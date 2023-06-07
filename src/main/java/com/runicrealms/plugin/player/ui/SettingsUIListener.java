@@ -1,11 +1,6 @@
-package com.runicrealms.plugin.player.settings;
+package com.runicrealms.plugin.player.ui;
 
-import co.aikar.taskchain.TaskChain;
-import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.common.util.GUIUtil;
-import com.runicrealms.plugin.player.ui.ProfileUI;
-import com.runicrealms.plugin.rdb.RunicDatabase;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -14,7 +9,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.ItemStack;
-import redis.clients.jedis.Jedis;
 
 public class SettingsUIListener implements Listener {
 
@@ -46,20 +40,13 @@ public class SettingsUIListener implements Listener {
         if (material == GUIUtil.BACK_BUTTON.getType()) {
             player.openInventory(new ProfileUI(player).getInventory());
         } else if (material == Material.PAPER) {
-            TaskChain<?> chain = RunicCore.newChain();
-            chain
-                    .asyncFirst(() -> {
-                        boolean castMenuEnabled = settingsUI.getSettingsData().isCastMenuEnabled();
-                        settingsUI.getSettingsData().setCastMenuEnabled(!castMenuEnabled);
-                        Bukkit.getScheduler().runTaskAsynchronously(RunicCore.getInstance(), () -> {
-                            try (Jedis jedis = RunicDatabase.getAPI().getRedisAPI().getNewJedisResource()) {
-                                settingsUI.getSettingsData().writeToJedis(player.getUniqueId(), jedis);
-                            }
-                        });
-                        return settingsUI.getSettingsData().isCastMenuEnabled();
-                    })
-                    .syncLast(isCastMenuEnabled -> player.openInventory(new SettingsUI(player, settingsUI.getSettingsData()).getInventory()))
-                    .execute();
+            boolean castMenuEnabled = settingsUI.getSettingsData().isCastMenuEnabled();
+            settingsUI.getSettingsData().setCastMenuEnabled(!castMenuEnabled);
+            player.openInventory(new SettingsUI(player, settingsUI.getSettingsData()).getInventory());
+        } else if (material == Material.POPPED_CHORUS_FRUIT) {
+            boolean openRunestoneInCombat = settingsUI.getSettingsData().shouldOpenRunestoneInCombat();
+            settingsUI.getSettingsData().setOpenRunestoneInCombat(!openRunestoneInCombat);
+            player.openInventory(new SettingsUI(player, settingsUI.getSettingsData()).getInventory());
         }
     }
 }

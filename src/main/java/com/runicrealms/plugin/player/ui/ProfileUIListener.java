@@ -1,16 +1,12 @@
 package com.runicrealms.plugin.player.ui;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.model.SettingsData;
-import com.runicrealms.plugin.player.settings.SettingsUI;
-import com.runicrealms.plugin.rdb.RunicDatabase;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
-import redis.clients.jedis.Jedis;
 
 public class ProfileUIListener implements Listener {
 
@@ -40,13 +36,7 @@ public class ProfileUIListener implements Listener {
         if (event.getSlot() == 0) {
             player.closeInventory();
         } else if (event.getSlot() == 24) {
-            try (Jedis jedis = RunicDatabase.getAPI().getRedisAPI().getNewJedisResource()) {
-                player.openInventory(new SettingsUI
-                        (
-                                player,
-                                (SettingsData) RunicCore.getSettingsManager().loadSessionData(player.getUniqueId(), jedis)
-                        ).getInventory());
-            }
+            player.openInventory(new SettingsUI(player, RunicCore.getSettingsManager().getSettingsData(player.getUniqueId())).getInventory());
         }
     }
 

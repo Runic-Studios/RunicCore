@@ -4,7 +4,6 @@ import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.WeaponType;
 import com.runicrealms.plugin.events.SpellCastEvent;
 import com.runicrealms.plugin.listeners.DamageListener;
-import com.runicrealms.plugin.model.SettingsData;
 import com.runicrealms.plugin.rdb.RunicDatabase;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
@@ -55,7 +54,7 @@ public class SpellUseListener implements Listener {
             player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 0.25f, 1.0f);
             casters.put(player.getUniqueId(), castTimeoutTask(player));
             String prefix = isArcher ? ACTIVATE_LEFT : ACTIVATE_RIGHT;
-            boolean displayCastMenu = ((SettingsData) RunicCore.getSettingsManager().getSessionData(player.getUniqueId())).isCastMenuEnabled();
+            boolean displayCastMenu = RunicCore.getSettingsManager().getSettingsData(player.getUniqueId()).isCastMenuEnabled();
             if (!displayCastMenu) return;
             // Add space to title to fix a 1.17/1.18 bug
             player.sendTitle
@@ -92,7 +91,7 @@ public class SpellUseListener implements Listener {
         casters.get(player.getUniqueId()).cancel(); // cancel timeout task
         casters.remove(player.getUniqueId());
         String prefix = isArcher ? ACTIVATE_LEFT : ACTIVATE_RIGHT;
-        boolean displayCastMenu = ((SettingsData) RunicCore.getSettingsManager().getSessionData(player.getUniqueId())).isCastMenuEnabled();
+        boolean displayCastMenu = RunicCore.getSettingsManager().getSettingsData(player.getUniqueId()).isCastMenuEnabled();
         if (displayCastMenu) {
             player.sendTitle
                     (

@@ -1,54 +1,31 @@
 package com.runicrealms.plugin.model;
 
-import com.runicrealms.plugin.rdb.RunicDatabase;
-import com.runicrealms.plugin.rdb.model.SessionDataRedis;
-import redis.clients.jedis.Jedis;
+import com.runicrealms.plugin.common.RunicCommon;
 
-import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
-public class SettingsData implements SessionDataRedis {
-    public static final String DATA_SECTION_SETTINGS = "settings:castMenuEnabled";
+public class SettingsData {
+    private final UUID owner;
     private boolean castMenuEnabled = true;
-
-    public SettingsData() {
-        // Default constructor for Spring
-    }
+    private boolean openRunestoneInCombat = true;
 
     /**
      * Build the player's settings data from redis, then add to memory
-     *
-     * @param uuid  of the player to lookup
-     * @param jedis the jedis resource
      */
-    public SettingsData(UUID uuid, Jedis jedis) {
-        String database = RunicDatabase.getAPI().getDataAPI().getMongoDatabase().getName();
-        this.castMenuEnabled = Boolean.parseBoolean(jedis.get(database + ":" + uuid + ":" + DATA_SECTION_SETTINGS));
+    public SettingsData(UUID owner) {
+        RunicCommon.getLuckPermsAPI().retrieveData(owner).thenAcceptAsync(data -> {
+            if (data.containsKey("settings.cast-menu")) castMenuEnabled = data.getBoolean("settings.cast-menu");
+            if (data.containsKey("settings.open-runestone"))
+                openRunestoneInCombat = data.getBoolean("settings.open-runestone");
+        });
+        this.owner = owner;
     }
 
-    @Override
-    public Map<String, String> getDataMapFromJedis(UUID uuid, Jedis jedis, int... slot) {
-        return null;
-    }
-
-    @Override
-    public List<String> getFields() {
-        return null;
-    }
-
-    @Override
-    public Map<String, String> toMap(UUID uuid, int... slot) {
-        return null;
-    }
-
-    @Override
-    public void writeToJedis(UUID uuid, Jedis jedis, int... slot) {
-        // Inform the server that this player should be saved to mongo on next task (jedis data is refreshed)
-        String database = RunicDatabase.getAPI().getDataAPI().getMongoDatabase().getName();
-        jedis.sadd(database + ":markedForSave:core", uuid.toString());
-        jedis.set(database + ":" + uuid + ":" + DATA_SECTION_SETTINGS, String.valueOf(this.castMenuEnabled));
-        jedis.expire(database + ":" + uuid + ":" + DATA_SECTION_SETTINGS, RunicDatabase.getAPI().getRedisAPI().getExpireTime());
+    public void save() {
+        RunicCommon.getLuckPermsAPI().savePayload(RunicCommon.getLuckPermsAPI().createPayload(owner, (data) -> {
+            data.set("settings.cast-menu", castMenuEnabled);
+            data.set("settings.open-runestone", openRunestoneInCombat);
+        }));
     }
 
     public boolean isCastMenuEnabled() {
@@ -57,5 +34,15 @@ public class SettingsData implements SessionDataRedis {
 
     public void setCastMenuEnabled(boolean castMenuEnabled) {
         this.castMenuEnabled = castMenuEnabled;
+        save();
+    }
+
+    public boolean shouldOpenRunestoneInCombat() {
+        return openRunestoneInCombat;
+    }
+
+    public void setOpenRunestoneInCombat(boolean openRunestoneInCombat) {
+        this.openRunestoneInCombat = openRunestoneInCombat;
+        save();
     }
 }

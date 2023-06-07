@@ -38,7 +38,6 @@ public class CorePlayerData implements SessionDataMongo {
     private HashMap<Integer, HashMap<SkillTreePosition, SkillTreeData>> skillTreeDataMap = new HashMap<>();
     private HashMap<Integer, SpellData> spellDataMap = new HashMap<>();
     private TitleData titleData = new TitleData();
-    private SettingsData settingsData = new SettingsData();
 
     @SuppressWarnings("unused")
     public CorePlayerData() {
@@ -153,14 +152,6 @@ public class CorePlayerData implements SessionDataMongo {
 
     public void setLastLoginDate(LocalDate lastLoginDate) {
         this.lastLoginDate = lastLoginDate;
-    }
-
-    public SettingsData getSettingsData() {
-        return settingsData;
-    }
-
-    public void setSettingsData(SettingsData settingsData) {
-        this.settingsData = settingsData;
     }
 
     /**
@@ -280,8 +271,6 @@ public class CorePlayerData implements SessionDataMongo {
             CoreCharacterData characterData = this.coreCharacterDataMap.get(slot);
             characterData.writeToJedis(this.uuid, jedis, slot);
         }
-        // Settings
-        this.settingsData.writeToJedis(uuid, jedis);
     }
 
 }

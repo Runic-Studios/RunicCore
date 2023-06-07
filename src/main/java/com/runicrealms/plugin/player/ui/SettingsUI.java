@@ -1,4 +1,4 @@
-package com.runicrealms.plugin.player.settings;
+package com.runicrealms.plugin.player.ui;
 
 import com.runicrealms.plugin.common.util.ColorUtil;
 import com.runicrealms.plugin.common.util.GUIUtil;
@@ -45,11 +45,16 @@ public class SettingsUI implements InventoryHolder {
         GUIUtil.fillInventoryBorders(this.inventory);
         this.inventory.setItem(0, GUIUtil.BACK_BUTTON);
         boolean castMenuEnabled = this.settingsData.isCastMenuEnabled();
-        ChatColor chatColor = castMenuEnabled ? ChatColor.GREEN : ChatColor.RED;
-        this.inventory.setItem(22, GUIUtil.dispItem(
+        boolean openRunestoneInCombat = this.settingsData.shouldOpenRunestoneInCombat();
+        this.inventory.setItem(20, GUIUtil.dispItem(
                 Material.PAPER,
                 ChatColor.LIGHT_PURPLE + "Display Spell Cast UI",
-                new String[]{ChatColor.YELLOW + "Enabled: " + chatColor + castMenuEnabled}
+                new String[]{ChatColor.YELLOW + "Enabled: " + (castMenuEnabled ? ChatColor.GREEN : ChatColor.RED) + castMenuEnabled}
+        ));
+        this.inventory.setItem(24, GUIUtil.dispItem(
+                Material.POPPED_CHORUS_FRUIT,
+                ChatColor.LIGHT_PURPLE + "Open Runestone in Combat",
+                new String[]{ChatColor.YELLOW + "Enabled: " + (openRunestoneInCombat ? ChatColor.GREEN : ChatColor.RED) + openRunestoneInCombat}
         ));
     }
 }
