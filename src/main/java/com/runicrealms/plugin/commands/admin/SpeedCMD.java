@@ -3,6 +3,7 @@ package com.runicrealms.plugin.commands.admin;
 import co.aikar.commands.BaseCommand;
 import co.aikar.commands.annotation.CatchUnknown;
 import co.aikar.commands.annotation.CommandAlias;
+import co.aikar.commands.annotation.CommandPermission;
 import co.aikar.commands.annotation.Conditions;
 import co.aikar.commands.annotation.Default;
 import co.aikar.commands.annotation.Syntax;
@@ -11,6 +12,7 @@ import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
 @CommandAlias("speed")
+@CommandPermission("runic.op")
 public class SpeedCMD extends BaseCommand {
 
     // speed [speed]

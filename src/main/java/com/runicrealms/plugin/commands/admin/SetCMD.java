@@ -3,16 +3,17 @@ package com.runicrealms.plugin.commands.admin;
 import co.aikar.commands.BaseCommand;
 import co.aikar.commands.annotation.CommandAlias;
 import co.aikar.commands.annotation.CommandCompletion;
+import co.aikar.commands.annotation.CommandPermission;
 import co.aikar.commands.annotation.Conditions;
 import co.aikar.commands.annotation.Subcommand;
 import co.aikar.commands.annotation.Syntax;
 import com.runicrealms.plugin.CityLocation;
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.common.CharacterClass;
 import com.runicrealms.plugin.common.util.Pair;
 import com.runicrealms.plugin.model.CoreCharacterData;
 import com.runicrealms.plugin.player.utilities.PlayerLevelUtil;
 import com.runicrealms.plugin.rdb.RunicDatabase;
-import com.runicrealms.plugin.common.CharacterClass;
 import com.runicrealms.plugin.utilities.NametagHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -27,6 +28,7 @@ import java.util.UUID;
 import static com.runicrealms.plugin.classes.SelectClass.setPlayerClass;
 
 @CommandAlias("set")
+@CommandPermission("runic.op")
 public class SetCMD extends BaseCommand {
 
     public SetCMD() {

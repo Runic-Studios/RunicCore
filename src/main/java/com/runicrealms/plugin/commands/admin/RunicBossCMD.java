@@ -3,6 +3,7 @@ package com.runicrealms.plugin.commands.admin;
 import co.aikar.commands.BaseCommand;
 import co.aikar.commands.annotation.CommandAlias;
 import co.aikar.commands.annotation.CommandCompletion;
+import co.aikar.commands.annotation.CommandPermission;
 import co.aikar.commands.annotation.Conditions;
 import co.aikar.commands.annotation.Default;
 import com.gmail.filoghost.holographicdisplays.api.Hologram;
@@ -29,6 +30,7 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @CommandAlias("runicboss")
+@CommandPermission("runic.op")
 public class RunicBossCMD extends BaseCommand {
 
     private static final int CHEST_DURATION = 45; // seconds

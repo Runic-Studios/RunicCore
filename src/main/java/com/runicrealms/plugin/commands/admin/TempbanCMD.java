@@ -6,7 +6,6 @@ import co.aikar.commands.annotation.CommandAlias;
 import co.aikar.commands.annotation.CommandCompletion;
 import co.aikar.commands.annotation.CommandPermission;
 import co.aikar.commands.annotation.Default;
-import co.aikar.commands.annotation.Private;
 import co.aikar.commands.annotation.Single;
 import co.aikar.commands.annotation.Syntax;
 import com.google.gson.JsonObject;
@@ -26,7 +25,6 @@ import java.util.concurrent.TimeUnit;
 
 @CommandAlias("tempban")
 @CommandPermission("runiccore.tempban")
-@Private
 public class TempbanCMD extends BaseCommand {
 
     private static UUID getUUID(String name) {

@@ -4,6 +4,7 @@ import co.aikar.commands.BaseCommand;
 import co.aikar.commands.annotation.CatchUnknown;
 import co.aikar.commands.annotation.CommandAlias;
 import co.aikar.commands.annotation.CommandCompletion;
+import co.aikar.commands.annotation.CommandPermission;
 import co.aikar.commands.annotation.Conditions;
 import co.aikar.commands.annotation.Default;
 import com.runicrealms.plugin.CityLocation;
@@ -22,6 +23,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @CommandAlias("runicteleport")
+@CommandPermission("runic.op")
 public class RunicTeleportCMD extends BaseCommand {
 
     public RunicTeleportCMD() {

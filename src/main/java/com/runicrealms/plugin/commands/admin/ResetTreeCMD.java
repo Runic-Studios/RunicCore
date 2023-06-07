@@ -4,6 +4,7 @@ import co.aikar.commands.BaseCommand;
 import co.aikar.commands.annotation.CatchUnknown;
 import co.aikar.commands.annotation.CommandAlias;
 import co.aikar.commands.annotation.CommandCompletion;
+import co.aikar.commands.annotation.CommandPermission;
 import co.aikar.commands.annotation.Conditions;
 import co.aikar.commands.annotation.Default;
 import co.aikar.commands.annotation.Syntax;
@@ -27,6 +28,7 @@ import java.util.Set;
 import java.util.UUID;
 
 @CommandAlias("resettree")
+@CommandPermission("runic.op")
 public class ResetTreeCMD extends BaseCommand implements Listener {
 
     // todo: free from level 30, then use a linear function to calculate cost.

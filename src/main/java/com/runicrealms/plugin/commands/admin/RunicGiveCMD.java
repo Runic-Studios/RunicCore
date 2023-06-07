@@ -3,6 +3,7 @@ package com.runicrealms.plugin.commands.admin;
 import co.aikar.commands.BaseCommand;
 import co.aikar.commands.annotation.CommandAlias;
 import co.aikar.commands.annotation.CommandCompletion;
+import co.aikar.commands.annotation.CommandPermission;
 import co.aikar.commands.annotation.Conditions;
 import co.aikar.commands.annotation.Subcommand;
 import com.runicrealms.plugin.RunicCore;
@@ -17,6 +18,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 @CommandAlias("runicgive")
+@CommandPermission("runic.op")
 public class RunicGiveCMD extends BaseCommand {
 
     // runicgive exp [player] [amount] [x] [y] [z] [mobLevel]
