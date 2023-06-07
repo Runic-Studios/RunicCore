@@ -90,6 +90,10 @@ public class RuneListener implements Listener {
         if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK)
             return;
 
+        if (RunicCore.getCombatAPI().isInCombat(event.getPlayer().getUniqueId()) &&
+                !RunicCore.getSettingsManager().getSettingsData(event.getPlayer().getUniqueId()).shouldOpenRunestoneInCombat())
+            return;
+
         player.openInventory(new RuneGUI(player).getInventory());
     }
 }

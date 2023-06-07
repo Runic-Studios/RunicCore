@@ -138,10 +138,10 @@ import com.runicrealms.plugin.player.listener.PlayerLevelListener;
 import com.runicrealms.plugin.player.listener.PlayerMenuListener;
 import com.runicrealms.plugin.player.listener.PlayerQuitListener;
 import com.runicrealms.plugin.player.listener.PlayerRegenListener;
-import com.runicrealms.plugin.player.settings.SettingsUIListener;
 import com.runicrealms.plugin.player.stat.StatListener;
 import com.runicrealms.plugin.player.stat.StatManager;
 import com.runicrealms.plugin.player.ui.ProfileUIListener;
+import com.runicrealms.plugin.player.ui.SettingsUIListener;
 import com.runicrealms.plugin.player.ui.StatsGUIListener;
 import com.runicrealms.plugin.playerqueue.PlayerQueueManager;
 import com.runicrealms.plugin.rdb.RunicDatabase;
@@ -151,7 +151,6 @@ import com.runicrealms.plugin.rdb.api.ConverterAPI;
 import com.runicrealms.plugin.rdb.api.DataAPI;
 import com.runicrealms.plugin.rdb.api.RedisAPI;
 import com.runicrealms.plugin.rdb.event.MongoSaveEvent;
-import com.runicrealms.plugin.rdb.model.SessionDataManager;
 import com.runicrealms.plugin.redis.RedisManager;
 import com.runicrealms.plugin.region.RegionEventListener;
 import com.runicrealms.plugin.scoreboard.ScoreboardHandler;
@@ -211,7 +210,7 @@ public class RunicCore extends JavaPlugin implements Listener {
     private static RunicShopManager runicShopManager;
     private static PlayerHungerManager playerHungerManager;
     private static TitleAPI titleAPI;
-    private static SessionDataManager settingsManager;
+    private static SettingsManager settingsManager;
     private static ShopAPI shopAPI;
     private static MongoTask mongoTask;
     private static StatusEffectAPI statusEffectAPI;
@@ -314,7 +313,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         return gravestoneManager;
     }
 
-    public static SessionDataManager getSettingsManager() {
+    public static SettingsManager getSettingsManager() {
         return settingsManager;
     }
 
