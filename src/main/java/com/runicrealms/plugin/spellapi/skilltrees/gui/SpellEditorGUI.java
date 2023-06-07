@@ -121,8 +121,6 @@ public class SpellEditorGUI implements InventoryHolder {
         this.inventory.clear();
         this.inventory.setItem(0, GUIUtil.BACK_BUTTON);
         this.inventory.setItem(31, ancientRunestone());
-        String slotOne = RunicCore.getSettingsManager().getSettingsData(player.getUniqueId()).getSpellSlotOneDisplay();
-        String slotFour = RunicCore.getSettingsManager().getSettingsData(player.getUniqueId()).getSpellSlotFourDisplay();
         this.inventory.setItem(SPELL_ONE_INDEX, spellButton(1, 0));
         this.inventory.setItem(SPELL_TWO_INDEX, spellButton(2, SLOT_REQ_2));
         this.inventory.setItem(SPELL_THREE_INDEX, spellButton(3, SLOT_REQ_3));
@@ -141,7 +139,7 @@ public class SpellEditorGUI implements InventoryHolder {
             case 1 -> "Slot One";
             case 2 -> "Left-click";
             case 3 -> "Right-click";
-            case 4 -> "Slot four";
+            case 4 -> "Slot Four";
             default -> "";
         };
 

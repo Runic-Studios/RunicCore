@@ -88,7 +88,7 @@ public class SettingsUIListener implements Listener {
                     event.getPlayer().sendMessage(ChatColor.RED + "This keybind must be one english character or number!");
                     return;
                 }
-                data.setSpellSlotOneDisplay(event.getMessage());
+                data.setSpellSlotOneDisplay(event.getMessage().toUpperCase());
                 event.getPlayer().openInventory(new SettingsUI(event.getPlayer(), data).getInventory());
             });
         } else if (settingSlotFour.contains(event.getPlayer().getUniqueId())) {
@@ -104,7 +104,7 @@ public class SettingsUIListener implements Listener {
                     event.getPlayer().sendMessage(ChatColor.RED + "This keybind must be one english character or number!");
                     return;
                 }
-                data.setSpellSlotFourDisplay(event.getMessage());
+                data.setSpellSlotFourDisplay(event.getMessage().toUpperCase());
                 event.getPlayer().openInventory(new SettingsUI(event.getPlayer(), data).getInventory());
             });
         }
