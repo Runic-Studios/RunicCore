@@ -79,10 +79,12 @@ public class SpellEditorGUI implements InventoryHolder {
             ItemMeta meta = skillTreeButton.getItemMeta();
             if (meta == null) return skillTreeButton;
             meta.setDisplayName(ChatColor.LIGHT_PURPLE + "Your Spell Setup:");
-            String spellOne = "&d[1] &7Spell Hotbar 1: &f" + playerSpellData.getSpellHotbarOne();
+            String slotOne = RunicCore.getSettingsManager().getSettingsData(player.getUniqueId()).getSpellSlotOneDisplay();
+            String slotFour = RunicCore.getSettingsManager().getSettingsData(player.getUniqueId()).getSpellSlotFourDisplay();
+            String spellOne = "&d[" + slotOne + "] &7Spell Hotbar 1: &f" + playerSpellData.getSpellHotbarOne();
             String spellTwo = "&d[L] &7Spell Left-click: &f" + playerSpellData.getSpellLeftClick();
             String spellThree = "&d[R] &7Spell Right-click: &f" + playerSpellData.getSpellRightClick();
-            String spellFour = "&d[F] &7Spell Swap-hands: &f" + playerSpellData.getSpellSwapHands();
+            String spellFour = "&d[" + slotFour + "] &7Spell Swap-hands: &f" + playerSpellData.getSpellSwapHands();
             List<String> lore = new ArrayList<String>() {
                 {
                     add(ColorUtil.format(spellOne));

@@ -60,7 +60,7 @@ public class SpellUseListener implements Listener {
             player.sendTitle
                     (
                             " ", ChatColor.LIGHT_PURPLE + prefix +
-                                    " - " + ChatColor.DARK_GRAY + "[1] [L] [R] [F]", 0, SPELL_TIMEOUT * 20, 0
+                                    " - " + ChatColor.DARK_GRAY + "[" + getActivationOne(player) + "] [L] [R] [" + getActivationFour(player) + "]", 0, SPELL_TIMEOUT * 20, 0
                     );
         } else {
             castSpell(player, whichSpellToCast, RunicDatabase.getAPI().getCharacterAPI().getPlayerClass(player).equalsIgnoreCase("archer"));
@@ -97,7 +97,7 @@ public class SpellUseListener implements Listener {
                     (
                             " ",
                             ChatColor.LIGHT_PURPLE + prefix + " - "
-                                    + determineSelectedSlot(number), 0, 15, 0
+                                    + determineSelectedSlot(player, number), 0, 15, 0
                     );
         }
         castSelectedSpell(player, number);
@@ -124,23 +124,18 @@ public class SpellUseListener implements Listener {
      * @param number which of the four spells to execute
      * @return A String corresponding to the new UI to display
      */
-    private String determineSelectedSlot(int number) {
-        String selectedSpell = "";
-        switch (number) {
-            case 1:
-                selectedSpell = ChatColor.LIGHT_PURPLE + "[1] " + ChatColor.DARK_GRAY + "[L] [R] [F]";
-                break;
-            case 2:
-                selectedSpell = ChatColor.DARK_GRAY + "[1] " + ChatColor.LIGHT_PURPLE + "[L] " + ChatColor.DARK_GRAY + "[R] [F]";
-                break;
-            case 3:
-                selectedSpell = ChatColor.DARK_GRAY + "[1] [L] " + ChatColor.LIGHT_PURPLE + "[R] " + ChatColor.DARK_GRAY + "[F]";
-                break;
-            case 4:
-                selectedSpell = ChatColor.DARK_GRAY + "[1] [L] [R] " + ChatColor.LIGHT_PURPLE + "[F]";
-                break;
-        }
-        return selectedSpell;
+    private String determineSelectedSlot(Player player, int number) {
+        return switch (number) {
+            case 1 ->
+                    ChatColor.LIGHT_PURPLE + "[" + getActivationOne(player) + "] " + ChatColor.DARK_GRAY + "[L] [R] [" + getActivationFour(player) + "]";
+            case 2 ->
+                    ChatColor.DARK_GRAY + "[" + getActivationOne(player) + "] " + ChatColor.LIGHT_PURPLE + "[L] " + ChatColor.DARK_GRAY + "[R] [" + getActivationFour(player) + "]";
+            case 3 ->
+                    ChatColor.DARK_GRAY + "[" + getActivationOne(player) + "] [L] " + ChatColor.LIGHT_PURPLE + "[R] " + ChatColor.DARK_GRAY + "[" + getActivationFour(player) + "]";
+            case 4 ->
+                    ChatColor.DARK_GRAY + "[" + getActivationOne(player) + "] [L] [R] " + ChatColor.LIGHT_PURPLE + "[" + getActivationFour(player) + "]";
+            default -> "";
+        };
     }
 
     @EventHandler(priority = EventPriority.NORMAL)
@@ -185,6 +180,14 @@ public class SpellUseListener implements Listener {
         else if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
             activateSpellMode(player, ClickType.RIGHT, 3, isArcher);
         }
+    }
+
+    private String getActivationOne(Player player) {
+        return RunicCore.getSettingsManager().getSettingsData(player.getUniqueId()).getSpellSlotOneDisplay();
+    }
+
+    private String getActivationFour(Player player) {
+        return RunicCore.getSettingsManager().getSettingsData(player.getUniqueId()).getSpellSlotFourDisplay();
     }
 
     enum ClickType {

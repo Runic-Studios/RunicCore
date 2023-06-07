@@ -9,14 +9,22 @@ public class SettingsData {
     private boolean castMenuEnabled = true;
     private boolean openRunestoneInCombat = true;
 
+    private String spellSlotOneDisplay = "1";
+    private String spellSlotFourDisplay = "F";
+
     /**
      * Build the player's settings data from redis, then add to memory
      */
     public SettingsData(UUID owner) {
         RunicCommon.getLuckPermsAPI().retrieveData(owner).thenAcceptAsync(data -> {
-            if (data.containsKey("settings.cast-menu")) castMenuEnabled = data.getBoolean("settings.cast-menu");
+            if (data.containsKey("settings.cast-menu"))
+                castMenuEnabled = data.getBoolean("settings.cast-menu");
             if (data.containsKey("settings.open-runestone"))
                 openRunestoneInCombat = data.getBoolean("settings.open-runestone");
+            if (data.containsKey("settings.spell-one"))
+                spellSlotOneDisplay = data.getString("settings.spell-one");
+            if (data.containsKey("settings.spell-four"))
+                spellSlotFourDisplay = data.getString("settings.spell-four");
         });
         this.owner = owner;
     }
@@ -25,6 +33,8 @@ public class SettingsData {
         RunicCommon.getLuckPermsAPI().savePayload(RunicCommon.getLuckPermsAPI().createPayload(owner, (data) -> {
             data.set("settings.cast-menu", castMenuEnabled);
             data.set("settings.open-runestone", openRunestoneInCombat);
+            data.set("settings.spell-one", spellSlotOneDisplay);
+            data.set("settings.spell-four", spellSlotFourDisplay);
         }));
     }
 
@@ -43,6 +53,24 @@ public class SettingsData {
 
     public void setOpenRunestoneInCombat(boolean openRunestoneInCombat) {
         this.openRunestoneInCombat = openRunestoneInCombat;
+        save();
+    }
+
+    public String getSpellSlotOneDisplay() {
+        return spellSlotOneDisplay;
+    }
+
+    public void setSpellSlotOneDisplay(String spellSlotOneDisplay) {
+        this.spellSlotOneDisplay = spellSlotOneDisplay;
+        save();
+    }
+
+    public String getSpellSlotFourDisplay() {
+        return spellSlotFourDisplay;
+    }
+
+    public void setSpellSlotFourDisplay(String spellSlotFourDisplay) {
+        this.spellSlotFourDisplay = spellSlotFourDisplay;
         save();
     }
 }

@@ -46,15 +46,37 @@ public class SettingsUI implements InventoryHolder {
         this.inventory.setItem(0, GUIUtil.BACK_BUTTON);
         boolean castMenuEnabled = this.settingsData.isCastMenuEnabled();
         boolean openRunestoneInCombat = this.settingsData.shouldOpenRunestoneInCombat();
-        this.inventory.setItem(20, GUIUtil.dispItem(
+        String spellSlotOneDisplay = this.settingsData.getSpellSlotOneDisplay();
+        String spellSlotFourDisplay = this.settingsData.getSpellSlotFourDisplay();
+        this.inventory.setItem(21, GUIUtil.dispItem(
                 Material.PAPER,
                 ChatColor.LIGHT_PURPLE + "Display Spell Cast UI",
                 new String[]{ChatColor.YELLOW + "Enabled: " + (castMenuEnabled ? ChatColor.GREEN : ChatColor.RED) + castMenuEnabled}
         ));
-        this.inventory.setItem(24, GUIUtil.dispItem(
+        this.inventory.setItem(23, GUIUtil.dispItem(
                 Material.POPPED_CHORUS_FRUIT,
                 ChatColor.LIGHT_PURPLE + "Open Runestone in Combat",
                 new String[]{ChatColor.YELLOW + "Enabled: " + (openRunestoneInCombat ? ChatColor.GREEN : ChatColor.RED) + openRunestoneInCombat}
+        ));
+        this.inventory.setItem(30, GUIUtil.dispItem(
+                Material.BOOK,
+                ChatColor.LIGHT_PURPLE + "Spell Activation Slot 1",
+                new String[]{
+                        ChatColor.YELLOW + "Visual Keybind: " + ChatColor.GREEN + "[" + spellSlotOneDisplay + "]",
+                        "",
+                        ChatColor.GRAY + "This is purely visual, rebind",
+                        ChatColor.GRAY + "this in your controls to change."
+                }
+        ));
+        this.inventory.setItem(32, GUIUtil.dispItem(
+                Material.BOOK,
+                ChatColor.LIGHT_PURPLE + "Spell Activation Slot 4",
+                new String[]{
+                        ChatColor.YELLOW + "Visual Keybind: " + ChatColor.GREEN + "[" + spellSlotFourDisplay + "]",
+                        "",
+                        ChatColor.GRAY + "This is purely visual, rebind",
+                        ChatColor.GRAY + "this in your controls to change."
+                }
         ));
     }
 }
