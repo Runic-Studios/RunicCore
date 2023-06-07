@@ -9,7 +9,6 @@ import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
@@ -47,16 +46,6 @@ public class Slam extends Spell implements PhysicalDamageSpell, RadiusSpell {
                 damage + " + &f" + damagePerLevel +
                 "x&7 lvl) physical⚔ damage to enemies within " +
                 radius + " blocks and knock them up!");
-    }
-
-    @Override
-    @SuppressWarnings("deprecation")
-    public boolean attemptToExecute(Player player) {
-        if (!player.isOnGround()) {
-            player.sendMessage(ChatColor.RED + "You must be on the ground to cast " + this.getName() + "!");
-            return false;
-        }
-        return true;
     }
 
     @Override

@@ -9,7 +9,6 @@ import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.spellapi.spellutil.particles.SlashEffect;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Particle;
@@ -60,16 +59,6 @@ public class Lunge extends Spell implements DurationSpell {
                 () -> LUNGE_TASKS.remove(player.getUniqueId()), (int) duration * 20L);
         if (damage)
             LUNGE_TASKS.put(player.getUniqueId(), lungeDamageTask);
-    }
-
-    @Override
-    @SuppressWarnings("deprecation")
-    public boolean attemptToExecute(Player player) {
-        if (!player.isOnGround()) {
-            player.sendMessage(ChatColor.RED + "You must be on the ground to cast " + this.getName() + "!");
-            return false;
-        }
-        return true;
     }
 
     @Override

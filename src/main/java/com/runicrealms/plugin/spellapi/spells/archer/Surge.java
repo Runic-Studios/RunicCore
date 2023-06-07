@@ -6,7 +6,6 @@ import com.runicrealms.plugin.events.EnvironmentDamage;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Particle;
@@ -35,16 +34,6 @@ public class Surge extends Spell {
     public Surge() {
         super("Surge", CharacterClass.ARCHER);
         this.setDescription("You launch yourself forward!");
-    }
-
-    @Override
-    @SuppressWarnings("deprecation")
-    public boolean attemptToExecute(Player player) {
-        if (!player.isOnGround()) {
-            player.sendMessage(ChatColor.RED + "You must be on the ground to cast " + this.getName() + "!");
-            return false;
-        }
-        return true;
     }
 
     @Override

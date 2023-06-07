@@ -10,7 +10,6 @@ import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.spellapi.spellutil.particles.EntityTrail;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Particle;
@@ -46,16 +45,6 @@ public class LeapingShot extends Spell implements DurationSpell, PhysicalDamageS
                 "(" + damage + " + &f" + damagePerLevel +
                 "x &7lvl) physical⚔ damage while simultaneously leaping backwards! " +
                 "During your leap, you are granted fall damage immunity for " + duration + "s.");
-    }
-
-    @Override
-    @SuppressWarnings("deprecation")
-    public boolean attemptToExecute(Player player) {
-        if (!player.isOnGround()) {
-            player.sendMessage(ChatColor.RED + "You must be on the ground to cast " + this.getName() + "!");
-            return false;
-        }
-        return true;
     }
 
     @Override
