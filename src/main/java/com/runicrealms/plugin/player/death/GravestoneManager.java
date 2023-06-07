@@ -33,10 +33,12 @@ public class GravestoneManager implements Listener {
     }
 
     private boolean canOpenGravestone(UUID uuid, Player whoOpened, Gravestone gravestone) {
+        Bukkit.broadcastMessage("0");
         if (gravestoneMap.get(uuid) != null && gravestoneMap.get(uuid).equals(gravestone))
             return true; // Always true if it is the slain player
         if (!gravestone.hasPriority())
             return false; // True if priority has expired
+        Bukkit.broadcastMessage("1");
         return RunicCore.getPartyAPI().isPartyMember(uuid, whoOpened); // Party members can open gravestone
     }
 
@@ -57,6 +59,7 @@ public class GravestoneManager implements Listener {
                 gravestoneMap.forEach((uuid, gravestone) -> {
                     if (gravestone.getShulkerBox().getBlock().equals(event.getClickedBlock())) {
                         if (canOpenGravestone(uuid, event.getPlayer(), gravestone)) {
+                            Bukkit.broadcastMessage("2");
                             event.getPlayer().playSound(event.getPlayer().getLocation(), Sound.BLOCK_SHULKER_BOX_OPEN, 0.5f, 1.0f);
                             event.getPlayer().openInventory(gravestone.getInventory());
                         } else {
