@@ -65,7 +65,7 @@ public class SettingsUI implements InventoryHolder {
         List<String> slotOneLore = new ArrayList<>();
         slotOneLore.add("&eVisual Keybind: &a[" + spellSlotOneDisplay + "]");
         slotOneLore.add("");
-        slotOneLore.addAll(ChatUtils.formattedText("&7This only changes the &oappearance &7of the spell UI. To actually change the binding, change it in your player controls."));
+        slotOneLore.addAll(ChatUtils.formattedText("&7This only changes the &7&o&7appearance &r&7of the spell UI. To actually change the binding, change it in your player controls."));
         this.inventory.setItem(30, GUIUtil.dispItem(
                 Material.BOOK,
                 ChatColor.LIGHT_PURPLE + "Spell Activation Slot 1 (Hotbar 1)",
@@ -74,7 +74,7 @@ public class SettingsUI implements InventoryHolder {
         List<String> slotFourLore = new ArrayList<>();
         slotFourLore.add("&eVisual Keybind: &a[" + spellSlotFourDisplay + "]");
         slotFourLore.add("");
-        slotFourLore.addAll(ChatUtils.formattedText("&7This only changes the &oappearance &7of the spell UI. To actually change the binding, change it in your player controls."));
+        slotFourLore.addAll(ChatUtils.formattedText("&7This only changes the &7&o&7appearance &r&7of the spell UI. To actually change the binding, change it in your player controls."));
         this.inventory.setItem(32, GUIUtil.dispItem(
                 Material.BOOK,
                 ChatColor.LIGHT_PURPLE + "Spell Activation Slot 4 (Swap-Hands)",
