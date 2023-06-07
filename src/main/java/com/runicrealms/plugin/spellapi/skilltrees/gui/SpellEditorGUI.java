@@ -81,10 +81,10 @@ public class SpellEditorGUI implements InventoryHolder {
             meta.setDisplayName(ChatColor.LIGHT_PURPLE + "Your Spell Setup:");
             String slotOne = RunicCore.getSettingsManager().getSettingsData(player.getUniqueId()).getSpellSlotOneDisplay();
             String slotFour = RunicCore.getSettingsManager().getSettingsData(player.getUniqueId()).getSpellSlotFourDisplay();
-            String spellOne = "&d[" + slotOne + "] &7Spell Hotbar 1: &f" + playerSpellData.getSpellHotbarOne();
+            String spellOne = "&d[" + slotOne + "] &7Spell Slot One: &f" + playerSpellData.getSpellHotbarOne();
             String spellTwo = "&d[L] &7Spell Left-click: &f" + playerSpellData.getSpellLeftClick();
             String spellThree = "&d[R] &7Spell Right-click: &f" + playerSpellData.getSpellRightClick();
-            String spellFour = "&d[" + slotFour + "] &7Spell Swap-hands: &f" + playerSpellData.getSpellSwapHands();
+            String spellFour = "&d[" + slotFour + "] &7Spell Slot Four: &f" + playerSpellData.getSpellSwapHands();
             List<String> lore = new ArrayList<String>() {
                 {
                     add(ColorUtil.format(spellOne));
@@ -121,22 +121,38 @@ public class SpellEditorGUI implements InventoryHolder {
         this.inventory.clear();
         this.inventory.setItem(0, GUIUtil.BACK_BUTTON);
         this.inventory.setItem(31, ancientRunestone());
-        this.inventory.setItem(SPELL_ONE_INDEX, spellButton("Hotbar 1", 0));
-        this.inventory.setItem(SPELL_TWO_INDEX, spellButton("Left-click", SLOT_REQ_2));
-        this.inventory.setItem(SPELL_THREE_INDEX, spellButton("Right-click", SLOT_REQ_3));
-        this.inventory.setItem(SPELL_FOUR_INDEX, spellButton("Swap-hands", SLOT_REQ_4));
+        String slotOne = RunicCore.getSettingsManager().getSettingsData(player.getUniqueId()).getSpellSlotOneDisplay();
+        String slotFour = RunicCore.getSettingsManager().getSettingsData(player.getUniqueId()).getSpellSlotFourDisplay();
+        this.inventory.setItem(SPELL_ONE_INDEX, spellButton(1, 0));
+        this.inventory.setItem(SPELL_TWO_INDEX, spellButton(2, SLOT_REQ_2));
+        this.inventory.setItem(SPELL_THREE_INDEX, spellButton(3, SLOT_REQ_3));
+        this.inventory.setItem(SPELL_FOUR_INDEX, spellButton(4, SLOT_REQ_4));
     }
 
-    private ItemStack spellButton(String displayName, int level) {
+    private ItemStack spellButton(int slot, int level) {
+        String letter = switch (slot) {
+            case 1 -> RunicCore.getSettingsManager().getSettingsData(player.getUniqueId()).getSpellSlotOneDisplay();
+            case 2 -> "L";
+            case 3 -> "R";
+            case 4 -> RunicCore.getSettingsManager().getSettingsData(player.getUniqueId()).getSpellSlotFourDisplay();
+            default -> "";
+        };
+        String name = switch (slot) {
+            case 1 -> "Slot One";
+            case 2 -> "Left-click";
+            case 3 -> "Right-click";
+            case 4 -> "Slot four";
+            default -> "";
+        };
+
         ItemStack spellEditorButton = new ItemStack(Material.PAPER);
         boolean hasSlotUnlocked = hasSlotUnlocked(this.player, level);
         if (!hasSlotUnlocked)
             spellEditorButton = new ItemStack(Material.BARRIER);
         ItemMeta meta = spellEditorButton.getItemMeta();
         if (meta == null) return spellEditorButton;
-        meta.setDisplayName(ChatColor.LIGHT_PURPLE + "Spell " + displayName);
-        meta.setLore(ChatUtils.formattedText(ChatColor.GRAY + "Configure your active spell for " +
-                "slot: " + ChatColor.WHITE + displayName));
+        meta.setDisplayName(ColorUtil.format("&d[" + letter + "] Spell " + name));
+        meta.setLore(ChatUtils.formattedText(ChatColor.GRAY + "Configure your active spell for " + ChatColor.WHITE + name));
         if (!hasSlotUnlocked) {
             meta.setDisplayName(ChatColor.RED + "Spell Slot Locked");
             meta.setLore(ChatUtils.formattedText(ChatColor.GRAY + "Reach level [" + level + "] to unlock this slot!"));
