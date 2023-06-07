@@ -136,6 +136,13 @@ public class SpellEditorGUI implements InventoryHolder {
             default -> "";
         };
         String name = switch (slot) {
+            case 1 -> "Slot One (Hotbar 1)";
+            case 2 -> "Left-click";
+            case 3 -> "Right-click";
+            case 4 -> "Slot Four (Swap-hands)";
+            default -> "";
+        };
+        String nameShort = switch (slot) {
             case 1 -> "Slot One";
             case 2 -> "Left-click";
             case 3 -> "Right-click";
@@ -150,7 +157,7 @@ public class SpellEditorGUI implements InventoryHolder {
         ItemMeta meta = spellEditorButton.getItemMeta();
         if (meta == null) return spellEditorButton;
         meta.setDisplayName(ColorUtil.format("&d[" + letter + "] Spell " + name));
-        meta.setLore(ChatUtils.formattedText(ChatColor.GRAY + "Configure your active spell for " + ChatColor.WHITE + name));
+        meta.setLore(ChatUtils.formattedText(ChatColor.GRAY + "Configure your active spell for " + ChatColor.WHITE + nameShort));
         if (!hasSlotUnlocked) {
             meta.setDisplayName(ChatColor.RED + "Spell Slot Locked");
             meta.setLore(ChatUtils.formattedText(ChatColor.GRAY + "Reach level [" + level + "] to unlock this slot!"));
