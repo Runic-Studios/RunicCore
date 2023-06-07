@@ -43,8 +43,10 @@ public class FromTheShadows extends Spell {
         if (event.getSpell() instanceof Cocoon) {
             actuallyBuffedPlayers.remove(event.getPlayer().getUniqueId());
             Spell spell = RunicCore.getSpellAPI().getSpell("Cocoon");
-            addStatusEffect(event.getVictim(), RunicStatusEffect.ROOT, ((DurationSpell) spell).getDuration() / 2, true);
-            potentialBuffedPlayers.remove(event.getPlayer().getUniqueId());
+            Bukkit.getScheduler().runTask(plugin, () -> {
+                addStatusEffect(event.getVictim(), RunicStatusEffect.ROOT, ((DurationSpell) spell).getDuration() / 2, true);
+                potentialBuffedPlayers.remove(event.getPlayer().getUniqueId());
+            });
         } else if (event.getSpell() instanceof TwinFangs) {
             event.setCritical(true);
         }
@@ -76,7 +78,7 @@ public class FromTheShadows extends Spell {
             double duration = lunge.getDuration();
             double launchMultiplier = lunge.getLaunchMultiplier();
             double verticalPower = lunge.getVerticalPower();
-            Lunge.lunge(event.getCaster(), duration, launchMultiplier, verticalPower, false);
+            Lunge.lunge(event.getCaster(), duration, launchMultiplier, verticalPower);
         } else if (event.getSpell() instanceof TwinFangs twinFangs) {
             actuallyBuffedPlayers.put(event.getCaster().getUniqueId(), twinFangs);
         } else if (event.getSpell() instanceof Cocoon cocoon) {

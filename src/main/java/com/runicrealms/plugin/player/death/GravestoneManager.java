@@ -34,8 +34,10 @@ public class GravestoneManager implements Listener {
 
     private boolean canOpenGravestone(UUID uuid, Player whoOpened, Gravestone gravestone) {
         Bukkit.broadcastMessage("0");
+        Bukkit.broadcastMessage("uuid is " + uuid);
         if (gravestoneMap.get(uuid) != null && gravestoneMap.get(uuid).equals(gravestone))
             return true; // Always true if it is the slain player
+        Bukkit.broadcastMessage("0.5");
         if (!gravestone.hasPriority())
             return false; // True if priority has expired
         Bukkit.broadcastMessage("1");

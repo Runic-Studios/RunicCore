@@ -3,11 +3,9 @@ package com.runicrealms.plugin.spellapi.spells.rogue;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.common.CharacterClass;
 import com.runicrealms.plugin.events.EnvironmentDamage;
-import com.runicrealms.plugin.events.PhysicalDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
-import com.runicrealms.plugin.spellapi.spellutil.particles.SlashEffect;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Location;
@@ -16,25 +14,22 @@ import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
 
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 public class Lunge extends Spell implements DurationSpell {
-    private static final Map<UUID, BukkitTask> LUNGE_TASKS = new HashMap<>();
+    private static final Set<UUID> LUNGE_SET = new HashSet<>();
     private double duration;
     private double launchMultiplier;
     private double verticalPower;
-    private double percent;
 
     public Lunge() {
         super("Lunge", CharacterClass.ROGUE);
-        this.setDescription("You lunge forward into the air! " +
-                "Your next basic attack within " + duration + "s deals " +
-                (percent * 100) + "% damage!");
+        this.setDescription("You lunge forward into the air!");
     }
 
     /**
@@ -42,7 +37,7 @@ public class Lunge extends Spell implements DurationSpell {
      *
      * @param player who cast the spell
      */
-    public static void lunge(Player player, double duration, double launchMultiplier, double verticalPower, boolean damage) {
+    public static void lunge(Player player, double duration, double launchMultiplier, double verticalPower) {
         // Spell variables, vectors
         Location location = player.getLocation();
         Vector look = location.getDirection();
@@ -55,15 +50,14 @@ public class Lunge extends Spell implements DurationSpell {
         player.getWorld().spawnParticle(Particle.REDSTONE, player.getLocation(),
                 25, 0.5f, 0.5f, 0.5f, 0, new Particle.DustOptions(Color.fromRGB(210, 180, 140), 20));
         player.setVelocity(launchPath); // .multiply(launchMultiplier)
-        BukkitTask lungeDamageTask = Bukkit.getScheduler().runTaskLaterAsynchronously(RunicCore.getInstance(),
-                () -> LUNGE_TASKS.remove(player.getUniqueId()), (int) duration * 20L);
-        if (damage)
-            LUNGE_TASKS.put(player.getUniqueId(), lungeDamageTask);
+        LUNGE_SET.add(player.getUniqueId());
+        Bukkit.getScheduler().runTaskLaterAsynchronously(RunicCore.getInstance(),
+                () -> LUNGE_SET.remove(player.getUniqueId()), (int) duration * 20L);
     }
 
     @Override
     public void executeSpell(Player player, SpellItemType type) {
-        lunge(player, duration, launchMultiplier, verticalPower, true);
+        lunge(player, duration, launchMultiplier, verticalPower);
     }
 
     @Override
@@ -82,8 +76,6 @@ public class Lunge extends Spell implements DurationSpell {
         setDuration(duration.doubleValue());
         Number launchMultiplier = (Number) spellData.getOrDefault("launch-multiplier", 0);
         setLaunchMultiplier(launchMultiplier.doubleValue());
-        Number percent = (Number) spellData.getOrDefault("percent", 0);
-        setPercent(percent.doubleValue());
         Number verticalPower = (Number) spellData.getOrDefault("vertical-power", 0);
         setVerticalPower(verticalPower.doubleValue());
     }
@@ -109,21 +101,9 @@ public class Lunge extends Spell implements DurationSpell {
      */
     @EventHandler(priority = EventPriority.LOW)
     public void onFallDamage(EnvironmentDamage event) {
-        if (!LUNGE_TASKS.containsKey(event.getVictim().getUniqueId())) return;
+        if (!LUNGE_SET.contains(event.getVictim().getUniqueId())) return;
         if (event.getCause() == EnvironmentDamage.DamageCauses.FALL_DAMAGE)
             event.setCancelled(true);
     }
 
-    @EventHandler(priority = EventPriority.LOWEST) // fires FIRST
-    public void onPhysicalDamage(PhysicalDamageEvent event) {
-        if (!LUNGE_TASKS.containsKey(event.getPlayer().getUniqueId())) return;
-        event.setAmount((int) (event.getAmount() * percent));
-        event.getPlayer().getWorld().playSound(event.getPlayer().getLocation(), Sound.ENTITY_ENDER_DRAGON_GROWL, 0.5f, 2.0f);
-        SlashEffect.slashHorizontal(event.getPlayer().getLocation());
-        LUNGE_TASKS.remove(event.getPlayer().getUniqueId());
-    }
-
-    public void setPercent(double percent) {
-        this.percent = percent;
-    }
 }
