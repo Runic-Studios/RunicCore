@@ -13,6 +13,7 @@ import org.bukkit.Particle;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.HashMap;
@@ -40,8 +41,9 @@ public class Rupture extends Spell implements DurationSpell, PhysicalDamageSpell
                 "Enemies cannot be affected more than once per cast of &aWhirlwind.");
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGH)
     public void onPhysicalDamage(PhysicalDamageEvent event) {
+        if (event.isCancelled()) return;
         if (!hasPassive(event.getPlayer().getUniqueId(), this.getName())) return;
         if (!Whirlwind.getUuidSet().contains(event.getPlayer().getUniqueId())) return;
         if (!event.isBasicAttack()) return; // Only listen for basic attacks
@@ -90,7 +92,7 @@ public class Rupture extends Spell implements DurationSpell, PhysicalDamageSpell
                 } else {
                     count += 1;
                     livingEntity.getWorld().spawnParticle(Particle.CRIMSON_SPORE, livingEntity.getLocation(), 10, 0.5f, 0.5f, 0.5f, 0);
-                    DamageUtil.damageEntityPhysical(damage, livingEntity, player, true, false, spell);
+                    DamageUtil.damageEntityPhysical(damage, livingEntity, player, true, false, false, spell);
                 }
 
             }
