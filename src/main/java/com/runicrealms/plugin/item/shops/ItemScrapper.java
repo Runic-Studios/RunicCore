@@ -73,7 +73,7 @@ public class ItemScrapper implements RunicShop {
                 return RunicItemsAPI.generateItemFromTemplate("chain-link");
             }
             case GOLDEN_HELMET, GOLDEN_CHESTPLATE, GOLDEN_LEGGINGS, GOLDEN_BOOTS, STONE_SHOVEL, WOODEN_SHOVEL, STONE_HOE -> {
-                return RunicItemsAPI.generateItemFromTemplate("gold-bar");
+                return RunicItemsAPI.generateItemFromTemplate("gold-ore");
             }
             case DIAMOND_HELMET, DIAMOND_CHESTPLATE, DIAMOND_LEGGINGS, DIAMOND_BOOTS -> {
                 return RunicItemsAPI.generateItemFromTemplate("thread");
@@ -82,7 +82,7 @@ public class ItemScrapper implements RunicShop {
                 return RunicItemsAPI.generateItemFromTemplate("animal-hide");
             }
             case IRON_HELMET, IRON_CHESTPLATE, IRON_LEGGINGS, IRON_BOOTS, SHIELD, WOODEN_AXE, STONE_SWORD, WOODEN_SWORD, BOW, WOODEN_HOE -> {
-                return RunicItemsAPI.generateItemFromTemplate("iron-bar");
+                return RunicItemsAPI.generateItemFromTemplate("iron-ore");
             }
             // Offhands made from shears
             case SHEARS -> {

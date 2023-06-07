@@ -65,7 +65,7 @@ public class DeathListener implements Listener {
         // Create a new inventory and add the items to drop to this inventory
         Inventory droppedItemsInventory = Bukkit.createInventory(null, 36);
         for (ItemStack item : itemsToDrop) {
-            droppedItemsInventory.addItem(item);
+            RunicItemsAPI.addItem(droppedItemsInventory, item);
         }
 
         return droppedItemsInventory;

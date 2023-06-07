@@ -4,6 +4,7 @@ import com.gmail.filoghost.holographicdisplays.api.Hologram;
 import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.utilities.BlocksUtil;
+import com.runicrealms.runicitems.RunicItemsAPI;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -121,7 +122,7 @@ public class Gravestone {
             // 3. Load the player's items into the shulker box
             for (ItemStack item : inventory.getContents()) {
                 if (item != null) {
-                    shulkerBox.getInventory().addItem(item);
+                    RunicItemsAPI.addItem(shulkerBox.getInventory(), item);
                 }
             }
             // Update the block with the inventory
