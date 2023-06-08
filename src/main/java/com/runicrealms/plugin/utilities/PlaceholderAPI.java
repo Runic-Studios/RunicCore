@@ -28,6 +28,9 @@ import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.model.TitleData;
 import com.runicrealms.plugin.rdb.RunicDatabase;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
+import net.luckperms.api.LuckPermsProvider;
+import net.luckperms.api.model.user.User;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
@@ -89,6 +92,12 @@ public class PlaceholderAPI extends PlaceholderExpansion {
                     return "[" + titleData.getSuffix() + "] ";
                 }
                 return "";
+            case "name_color":
+                User user = LuckPermsProvider.get().getUserManager().getUser(player.getUniqueId());
+                if (user == null) return ChatColor.GRAY.toString();
+                String color = user.getCachedData().getMetaData().getMetaValue("name_color");
+                if (color != null) return color;
+                return ChatColor.GRAY.toString();
             default:
                 return "";
         }
