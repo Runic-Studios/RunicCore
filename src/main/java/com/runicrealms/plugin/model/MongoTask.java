@@ -57,7 +57,7 @@ public class MongoTask implements MongoTaskOperation {
         Since we lazy-load character-specific data, we'll try to retrieve it for all slots which may exist in Redis.
         We do this for each character-specific field (skill trees, spells, etc.)
          */
-        for (int slot = 1; slot < RunicDatabase.getAPI().getDataAPI().getMaxCharacterSlot(); slot++) {
+        for (int slot = 1; slot <= RunicDatabase.getAPI().getDataAPI().getMaxCharacterSlot(); slot++) {
             CoreCharacterData characterData = corePlayerData.getCharacter(slot);
             if (characterData != null) {
                 update.set("coreCharacterDataMap." + slot, corePlayerData.getCoreCharacterDataMap().get(slot));
