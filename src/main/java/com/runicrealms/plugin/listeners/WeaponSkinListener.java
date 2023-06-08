@@ -12,8 +12,9 @@ import org.bukkit.event.player.PlayerDropItemEvent;
  */
 public class WeaponSkinListener implements Listener {
 
-    @EventHandler(priority = EventPriority.LOWEST)
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerDropItem(PlayerDropItemEvent event) {
+        if (event.isCancelled()) return;
         event.getItemDrop().setItemStack(RunicItems.getWeaponSkinAPI().disableSkin(event.getItemDrop().getItemStack()));
     }
 
