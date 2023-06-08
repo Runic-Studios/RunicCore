@@ -52,6 +52,8 @@ public class ManaListener implements Listener {
 
     @EventHandler
     public void onArmorEquip(ArmorEquipEvent event) {
+        if (!RunicDatabase.getAPI().getCharacterAPI().getLoadedCharacters().contains(event.getPlayer().getUniqueId()))
+            return;
         Player player = event.getPlayer();
         // delay by 1 tick to calculate new armor values, not old
         new BukkitRunnable() {
@@ -88,6 +90,8 @@ public class ManaListener implements Listener {
      */
     @EventHandler
     public void onOffhandEquip(InventoryClickEvent event) {
+        if (!RunicDatabase.getAPI().getCharacterAPI().getLoadedCharacters().contains(event.getWhoClicked().getUniqueId()))
+            return;
         if (!(event.getWhoClicked() instanceof Player player)) return;
         if (event.getCurrentItem() == null) return;
         if (event.getClickedInventory() == null) return;
@@ -107,6 +111,8 @@ public class ManaListener implements Listener {
      */
     @EventHandler
     public void onOffhandSwap(PlayerSwapHandItemsEvent event) {
+        if (!RunicDatabase.getAPI().getCharacterAPI().getLoadedCharacters().contains(event.getPlayer().getUniqueId()))
+            return;
         Player player = event.getPlayer();
         new BukkitRunnable() {
             @Override
