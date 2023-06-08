@@ -1,5 +1,6 @@
 package com.runicrealms.plugin.player.ui;
 
+import com.runicrealms.plugin.common.util.ChatUtils;
 import com.runicrealms.plugin.common.util.ColorUtil;
 import com.runicrealms.plugin.common.util.GUIUtil;
 import com.runicrealms.plugin.model.SettingsData;
@@ -10,6 +11,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class SettingsUI implements InventoryHolder {
     private final Inventory inventory;
@@ -58,25 +62,23 @@ public class SettingsUI implements InventoryHolder {
                 ChatColor.LIGHT_PURPLE + "Open Runestone in Combat",
                 new String[]{ChatColor.YELLOW + "Enabled: " + (openRunestoneInCombat ? ChatColor.GREEN : ChatColor.RED) + openRunestoneInCombat}
         ));
+        List<String> slotOneLore = new ArrayList<>();
+        slotOneLore.add("&eVisual Keybind: &a[" + spellSlotOneDisplay + "]");
+        slotOneLore.add("");
+        slotOneLore.addAll(ChatUtils.formattedText("&7This only changes the &7&o&7appearance &r&7of the spell UI. To actually change the binding, change it in your player controls."));
         this.inventory.setItem(30, GUIUtil.dispItem(
                 Material.BOOK,
-                ChatColor.LIGHT_PURPLE + "Spell Activation Slot 1",
-                new String[]{
-                        ChatColor.YELLOW + "Visual Keybind: " + ChatColor.GREEN + "[" + spellSlotOneDisplay + "]",
-                        "",
-                        ChatColor.GRAY + "This is purely visual, rebind",
-                        ChatColor.GRAY + "this in your controls to change."
-                }
+                ChatColor.LIGHT_PURPLE + "Spell Activation Slot 1 (Hotbar 1)",
+                slotOneLore
         ));
+        List<String> slotFourLore = new ArrayList<>();
+        slotFourLore.add("&eVisual Keybind: &a[" + spellSlotFourDisplay + "]");
+        slotFourLore.add("");
+        slotFourLore.addAll(ChatUtils.formattedText("&7This only changes the &7&o&7appearance &r&7of the spell UI. To actually change the binding, change it in your player controls."));
         this.inventory.setItem(32, GUIUtil.dispItem(
                 Material.BOOK,
-                ChatColor.LIGHT_PURPLE + "Spell Activation Slot 4",
-                new String[]{
-                        ChatColor.YELLOW + "Visual Keybind: " + ChatColor.GREEN + "[" + spellSlotFourDisplay + "]",
-                        "",
-                        ChatColor.GRAY + "This is purely visual, rebind",
-                        ChatColor.GRAY + "this in your controls to change."
-                }
+                ChatColor.LIGHT_PURPLE + "Spell Activation Slot 4 (Swap-Hands)",
+                slotFourLore
         ));
     }
 }

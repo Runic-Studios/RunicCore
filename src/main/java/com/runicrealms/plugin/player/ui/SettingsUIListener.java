@@ -4,6 +4,7 @@ import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.common.util.ColorUtil;
 import com.runicrealms.plugin.common.util.GUIUtil;
 import com.runicrealms.plugin.model.SettingsData;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -77,30 +78,35 @@ public class SettingsUIListener implements Listener {
             event.setCancelled(true);
             settingSlotOne.remove(event.getPlayer().getUniqueId());
             SettingsData data = RunicCore.getSettingsManager().getSettingsData(event.getPlayer().getUniqueId());
-            if (event.getMessage().equalsIgnoreCase("cancel")) {
+
+            Bukkit.getScheduler().runTask(RunicCore.getInstance(), () -> {
+                if (event.getMessage().equalsIgnoreCase("cancel")) {
+                    event.getPlayer().openInventory(new SettingsUI(event.getPlayer(), data).getInventory());
+                    return;
+                }
+                if (event.getMessage().length() != 1 || !event.getMessage().matches("^[A-Za-z0-9]$")) {
+                    event.getPlayer().sendMessage(ChatColor.RED + "This keybind must be one english character or number!");
+                    return;
+                }
+                data.setSpellSlotOneDisplay(event.getMessage().toUpperCase());
                 event.getPlayer().openInventory(new SettingsUI(event.getPlayer(), data).getInventory());
-                return;
-            }
-            if (event.getMessage().length() != 1 || !event.getMessage().matches("^[A-Za-z0-9]$")) {
-                event.getPlayer().sendMessage(ChatColor.RED + "This keybind must be one english character or number!");
-                return;
-            }
-            data.setSpellSlotOneDisplay(event.getMessage());
-            event.getPlayer().openInventory(new SettingsUI(event.getPlayer(), data).getInventory());
+            });
         } else if (settingSlotFour.contains(event.getPlayer().getUniqueId())) {
             event.setCancelled(true);
             settingSlotFour.remove(event.getPlayer().getUniqueId());
             SettingsData data = RunicCore.getSettingsManager().getSettingsData(event.getPlayer().getUniqueId());
-            if (event.getMessage().equalsIgnoreCase("cancel")) {
+            Bukkit.getScheduler().runTask(RunicCore.getInstance(), () -> {
+                if (event.getMessage().equalsIgnoreCase("cancel")) {
+                    event.getPlayer().openInventory(new SettingsUI(event.getPlayer(), data).getInventory());
+                    return;
+                }
+                if (event.getMessage().length() != 1 || !event.getMessage().matches("^[A-Za-z0-9]$")) {
+                    event.getPlayer().sendMessage(ChatColor.RED + "This keybind must be one english character or number!");
+                    return;
+                }
+                data.setSpellSlotFourDisplay(event.getMessage().toUpperCase());
                 event.getPlayer().openInventory(new SettingsUI(event.getPlayer(), data).getInventory());
-                return;
-            }
-            if (event.getMessage().length() != 1 || !event.getMessage().matches("^[A-Za-z0-9]$")) {
-                event.getPlayer().sendMessage(ChatColor.RED + "This keybind must be one english character or number!");
-                return;
-            }
-            data.setSpellSlotFourDisplay(event.getMessage());
-            event.getPlayer().openInventory(new SettingsUI(event.getPlayer(), data).getInventory());
+            });
         }
     }
 }
