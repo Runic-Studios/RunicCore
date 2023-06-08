@@ -29,7 +29,7 @@ public class Agility extends Spell implements AttributeSpell {
         Stat stat = Stat.getFromName(statName);
         String prefix = stat == null ? "" : stat.getPrefix();
         this.setDescription("You've learned to use your speed to your advantage! " +
-                "While &aSprint &7is active, gain bonus physical damage " +
+                "While &aSprint &7is active, you gain bonus basic attack damage " +
                 "equal to (" + baseValue + " + &f" + multiplier + "x &e" + prefix + "&7)!");
     }
 
@@ -50,6 +50,7 @@ public class Agility extends Spell implements AttributeSpell {
     @EventHandler(priority = EventPriority.HIGH) // runs last
     public void onAgilityHit(PhysicalDamageEvent event) {
         if (event.isCancelled()) return;
+        if (!event.isBasicAttack()) return;
         if (!hasPassive(event.getPlayer().getUniqueId(), this.getName())) return;
         if (!agilityPlayers.contains(event.getPlayer().getUniqueId())) return;
         int bonus = (int) (multiplier * RunicCore.getStatAPI().getStat(event.getPlayer().getUniqueId(), statName));
