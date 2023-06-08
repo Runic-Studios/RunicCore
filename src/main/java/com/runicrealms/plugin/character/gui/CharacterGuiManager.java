@@ -294,13 +294,30 @@ public class CharacterGuiManager implements Listener {
             jedis.srem(database + ":" + uuid + ":spellData", String.valueOf(slot));
         }
         // 2. Delete from Mongo
+        MongoTemplate mongoTemplate = RunicDatabase.getAPI().getDataAPI().getMongoTemplate();
+
         Query query = new Query();
         query.addCriteria(Criteria.where(CharacterField.PLAYER_UUID.getField()).is(uuid));
+
+        // Fetch the existing document
+        CorePlayerData corePlayerData = mongoTemplate.findOne(query, CorePlayerData.class);
+        if (corePlayerData == null) {
+            // handle missing document error
+            return;
+        }
+
         Update update = new Update();
-        update.unset("coreCharacterDataMap." + slot);
-        update.unset("skillTreeDataMap." + slot);
-        update.unset("spellDataMap." + slot);
-        MongoTemplate mongoTemplate = RunicDatabase.getAPI().getDataAPI().getMongoTemplate();
+        // Only unset the fields that exist
+        if (corePlayerData.getCoreCharacterDataMap().containsKey(slot)) {
+            update.unset("coreCharacterDataMap." + slot);
+        }
+        if (corePlayerData.getSkillTreeDataMap().containsKey(slot)) {
+            update.unset("skillTreeDataMap." + slot);
+        }
+        if (corePlayerData.getSpellDataMap().containsKey(slot)) {
+            update.unset("spellDataMap." + slot);
+        }
+
         mongoTemplate.updateFirst(query, update, CorePlayerData.class);
         // 3. Mark this deletion as complete
         event.getPluginsToDeleteData().remove("core");
