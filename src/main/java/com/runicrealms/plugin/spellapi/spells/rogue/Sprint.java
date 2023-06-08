@@ -3,9 +3,11 @@ package com.runicrealms.plugin.spellapi.spells.rogue;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.common.CharacterClass;
 import com.runicrealms.plugin.events.PhysicalDamageEvent;
-import com.runicrealms.plugin.spellapi.spelltypes.*;
+import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
+import com.runicrealms.plugin.spellapi.spelltypes.RunicStatusEffect;
+import com.runicrealms.plugin.spellapi.spelltypes.Spell;
+import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.spellapi.spellutil.particles.HorizontalCircleFrame;
-import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Particle;
@@ -15,6 +17,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -22,19 +25,14 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public class Sprint extends Spell implements DurationSpell, PhysicalDamageSpell {
+public class Sprint extends Spell implements DurationSpell {
     private final Map<UUID, BukkitTask> sprintTasks = new HashMap<>();
-    private double damage;
-    private double damagePerLevel;
     private double duration;
     private int level;
 
     public Sprint() {
         super("Sprint", CharacterClass.ROGUE);
-        this.setDescription("For " + duration + "s, you gain a " +
-                "massive boost of speed! While the speed persists, your first melee attack against " +
-                "an enemy deals (" + damage + " + &f" + damagePerLevel +
-                "x&7 lvl) physical⚔ damage!");
+        this.setDescription("For " + duration + "s, you gain a massive boost of speed!");
     }
 
     @Override
@@ -69,37 +67,15 @@ public class Sprint extends Spell implements DurationSpell, PhysicalDamageSpell 
         setLevel(level.intValue());
     }
 
-    @Override
-    public double getPhysicalDamage() {
-        return damage;
-    }
-
-    @Override
-    public void setPhysicalDamage(double physicalDamage) {
-        this.damage = physicalDamage;
-    }
-
-    @Override
-    public double getPhysicalDamagePerLevel() {
-        return damagePerLevel;
-    }
-
-    @Override
-    public void setPhysicalDamagePerLevel(double physicalDamagePerLevel) {
-        this.damagePerLevel = physicalDamagePerLevel;
-    }
-
-    @EventHandler
+    @EventHandler(priority = EventPriority.NORMAL)
     public void onPhysicalDamage(PhysicalDamageEvent event) {
+        if (event.isCancelled()) return;
         if (!event.isBasicAttack()) return;
         if (!sprintTasks.containsKey(event.getPlayer().getUniqueId())) return;
         Player player = event.getPlayer();
-        player.getWorld().playSound(player.getLocation(), Sound.BLOCK_GRASS_BREAK, 0.5f, 0.5f);
-        player.getWorld().spawnParticle(Particle.CRIT_MAGIC, event.getVictim().getEyeLocation(), 15, 0.5f, 0.5f, 0.5f, 0);
-        EmpoweredSprintEvent sprintEvent = new EmpoweredSprintEvent(event.getPlayer(), event.getVictim(), damage);
+        EmpoweredSprintEvent sprintEvent = new EmpoweredSprintEvent(event.getPlayer(), event.getVictim(), event.getAmount());
         Bukkit.getPluginManager().callEvent(sprintEvent);
         if (sprintEvent.isCancelled) return;
-        DamageUtil.damageEntityPhysical(sprintEvent.getDamage(), event.getVictim(), player, false, false, this);
         sprintTasks.remove(player.getUniqueId());
     }
 
