@@ -9,6 +9,7 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import com.runicrealms.RunicChat;
 import com.runicrealms.plugin.api.CombatAPI;
+import com.runicrealms.plugin.api.CoreWriteOperation;
 import com.runicrealms.plugin.api.LootTableAPI;
 import com.runicrealms.plugin.api.PartyAPI;
 import com.runicrealms.plugin.api.PlayerDataAPI;
@@ -219,6 +220,7 @@ public class RunicCore extends JavaPlugin implements Listener {
     private static AmbientSoundHandler ambientSoundHandler;
     private static BoostAPI boostAPI;
     private static VanishAPI vanishAPI;
+    private static CoreWriteOperation coreWriteOperation;
 
     // getters for handlers
     public static RunicCore getInstance() {
@@ -352,6 +354,10 @@ public class RunicCore extends JavaPlugin implements Listener {
         return taskChainFactory.newChain();
     }
 
+    public static CoreWriteOperation getCoreWriteOperation() {
+        return coreWriteOperation;
+    }
+
     private void loadConfig() {
         getConfig().options().copyDefaults(true);
         saveConfig();
@@ -390,6 +396,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         ambientSoundHandler = null;
         boostAPI = null;
         vanishAPI = null;
+        coreWriteOperation = null;
     }
 
     @Override
@@ -408,6 +415,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         ConverterAPI converterAPI = new ConverterHandler();
         RedisAPI redisAPI = new RedisManager();
         DatabaseManager databaseManager = new DatabaseManager();
+        coreWriteOperation = databaseManager;
         // Implement interface logic from RDB
         RunicDatabase.getInstance().setAPIImplementation(new RunicDatabaseAPI() {
             @Override

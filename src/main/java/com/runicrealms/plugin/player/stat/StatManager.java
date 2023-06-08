@@ -2,6 +2,7 @@ package com.runicrealms.plugin.player.stat;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.api.StatAPI;
+import com.runicrealms.plugin.model.SkillTreeData;
 import com.runicrealms.plugin.model.SkillTreePosition;
 import com.runicrealms.plugin.rdb.event.CharacterLoadedEvent;
 import com.runicrealms.plugin.rdb.event.CharacterQuitEvent;
@@ -13,6 +14,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 public class StatManager implements Listener, StatAPI {
@@ -102,8 +104,10 @@ public class StatManager implements Listener, StatAPI {
      * @param treePosition which subtree are we loading? (1,2,3)
      */
     private void grabBaseStatsFromTree(UUID uuid, int slot, SkillTreePosition treePosition) {
-        if (RunicCore.getSkillTreeAPI().loadSkillTreeData(uuid, slot, treePosition) == null) return;
-        for (Perk perk : RunicCore.getSkillTreeAPI().loadSkillTreeData(uuid, slot, treePosition).getPerks()) {
+        Map<SkillTreePosition, SkillTreeData> skillTreeDataMap = RunicCore.getSkillTreeAPI().getSkillTreeDataMap(uuid, slot);
+        if (skillTreeDataMap == null) return;
+        SkillTreeData skillTreeData = skillTreeDataMap.get(treePosition);
+        for (Perk perk : skillTreeData.getPerks()) {
             if (perk.getCurrentlyAllocatedPoints() < perk.getCost()) continue;
             if (!(perk instanceof PerkBaseStat perkBaseStat)) continue;
             Stat stat = perkBaseStat.getStat();

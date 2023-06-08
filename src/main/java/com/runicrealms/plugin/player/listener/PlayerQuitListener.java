@@ -15,7 +15,6 @@ import redis.clients.jedis.Jedis;
 import java.util.UUID;
 
 public class PlayerQuitListener implements Listener {
-
     public static final String DATA_SAVING_KEY = "isSavingData";
     /*
     Player is prevented from joining network while data is saving,
@@ -30,6 +29,9 @@ public class PlayerQuitListener implements Listener {
         Bukkit.getScheduler().runTaskAsynchronously(RunicCore.getInstance(), () -> {
             try (Jedis jedis = RunicDatabase.getAPI().getRedisAPI().getNewJedisResource()) {
                 jedis.del(database + ":" + uuid + ":" + PlayerQuitListener.DATA_SAVING_KEY);
+                if (!event.getPlayer().isOnline()) { // Insurance
+                    RunicCore.getPlayerDataAPI().getCorePlayerDataMap().remove(event.getPlayer().getUniqueId());
+                }
             }
         });
     }
