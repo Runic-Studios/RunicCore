@@ -16,6 +16,8 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.Map;
+
 @CommandAlias("whois")
 public class WhoIsCMD extends BaseCommand {
 
@@ -42,16 +44,24 @@ public class WhoIsCMD extends BaseCommand {
         int classLevel = target.getLevel();
         int slot = RunicDatabase.getAPI().getCharacterAPI().getCharacterSlot(player.getUniqueId());
         // Skill Tree data to show subclass info
-        SkillTreeData first = RunicCore.getSkillTreeAPI().loadSkillTreeData(target.getUniqueId(), slot, SkillTreePosition.FIRST);
-        SkillTreeData second = RunicCore.getSkillTreeAPI().loadSkillTreeData(target.getUniqueId(), slot, SkillTreePosition.SECOND);
-        SkillTreeData third = RunicCore.getSkillTreeAPI().loadSkillTreeData(target.getUniqueId(), slot, SkillTreePosition.THIRD);
+        Map<SkillTreePosition, SkillTreeData> skillTreeDataMap = RunicCore.getSkillTreeAPI().getSkillTreeDataMap(target.getUniqueId(), slot);
+        String message = ColorUtil.format
+                ("&e&l" + target.getName() + "s Profile" +
+                        "\n&7Class: &f" + className + " &7lv. " + classLevel);
+        if (skillTreeDataMap.get(SkillTreePosition.FIRST) != null) {
+            SkillTreeData first = skillTreeDataMap.get(SkillTreePosition.FIRST);
+            message += ChatColor.GRAY + "\nSubclass: " + first.getSubClass(target.getUniqueId()).getName() + " " + ChatColor.WHITE + first.getTotalPoints();
+        }
+        if (skillTreeDataMap.get(SkillTreePosition.SECOND) != null) {
+            SkillTreeData second = skillTreeDataMap.get(SkillTreePosition.SECOND);
+            message += ChatColor.GRAY + ", " + second.getSubClass(target.getUniqueId()).getName() + " " + ChatColor.WHITE + second.getTotalPoints();
+        }
+        if (skillTreeDataMap.get(SkillTreePosition.THIRD) != null) {
+            SkillTreeData third = skillTreeDataMap.get(SkillTreePosition.THIRD);
+            message += ChatColor.GRAY + ", " + third.getSubClass(target.getUniqueId()).getName() + " " + ChatColor.WHITE + third.getTotalPoints();
+        }
         player.sendMessage("");
-        player.sendMessage(ColorUtil.format
-                ("&e&l" + player.getName() + "s Profile" +
-                        "\n&7Class: &f" + className + " &7lv. " + classLevel +
-                        "\n&7Subclass: &7" + first.getSubClass(target.getUniqueId()).getName() + " &f" + first.getTotalPoints() +
-                        "&7, " + second.getSubClass(target.getUniqueId()).getName() + " &f" + second.getTotalPoints() +
-                        "&7, " + third.getSubClass(target.getUniqueId()).getName() + " &f" + third.getTotalPoints()));
+        player.sendMessage(message);
         player.sendMessage("");
     }
 

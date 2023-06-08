@@ -13,7 +13,6 @@ import org.springframework.data.mongodb.core.BulkOperations;
 import org.springframework.data.mongodb.core.query.Update;
 import redis.clients.jedis.Jedis;
 
-import java.util.HashMap;
 import java.util.Set;
 import java.util.UUID;
 
@@ -61,24 +60,7 @@ public class MongoTask implements MongoTaskOperation {
         for (int slot = 1; slot <= RunicDatabase.getAPI().getDataAPI().getMaxCharacterSlot(); slot++) {
             CoreCharacterData characterData = corePlayerData.getCharacter(slot);
             if (characterData != null) {
-//                Bukkit.getLogger().info("found character data in slot " + slot);
                 update.set("coreCharacterDataMap." + slot, corePlayerData.getCoreCharacterDataMap().get(slot));
-            }
-        }
-        // Update SkillTreeData
-        for (int slot = 1; slot <= RunicDatabase.getAPI().getDataAPI().getMaxCharacterSlot(); slot++) {
-            HashMap<SkillTreePosition, SkillTreeData> skillTreeData = corePlayerData.getSkillTreeData(slot);
-            if (skillTreeData != null) {
-//                Bukkit.getLogger().info("found skill tree data in slot " + slot);
-                update.set("skillTreeDataMap." + slot, corePlayerData.getSkillTreeDataMap().get(slot));
-            }
-        }
-        // Update SpellData
-        for (int slot = 1; slot <= RunicDatabase.getAPI().getDataAPI().getMaxCharacterSlot(); slot++) {
-            SpellData spellData = corePlayerData.getSpellData(slot);
-            if (spellData != null) {
-//                Bukkit.getLogger().info("found spell data in slot " + slot);
-                update.set("spellDataMap." + slot, corePlayerData.getSpellDataMap().get(slot));
             }
         }
         // Update TitleData

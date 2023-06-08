@@ -128,20 +128,6 @@ public class PlayerJoinListener implements Listener {
                 .execute();
     }
 
-    // REMOVED IN FAVOR OF QUEUE SYSTEM
-
-//    /**
-//     * Allows donator ranks to enter a full server
-//     */
-//    @EventHandler
-//    public void onJoinFullServer(PlayerLoginEvent event) {
-//        if (event.getResult() == PlayerLoginEvent.Result.KICK_FULL) {
-//            if (event.getPlayer().hasPermission("core.full.join")) {
-//                event.allow();
-//            }
-//        }
-//    }
-
     @EventHandler(priority = EventPriority.NORMAL)
     public void onPreJoin(AsyncPlayerPreLoginEvent event) {
         try (Jedis jedis = RunicDatabase.getAPI().getRedisAPI().getNewJedisResource()) {

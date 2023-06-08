@@ -78,9 +78,11 @@ public class SpellGUI implements InventoryHolder {
      */
     private int grabUnlockedSpellsFromTree(SkillTreePosition treePosition, int index) {
         int slot = RunicDatabase.getAPI().getCharacterAPI().getCharacterSlot(player.getUniqueId());
-        if (RunicCore.getSkillTreeAPI().loadSkillTreeData(player.getUniqueId(), slot, treePosition) == null)
+        if (RunicCore.getSkillTreeAPI().getSkillTreeDataMap(player.getUniqueId(), slot) == null)
             return index;
-        for (Perk perk : RunicCore.getSkillTreeAPI().loadSkillTreeData(player.getUniqueId(), slot, treePosition).getPerks()) {
+        if (RunicCore.getSkillTreeAPI().getSkillTreeDataMap(player.getUniqueId(), slot).get(treePosition) == null)
+            return index;
+        for (Perk perk : RunicCore.getSkillTreeAPI().getSkillTreeDataMap(player.getUniqueId(), slot).get(treePosition).getPerks()) {
             if (perk.getCurrentlyAllocatedPoints() < perk.getCost()) continue;
             if (!(perk instanceof PerkSpell)) continue;
             if (RunicCore.getSpellAPI().getSpell(((PerkSpell) perk).getSpellName()) == null)

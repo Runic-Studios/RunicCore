@@ -15,9 +15,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.ItemStack;
-import redis.clients.jedis.Jedis;
-
-import java.util.UUID;
 
 public class SpellGUIListener implements Listener {
 
@@ -53,33 +50,41 @@ public class SpellGUIListener implements Listener {
             player.openInventory(new SpellEditorGUI(player).getInventory());
         else if (material == Material.NETHER_WART) {
             String spellName = spellGUI.getInventory().getItem(event.getRawSlot()).getItemMeta().getDisplayName();
-            updateSpellInSlot(player.getUniqueId(), spellGUI, spellName);
-            player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 2.0f);
-            player.sendMessage(ChatColor.LIGHT_PURPLE + "You've set the spell in this slot to " + spellName + ChatColor.LIGHT_PURPLE + "!");
-            player.openInventory(new SpellEditorGUI(player).getInventory());
+            updateSpellInSlot(player, spellGUI, spellName);
         }
     }
 
     /**
      * Sets the in-memory spell in the current GUI slot for given player.
      *
-     * @param uuid      of player to set spell for
+     * @param player    to set spell for
      * @param spellGUI  associated open GUI
      * @param spellName name of spell to set in slot
      */
-    private void updateSpellInSlot(UUID uuid, SpellGUI spellGUI, String spellName) {
+    private void updateSpellInSlot(Player player, SpellGUI spellGUI, String spellName) {
         String spell = ChatColor.stripColor(spellName);
-        int slot = RunicDatabase.getAPI().getCharacterAPI().getCharacterSlot(uuid);
-        SpellData playerSpellData = RunicCore.getSkillTreeAPI().getPlayerSpellData(uuid, slot);
+        int slot = RunicDatabase.getAPI().getCharacterAPI().getCharacterSlot(player.getUniqueId());
+        SpellData spellData = RunicCore.getSkillTreeAPI().getPlayerSpellData(player.getUniqueId(), slot);
         switch (spellGUI.getSpellField()) {
-            case HOT_BAR_ONE -> playerSpellData.setSpellHotbarOne(spell);
-            case LEFT_CLICK -> playerSpellData.setSpellLeftClick(spell);
-            case RIGHT_CLICK -> playerSpellData.setSpellRightClick(spell);
-            case SWAP_HANDS -> playerSpellData.setSpellSwapHands(spell);
+            case HOT_BAR_ONE -> spellData.setSpellHotbarOne(spell);
+            case LEFT_CLICK -> spellData.setSpellLeftClick(spell);
+            case RIGHT_CLICK -> spellData.setSpellRightClick(spell);
+            case SWAP_HANDS -> spellData.setSpellSwapHands(spell);
             default -> throw new IllegalStateException("Unexpected value: " + spellGUI.getSpellField());
         }
-        try (Jedis jedis = RunicDatabase.getAPI().getRedisAPI().getNewJedisResource()) {
-            playerSpellData.writeToJedis(uuid, jedis, RunicDatabase.getAPI().getCharacterAPI().getCharacterSlot(uuid));
-        }
+        RunicCore.getCoreWriteOperation().updateCorePlayerData
+                (
+                        player.getUniqueId(),
+                        slot,
+                        "spellDataMap",
+                        spellData,
+                        RunicDatabase.getAPI().getDataAPI().getMongoTemplate(),
+                        () -> {
+                            player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 2.0f);
+                            player.sendMessage(ChatColor.LIGHT_PURPLE + "You've set the spell in this slot to " + spellName + ChatColor.LIGHT_PURPLE + "!");
+                            player.openInventory(new SpellEditorGUI(player).getInventory());
+                        }
+                );
     }
+
 }

@@ -1,23 +1,26 @@
 package com.runicrealms.plugin.database;
 
+import co.aikar.taskchain.TaskChain;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoDatabase;
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.api.CoreWriteOperation;
 import com.runicrealms.plugin.api.PlayerDataAPI;
 import com.runicrealms.plugin.common.CharacterClass;
 import com.runicrealms.plugin.common.util.Pair;
 import com.runicrealms.plugin.model.CorePlayerData;
-import com.runicrealms.plugin.model.ProjectedData;
 import com.runicrealms.plugin.model.TitleData;
 import com.runicrealms.plugin.rdb.CoreMongoConfiguration;
 import com.runicrealms.plugin.rdb.RunicDatabase;
 import com.runicrealms.plugin.rdb.api.CharacterAPI;
 import com.runicrealms.plugin.rdb.api.DataAPI;
+import com.runicrealms.plugin.rdb.api.WriteCallback;
 import com.runicrealms.plugin.rdb.event.CharacterHasQuitEvent;
 import com.runicrealms.plugin.rdb.event.CharacterLoadedEvent;
 import com.runicrealms.plugin.rdb.event.CharacterQuitEvent;
 import com.runicrealms.plugin.rdb.event.MongoSaveEvent;
 import com.runicrealms.plugin.rdb.model.CharacterField;
+import com.runicrealms.plugin.taskchain.TaskChainUtil;
 import com.runicrealms.runicrestart.RunicRestart;
 import org.bson.types.ObjectId;
 import org.bukkit.Bukkit;
@@ -35,6 +38,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import redis.clients.jedis.Jedis;
 
 import java.time.LocalDate;
@@ -53,11 +57,10 @@ import java.util.logging.Level;
  *
  * @author Skyfallin
  */
-public class DatabaseManager implements CharacterAPI, DataAPI, PlayerDataAPI, Listener {
+public class DatabaseManager implements CharacterAPI, DataAPI, PlayerDataAPI, Listener, CoreWriteOperation {
     private static final int CHARACTER_SAVE_PERIOD = 30; // Seconds
     private final ConcurrentHashMap<UUID, Pair<Integer, CharacterClass>> loadedCharacterMap; // stores the current character the player is playing
     private final Map<UUID, CorePlayerData> corePlayerDataMap; // For caching session data in-memory
-    private final Map<UUID, ProjectedData> projectedDataMap; // For character select screen (projects only a few fields)
     private MongoClient mongoClient;
     private MongoDatabase mongoDatabase;
     private MongoTemplate mongoTemplate;
@@ -66,7 +69,6 @@ public class DatabaseManager implements CharacterAPI, DataAPI, PlayerDataAPI, Li
         Bukkit.getServer().getPluginManager().registerEvents(this, RunicCore.getInstance());
         loadedCharacterMap = new ConcurrentHashMap<>();
         corePlayerDataMap = new HashMap<>();
-        projectedDataMap = new HashMap<>();
         /*
         Create a mongo client from Spring's config (Spring manages its lifecycle)
         Doesn't start until all other plugins are loaded
@@ -92,11 +94,6 @@ public class DatabaseManager implements CharacterAPI, DataAPI, PlayerDataAPI, Li
                 }
             }
         }.runTaskTimerAsynchronously(RunicCore.getInstance(), 0, 10L);
-    }
-
-    @Override
-    public void addToCoreDataMap(CorePlayerData corePlayerData) {
-        this.corePlayerDataMap.put(corePlayerData.getUuid(), corePlayerData);
     }
 
     /**
@@ -128,11 +125,6 @@ public class DatabaseManager implements CharacterAPI, DataAPI, PlayerDataAPI, Li
     @Override
     public MongoTemplate getMongoTemplate() {
         return mongoTemplate;
-    }
-
-    @Override
-    public Map<UUID, ProjectedData> getProjectedDataMap() {
-        return projectedDataMap;
     }
 
     @Override
@@ -233,7 +225,6 @@ public class DatabaseManager implements CharacterAPI, DataAPI, PlayerDataAPI, Li
         event.getCharacterSelectEvent().getBukkitTask().cancel();
         player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 1.0f);
         player.sendTitle(ChatColor.DARK_GREEN + "Load Complete!", ChatColor.GREEN + "Welcome " + player.getName(), 10, 100, 10);
-        projectedDataMap.remove(event.getPlayer().getUniqueId()); // remove intermediary data objects
         int slot = event.getCharacterSelectEvent().getSlot();
         loadedCharacterMap.put
                 (
@@ -357,4 +348,24 @@ public class DatabaseManager implements CharacterAPI, DataAPI, PlayerDataAPI, Li
         }, 0, CHARACTER_SAVE_PERIOD * 20L);
     }
 
+    @Override
+    public <T> void updateCorePlayerData(UUID uuid, int slot, String fieldName, T newValue, MongoTemplate mongoTemplate, WriteCallback callback) {
+        TaskChain<?> chain = RunicCore.newChain();
+        chain
+                .asyncFirst(() -> {
+                    // Define a query to find the CorePlayerData for this player
+                    Query query = new Query();
+                    query.addCriteria(Criteria.where(CharacterField.PLAYER_UUID.getField()).is(uuid));
+
+                    // Define an update to set the specific field
+                    Update update = new Update();
+                    update.set(fieldName + "." + slot, newValue);
+
+                    // Execute the update operation
+                    return mongoTemplate.updateFirst(query, update, CorePlayerData.class);
+                })
+                .abortIfNull(TaskChainUtil.CONSOLE_LOG, null, "RunicCore failed to save " + fieldName + "!")
+                .syncLast(updateResult -> callback.onWriteComplete())
+                .execute();
+    }
 }

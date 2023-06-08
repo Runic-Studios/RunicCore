@@ -11,9 +11,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
 import redis.clients.jedis.Jedis;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -35,8 +33,8 @@ public class CorePlayerData implements SessionDataMongo {
     private LocalDate lastLoginDate;
     private String guild = "";
     private HashMap<Integer, CoreCharacterData> coreCharacterDataMap = new HashMap<>();
-    private HashMap<Integer, HashMap<SkillTreePosition, SkillTreeData>> skillTreeDataMap = new HashMap<>();
-    private HashMap<Integer, SpellData> spellDataMap = new HashMap<>();
+    private Map<Integer, Map<SkillTreePosition, SkillTreeData>> skillTreeDataMap = new HashMap<>();
+    private Map<Integer, SpellData> spellDataMap = new HashMap<>();
     private TitleData titleData = new TitleData();
 
     @SuppressWarnings("unused")
@@ -60,7 +58,7 @@ public class CorePlayerData implements SessionDataMongo {
             UUID uuid,
             LocalDate lastLoginDate,
             HashMap<Integer, CoreCharacterData> coreCharacterDataMap,
-            HashMap<Integer, HashMap<SkillTreePosition, SkillTreeData>> skillTreeDataMap,
+            Map<Integer, Map<SkillTreePosition, SkillTreeData>> skillTreeDataMap,
             HashMap<Integer, SpellData> spellDataMap,
             TitleData titleData) {
         this.id = id;
@@ -168,72 +166,30 @@ public class CorePlayerData implements SessionDataMongo {
         return null;
     }
 
-    /**
-     * ?
-     *
-     * @param slot
-     * @return
-     */
-    public HashMap<SkillTreePosition, SkillTreeData> getSkillTreeData(int slot) {
-        if (skillTreeDataMap.get(slot) != null) {
-            return skillTreeDataMap.get(slot);
-        }
-        // Lazy load the SkillTreeData from Redis (if it exists)
-        try (Jedis jedis = RunicDatabase.getAPI().getRedisAPI().getNewJedisResource()) {
-            SkillTreeData first = RunicCore.getSkillTreeAPI().checkRedisForSkillTreeData(uuid, slot, SkillTreePosition.FIRST, jedis);
-            SkillTreeData second = RunicCore.getSkillTreeAPI().checkRedisForSkillTreeData(uuid, slot, SkillTreePosition.SECOND, jedis);
-            SkillTreeData third = RunicCore.getSkillTreeAPI().checkRedisForSkillTreeData(uuid, slot, SkillTreePosition.THIRD, jedis);
-            List<SkillTreeData> list = new ArrayList<SkillTreeData>() {{
-                add(first);
-                add(second);
-                add(third);
-            }};
-            for (SkillTreeData data : list) {
-                if (data != null) {
-                    skillTreeDataMap.computeIfAbsent(slot, k -> new HashMap<>());
-                    skillTreeDataMap.get(slot).put(SkillTreePosition.FIRST, first);
-                    skillTreeDataMap.get(slot).put(SkillTreePosition.SECOND, second);
-                    skillTreeDataMap.get(slot).put(SkillTreePosition.THIRD, third);
-                }
-            }
-            return skillTreeDataMap.get(slot);
-        }
-    }
-
-    public HashMap<Integer, HashMap<SkillTreePosition, SkillTreeData>> getSkillTreeDataMap() {
+    public Map<Integer, Map<SkillTreePosition, SkillTreeData>> getSkillTreeDataMap() {
         return skillTreeDataMap;
     }
 
-    public void setSkillTreeDataMap(HashMap<Integer, HashMap<SkillTreePosition, SkillTreeData>> skillTreeDataMap) {
+    public void setSkillTreeDataMap(Map<Integer, Map<SkillTreePosition, SkillTreeData>> skillTreeDataMap) {
         this.skillTreeDataMap = skillTreeDataMap;
     }
 
     /**
-     * ?
-     *
-     * @param slot
-     * @return
+     * @param slot of the character
+     * @return their spell data wrapper
      */
     public SpellData getSpellData(int slot) {
         if (spellDataMap.get(slot) != null) {
             return spellDataMap.get(slot);
         }
-        // Lazy load the SpellData from Redis (if it exists)
-        try (Jedis jedis = RunicDatabase.getAPI().getRedisAPI().getNewJedisResource()) {
-            SpellData spellData = RunicCore.getSkillTreeAPI().checkRedisForSpellData(uuid, slot, jedis);
-            if (spellData != null) {
-                spellDataMap.put(slot, new SpellData(uuid, slot, jedis));
-                return spellDataMap.get(slot);
-            }
-        }
-        return null; // Oh-no!
+        return null;
     }
 
     public Map<Integer, SpellData> getSpellDataMap() {
         return spellDataMap;
     }
 
-    public void setSpellDataMap(HashMap<Integer, SpellData> spellDataMap) {
+    public void setSpellDataMap(Map<Integer, SpellData> spellDataMap) {
         this.spellDataMap = spellDataMap;
     }
 
