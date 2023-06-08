@@ -58,7 +58,7 @@ public class MongoTask implements MongoTaskOperation {
         Since we lazy-load character-specific data, we'll try to retrieve it for all slots which may exist in Redis.
         We do this for each character-specific field (skill trees, spells, etc.)
          */
-        for (int slot = 1; slot < RunicDatabase.getAPI().getDataAPI().getMaxCharacterSlot(); slot++) {
+        for (int slot = 1; slot <= RunicDatabase.getAPI().getDataAPI().getMaxCharacterSlot(); slot++) {
             CoreCharacterData characterData = corePlayerData.getCharacter(slot);
             if (characterData != null) {
 //                Bukkit.getLogger().info("found character data in slot " + slot);
@@ -66,7 +66,7 @@ public class MongoTask implements MongoTaskOperation {
             }
         }
         // Update SkillTreeData
-        for (int slot = 1; slot < RunicDatabase.getAPI().getDataAPI().getMaxCharacterSlot(); slot++) {
+        for (int slot = 1; slot <= RunicDatabase.getAPI().getDataAPI().getMaxCharacterSlot(); slot++) {
             HashMap<SkillTreePosition, SkillTreeData> skillTreeData = corePlayerData.getSkillTreeData(slot);
             if (skillTreeData != null) {
 //                Bukkit.getLogger().info("found skill tree data in slot " + slot);
@@ -74,7 +74,7 @@ public class MongoTask implements MongoTaskOperation {
             }
         }
         // Update SpellData
-        for (int slot = 1; slot < RunicDatabase.getAPI().getDataAPI().getMaxCharacterSlot(); slot++) {
+        for (int slot = 1; slot <= RunicDatabase.getAPI().getDataAPI().getMaxCharacterSlot(); slot++) {
             SpellData spellData = corePlayerData.getSpellData(slot);
             if (spellData != null) {
 //                Bukkit.getLogger().info("found spell data in slot " + slot);
