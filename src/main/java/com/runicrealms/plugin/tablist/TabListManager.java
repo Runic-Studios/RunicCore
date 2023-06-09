@@ -64,6 +64,7 @@ public class TabListManager implements Listener, TabAPI {
         // make sure we're starting with a clean slate
         if (tabbed.getTabList(player) != null) tabbed.destroyTabList(player);
 
+
         // build new tablist
         TableTabList tableTabList = tabbed.newTableTabList(player);
 
@@ -98,8 +99,7 @@ public class TabListManager implements Listener, TabAPI {
     public void refreshAllTabLists() {
         for (Player online : Bukkit.getOnlinePlayers()) {
             if (online.hasMetadata("NPC")) continue;
-            RunicCore.getInstance().getServer().getScheduler().runTaskLaterAsynchronously
-                    (RunicCore.getInstance(), () -> setupTab(online), 1);
+            RunicCore.getInstance().getServer().getScheduler().runTaskLater(RunicCore.getInstance(), () -> setupTab(online), 1);
         }
     }
 
