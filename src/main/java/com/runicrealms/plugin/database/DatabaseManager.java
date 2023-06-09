@@ -226,7 +226,7 @@ public class DatabaseManager implements CharacterAPI, DataAPI, PlayerDataAPI, Li
         player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 1.0f);
         player.sendTitle(ChatColor.DARK_GREEN + "Load Complete!", ChatColor.GREEN + "Welcome " + player.getName(), 10, 100, 10);
         int slot = event.getCharacterSelectEvent().getSlot();
-        Bukkit.getLogger().severe("PLAYER MARKED AS LOADED 5");
+//        Bukkit.getLogger().severe("PLAYER MARKED AS LOADED 5");
         loadedCharacterMap.put
                 (
                         event.getPlayer().getUniqueId(),

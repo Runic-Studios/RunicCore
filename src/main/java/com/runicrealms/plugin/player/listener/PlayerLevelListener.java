@@ -67,7 +67,7 @@ public class PlayerLevelListener implements Listener {
      * @return a pair that contains the title and subtitle
      */
     private Pair<String, String> getLevelTitle(Player player, String className, int classLevel) {
-        if (PlayerJoinListener.LOADING_PLAYERS.contains(player.getUniqueId())) {
+        if (PlayerJoinListener.LOADING_SCREEN_PLAYERS.contains(player.getUniqueId())) {
             return Pair.pair
                     (
 
@@ -123,7 +123,7 @@ public class PlayerLevelListener implements Listener {
         NametagHandler.updateNametag(player, slot);
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 1.0f);
 
-        if (!PlayerJoinListener.LOADING_PLAYERS.contains(player.getUniqueId())) {
+        if (!PlayerJoinListener.LOADING_SCREEN_PLAYERS.contains(player.getUniqueId())) {
             Pair<String, String> levelTitleMessage = getLevelTitle(player, className, classLevel);
             player.sendTitle(levelTitleMessage.first, levelTitleMessage.second, 10, 50, 10);
             shootFirework(player.getWorld(), player.getEyeLocation());

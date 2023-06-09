@@ -44,7 +44,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Manages the character select menu which the player sees upon login
@@ -54,7 +53,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class CharacterGuiManager implements Listener {
     private static final Map<UUID, CharacterGui> classMenu = new HashMap<>();
     private static final Map<UUID, Integer> deletingCharacters = new HashMap<>();
-    private final Map<UUID, CharacterSelectEvent> loadingEventMap = new ConcurrentHashMap<>();
+    private final Map<UUID, CharacterSelectEvent> loadingEventMap = new HashMap<>();
 
     private static boolean checkIsCharacterIcon(ItemStack item) {
         for (Map.Entry<CharacterClass, ItemStack> classIcon : CharacterSelectUtil.getClassIcons().entrySet()) {
@@ -277,8 +276,10 @@ public class CharacterGuiManager implements Listener {
                             RunicCore.getPlayerDataAPI().getCorePlayerData(uuid),
                             bukkitTask
                     );
-            Bukkit.getPluginManager().callEvent(characterSelectEvent);
             loadingEventMap.put(player.getUniqueId(), characterSelectEvent);
+//            Bukkit.getLogger().severe("loading event map: " + loadingEventMap.keySet().stream().map(UUID::toString).collect(Collectors.joining(", ")));
+            Bukkit.getPluginManager().callEvent(characterSelectEvent);
+
         });
     }
 
@@ -370,12 +371,13 @@ public class CharacterGuiManager implements Listener {
      */
     @EventHandler(priority = EventPriority.LOWEST)
     public void onLoadingQuit(PlayerQuitEvent event) {
+//        Bukkit.getLogger().severe("loading event map: " + loadingEventMap.keySet().stream().map(UUID::toString).collect(Collectors.joining(", ")));
         if (loadingEventMap.containsKey(event.getPlayer().getUniqueId())) {
-            Bukkit.getLogger().warning("PLAYER DISCONNECT DURING LOAD, PROCESS ABORTED, CANCELLING EVENT GOOD ENDING");
+//            Bukkit.getLogger().warning("PLAYER DISCONNECT DURING LOAD, PROCESS ABORTED, CANCELLING EVENT GOOD ENDING");
             loadingEventMap.get(event.getPlayer().getUniqueId()).setCancelled(true);
             loadingEventMap.remove(event.getPlayer().getUniqueId());
         } else {
-            Bukkit.getLogger().warning("QUIT EVENT BAD ENDING");
+//            Bukkit.getLogger().warning("QUIT EVENT BAD ENDING");
         }
         classMenu.remove(event.getPlayer().getUniqueId());
         deletingCharacters.remove(event.getPlayer().getUniqueId());

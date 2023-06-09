@@ -31,7 +31,9 @@ import java.util.UUID;
 
 @SuppressWarnings("deprecation")
 public class PlayerJoinListener implements Listener {
-    public static final Set<UUID> LOADING_PLAYERS = new HashSet<>();
+    public static final Set<UUID> LOADING_SCREEN_PLAYERS = new HashSet<>();
+    // These are players that have begun a lo
+    public static final Set<UUID> LOADS_IN_PROGRESS = new HashSet<>();
     private static final String WORLD_NAME = "Alterra";
     public static final Location SPAWN_BOX = new Location(Bukkit.getWorld(WORLD_NAME), -2271.5, 2, 2289.5);
 
@@ -47,7 +49,8 @@ public class PlayerJoinListener implements Listener {
         characterSelectEvent.getPluginsToLoadData().add("core");
         CorePlayerData corePlayerData = (CorePlayerData) characterSelectEvent.getSessionDataMongo();
         CoreCharacterData coreCharacterData = corePlayerData.getCharacter(characterSelectEvent.getSlot());
-        LOADING_PLAYERS.add(player.getUniqueId());
+        LOADING_SCREEN_PLAYERS.add(player.getUniqueId());
+        LOADS_IN_PROGRESS.add(player.getUniqueId());
         player.setLevel(coreCharacterData.getLevel());
         int totalExpAtLevel = PlayerLevelUtil.calculateTotalExp(coreCharacterData.getLevel());
         int totalExpToLevel = PlayerLevelUtil.calculateTotalExp(coreCharacterData.getLevel() + 1);
@@ -70,12 +73,14 @@ public class PlayerJoinListener implements Listener {
                 if (characterSelectEvent.getPluginsToLoadData().size() > 0)
                     return; // Other plugins loading data
                 this.cancel();
-                if (!characterSelectEvent.isCancelled()) {
+                if (characterSelectEvent.isCancelled()) {
+                    LOADS_IN_PROGRESS.remove(player.getUniqueId());
+//                    Bukkit.getLogger().severe("SELECT EVENT WAS CANCELLED");
+                } else {
+//                    Bukkit.getLogger().severe("FIRING LOADED EVENT");
                     CharacterLoadedEvent characterLoadedEvent = new CharacterLoadedEvent(player, characterSelectEvent);
                     // Inform all plugins that character is loaded!
                     Bukkit.getScheduler().runTask(RunicCore.getInstance(), () -> Bukkit.getPluginManager().callEvent(characterLoadedEvent));
-                } else {
-                    Bukkit.getLogger().severe("SELECT EVENT WAS CANCELLED");
                 }
             }
         }.runTaskTimerAsynchronously(RunicCore.getInstance(), 0, 20L);
@@ -88,11 +93,18 @@ public class PlayerJoinListener implements Listener {
         HealthUtils.setPlayerMaxHealth(player);
         player.setHealthScale(HealthUtils.getHeartAmount());
         player.setHealth(player.getMaxHealth());
-        Bukkit.getLogger().severe("PLAYER HEALTH SET 3");
+//        Bukkit.getLogger().severe("PLAYER HEALTH SET 3");
         int slot = event.getCharacterSelectEvent().getSlot();
         player.teleport(((CorePlayerData) event.getCharacterSelectEvent().getSessionDataMongo()).getCharacter(slot).getLocation());
-        Bukkit.getLogger().severe("PLAYER WAS TELEPORTED 4");
-        Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), () -> LOADING_PLAYERS.remove(event.getPlayer().getUniqueId()), 7L);
+//        Bukkit.getLogger().severe("PLAYER WAS TELEPORTED 4");
+        Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), () -> LOADING_SCREEN_PLAYERS.remove(event.getPlayer().getUniqueId()), 7L);
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onCharacterLoadedLast(CharacterLoadedEvent event) {
+//        Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), () -> {
+        LOADS_IN_PROGRESS.remove(event.getPlayer().getUniqueId());
+//        }, 40L);
     }
 
     /**
@@ -137,11 +149,17 @@ public class PlayerJoinListener implements Listener {
 
     @EventHandler(priority = EventPriority.NORMAL)
     public void onPreJoin(AsyncPlayerPreLoginEvent event) {
-        try (Jedis jedis = RunicDatabase.getAPI().getRedisAPI().getNewJedisResource()) {
-            if (jedis.exists(event.getUniqueId() + ":" + PlayerQuitListener.DATA_SAVING_KEY)) {
-                event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER,
-                        ChatColor.GREEN + "You recently played and your data is saving!" +
-                                "\n" + ChatColor.GREEN + "Try again in a moment");
+        if (LOADS_IN_PROGRESS.contains(event.getUniqueId())) {
+            event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER,
+                    ChatColor.GREEN + "You recently played and your data is saving!" +
+                            "\n" + ChatColor.GREEN + "Try again in a moment");
+        } else {
+            try (Jedis jedis = RunicDatabase.getAPI().getRedisAPI().getNewJedisResource()) {
+                if (jedis.exists(event.getUniqueId() + ":" + PlayerQuitListener.DATA_SAVING_KEY)) {
+                    event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER,
+                            ChatColor.GREEN + "You recently played and your data is saving!" +
+                                    "\n" + ChatColor.GREEN + "Try again in a moment");
+                }
             }
         }
     }
