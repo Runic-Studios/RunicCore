@@ -31,31 +31,37 @@ public class ScrapperListener implements Listener {
      * Handles logic for the shop menus
      */
     @EventHandler
-    public void onShopClick(InventoryClickEvent e) {
+    public void onShopClick(InventoryClickEvent event) {
 
                 /*
         Preliminary checks
          */
-        if (e.getClickedInventory() == null) return;
-        if (!(e.getView().getTopInventory().getHolder() instanceof ItemScrapper.ItemScrapperHolder)) return;
-        if (e.getClickedInventory().getType() == InventoryType.PLAYER) return;
-        ItemScrapper.ItemScrapperHolder itemScrapperHolder = (ItemScrapper.ItemScrapperHolder) e.getClickedInventory().getHolder();
-        if (!e.getWhoClicked().equals(itemScrapperHolder.getPlayer())) {
-            e.setCancelled(true);
-            e.getWhoClicked().closeInventory();
+        if (event.getClickedInventory() == null) return;
+        if (!(event.getView().getTopInventory().getHolder() instanceof ItemScrapper.ItemScrapperHolder)) return;
+        if (event.getClickedInventory().getType() == InventoryType.PLAYER) return;
+        ItemScrapper.ItemScrapperHolder itemScrapperHolder = (ItemScrapper.ItemScrapperHolder) event.getClickedInventory().getHolder();
+        if (!event.getWhoClicked().equals(itemScrapperHolder.getPlayer())) {
+            event.setCancelled(true);
+            event.getWhoClicked().closeInventory();
             return;
         }
-        Player player = (Player) e.getWhoClicked();
-        if (e.getCurrentItem() == null) return;
-        if (itemScrapperHolder.getInventory().getItem(e.getRawSlot()) == null) return;
+        Player player = (Player) event.getWhoClicked();
+        if (event.getCurrentItem() == null) return;
+        if (itemScrapperHolder.getInventory().getItem(event.getRawSlot()) == null) return;
         ItemScrapper itemScrapper = (ItemScrapper) RunicCore.getRunicShopManager().getPlayersInShops().get(player.getUniqueId());
 
-        ItemStack item = e.getCurrentItem();
+        if (itemScrapper == null) {
+            event.setCancelled(true);
+            player.closeInventory();
+            return;
+        }
+
+        ItemStack item = event.getCurrentItem();
         Material material = item.getType();
 
-        if (!ItemScrapper.SCRAPPER_SLOTS.contains(e.getRawSlot())) { // e.getClickedInventory().equals(e.getView().getTopInventory()) &&
+        if (!ItemScrapper.SCRAPPER_SLOTS.contains(event.getRawSlot())) { // e.getClickedInventory().equals(e.getView().getTopInventory()) &&
             player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1.0f);
-            e.setCancelled(true);
+            event.setCancelled(true);
         }
 
         if (material == GUIUtil.CLOSE_BUTTON.getType())
