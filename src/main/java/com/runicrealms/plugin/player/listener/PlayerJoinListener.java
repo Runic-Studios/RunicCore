@@ -22,6 +22,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 import redis.clients.jedis.Jedis;
 
 import java.util.HashSet;
@@ -40,7 +41,7 @@ public class PlayerJoinListener implements Listener {
      * @param player               to set values for
      * @param characterSelectEvent the associated select event to finish loading
      */
-    private void buildCharacterFromEvent(Player player, CharacterSelectEvent characterSelectEvent) {
+    private BukkitTask buildCharacterFromEvent(Player player, CharacterSelectEvent characterSelectEvent) {
         // For benchmarking
         long startTime = System.nanoTime();
         characterSelectEvent.getPluginsToLoadData().add("core");
@@ -63,15 +64,19 @@ public class PlayerJoinListener implements Listener {
         long elapsedTime = endTime - startTime;
         // Log elapsed time in milliseconds
         Bukkit.getLogger().info("RunicCore|character took: " + elapsedTime / 1_000_000 + "ms to load");
-        new BukkitRunnable() {
+        return new BukkitRunnable() {
             @Override
             public void run() {
                 if (characterSelectEvent.getPluginsToLoadData().size() > 0)
                     return; // Other plugins loading data
                 this.cancel();
-                CharacterLoadedEvent characterLoadedEvent = new CharacterLoadedEvent(player, characterSelectEvent);
-                // Inform all plugins that character is loaded!
-                Bukkit.getScheduler().runTask(RunicCore.getInstance(), () -> Bukkit.getPluginManager().callEvent(characterLoadedEvent));
+                if (!characterSelectEvent.isCancelled()) {
+                    CharacterLoadedEvent characterLoadedEvent = new CharacterLoadedEvent(player, characterSelectEvent);
+                    // Inform all plugins that character is loaded!
+                    Bukkit.getScheduler().runTask(RunicCore.getInstance(), () -> Bukkit.getPluginManager().callEvent(characterLoadedEvent));
+                } else {
+                    Bukkit.getLogger().severe("SELECT EVENT WAS CANCELLED");
+                }
             }
         }.runTaskTimerAsynchronously(RunicCore.getInstance(), 0, 20L);
     }
@@ -83,8 +88,10 @@ public class PlayerJoinListener implements Listener {
         HealthUtils.setPlayerMaxHealth(player);
         player.setHealthScale(HealthUtils.getHeartAmount());
         player.setHealth(player.getMaxHealth());
+        Bukkit.getLogger().severe("PLAYER HEALTH SET 3");
         int slot = event.getCharacterSelectEvent().getSlot();
         player.teleport(((CorePlayerData) event.getCharacterSelectEvent().getSessionDataMongo()).getCharacter(slot).getLocation());
+        Bukkit.getLogger().severe("PLAYER WAS TELEPORTED 4");
         Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), () -> LOADING_PLAYERS.remove(event.getPlayer().getUniqueId()), 7L);
     }
 

@@ -219,13 +219,14 @@ public class DatabaseManager implements CharacterAPI, DataAPI, PlayerDataAPI, Li
     /**
      * IMPORTANT: performs all necessary data cleanup after player is loaded
      */
-    @EventHandler(priority = EventPriority.LOWEST) // first
+    @EventHandler(priority = EventPriority.HIGH)
     public void onCharacterLoaded(CharacterLoadedEvent event) {
         Player player = event.getPlayer();
         event.getCharacterSelectEvent().getBukkitTask().cancel();
         player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 1.0f);
         player.sendTitle(ChatColor.DARK_GREEN + "Load Complete!", ChatColor.GREEN + "Welcome " + player.getName(), 10, 100, 10);
         int slot = event.getCharacterSelectEvent().getSlot();
+        Bukkit.getLogger().severe("PLAYER MARKED AS LOADED 5");
         loadedCharacterMap.put
                 (
                         event.getPlayer().getUniqueId(),
@@ -334,6 +335,7 @@ public class DatabaseManager implements CharacterAPI, DataAPI, PlayerDataAPI, Li
     private void startLocationSaveTask() {
         Bukkit.getScheduler().runTaskTimerAsynchronously(RunicCore.getInstance(), () -> {
             for (UUID uuid : loadedCharacterMap.keySet()) {
+//                if (PlayerJoinListener.LOADING_PLAYERS.contains(uuid)) continue; // Not yet teleported
                 Player player = Bukkit.getPlayer(uuid);
                 if (player == null) continue; // Player not online
                 int slot = RunicDatabase.getAPI().getCharacterAPI().getCharacterSlot(uuid);

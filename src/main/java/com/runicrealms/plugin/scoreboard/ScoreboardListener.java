@@ -64,7 +64,7 @@ public class ScoreboardListener implements Listener {
         Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), () -> HealthUtils.setPlayerMaxHealth(player), 1L);
     }
 
-    @EventHandler(priority = EventPriority.NORMAL)
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerJoin(CharacterLoadedEvent event) {
         Player player = event.getPlayer();
         RunicCore.getScoreboardAPI().setupScoreboard(player);

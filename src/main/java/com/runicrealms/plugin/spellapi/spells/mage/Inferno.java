@@ -25,6 +25,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class Inferno extends Spell implements DurationSpell {
     private final Map<UUID, StackTask> infernoMap = new ConcurrentHashMap<>();
+    private double buffDuration;
     private int period;
     private double percent;
     private int damageCapPerTick;
@@ -36,12 +37,12 @@ public class Inferno extends Spell implements DurationSpell {
         super("Inferno", CharacterClass.MAGE);
         this.setIsPassive(true);
         this.setDescription("Casting a fire spell creates a stack of &7&oinferno&7. " +
-                "After gaining " + stacksRequired + " stacks, your next spell releases the inferno! " +
-                "&7&oInfernal &7spells burn targets for " + (percent * 100) +
-                "% max health every second for " + duration + "s. " +
+                "After gaining " + stacksRequired + " stacks, you become infernal for " + buffDuration + "s!" +
+                "While infernal, your fire spells burn targets for " + (percent * 100) +
+                "% max health every second for " + duration + "s! " +
                 "Targets receive " + (percent * 100) + "% less healing while under the effect of inferno. " +
                 "Each tick is capped at " + damageCapPerTick + " total damage against monsters. " +
-                "Stacks expire after " + durationFalloff + "s.");
+                "Stacks expire after " + durationFalloff + "s. Targets cannot be affected more than once.");
     }
 
     public void setStacksRequired(double stacksRequired) {
@@ -50,6 +51,10 @@ public class Inferno extends Spell implements DurationSpell {
 
     public void setDurationFalloff(double durationFalloff) {
         this.durationFalloff = durationFalloff;
+    }
+
+    public void setBuffDuration(double buffDuration) {
+        this.buffDuration = buffDuration;
     }
 
     private void triggerInferno(Player player, LivingEntity victim) {
@@ -90,6 +95,8 @@ public class Inferno extends Spell implements DurationSpell {
 
     @Override
     public void loadDurationData(Map<String, Object> spellData) {
+        Number buffDuration = (Number) spellData.getOrDefault("buff-duration", 0);
+        setBuffDuration(buffDuration.doubleValue());
         Number damageCapPerTick = (Number) spellData.getOrDefault("damage-cap-per-tick", 0);
         setDamageCapPerTick((int) damageCapPerTick.doubleValue());
         Number duration = (Number) spellData.getOrDefault("duration", 0);
@@ -126,6 +133,7 @@ public class Inferno extends Spell implements DurationSpell {
                 && infernoMap.get(event.getPlayer().getUniqueId()).getStacks().get() == stacksRequired) {
             infernoMap.get(event.getPlayer().getUniqueId()).getBukkitTask().cancel();
             infernoMap.remove(event.getPlayer().getUniqueId());
+            // todo: here
             triggerInferno(event.getPlayer(), event.getVictim());
             return;
         }

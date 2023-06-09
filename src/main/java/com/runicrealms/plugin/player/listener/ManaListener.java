@@ -64,7 +64,7 @@ public class ManaListener implements Listener {
         }.runTaskLater(RunicCore.getInstance(), 1L);
     }
 
-    @EventHandler(priority = EventPriority.NORMAL)
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onJoin(CharacterLoadedEvent event) {
         Player player = event.getPlayer();
         // Set their mana to their maxMana on load

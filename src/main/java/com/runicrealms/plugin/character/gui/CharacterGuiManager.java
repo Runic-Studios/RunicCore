@@ -12,6 +12,7 @@ import com.runicrealms.plugin.model.CorePlayerData;
 import com.runicrealms.plugin.model.ProjectedData;
 import com.runicrealms.plugin.rdb.RunicDatabase;
 import com.runicrealms.plugin.rdb.event.CharacterDeleteEvent;
+import com.runicrealms.plugin.rdb.event.CharacterLoadedEvent;
 import com.runicrealms.plugin.rdb.event.CharacterSelectEvent;
 import com.runicrealms.plugin.rdb.model.CharacterField;
 import com.runicrealms.plugin.taskchain.TaskChainUtil;
@@ -43,6 +44,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Manages the character select menu which the player sees upon login
@@ -52,6 +54,7 @@ import java.util.UUID;
 public class CharacterGuiManager implements Listener {
     private static final Map<UUID, CharacterGui> classMenu = new HashMap<>();
     private static final Map<UUID, Integer> deletingCharacters = new HashMap<>();
+    private final Map<UUID, CharacterSelectEvent> loadingEventMap = new ConcurrentHashMap<>();
 
     private static boolean checkIsCharacterIcon(ItemStack item) {
         for (Map.Entry<CharacterClass, ItemStack> classIcon : CharacterSelectUtil.getClassIcons().entrySet()) {
@@ -266,6 +269,7 @@ public class CharacterGuiManager implements Listener {
         Bukkit.getScheduler().runTaskAsynchronously(RunicCore.getInstance(), () -> {
             UUID uuid = player.getUniqueId();
             BukkitTask bukkitTask = displayLoadingTitle(player);
+
             CharacterSelectEvent characterSelectEvent = new CharacterSelectEvent
                     (
                             player,
@@ -274,6 +278,7 @@ public class CharacterGuiManager implements Listener {
                             bukkitTask
                     );
             Bukkit.getPluginManager().callEvent(characterSelectEvent);
+            loadingEventMap.put(player.getUniqueId(), characterSelectEvent);
         });
     }
 
@@ -360,10 +365,25 @@ public class CharacterGuiManager implements Listener {
         }
     }
 
-    @EventHandler
-    public void onQuit(PlayerQuitEvent event) {
+    /**
+     * This fixes a bug where the player disconnects during the loading process
+     */
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onLoadingQuit(PlayerQuitEvent event) {
+        if (loadingEventMap.containsKey(event.getPlayer().getUniqueId())) {
+            Bukkit.getLogger().warning("PLAYER DISCONNECT DURING LOAD, PROCESS ABORTED, CANCELLING EVENT GOOD ENDING");
+            loadingEventMap.get(event.getPlayer().getUniqueId()).setCancelled(true);
+            loadingEventMap.remove(event.getPlayer().getUniqueId());
+        } else {
+            Bukkit.getLogger().warning("QUIT EVENT BAD ENDING");
+        }
         classMenu.remove(event.getPlayer().getUniqueId());
         deletingCharacters.remove(event.getPlayer().getUniqueId());
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onLoadingSuccess(CharacterLoadedEvent event) {
+        loadingEventMap.remove(event.getPlayer().getUniqueId());
     }
 
     /**
