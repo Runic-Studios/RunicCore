@@ -24,7 +24,7 @@ import java.util.logging.Level;
  */
 public class RedisManager implements Listener, RedisAPI {
     public static final String REDIS_PASSWORD = "i3yIgvdVw13MbFO2RJF382dX8kvZzUaD";
-    private static final int MAX_CONNECTIONS = 128;
+    private static final int MAX_CONNECTIONS = 1024; // 128
     private static final int REDIS_PORT = 17083; // TODO: these should be in a local config file on the machine
     private static final int TIMEOUT = 5000; // 5 seconds
     private static final String REDIS_CONNECTION_STRING = "redis-17083.c15.us-east-1-2.ec2.cloud.redislabs.com";

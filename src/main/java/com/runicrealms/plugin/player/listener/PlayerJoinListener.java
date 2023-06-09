@@ -171,8 +171,8 @@ public class PlayerJoinListener implements Listener {
 
     private void setupNewPlayer(Player player) {
         // broadcast new player welcome message
-        Bukkit.getServer().broadcastMessage(ChatColor.WHITE + player.getName()
-                + ChatColor.LIGHT_PURPLE + " joined the realm for the first time!");
+//        Bukkit.getServer().broadcastMessage(ChatColor.WHITE + player.getName()
+//                + ChatColor.LIGHT_PURPLE + " joined the realm for the first time!");
         // heal player
         HealthUtils.setPlayerMaxHealth(player);
         player.setHealthScale(HealthUtils.getHeartAmount());
