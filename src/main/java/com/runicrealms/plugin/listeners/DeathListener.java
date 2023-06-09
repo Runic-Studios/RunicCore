@@ -91,8 +91,7 @@ public class DeathListener implements Listener {
             // If the player should drop items, create their Gravestone
             if (droppedItemsInventory != null && !droppedItemsInventory.isEmpty()) {
                 boolean victimHasPriority = event.getKiller().length == 0 || !(event.getKiller()[0] instanceof Player);
-                Bukkit.broadcastMessage("priority is " + victimHasPriority);
-                new Gravestone(victim, droppedItemsInventory, victimHasPriority);
+                new Gravestone(victim, event.getLocation(), droppedItemsInventory, victimHasPriority);
             }
         }
 

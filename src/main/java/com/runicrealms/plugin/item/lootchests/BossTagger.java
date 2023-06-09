@@ -40,7 +40,7 @@ public class BossTagger implements Listener {
                         "Jorundr",
                         "GlitchedEntity",
                         "TheLibrarian",
-                        "DeraPharaoh",
+                        "sandGuy",
                         "Eldrid"
                 ));
     }

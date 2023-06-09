@@ -49,6 +49,20 @@ public class Gravestone {
         RunicCore.getGravestoneManager().getGravestoneMap().put(uuid, this);
     }
 
+    /**
+     * @param location specify exact location to spawn gravestone. useful if player combat logged
+     */
+    public Gravestone(Player player, Location location, Inventory inventory, boolean priority) {
+        this.uuid = player.getUniqueId();
+        this.location = location;
+        this.inventory = inventory;
+        this.priority = priority;
+        this.startTime = System.currentTimeMillis();
+        this.shulkerBox = spawnGravestone(player);
+        this.hologram = buildHologram(player);
+        RunicCore.getGravestoneManager().getGravestoneMap().put(uuid, this);
+    }
+
     private Hologram buildHologram(Player player) {
         // Spawn the hologram a few blocks above
         Hologram hologram = HologramsAPI.createHologram(RunicCore.getInstance(), shulkerBox.getLocation().add(0.5f, 2.5f, 0.5f));

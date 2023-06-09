@@ -92,7 +92,7 @@ public class Rupture extends Spell implements DurationSpell, PhysicalDamageSpell
                 } else {
                     count += 1;
                     livingEntity.getWorld().spawnParticle(Particle.CRIMSON_SPORE, livingEntity.getLocation(), 10, 0.5f, 0.5f, 0.5f, 0);
-                    DamageUtil.damageEntityPhysical(damage, livingEntity, player, true, false, false, spell);
+                    DamageUtil.damageEntityPhysical(damage, livingEntity, player, false, false, false, spell);
                 }
 
             }
