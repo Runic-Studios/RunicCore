@@ -209,18 +209,16 @@ public class ScoreboardHandler implements ScoreboardAPI {
     public void updatePlayerInfo(final Player player, final ScoreboardUpdateEvent event) {
         Scoreboard scoreboard = event.getScoreboard();
         String playerNameSubString = player.getName().length() > 16 ? player.getName().substring(0, 16) : player.getName();
+
         Team playerClass = scoreboard.getTeam(playerNameSubString + CLASS_TEAM_STRING);
-        assert playerClass != null;
-        playerClass.setPrefix(playerClass(player));
+        if (playerClass != null) playerClass.setPrefix(playerClass(player));
+
         Team playerProf = scoreboard.getTeam(playerNameSubString + PROF_TEAM_STRING);
-        assert playerProf != null;
-        playerProf.setPrefix(playerProf(event.getProfession(), event.getProfessionLevel()));
+        if (playerProf != null) playerProf.setPrefix(playerProf(event.getProfession(), event.getProfessionLevel()));
         Team playerGuild = scoreboard.getTeam(playerNameSubString + GUILD_TEAM_STRING);
-        assert playerGuild != null;
-        playerGuild.setPrefix(playerGuild(player, event.getJedis()));
+        if (playerGuild != null) playerGuild.setPrefix(playerGuild(player, event.getJedis()));
         Team playerOutlaw = scoreboard.getTeam(playerNameSubString + OUTLAW_TEAM_STRING);
-        assert playerOutlaw != null;
-        playerOutlaw.setPrefix(playerOutlaw(event.isOutlaw()));
+        if (playerOutlaw != null) playerOutlaw.setPrefix(playerOutlaw(event.isOutlaw()));
     }
 
     @Override
