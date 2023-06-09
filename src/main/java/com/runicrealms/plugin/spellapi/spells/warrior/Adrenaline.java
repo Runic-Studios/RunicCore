@@ -1,9 +1,8 @@
 package com.runicrealms.plugin.spellapi.spells.warrior;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.events.MagicDamageEvent;
-import com.runicrealms.plugin.events.PhysicalDamageEvent;
 import com.runicrealms.plugin.common.CharacterClass;
+import com.runicrealms.plugin.events.PhysicalDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.AttributeSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.RunicStatusEffect;
@@ -39,7 +38,7 @@ public class Adrenaline extends Spell implements AttributeSpell, DurationSpell {
         super("Adrenaline", CharacterClass.WARRIOR);
         Stat stat = Stat.getFromName(statName);
         String prefix = stat == null ? "" : stat.getPrefix();
-        this.setDescription("For the next " + duration + "s, each time you deal damage, " +
+        this.setDescription("For the next " + duration + "s, each time you basic attack, " +
                 "gain a stack of Adrenaline, granting additional physical damage equal to" +
                 " (" + baseValue + " + &f" + multiplier + "x &e" + prefix + "&7). " +
                 "Each hit refreshes the duration of your stacks, " +
@@ -124,14 +123,6 @@ public class Adrenaline extends Spell implements AttributeSpell, DurationSpell {
     @Override
     public void setDuration(double duration) {
         this.duration = duration;
-    }
-
-    @EventHandler(priority = EventPriority.HIGH)
-    public void onMagicDamage(MagicDamageEvent event) {
-        if (!adrenalineMap.containsKey(event.getPlayer().getUniqueId())) return;
-        if (event.isCancelled()) return;
-        Player player = event.getPlayer();
-        event.setAmount(event.getAmount() + damageBasedOnStacks(player));
     }
 
     /**

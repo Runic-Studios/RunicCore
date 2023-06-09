@@ -155,6 +155,11 @@ public class Inferno extends Spell implements DurationSpell {
         if (event.isCancelled()) return;
         if (!hasPassive(event.getCaster().getUniqueId(), this.getName())) return;
         if (event.getSpell() == null) return;
+        // Stack inferno
+        if (!(event.getSpell() instanceof Fireball
+                || event.getSpell() instanceof DragonsBreath
+                || event.getSpell() instanceof FireBlast
+                || event.getSpell() instanceof MeteorShower)) return;
         // Trigger inferno
         if (infernoMap.containsKey(event.getCaster().getUniqueId())
                 && infernoMap.get(event.getCaster().getUniqueId()).getStacks().get() == stacksRequired) {
@@ -163,11 +168,6 @@ public class Inferno extends Spell implements DurationSpell {
             triggerInferno(event.getCaster());
             return;
         }
-        // Stack inferno
-        if (!(event.getSpell() instanceof Fireball
-                || event.getSpell() instanceof DragonsBreath
-                || event.getSpell() instanceof FireBlast
-                || event.getSpell() instanceof MeteorShower)) return;
         Player caster = event.getCaster();
         if (!infernoMap.containsKey(caster.getUniqueId())) {
             BukkitTask bukkitTask = Bukkit.getScheduler().runTaskLaterAsynchronously(RunicCore.getInstance(),
