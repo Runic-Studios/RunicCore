@@ -226,8 +226,13 @@ public class BoostManager implements BoostAPI, Listener {
             return (int) ((System.currentTimeMillis() - startTimeStamp) / 1000);
         }
 
+        public double getBossBarProgress() {
+            return ((double) getRemainingSeconds()) / (boost.getDuration() * 60.0)
+        }
+
         public void applyBossBar(BossBar bossBar) {
-            bossBar.setProgress(((double) getRemainingSeconds()) / (boost.getDuration() * 60.0));
+            double progress = getBossBarProgress();
+            if (progress >= 0) bossBar.setProgress(progress);
             bossBar.setTitle(title);
         }
 
