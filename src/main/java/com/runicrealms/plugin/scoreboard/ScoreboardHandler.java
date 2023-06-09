@@ -225,7 +225,10 @@ public class ScoreboardHandler implements ScoreboardAPI {
 
     @Override
     public void updatePlayerScoreboard(Player player) {
-        Bukkit.getScheduler().runTaskAsynchronously(RunicCore.getInstance(), () -> Bukkit.getPluginManager().callEvent(new ScoreboardUpdateEvent(player, player.getScoreboard())));
+        Bukkit.getScheduler().runTaskAsynchronously(RunicCore.getInstance(), () -> {
+            if (!RunicDatabase.getAPI().getCharacterAPI().getLoadedCharacters().contains(player.getUniqueId())) return;
+            Bukkit.getPluginManager().callEvent(new ScoreboardUpdateEvent(player, player.getScoreboard()));
+        });
     }
 
     /**
