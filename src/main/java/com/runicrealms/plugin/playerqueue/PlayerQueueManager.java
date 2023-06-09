@@ -1,8 +1,8 @@
 package com.runicrealms.plugin.playerqueue;
 
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.common.DonorRank;
 import com.runicrealms.plugin.common.util.ColorUtil;
-import com.runicrealms.plugin.donor.DonorRank;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
