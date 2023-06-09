@@ -65,6 +65,8 @@ public class DonorPerksUI implements InventoryHolder {
                     "",
                     ColorUtil.format("&7Chat Name Color: " + rank.getChatColor() + "&l" + rank.getChatColor().name().replaceAll("_", " ").toUpperCase()),
                     ColorUtil.format("&7Title: " + rank.getChatColor() + "&l" + (rank.getTitle().isEmpty() ? "NONE" : rank.getTitle()))
+                    "",
+                    ColorUtil.format("&eClick to enable title")
             ));
             nameIcon.setItemMeta(meta);
             this.inventory.setItem(20, nameIcon);
