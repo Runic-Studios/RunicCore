@@ -48,17 +48,19 @@ public class WhoIsCMD extends BaseCommand {
         String message = ColorUtil.format
                 ("&e&l" + target.getName() + "s Profile" +
                         "\n&7Class: &f" + className + " &7lv. " + classLevel);
-        if (skillTreeDataMap.get(SkillTreePosition.FIRST) != null) {
-            SkillTreeData first = skillTreeDataMap.get(SkillTreePosition.FIRST);
-            message += ChatColor.GRAY + "\nSubclass: " + first.getSubClass(target.getUniqueId()).getName() + " " + ChatColor.WHITE + first.getTotalPoints();
-        }
-        if (skillTreeDataMap.get(SkillTreePosition.SECOND) != null) {
-            SkillTreeData second = skillTreeDataMap.get(SkillTreePosition.SECOND);
-            message += ChatColor.GRAY + ", " + second.getSubClass(target.getUniqueId()).getName() + " " + ChatColor.WHITE + second.getTotalPoints();
-        }
-        if (skillTreeDataMap.get(SkillTreePosition.THIRD) != null) {
-            SkillTreeData third = skillTreeDataMap.get(SkillTreePosition.THIRD);
-            message += ChatColor.GRAY + ", " + third.getSubClass(target.getUniqueId()).getName() + " " + ChatColor.WHITE + third.getTotalPoints();
+        if (skillTreeDataMap != null) {
+            if (skillTreeDataMap.get(SkillTreePosition.FIRST) != null) {
+                SkillTreeData first = skillTreeDataMap.get(SkillTreePosition.FIRST);
+                message += ChatColor.GRAY + "\nSubclass: " + first.getSubClass(target.getUniqueId()).getName() + " " + ChatColor.WHITE + first.getTotalPoints();
+            }
+            if (skillTreeDataMap.get(SkillTreePosition.SECOND) != null) {
+                SkillTreeData second = skillTreeDataMap.get(SkillTreePosition.SECOND);
+                message += ChatColor.GRAY + ", " + second.getSubClass(target.getUniqueId()).getName() + " " + ChatColor.WHITE + second.getTotalPoints();
+            }
+            if (skillTreeDataMap.get(SkillTreePosition.THIRD) != null) {
+                SkillTreeData third = skillTreeDataMap.get(SkillTreePosition.THIRD);
+                message += ChatColor.GRAY + ", " + third.getSubClass(target.getUniqueId()).getName() + " " + ChatColor.WHITE + third.getTotalPoints();
+            }
         }
         player.sendMessage("");
         player.sendMessage(message);
