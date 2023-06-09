@@ -1,9 +1,9 @@
 package com.runicrealms.plugin.spellapi.spells.archer;
 
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.common.CharacterClass;
 import com.runicrealms.plugin.events.PhysicalDamageEvent;
 import com.runicrealms.plugin.events.SpellCastEvent;
-import com.runicrealms.plugin.common.CharacterClass;
 import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import org.bukkit.Bukkit;
@@ -11,12 +11,13 @@ import org.bukkit.Sound;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 
-import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class Sunder extends Spell implements DurationSpell {
-    private final Map<UUID, Long> sunderMap = new HashMap<>();
+    private final Map<UUID, Long> sunderMap = new ConcurrentHashMap<>();
     private double duration;
     private double percent;
 
@@ -79,7 +80,9 @@ public class Sunder extends Spell implements DurationSpell {
     private void startMapTask() {
         Bukkit.getScheduler().runTaskTimerAsynchronously(RunicCore.getInstance(), () -> {
             if (sunderMap.isEmpty()) return;
-            for (UUID uuid : sunderMap.keySet()) {
+            Iterator<UUID> iterator = sunderMap.keySet().iterator();
+            while (iterator.hasNext()) {
+                UUID uuid = iterator.next();
                 long elapsedTime = System.currentTimeMillis() - sunderMap.get(uuid);
                 if (elapsedTime > (duration * 1000))
                     sunderMap.remove(uuid);
