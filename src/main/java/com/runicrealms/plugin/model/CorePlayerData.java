@@ -1,6 +1,5 @@
 package com.runicrealms.plugin.model;
 
-import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.rdb.RunicDatabase;
 import com.runicrealms.plugin.rdb.model.SessionDataMongo;
 import org.bson.types.ObjectId;
@@ -8,12 +7,10 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
-import redis.clients.jedis.Jedis;
 
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -70,27 +67,6 @@ public class CorePlayerData implements SessionDataMongo {
         this.titleData = titleData;
     }
 
-    /**
-     * Build the player's data from redis.
-     * Does not load every character. Instead, lazy-loads the characters as-needed
-     *
-     * @param uuid  of the player that selected the character profile
-     * @param jedis the jedis resource
-     */
-    public CorePlayerData(UUID uuid, Jedis jedis) {
-        this.uuid = uuid;
-        this.lastLoginDate = LocalDate.now();
-        String database = RunicDatabase.getAPI().getDataAPI().getMongoDatabase().getName();
-        if (jedis.exists(database + ":" + uuid + ":guild")) {
-            this.guild = jedis.get(database + ":" + uuid + ":guild");
-        }
-        // Load title data from Redis (no lazy loading for TitleData)
-        TitleData titleDataRedis = RunicCore.getTitleAPI().checkRedisForTitleData(uuid, jedis);
-        if (titleDataRedis != null) {
-            this.titleData = titleDataRedis;
-        }
-    }
-
     @SuppressWarnings("unchecked")
     @Override
     public CorePlayerData addDocumentToMongo() {
@@ -107,15 +83,6 @@ public class CorePlayerData implements SessionDataMongo {
     public CoreCharacterData getCharacter(int slot) {
         if (coreCharacterDataMap.get(slot) != null) {
             return coreCharacterDataMap.get(slot);
-        }
-        // Lazy load the characters from redis
-        try (Jedis jedis = RunicDatabase.getAPI().getRedisAPI().getNewJedisResource()) {
-            Set<String> redisCharacterList = RunicDatabase.getAPI().getRedisAPI().getRedisDataSet(uuid, "characterData", jedis);
-            boolean dataInRedis = RunicDatabase.getAPI().getRedisAPI().determineIfDataInRedis(redisCharacterList, slot);
-            if (dataInRedis) {
-                coreCharacterDataMap.put(slot, new CoreCharacterData(uuid, slot, jedis));
-                return coreCharacterDataMap.get(slot);
-            }
         }
         return null; // Oh-no!
     }
@@ -207,26 +174,6 @@ public class CorePlayerData implements SessionDataMongo {
 
     public void setUuid(UUID uuid) {
         this.uuid = uuid;
-    }
-
-    public void writeToJedis(Jedis jedis) {
-        // Inform the server that this player should be saved to mongo on next task (jedis data is refreshed)
-        String database = RunicDatabase.getAPI().getDataAPI().getMongoDatabase().getName();
-        jedis.sadd(database + ":" + "markedForSave:core", this.uuid.toString());
-        // Inform the server that there is some core data
-        jedis.set(database + ":" + uuid + ":hasCoreData", this.uuid.toString());
-        jedis.expire(database + ":" + uuid + ":hasCoreData", RunicDatabase.getAPI().getRedisAPI().getExpireTime());
-        // Write guild
-        jedis.set(database + ":" + uuid + ":guild", this.guild);
-        jedis.expire(database + ":" + uuid + ":guild", RunicDatabase.getAPI().getRedisAPI().getExpireTime());
-        // Save character data
-        for (int slot : this.coreCharacterDataMap.keySet()) {
-            // Ensure the system knows that there is data in redis
-            jedis.sadd(database + ":" + this.uuid + ":characterData", String.valueOf(slot));
-            jedis.expire(database + ":" + this.uuid + ":characterData", RunicDatabase.getAPI().getRedisAPI().getExpireTime());
-            CoreCharacterData characterData = this.coreCharacterDataMap.get(slot);
-            characterData.writeToJedis(this.uuid, jedis, slot);
-        }
     }
 
 }

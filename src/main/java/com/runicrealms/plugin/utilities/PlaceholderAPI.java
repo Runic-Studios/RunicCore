@@ -68,38 +68,43 @@ public class PlaceholderAPI extends PlaceholderExpansion {
         TitleData titleData = RunicCore.getTitleAPI().getTitleData(player.getUniqueId());
 
         switch (lowerArg) {
-            case "class":
+            case "class" -> {
                 return RunicDatabase.getAPI().getCharacterAPI().getPlayerClass(player);
-            case "class_prefix":
+            }
+            case "class_prefix" -> {
                 return RunicDatabase.getAPI().getCharacterAPI().getPlayerClass(player).substring(0, 2);
-            case "level":
-                return player.getLevel() + "";
-            case "prof":
-                return "";
-            case "prof_level":
-                return "";
-            case "prefix":
+            }
+            case "level" -> {
+                return String.valueOf(player.getLevel());
+            }
+            case "prefix" -> {
                 return titleData.getPrefix();
-            case "prefix_formatted":
+            }
+            case "prefix_formatted" -> {
                 if (!titleData.getPrefix().equals("")) {
                     return "[" + titleData.getPrefix() + "] ";
                 }
                 return "";
-            case "suffix":
+            }
+            case "suffix" -> {
                 return titleData.getSuffix();
-            case "suffix_formatted":
+            }
+            case "suffix_formatted" -> {
                 if (!titleData.getSuffix().equals("")) {
                     return "[" + titleData.getSuffix() + "] ";
                 }
                 return "";
-            case "name_color":
+            }
+            case "name_color" -> {
                 User user = LuckPermsProvider.get().getUserManager().getUser(player.getUniqueId());
                 if (user == null) return ChatColor.GRAY.toString();
                 String color = user.getCachedData().getMetaData().getMetaValue("name_color");
                 if (color != null) return color;
                 return ChatColor.GRAY.toString();
-            default:
+            }
+            default -> {
                 return "";
+            }
         }
     }
 }

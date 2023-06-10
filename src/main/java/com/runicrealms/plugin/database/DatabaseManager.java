@@ -90,7 +90,7 @@ public class DatabaseManager implements CharacterAPI, DataAPI, PlayerDataAPI, Li
                 } finally {
                     Bukkit.getLogger().info(ChatColor.GREEN + springString());
                     RunicRestart.getAPI().markPluginLoaded("core");
-                    startLocationSaveTask(); // Save location periodically
+//                    startLocationSaveTask(); // Save location periodically
                 }
             }
         }.runTaskTimerAsynchronously(RunicCore.getInstance(), 0, 10L);
@@ -129,43 +129,27 @@ public class DatabaseManager implements CharacterAPI, DataAPI, PlayerDataAPI, Li
 
     @Override
     public CorePlayerData loadCorePlayerData(UUID uuid) {
-        // Step 1: Check redis
-        try (Jedis jedis = RunicDatabase.getAPI().getRedisAPI().getNewJedisResource()) {
-            boolean dataInRedis = checkRedisForCoreData(uuid, jedis);
-            if (dataInRedis) {
-                //                Bukkit.getLogger().info("LOADING CORE DATA FROM REDIS");
-                return new CorePlayerData(uuid, jedis);
-            }
-            // Step 2: Check the mongo database
-            Query query = new Query();
-            query.addCriteria(Criteria.where(CharacterField.PLAYER_UUID.getField()).is(uuid));
-            MongoTemplate mongoTemplate = RunicDatabase.getAPI().getDataAPI().getMongoTemplate();
-            List<CorePlayerData> results = mongoTemplate.find(query, CorePlayerData.class);
-            if (results.size() > 0) {
-                CorePlayerData result = results.get(0);
-                result.writeToJedis(jedis);
-                return result;
-            }
-            // Step 3: if no data is found, we create some data and save it to the collection
-            CorePlayerData newData = new CorePlayerData
-                    (
-                            new ObjectId(),
-                            uuid,
-                            LocalDate.now(),
-                            new HashMap<>(),
-                            new HashMap<>(),
-                            new HashMap<>(),
-                            new TitleData()
-                    );
-            newData.addDocumentToMongo();
-            newData.writeToJedis(jedis);
-            return newData;
+        // Step 1: Check the mongo database
+        Query query = new Query();
+        query.addCriteria(Criteria.where(CharacterField.PLAYER_UUID.getField()).is(uuid));
+        MongoTemplate mongoTemplate = RunicDatabase.getAPI().getDataAPI().getMongoTemplate();
+        List<CorePlayerData> results = mongoTemplate.find(query, CorePlayerData.class);
+        if (results.size() > 0) {
+            return results.get(0);
         }
-    }
-
-    public boolean checkRedisForCoreData(UUID uuid, Jedis jedis) {
-        String database = RunicDatabase.getAPI().getDataAPI().getMongoDatabase().getName();
-        return jedis.exists(database + ":" + uuid + ":hasCoreData");
+        // Step 2: If no data is found, we create some data and save it to the collection
+        CorePlayerData newData = new CorePlayerData
+                (
+                        new ObjectId(),
+                        uuid,
+                        LocalDate.now(),
+                        new HashMap<>(),
+                        new HashMap<>(),
+                        new HashMap<>(),
+                        new TitleData()
+                );
+        newData.addDocumentToMongo();
+        return newData;
     }
 
     @Override
@@ -224,6 +208,7 @@ public class DatabaseManager implements CharacterAPI, DataAPI, PlayerDataAPI, Li
         Player player = event.getPlayer();
         event.getCharacterSelectEvent().getBukkitTask().cancel();
         player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 1.0f);
+        player.sendMessage(ChatColor.GREEN + "Load complete!");
         player.sendTitle(ChatColor.DARK_GREEN + "Load Complete!", ChatColor.GREEN + "Welcome " + player.getName(), 10, 100, 10);
         int slot = event.getCharacterSelectEvent().getSlot();
 //        Bukkit.getLogger().severe("PLAYER MARKED AS LOADED 5");
@@ -240,20 +225,29 @@ public class DatabaseManager implements CharacterAPI, DataAPI, PlayerDataAPI, Li
      */
     @EventHandler(priority = EventPriority.HIGHEST) // last thing that runs
     public void onCharacterQuitFinished(CharacterQuitEvent event) {
+        UUID uuid = event.getPlayer().getUniqueId();
+        int slot = event.getSlot();
         Location location = event.getPlayer().getLocation();
-        try (Jedis jedis = RunicDatabase.getAPI().getRedisAPI().getNewJedisResource()) {
-            CorePlayerData corePlayerData = getCorePlayerData(event.getPlayer().getUniqueId());
-            corePlayerData.setLastLoginDate(LocalDate.now());
-            corePlayerData.getCharacter(event.getSlot()).setLocation(location);
-            corePlayerData.getCharacter(event.getSlot()).setCurrentHp((int) event.getPlayer().getHealth());
-            corePlayerData.writeToJedis(jedis);
-            // Removed from in-game memory map
-            loadedCharacterMap.remove(event.getPlayer().getUniqueId());
-            // Inform plugins that logout is complete
-            CharacterHasQuitEvent characterHasQuitEvent = new CharacterHasQuitEvent(event.getPlayer(), event);
-            Bukkit.getScheduler().runTask(RunicCore.getInstance(),
-                    () -> Bukkit.getPluginManager().callEvent(characterHasQuitEvent)); // Inform plugins that character has finished data save! SYNC
-        }
+
+
+        CorePlayerData corePlayerData = getCorePlayerData(event.getPlayer().getUniqueId());
+        corePlayerData.setLastLoginDate(LocalDate.now());
+        corePlayerData.getCharacter(event.getSlot()).setLocation(location);
+        corePlayerData.getCharacter(event.getSlot()).setCurrentHp((int) event.getPlayer().getHealth());
+        // Uses TaskChain to save to MongoDB async, then sync callback function
+        RunicCore.getCoreWriteOperation().updateCorePlayerData
+                (
+                        uuid,
+                        slot,
+                        corePlayerData,
+                        // Sync callback
+                        () -> {
+                            // Removed from in-game memory map
+                            loadedCharacterMap.remove(event.getPlayer().getUniqueId());
+                            // Inform plugins that logout is complete
+                            Bukkit.getPluginManager().callEvent(new CharacterHasQuitEvent(event.getPlayer(), event));
+                        }
+                );
     }
 
     /**
@@ -287,7 +281,6 @@ public class DatabaseManager implements CharacterAPI, DataAPI, PlayerDataAPI, Li
     @EventHandler
     public void onQuit(PlayerQuitEvent event) {
         if (loadedCharacterMap.get(event.getPlayer().getUniqueId()) == null) return;
-        CorePlayerData corePlayerData = getCorePlayerData(event.getPlayer().getUniqueId());
         boolean isAsync = !RunicRestart.getAPI().isShuttingDown();
         if (isAsync) {
             Bukkit.getScheduler().runTaskAsynchronously(RunicCore.getInstance(),
@@ -295,7 +288,6 @@ public class DatabaseManager implements CharacterAPI, DataAPI, PlayerDataAPI, Li
                             (
                                     event.getPlayer(),
                                     loadedCharacterMap.get(event.getPlayer().getUniqueId()).first,
-                                    corePlayerData.getCharacter(loadedCharacterMap.get(event.getPlayer().getUniqueId()).first),
                                     true
                             )));
         } else {
@@ -303,7 +295,6 @@ public class DatabaseManager implements CharacterAPI, DataAPI, PlayerDataAPI, Li
                     (
                             event.getPlayer(),
                             loadedCharacterMap.get(event.getPlayer().getUniqueId()).first,
-                            corePlayerData.getCharacter(loadedCharacterMap.get(event.getPlayer().getUniqueId()).first),
                             false
                     ));
         }
@@ -332,26 +323,69 @@ public class DatabaseManager implements CharacterAPI, DataAPI, PlayerDataAPI, Li
     /**
      * Periodic task to save player location
      */
-    private void startLocationSaveTask() {
-        Bukkit.getScheduler().runTaskTimerAsynchronously(RunicCore.getInstance(), () -> {
-            for (UUID uuid : loadedCharacterMap.keySet()) {
-//                if (PlayerJoinListener.LOADING_PLAYERS.contains(uuid)) continue; // Not yet teleported
-                Player player = Bukkit.getPlayer(uuid);
-                if (player == null) continue; // Player not online
-                int slot = RunicDatabase.getAPI().getCharacterAPI().getCharacterSlot(uuid);
-                Location location = player.getLocation();
-                try (Jedis jedis = RunicDatabase.getAPI().getRedisAPI().getNewJedisResource()) {
-                    CorePlayerData corePlayerData = getCorePlayerData(uuid);
-                    corePlayerData.getCharacter(slot).setLocation(location);
-                    corePlayerData.getCharacter(slot).setCurrentHp((int) player.getHealth());
-                    corePlayerData.writeToJedis(jedis);
-                }
-            }
-        }, 0, CHARACTER_SAVE_PERIOD * 20L);
+//    private void startLocationSaveTask() {
+//        Bukkit.getScheduler().runTaskTimerAsynchronously(RunicCore.getInstance(), () -> {
+//            for (UUID uuid : loadedCharacterMap.keySet()) {
+////                if (PlayerJoinListener.LOADING_PLAYERS.contains(uuid)) continue; // Not yet teleported
+//                Player player = Bukkit.getPlayer(uuid);
+//                if (player == null) continue; // Player not online
+//                int slot = RunicDatabase.getAPI().getCharacterAPI().getCharacterSlot(uuid);
+//                Location location = player.getLocation();
+//                try (Jedis jedis = RunicDatabase.getAPI().getRedisAPI().getNewJedisResource()) {
+//                    CorePlayerData corePlayerData = getCorePlayerData(uuid);
+//                    corePlayerData.getCharacter(slot).setLocation(location);
+//                    corePlayerData.getCharacter(slot).setCurrentHp((int) player.getHealth());
+//                    RunicCore.getCoreWriteOperation().updateCoreCharacterData
+//                            (
+//                                    uuid,
+//                                    slot,
+//
+//                            );
+//                    corePlayerData.writeToJedis(jedis);
+//                }
+//            }
+//        }, 0, CHARACTER_SAVE_PERIOD * 20L);
+//    }
+    @Override
+    public void updateCorePlayerData(UUID uuid, int slot, CorePlayerData newValue, WriteCallback callback) {
+        TaskChain<?> chain = RunicCore.newChain();
+        chain
+                .asyncFirst(() -> {
+                    // Define a query to find the CorePlayerData for this player
+                    Query query = new Query();
+                    query.addCriteria(Criteria.where(CharacterField.PLAYER_UUID.getField()).is(uuid));
+
+                    // Use the findAndReplace method to replace the entire document
+                    return mongoTemplate.findAndReplace(query, newValue);
+                })
+                .abortIfNull(TaskChainUtil.CONSOLE_LOG, null, "RunicCore failed to write to CorePlayerData!")
+                .syncLast(updateResult -> callback.onWriteComplete())
+                .execute();
     }
 
     @Override
-    public <T> void updateCorePlayerData(UUID uuid, int slot, String fieldName, T newValue, MongoTemplate mongoTemplate, WriteCallback callback) {
+    public <T> void updateCorePlayerData(UUID uuid, String fieldName, T newValue, WriteCallback callback) {
+        TaskChain<?> chain = RunicCore.newChain();
+        chain
+                .asyncFirst(() -> {
+                    // Define a query to find the CorePlayerData for this player
+                    Query query = new Query();
+                    query.addCriteria(Criteria.where(CharacterField.PLAYER_UUID.getField()).is(uuid));
+
+                    // Define an update to set the specific field
+                    Update update = new Update();
+                    update.set(fieldName, newValue);
+
+                    // Execute the update operation
+                    return mongoTemplate.updateFirst(query, update, CorePlayerData.class);
+                })
+                .abortIfNull(TaskChainUtil.CONSOLE_LOG, null, "RunicCore failed to write to " + fieldName + "!")
+                .syncLast(updateResult -> callback.onWriteComplete())
+                .execute();
+    }
+
+    @Override
+    public <T> void updateCorePlayerData(UUID uuid, int slot, String fieldName, T newValue, WriteCallback callback) {
         TaskChain<?> chain = RunicCore.newChain();
         chain
                 .asyncFirst(() -> {
@@ -366,8 +400,30 @@ public class DatabaseManager implements CharacterAPI, DataAPI, PlayerDataAPI, Li
                     // Execute the update operation
                     return mongoTemplate.updateFirst(query, update, CorePlayerData.class);
                 })
-                .abortIfNull(TaskChainUtil.CONSOLE_LOG, null, "RunicCore failed to save " + fieldName + "!")
+                .abortIfNull(TaskChainUtil.CONSOLE_LOG, null, "RunicCore failed to write to " + fieldName + "!")
                 .syncLast(updateResult -> callback.onWriteComplete())
                 .execute();
     }
+
+    @Override
+    public <T> void updateCoreCharacterData(UUID uuid, int slot, T newValue, WriteCallback callback) {
+        TaskChain<?> chain = RunicCore.newChain();
+        chain
+                .asyncFirst(() -> {
+                    // Define a query to find the CoreCharacter for this player
+                    Query query = new Query();
+                    query.addCriteria(Criteria.where(CharacterField.PLAYER_UUID.getField()).is(uuid));
+
+                    // Define an update to set the specific field
+                    Update update = new Update();
+                    update.set("coreCharacterDataMap." + slot, newValue);
+
+                    // Execute the update operation
+                    return mongoTemplate.updateFirst(query, update, CorePlayerData.class);
+                })
+                .abortIfNull(TaskChainUtil.CONSOLE_LOG, null, "RunicCore failed to write to coreCharacterDataMap!")
+                .syncLast(updateResult -> callback.onWriteComplete())
+                .execute();
+    }
+
 }

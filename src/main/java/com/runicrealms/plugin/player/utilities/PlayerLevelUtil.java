@@ -4,10 +4,8 @@ import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.common.util.ChatUtils;
 import com.runicrealms.plugin.model.CoreCharacterData;
 import com.runicrealms.plugin.rdb.RunicDatabase;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
-import redis.clients.jedis.Jedis;
 
 public class PlayerLevelUtil {
 
@@ -54,40 +52,48 @@ public class PlayerLevelUtil {
      * @param expGained the amount of exp earned
      */
     public static void giveExperience(Player player, int expGained) {
-        Bukkit.getScheduler().runTaskAsynchronously(RunicCore.getInstance(), () -> {
-            try (Jedis jedis = RunicDatabase.getAPI().getRedisAPI().getNewJedisResource()) {
-                int currentLevel = player.getLevel();
-                if (currentLevel >= MAX_LEVEL) return;
-                int slot = RunicDatabase.getAPI().getCharacterAPI().getCharacterSlot(player.getUniqueId());
-                CoreCharacterData characterData = RunicCore.getPlayerDataAPI().getCorePlayerDataMap().get(player.getUniqueId()).getCharacter(slot);
-                int currentExp = characterData.getExp();
-                currentExp = currentExp + expGained;
 
-                // If the player's actual level is incorrect based on their total exp, adjust level
-                if (calculateExpectedLv(currentExp) != currentLevel) {
-                    player.sendMessage("\n");
-                    sendLevelMessage(player, calculateExpectedLv(currentExp));
-                    player.sendMessage("\n");
-                    player.setLevel(calculateExpectedLv(currentExp));
-                    currentLevel = calculateExpectedLv(currentExp);
-                }
+        int currentLevel = player.getLevel();
+        if (currentLevel >= MAX_LEVEL) return;
+        int slot = RunicDatabase.getAPI().getCharacterAPI().getCharacterSlot(player.getUniqueId());
+        CoreCharacterData characterData = RunicCore.getPlayerDataAPI().getCorePlayerDataMap().get(player.getUniqueId()).getCharacter(slot);
+        int currentExp = characterData.getExp();
+        currentExp = currentExp + expGained;
 
-                int totalExpAtLevel = calculateTotalExp(currentLevel);
-                int totalExpToLevel = calculateTotalExp(currentLevel + 1);
-                double proportion = (double) (currentExp - totalExpAtLevel) / (totalExpToLevel - totalExpAtLevel);
-                if (currentLevel == MAX_LEVEL) {
-                    player.setExp(0);
-                }
-                if (proportion < 0) {
-                    proportion = 0.0f;
-                }
+        // If the player's actual level is incorrect based on their total exp, adjust level
+        if (calculateExpectedLv(currentExp) != currentLevel) {
+            player.sendMessage("\n");
+            sendLevelMessage(player, calculateExpectedLv(currentExp));
+            player.sendMessage("\n");
+            player.setLevel(calculateExpectedLv(currentExp));
+            currentLevel = calculateExpectedLv(currentExp);
+        }
 
-                characterData.setExp(currentExp);
-                characterData.setLevel(currentLevel);
-                player.setExp((float) proportion);
-                characterData.writeToJedis(player.getUniqueId(), jedis, slot);
-            }
-        });
+        int totalExpAtLevel = calculateTotalExp(currentLevel);
+        int totalExpToLevel = calculateTotalExp(currentLevel + 1);
+        double proportion = (double) (currentExp - totalExpAtLevel) / (totalExpToLevel - totalExpAtLevel);
+        if (currentLevel == MAX_LEVEL) {
+            player.setExp(0);
+        }
+        if (proportion < 0) {
+            proportion = 0.0f;
+        }
+
+        characterData.setExp(currentExp);
+        characterData.setLevel(currentLevel);
+        player.setExp((float) proportion);
+        /*
+        Update data in MongoDB (uses TaskChain)
+        This shouldn't cause concurrency issues, because we read from the in-memory data structure, not directly from MongoDB.
+         */
+        RunicCore.getCoreWriteOperation().updateCoreCharacterData
+                (
+                        player.getUniqueId(),
+                        slot,
+                        characterData,
+                        () -> {
+                        }
+                );
     }
 
     /**

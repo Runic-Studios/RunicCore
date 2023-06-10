@@ -16,7 +16,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
-import org.springframework.data.mongodb.core.MongoTemplate;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -96,7 +95,6 @@ public class SkillTreeData {
                         slot,
                         "spellDataMap",
                         spellData,
-                        RunicDatabase.getAPI().getDataAPI().getMongoTemplate(),
                         () -> player.sendMessage(ChatColor.LIGHT_PURPLE + "Your skill trees have been reset!")
                 );
     }
@@ -164,7 +162,6 @@ public class SkillTreeData {
 
 
         UUID uuid = player.getUniqueId();
-        MongoTemplate mongoTemplate = RunicDatabase.getAPI().getDataAPI().getMongoTemplate();
         // Retrieve the updated SkillTreeData from our in-memory storage, ensure it is up-to-date for this tree
         Map<SkillTreePosition, SkillTreeData> updatedSkillTreeData = RunicCore.getSkillTreeAPI().getSkillTreeDataMap(uuid, slot);
         updatedSkillTreeData.put(this.position, this);
@@ -175,7 +172,6 @@ public class SkillTreeData {
                         slot,
                         "skillTreeDataMap",
                         updatedSkillTreeData,
-                        mongoTemplate,
                         () -> {
                             player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 1.5f);
                             player.sendMessage(ChatColor.GREEN + "You purchased a new perk!");
