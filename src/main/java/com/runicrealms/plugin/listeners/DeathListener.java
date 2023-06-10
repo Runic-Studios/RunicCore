@@ -76,8 +76,15 @@ public class DeathListener implements Listener {
         if (event.isCancelled()) return;
         Player victim = event.getVictim();
 
+
         // Broadcast the death message
-        DamageListener.broadcastDeathMessage(victim);
+        String message;
+        if (event.getKiller().length > 0 && event.getKiller()[0] instanceof Player killerPlayer) {
+            message = ChatColor.RED + event.getVictim().getName() + " was killed by " + killerPlayer.getName() + "!";
+        } else {
+            message = ChatColor.RED + event.getVictim().getName() + " died!";
+        }
+        Bukkit.getOnlinePlayers().forEach(player -> player.sendMessage(message));
 
         // Particles, sounds
         World world = event.getLocation().getWorld();
