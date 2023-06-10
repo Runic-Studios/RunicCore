@@ -25,7 +25,7 @@ public class RegenManager implements Listener {
     private static final int REGEN_PERIOD = 4; // seconds
 
     private static final int BASE_MANA = 150;
-    private static final int MANA_REGEN_AMT = 4;
+    private static final int MANA_REGEN_AMT = 5;
 
     private static final double ARCHER_MANA_LV = 1.75;
     private static final double CLERIC_MANA_LV = 2.25;
