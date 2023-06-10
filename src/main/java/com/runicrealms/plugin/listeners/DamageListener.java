@@ -121,16 +121,6 @@ public class DamageListener implements Listener {
         Bukkit.getPluginManager().callEvent(event);
     }
 
-    /**
-     * A generic death message for general purposes
-     *
-     * @param victim who died
-     */
-    public static void broadcastDeathMessage(Player victim) {
-        String nameVic = victim.getName();
-        Bukkit.getServer().broadcastMessage(ChatColor.RED + nameVic + " died!");
-    }
-
     @EventHandler(priority = EventPriority.LOWEST)
     public void onDamage(EntityDamageByEntityEvent e) {
 

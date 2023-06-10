@@ -6,7 +6,10 @@ import com.keenant.tabbed.tablist.TableTabList;
 import com.keenant.tabbed.util.Skins;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.api.TabAPI;
+import com.runicrealms.plugin.common.util.ColorUtil;
 import com.runicrealms.plugin.party.Party;
+import net.luckperms.api.LuckPermsProvider;
+import net.luckperms.api.model.user.User;
 import net.minecraft.server.v1_16_R3.EntityPlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -19,6 +22,8 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
+
+import java.util.Iterator;
 
 public class TabListManager implements Listener, TabAPI {
 
@@ -81,17 +86,47 @@ public class TabListManager implements Listener, TabAPI {
 
         // Fill column with online players, stop after second column
         try {
-            int i = 0;
-            int j = 0;
-            for (Player online : Bukkit.getOnlinePlayers()) {
-                if (RunicCore.getVanishAPI().getVanishedPlayers().contains(online)) continue;
-                if (i >= 19) {
-                    i = 0;  // Reset row count back to 0 after 20 players
-                    j = 1;  // Move to the next column
+
+            Iterator<? extends Player> iterator = Bukkit.getOnlinePlayers().iterator();
+            for (int j = 0; j < 2; j++) {
+                for (int i = 0; i < 19; i++) {
+                    Player online = null;
+                    while (iterator.hasNext() && online == null) {
+                        online = iterator.next();
+                        if (RunicCore.getVanishAPI().getVanishedPlayers().contains(online)) online = null;
+                    }
+                    if (online != null) {
+                        User lpUser = LuckPermsProvider.get().getUserManager().getUser(online.getUniqueId());
+                        String nameColor;
+                        if (lpUser == null) {
+                            nameColor = ChatColor.GRAY.toString();
+                        } else {
+                            nameColor = ColorUtil.format(lpUser.getCachedData().getMetaData().getMetaValue("name_color"));
+                        }
+                        tableTabList.set(j, i + 1, new TextTabItem(nameColor + online.getName(), getPing(online), Skins.getPlayer(online)));
+                    } else {
+                        tableTabList.remove(j, i);
+                    }
                 }
-                tableTabList.set(j, i + 1, new TextTabItem(online.getName(), getPing(online), Skins.getPlayer(online)));
-                i++;
             }
+//            int i = 0;
+//            int j = 0;
+//            for (Player online : Bukkit.getOnlinePlayers()) {
+//                if (RunicCore.getVanishAPI().getVanishedPlayers().contains(online)) continue;
+//                if (i >= 19) {
+//                    i = 0;  // Reset row count back to 0 after 20 players
+//                    j = 1;  // Move to the next column
+//                }
+//                User lpUser = LuckPermsProvider.get().getUserManager().getUser(online.getUniqueId());
+//                String nameColor;
+//                if (lpUser == null) {
+//                    nameColor = ChatColor.GRAY.toString();
+//                } else {
+//                    nameColor = ColorUtil.format(lpUser.getCachedData().getMetaData().getMetaValue("name_color"));
+//                }
+//                tableTabList.set(j, i + 1, new TextTabItem(nameColor + online.getName(), getPing(online), Skins.getPlayer(online)));
+//                i++;
+//            }
         } catch (NullPointerException e) {
             e.printStackTrace();
         }

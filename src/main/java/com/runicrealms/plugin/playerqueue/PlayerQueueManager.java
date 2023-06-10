@@ -59,7 +59,8 @@ public class PlayerQueueManager implements Listener {
                     else message.append("Your queue position: ");
                     message.append(findUUIDIndex(event.getPlayer().getUniqueId()) + 1);
                     message.append("\n&cOnce it's your turn, your position will be saved for " + QUEUE_SAVE_MIN + " minutes");
-                    if (!priority) message.append("\n&c&lPurchase a rank to gain access to the priority queue!");
+                    message.append("\n&c&lRejoin every few minutes to keep your spot and see your updated position.");
+                    if (!priority) message.append("\n&4&lPurchase a rank to gain access to the priority queue!");
                     event.disallow(PlayerLoginEvent.Result.KICK_FULL, ColorUtil.format(message.toString()));
                 } else {
                     // Player was on the join queue and is joining now that the queue is empty (shouldn't happen, but safety net)
