@@ -89,7 +89,7 @@ public class TabListManager implements Listener, TabAPI {
 
             Iterator<? extends Player> iterator = Bukkit.getOnlinePlayers().iterator();
             for (int j = 0; j < 2; j++) {
-                for (int i = 1; i < 19; i++) {
+                for (int i = 1; i <= 19; i++) {
                     Player online = null;
                     while (iterator.hasNext() && online == null) {
                         online = iterator.next();
