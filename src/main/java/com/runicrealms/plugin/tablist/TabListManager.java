@@ -89,7 +89,7 @@ public class TabListManager implements Listener, TabAPI {
 
             Iterator<? extends Player> iterator = Bukkit.getOnlinePlayers().iterator();
             for (int j = 0; j < 2; j++) {
-                for (int i = 0; i < 19; i++) {
+                for (int i = 1; i < 19; i++) {
                     Player online = null;
                     while (iterator.hasNext() && online == null) {
                         online = iterator.next();
@@ -103,7 +103,7 @@ public class TabListManager implements Listener, TabAPI {
                         } else {
                             nameColor = ColorUtil.format(lpUser.getCachedData().getMetaData().getMetaValue("name_color"));
                         }
-                        tableTabList.set(j, i + 1, new TextTabItem(nameColor + online.getName(), getPing(online), Skins.getPlayer(online)));
+                        tableTabList.set(j, i, new TextTabItem(nameColor + online.getName(), getPing(online), Skins.getPlayer(online)));
                     } else {
                         tableTabList.remove(j, i);
                     }
