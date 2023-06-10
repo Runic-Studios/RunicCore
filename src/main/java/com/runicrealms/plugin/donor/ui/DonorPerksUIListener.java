@@ -1,12 +1,9 @@
 package com.runicrealms.plugin.donor.ui;
 
-import co.aikar.taskchain.TaskChain;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.common.DonorRank;
 import com.runicrealms.plugin.common.util.ColorUtil;
 import com.runicrealms.plugin.model.TitleData;
-import com.runicrealms.plugin.rdb.RunicDatabase;
-import com.runicrealms.plugin.taskchain.TaskChainUtil;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -14,7 +11,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
-import redis.clients.jedis.Jedis;
 
 public class DonorPerksUIListener implements Listener {
 
@@ -46,21 +42,19 @@ public class DonorPerksUIListener implements Listener {
             DonorRank rank = DonorRank.getDonorRank(player);
             if (rank != DonorRank.NONE) {
                 String title = ColorUtil.format(rank.getTitle());
-                String completeMessage = ChatColor.DARK_AQUA + "You have enabled the title: " + ChatColor.AQUA + title + ChatColor.DARK_AQUA + "!";
-                TaskChain<?> chain = RunicCore.newChain();
-                chain
-                        .asyncFirst(() -> {
-                            try (Jedis jedis = RunicDatabase.getAPI().getRedisAPI().getNewJedisResource()) {
-                                TitleData titleData = RunicCore.getTitleAPI().loadTitleData(player.getUniqueId(), jedis);
-                                titleData.setPrefix(title);
-                                titleData.writeToJedis(player.getUniqueId(), jedis);
-                                return titleData;
-                            }
-                        })
-                        .abortIfNull(TaskChainUtil.CONSOLE_LOG, null, "RunicAchievements failed to write title!")
-                        .syncLast(data -> player.sendMessage(completeMessage))
-                        .execute();
+                TitleData titleData = RunicCore.getTitleAPI().getTitleData(player.getUniqueId());
+                titleData.setPrefix(title);
                 player.closeInventory();
+                RunicCore.getCoreWriteOperation().updateCorePlayerData
+                        (
+                                player.getUniqueId(),
+                                "titleData",
+                                titleData,
+                                () -> {
+                                    String completeMessage = ChatColor.DARK_AQUA + "You have enabled the title: " + ChatColor.AQUA + title + ChatColor.DARK_AQUA + "!";
+                                    player.sendMessage(completeMessage);
+                                }
+                        );
             }
         }
     }

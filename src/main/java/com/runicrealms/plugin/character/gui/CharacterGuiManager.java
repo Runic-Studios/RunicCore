@@ -140,6 +140,29 @@ public class CharacterGuiManager implements Listener {
         return item;
     }
 
+    private BukkitTask displayDeletionTitle(Player player) {
+        return new BukkitRunnable() {
+            int dots = 1;
+            boolean increasing = true;
+
+            @Override
+            public void run() {
+
+                player.sendTitle(ChatColor.RED + "Deleting" + ".".repeat(Math.max(0, dots)), "", 0, 30, 0);
+
+                if (increasing) {
+                    dots++;
+                    if (dots == 3) {
+                        increasing = false;
+                    }
+                } else {
+                    dots = 1;
+                    increasing = true;
+                }
+            }
+        }.runTaskTimerAsynchronously(RunicCore.getInstance(), 0, 10L);
+    }
+
     private BukkitTask displayLoadingTitle(Player player) {
         return new BukkitRunnable() {
             int dots = 1;
@@ -171,6 +194,7 @@ public class CharacterGuiManager implements Listener {
      */
     private void handleAddCharacter(ItemStack currentItem, Player player) {
         if (currentItem.getType() != CharacterSelectUtil.GO_BACK_ITEM.getType()) {
+            player.sendMessage(ChatColor.GREEN + "Creating new character...");
             CorePlayerData corePlayerData = RunicCore.getPlayerDataAPI().getCorePlayerData(player.getUniqueId());
             String className = getClassNameFromIcon(currentItem);
             TaskChain<?> chain = RunicCore.newChain();
@@ -182,6 +206,7 @@ public class CharacterGuiManager implements Listener {
                         int slot = projectedData.findFirstUnusedSlot();
                         CoreCharacterData.createCoreCharacterData(corePlayerData, className, slot, () -> { // Callback function when task is complete
                             projectedData.addCharacter(new ClassData(player.getUniqueId(), CharacterClass.getFromName(className), 0, 0));
+                            player.sendMessage(ChatColor.DARK_GREEN + "Complete!");
                             openSelectGui(player, projectedData);
                         });
                     })
@@ -200,6 +225,8 @@ public class CharacterGuiManager implements Listener {
     private void handleDeleteCharacter(ItemStack currentItem, Player player) {
         if (currentItem.getType() == CharacterSelectUtil.CONFIRM_DELETION_ITEM.getType()) {
             classMenu.remove(player.getUniqueId());
+            BukkitTask bukkitTask = displayDeletionTitle(player);
+            player.sendMessage(ChatColor.RED + "Please wait while your character is deleted!");
             player.closeInventory();
             Bukkit.getScheduler().runTaskAsynchronously(RunicCore.getInstance(), () -> {
                 CharacterDeleteEvent event = new CharacterDeleteEvent(player, deletingCharacters.get(player.getUniqueId()));
@@ -208,6 +235,8 @@ public class CharacterGuiManager implements Listener {
                 new BukkitRunnable() {
                     @Override
                     public void run() {
+                        // todo: DOES IT GET REMOVED FROM MARKED FOR SAVE?
+                        // todo: when you make a character, is it IMMEDIATELY added to mongo? what about redis?
                         if (event.getPluginsToDeleteData().size() > 0)
                             return; // Other plugins deleting data
                         this.cancel();
@@ -217,6 +246,8 @@ public class CharacterGuiManager implements Listener {
                             corePlayerData.getCoreCharacterDataMap().remove(event.getSlot());
                             deletingCharacters.remove(player.getUniqueId());
                             // Update UI
+                            bukkitTask.cancel();
+                            player.sendMessage(ChatColor.DARK_GREEN + "Complete!");
                             openSelectGui(player, new ProjectedData(player));
                         });
                     }
@@ -267,6 +298,7 @@ public class CharacterGuiManager implements Listener {
     private void initializeCharacterObject(Player player, Integer slot) {
         Bukkit.getScheduler().runTaskAsynchronously(RunicCore.getInstance(), () -> {
             UUID uuid = player.getUniqueId();
+            player.sendMessage(ChatColor.YELLOW + "You are now loading! Please do not disconnect.");
             BukkitTask bukkitTask = displayLoadingTitle(player);
 
             CharacterSelectEvent characterSelectEvent = new CharacterSelectEvent

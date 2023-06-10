@@ -78,7 +78,6 @@ public class SpellGUIListener implements Listener {
                         slot,
                         "spellDataMap",
                         spellData,
-                        RunicDatabase.getAPI().getDataAPI().getMongoTemplate(),
                         () -> {
                             player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 2.0f);
                             player.sendMessage(ChatColor.LIGHT_PURPLE + "You've set the spell in this slot to " + spellName + ChatColor.LIGHT_PURPLE + "!");
