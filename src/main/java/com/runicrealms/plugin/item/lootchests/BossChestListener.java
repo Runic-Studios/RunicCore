@@ -4,6 +4,9 @@ import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.runicitems.RunicItemsAPI;
 import com.runicrealms.runicitems.item.RunicItem;
 import com.runicrealms.runicitems.item.stats.RunicItemTag;
+import com.runicrealms.runicitems.weaponskin.WeaponSkinObtainEvent;
+import com.runicrealms.runicitems.weaponskin.WeaponSkinUtil;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -34,8 +37,12 @@ public class BossChestListener implements Listener {
         if (!(event.getView().getTopInventory().getHolder() instanceof BossChestInventory)) return;
         if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR) return;
         RunicItem runicItem = RunicItemsAPI.getRunicItemFromItemStack(event.getCurrentItem());
-        if (runicItem.getTags().contains(RunicItemTag.SOULBOUND))
+        if (runicItem.getTags().contains(RunicItemTag.SOULBOUND)) {
             event.setCancelled(true);
+            return;
+        }
+        WeaponSkinObtainEvent obtainEvent = WeaponSkinUtil.createObtainEvent((Player) event.getWhoClicked(), event.getCurrentItem());
+        if (obtainEvent != null) Bukkit.getPluginManager().callEvent(obtainEvent);
     }
 
     /**

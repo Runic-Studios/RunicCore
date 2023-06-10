@@ -1,6 +1,7 @@
 package com.runicrealms.plugin.item.shops;
 
 import com.runicrealms.plugin.DungeonLocation;
+import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.common.util.Pair;
 import com.runicrealms.runicitems.RunicItemsAPI;
 import com.runicrealms.runicitems.item.RunicItem;
@@ -49,7 +50,8 @@ public class Gatekeeper extends RunicShopGeneric {
         return player -> {
             Location location = dungeonLocation.getCheckpoints().get(checkpoint);
             player.teleport(location);
-            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "party teleport " + player.getName());
+            if (RunicCore.getPartyAPI().getParty(player.getUniqueId()) != null)
+                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "party teleport " + player.getName());
             player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDERMAN_TELEPORT, 0.5f, 1.2f);
             player.getWorld().playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 1.0f);
         };

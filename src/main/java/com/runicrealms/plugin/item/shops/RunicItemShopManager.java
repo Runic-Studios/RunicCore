@@ -7,6 +7,8 @@ import com.runicrealms.plugin.common.util.Pair;
 import com.runicrealms.plugin.config.ShopConfigLoader;
 import com.runicrealms.runicitems.RunicItemsAPI;
 import com.runicrealms.runicitems.util.ItemUtils;
+import com.runicrealms.runicitems.weaponskin.WeaponSkinObtainEvent;
+import com.runicrealms.runicitems.weaponskin.WeaponSkinUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -144,6 +146,8 @@ public class RunicItemShopManager implements Listener, ShopAPI {
             player.sendMessage(ChatColor.GREEN + "You purchased " + displayName + ChatColor.GREEN + "!");
         }
         runicShopItem.runBuy(player);
+        WeaponSkinObtainEvent obtainEvent = WeaponSkinUtil.createObtainEvent(player, runicShopItem.getShopItem());
+        if (obtainEvent != null) Bukkit.getPluginManager().callEvent(obtainEvent);
     }
 
     @EventHandler
