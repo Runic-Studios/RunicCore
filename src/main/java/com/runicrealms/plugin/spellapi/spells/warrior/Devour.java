@@ -10,6 +10,7 @@ import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.RadiusSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
+import com.runicrealms.plugin.spellapi.spellutil.ThreatUtil;
 import com.runicrealms.plugin.spellapi.spellutil.particles.SlashEffect;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.Bukkit;
@@ -44,7 +45,8 @@ public class Devour extends Spell implements DurationSpell, MagicDamageSpell, Ra
                 "dealing (" + damage + " + &f" + damagePerLevel
                 + "x&7 lvl) magicʔ damage " +
                 "to enemies within " + radius + " blocks and lowering their damage " +
-                "dealt by " + (percent * 100) + "% for " + duration + "s!");
+                "dealt by " + (percent * 100) + "% for " + duration + "s! " +
+                "This spell also taunts monsters, causing them to attack you!");
     }
 
     @Override
@@ -75,6 +77,7 @@ public class Devour extends Spell implements DurationSpell, MagicDamageSpell, Ra
                 Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(),
                         () -> debuffedEntities.remove(entity.getUniqueId()), (long) duration * 20L);
                 DamageUtil.damageEntitySpell(damage, (LivingEntity) entity, player, this);
+                ThreatUtil.generateThreat(player, entity);
             }
         }
     }

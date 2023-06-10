@@ -6,6 +6,7 @@ import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.RadiusSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
+import com.runicrealms.plugin.spellapi.spellutil.ThreatUtil;
 import com.runicrealms.plugin.spellapi.spellutil.VectorUtil;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.Color;
@@ -33,7 +34,8 @@ public class Smite extends Spell implements DistanceSpell, MagicDamageSpell, Rad
         this.setDescription("You fire a beam of light, " +
                 "dealing (" + damage + " + &f" + damagePerLevel
                 + "x&7 lvl) magicʔ damage to the first enemy hit " +
-                "and knocking away all enemies within " + radius + " blocks!");
+                "and knocking away all enemies within " + radius + " blocks! " +
+                "This spell also taunts monsters, causing them to attack you!");
     }
 
     @Override
@@ -68,6 +70,7 @@ public class Smite extends Spell implements DistanceSpell, MagicDamageSpell, Rad
                 entity.setVelocity(entity.getVelocity().add(knockbackVector));
             }
             DamageUtil.damageEntitySpell(damage, livingEntity, player, this);
+            ThreatUtil.generateThreat(player, livingEntity);
         }
     }
 
