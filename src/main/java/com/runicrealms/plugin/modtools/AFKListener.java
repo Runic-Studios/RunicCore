@@ -34,7 +34,10 @@ public class AFKListener implements Listener {
                 } else {
                     Long lastMovedTime = lastMoved.get(player.getUniqueId());
                     if (lastMovedTime != null && lastMovedTime + AFK_KICK_MILLIS < currentTime) {
-                        Bukkit.getScheduler().runTask(RunicCore.getInstance(), () -> player.kickPlayer(ChatColor.RED + "You have been idling for too long!"));
+                        Bukkit.getScheduler().runTask(RunicCore.getInstance(), () -> {
+                            if (player.isOnline())
+                                player.kickPlayer(ChatColor.RED + "You have been idling for too long!");
+                        });
                     }
                 }
                 lastLocations.put(player.getUniqueId(), location);
