@@ -29,11 +29,10 @@ public class PlayerQuitListener implements Listener {
         Bukkit.getScheduler().runTaskAsynchronously(RunicCore.getInstance(), () -> {
             try (Jedis jedis = RunicDatabase.getAPI().getRedisAPI().getNewJedisResource()) {
                 jedis.del(database + ":" + uuid + ":" + PlayerQuitListener.DATA_SAVING_KEY);
-                if (!event.getPlayer().isOnline()) { // Insurance
-                    RunicCore.getPlayerDataAPI().getCorePlayerDataMap().remove(event.getPlayer().getUniqueId());
-                }
             }
         });
+        // Removes the CorePlayerData from the in-memory structure (should ALWAYS happen before they are allowed back on the server)
+        RunicCore.getPlayerDataAPI().getCorePlayerDataMap().remove(event.getPlayer().getUniqueId());
     }
 
     @EventHandler(priority = EventPriority.LOWEST) // first

@@ -144,16 +144,12 @@ public class SkillTreeManager implements Listener, SkillTreeAPI {
 
     @Override
     public SkillTreeData loadSkillTreeData(UUID uuid, int slot, SkillTreePosition position, String playerClass, CorePlayerData corePlayerData) {
-        // Step 1: Check if it is already cached in-memory from CorePlayerData
-        if (corePlayerData.getSkillTreeData(slot, position) != null) {
-            return corePlayerData.getSkillTreeData(slot, position);
-        }
         /*
         There is an architectural disconnect here, because SkillTreeData is an embedded field of CorePlayerData, which
         IS cached in Redis, but SkillTreeData doesn't interface with Redis anymore. So when CorePlayerData is loaded from
         Redis, it doesn't actually load the SkillTreeData immediately, and we need another lookup.
          */
-        // Step 2: Check the Mongo database
+        // Step 1: Check the Mongo database
         Query query = new Query(Criteria.where(CharacterField.PLAYER_UUID.getField()).is(uuid));
         // Project only the fields we need
         query.fields().include("skillTreeDataMap");
@@ -164,7 +160,7 @@ public class SkillTreeManager implements Listener, SkillTreeAPI {
             corePlayerData.setSkillTreeDataMap(corePlayerDataMongo.getSkillTreeDataMap());
             return corePlayerData.getSkillTreeDataMap().get(slot).get(position);
         }
-        // Step 3: Create new data and add to in-memory object
+        // Step 2: Create new data and add to in-memory object
         SkillTreeData newData = new SkillTreeData(position, playerClass);
         corePlayerData.getSkillTreeDataMap().computeIfAbsent(slot, k -> new HashMap<>());
         corePlayerData.getSkillTreeDataMap().get(slot).put(position, newData);
