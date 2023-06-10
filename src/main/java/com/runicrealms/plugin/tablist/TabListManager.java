@@ -103,9 +103,9 @@ public class TabListManager implements Listener, TabAPI {
                         } else {
                             nameColor = ColorUtil.format(lpUser.getCachedData().getMetaData().getMetaValue("name_color"));
                         }
-                        tableTabList.set(j, i, new TextTabItem(nameColor + online.getName(), getPing(online), Skins.getPlayer(online)));
+                        tableTabList.set(j, i + 1, new TextTabItem(nameColor + online.getName(), getPing(online), Skins.getPlayer(online)));
                     } else {
-                        tableTabList.remove(j, i);
+                        tableTabList.remove(j, i + 1);
                     }
                 }
             }
