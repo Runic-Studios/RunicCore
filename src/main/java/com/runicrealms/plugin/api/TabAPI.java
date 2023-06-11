@@ -33,4 +33,9 @@ public interface TabAPI {
      * Refreshs everyone's tablists
      */
     void refreshAllTabLists();
+
+    /**
+     * Gets a player's name color in for the tab list.
+     */
+    String getTablistNameColor(Player player);
 }

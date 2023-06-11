@@ -97,14 +97,7 @@ public class TabListManager implements Listener, TabAPI {
                         if (RunicCore.getVanishAPI().getVanishedPlayers().contains(online)) online = null;
                     }
                     if (online != null) {
-                        User lpUser = LuckPermsProvider.get().getUserManager().getUser(online.getUniqueId());
-                        String nameColor;
-                        if (lpUser == null) {
-                            nameColor = ChatColor.GRAY.toString();
-                        } else {
-                            nameColor = ColorUtil.format(lpUser.getCachedData().getMetaData().getMetaValue("name_color"));
-                        }
-                        tableTabList.set(j, i, new TextTabItem(nameColor + online.getName(), getPing(online), Skins.getPlayer(online)));
+                        tableTabList.set(j, i, new TextTabItem(getTablistNameColor(online) + online.getName(), getPing(online), Skins.getPlayer(online)));
                     } else {
                         tableTabList.remove(j, i);
                     }
@@ -115,6 +108,19 @@ public class TabListManager implements Listener, TabAPI {
         } catch (NullPointerException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public String getTablistNameColor(Player player) {
+        User lpUser = LuckPermsProvider.get().getUserManager().getUser(player.getUniqueId());
+        String nameColor;
+        if (lpUser == null) {
+            nameColor = ChatColor.WHITE.toString();
+        } else {
+            nameColor = ColorUtil.format(lpUser.getCachedData().getMetaData().getMetaValue("name_color"));
+        }
+        if (nameColor.equalsIgnoreCase(ChatColor.GRAY.toString())) nameColor = ChatColor.WHITE.toString();
+        return nameColor;
     }
 
     @Override
@@ -160,7 +166,7 @@ public class TabListManager implements Listener, TabAPI {
             int k = 0;
             for (Player member : party.getMembersWithLeader()) {
                 if (k > 19) break;
-                tab.set(2, k + 1, new TextTabItem(member.getName() + " " + getHealthChatColor(member) + (int) member.getHealth() + "❤", getPing(member), Skins.getPlayer(member)));
+                tab.set(2, k + 1, new TextTabItem(getTablistNameColor(member) + member.getName() + " " + getHealthChatColor(member) + (int) member.getHealth() + "❤", getPing(member), Skins.getPlayer(member)));
                 k++;
             }
         }
