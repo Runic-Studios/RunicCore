@@ -16,6 +16,7 @@ public class ScoreboardUpdateEvent extends Event {
     private final Scoreboard scoreboard;
     private String profession;
     private int professionLevel;
+    private String guild;
     private boolean isOutlaw;
 
     /**
@@ -28,6 +29,7 @@ public class ScoreboardUpdateEvent extends Event {
         this.scoreboard = scoreboard;
         this.profession = "";
         this.professionLevel = 0;
+        this.guild = "";
         this.isOutlaw = false;
     }
 
@@ -70,5 +72,13 @@ public class ScoreboardUpdateEvent extends Event {
 
     public void setOutlaw(boolean outlaw) {
         isOutlaw = outlaw;
+    }
+
+    public String getGuild() {
+        return guild;
+    }
+
+    public void setGuild(String guild) {
+        this.guild = guild;
     }
 }
