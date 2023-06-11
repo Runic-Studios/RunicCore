@@ -81,21 +81,18 @@ public class ScoreboardHandler implements ScoreboardAPI {
     /**
      * Update the scoreboard info on the player's current guild data
      *
-     * @param player to update
-     * @param jedis  the jedis resource
+     * @param guildName of the guild
      * @return a string with their guild info
      */
-//    private String playerGuild(final Player player, Jedis jedis) {
-//        String display;
-//        String database = RunicDatabase.getAPI().getDataAPI().getMongoDatabase().getName();
-//        if (!jedis.exists(database + ":" + player.getUniqueId() + ":guild")) {
-//            display = NO_GUILD_STRING;
-//        } else {
-//            String guild = jedis.get(database + ":" + player.getUniqueId() + ":guild");
-//            display = ChatColor.YELLOW + "Guild: " + ChatColor.GREEN + guild;
-//        }
-//        return display;
-//    }
+    private String playerGuild(final String guildName) {
+        String display;
+        if (guildName.equalsIgnoreCase("")) {
+            display = NO_GUILD_STRING;
+        } else {
+            display = ChatColor.YELLOW + "Guild: " + ChatColor.GREEN + guildName;
+        }
+        return display;
+    }
 
     /**
      * Update the scoreboard info on the player's current outlaw status
@@ -215,7 +212,7 @@ public class ScoreboardHandler implements ScoreboardAPI {
         Team playerProf = scoreboard.getTeam(playerNameSubString + PROF_TEAM_STRING);
         if (playerProf != null) playerProf.setPrefix(playerProf(event.getProfession(), event.getProfessionLevel()));
         Team playerGuild = scoreboard.getTeam(playerNameSubString + GUILD_TEAM_STRING);
-        if (playerGuild != null) playerGuild.setPrefix(NO_GUILD_STRING); // TODO add guild
+        if (playerGuild != null) playerGuild.setPrefix(playerGuild(event.getGuild()));
         assert playerGuild != null;
         Team playerOutlaw = scoreboard.getTeam(playerNameSubString + OUTLAW_TEAM_STRING);
         if (playerOutlaw != null) playerOutlaw.setPrefix(playerOutlaw(event.isOutlaw()));
