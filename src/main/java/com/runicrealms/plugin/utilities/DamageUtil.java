@@ -11,6 +11,7 @@ import com.runicrealms.plugin.spellapi.spellutil.KnockbackUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
@@ -266,9 +267,11 @@ public class DamageUtil {
 
         // apply custom mechanics if the player were to die
         if (newHP >= 1) {
-            victim.setHealth(newHP);
-            victim.setNoDamageTicks(0);
-            victim.damage(0.0000000000001);
+            if (newHP <= victim.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue()) {
+                victim.setHealth(newHP);
+                victim.setNoDamageTicks(0);
+                victim.damage(0.0000000000001);
+            }
         } else {
             RunicDeathEvent runicDeathEvent = new RunicDeathEvent(victim, victim.getLocation());
             Bukkit.getPluginManager().callEvent(runicDeathEvent);
