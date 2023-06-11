@@ -40,6 +40,10 @@ public class WhoIsCMD extends BaseCommand {
             commandSender.sendMessage(ChatColor.RED + "Error: player not found!");
             return;
         }
+        if (!RunicDatabase.getAPI().getCharacterAPI().getLoadedCharacters().contains(target.getUniqueId())) {
+            commandSender.sendMessage(ChatColor.RED + "Error: that player is still loading!");
+            return;
+        }
         String className = RunicDatabase.getAPI().getCharacterAPI().getPlayerClass(target);
         int classLevel = target.getLevel();
         int slot = RunicDatabase.getAPI().getCharacterAPI().getCharacterSlot(player.getUniqueId());
