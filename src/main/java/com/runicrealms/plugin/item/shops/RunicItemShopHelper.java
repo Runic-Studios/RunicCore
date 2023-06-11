@@ -111,24 +111,24 @@ public class RunicItemShopHelper {
 
     public RunicShopGeneric getCaptain() {
         ArrayList<RunicShopItem> shopItems = new ArrayList<>();
+//        shopItems.add
+//                (
+//                        new RunicShopItem(
+//                                120,
+//                                boatItem(TravelType.BOAT, TravelLocation.SUNS_REACH_CITADEL),
+//                                runBoatBuy(TravelLocation.SUNS_REACH_CITADEL))
+//                );
+//        shopItems.add
+//                (
+//                        new RunicShopItem(
+//                                120,
+//                                boatItem(TravelType.BOAT, TravelLocation.BLACKGUARD_STRONGHOLD),
+//                                runBoatBuy(TravelLocation.BLACKGUARD_STRONGHOLD))
+//                );
         shopItems.add
                 (
                         new RunicShopItem(
-                                120,
-                                boatItem(TravelType.BOAT, TravelLocation.SUNS_REACH_CITADEL),
-                                runBoatBuy(TravelLocation.SUNS_REACH_CITADEL))
-                );
-        shopItems.add
-                (
-                        new RunicShopItem(
-                                120,
-                                boatItem(TravelType.BOAT, TravelLocation.BLACKGUARD_STRONGHOLD),
-                                runBoatBuy(TravelLocation.BLACKGUARD_STRONGHOLD))
-                );
-        shopItems.add
-                (
-                        new RunicShopItem(
-                                120,
+                                0,
                                 boatItem(TravelType.BOAT, TravelLocation.CRIMSON_CHAPEL),
                                 runBoatBuy(TravelLocation.CRIMSON_CHAPEL))
                 );
