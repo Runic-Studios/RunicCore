@@ -47,7 +47,7 @@ public class RunicMobCombatExpEvent extends RunicCombatExpEvent {
 
     @Override
     public int getFinalAmount() {
-        return super.getFinalAmount(getAmountNoBonuses());
+        return super.getFinalAmount(calculateLevelDiff(this.getRawAmount(), this.getPlayer().getLevel(), mobLevel));
     }
 
 }

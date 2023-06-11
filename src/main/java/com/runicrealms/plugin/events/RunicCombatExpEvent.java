@@ -70,7 +70,7 @@ public class RunicCombatExpEvent extends Event implements Cancellable {
     }
 
     public int getFinalAmount() {
-        return getFinalAmount(this.amount);
+        return getFinalAmount(getAmountNoBonuses());
     }
 
     public int getFinalAmount(int expAmount) {
