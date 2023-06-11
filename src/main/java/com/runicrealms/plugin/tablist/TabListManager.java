@@ -6,6 +6,7 @@ import com.keenant.tabbed.tablist.TableTabList;
 import com.keenant.tabbed.util.Skins;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.api.TabAPI;
+import com.runicrealms.plugin.api.event.TabUpdateEvent;
 import com.runicrealms.plugin.common.util.ColorUtil;
 import com.runicrealms.plugin.party.Party;
 import net.luckperms.api.LuckPermsProvider;
@@ -109,24 +110,8 @@ public class TabListManager implements Listener, TabAPI {
                     }
                 }
             }
-//            int i = 0;
-//            int j = 0;
-//            for (Player online : Bukkit.getOnlinePlayers()) {
-//                if (RunicCore.getVanishAPI().getVanishedPlayers().contains(online)) continue;
-//                if (i >= 19) {
-//                    i = 0;  // Reset row count back to 0 after 20 players
-//                    j = 1;  // Move to the next column
-//                }
-//                User lpUser = LuckPermsProvider.get().getUserManager().getUser(online.getUniqueId());
-//                String nameColor;
-//                if (lpUser == null) {
-//                    nameColor = ChatColor.GRAY.toString();
-//                } else {
-//                    nameColor = ColorUtil.format(lpUser.getCachedData().getMetaData().getMetaValue("name_color"));
-//                }
-//                tableTabList.set(j, i + 1, new TextTabItem(nameColor + online.getName(), getPing(online), Skins.getPlayer(online)));
-//                i++;
-//            }
+            // Call event for guilds
+            Bukkit.getPluginManager().callEvent(new TabUpdateEvent(player, tableTabList));
         } catch (NullPointerException e) {
             e.printStackTrace();
         }
