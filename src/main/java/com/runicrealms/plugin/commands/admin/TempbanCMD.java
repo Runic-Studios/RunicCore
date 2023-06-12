@@ -79,7 +79,7 @@ public class TempbanCMD extends BaseCommand {
             if (sender instanceof Player senderPlayer) name = senderPlayer.getName();
             else name = "CONSOLE";
             Bukkit.getOnlinePlayers().stream().filter((player) -> player.hasPermission("runicchat.staff")).forEach(player ->
-                    sender.sendMessage(ChatColor.GREEN + "[Staff] " + name + " temporarily banned " + targetName + " for " + hours + " hours.")
+                    player.sendMessage(ChatColor.GREEN + "[Staff] " + name + " temporarily banned " + targetName + " for " + hours + " hours.")
             );
         });
     }
