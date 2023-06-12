@@ -18,13 +18,13 @@ import java.util.Map;
 public class RunicCombatExpEvent extends Event implements Cancellable {
 
     private static final HandlerList handlers = new HandlerList();
-    private final int amount;
-    private final boolean applyBonuses;
-    private final Player player;
-    private final RunicExpSource runicExpSource;
-    private final @Nullable Location hologramLocation;
-    private final Map<BonusType, Double> bonuses = new HashMap<>();
-    private boolean isCancelled;
+    protected final int amount;
+    protected final boolean applyBonuses;
+    protected final Player player;
+    protected final RunicExpSource runicExpSource;
+    protected final @Nullable Location hologramLocation;
+    protected final Map<BonusType, Double> bonuses = new HashMap<>();
+    protected boolean isCancelled;
 
     /**
      * Give a player experience through our custom calculators.

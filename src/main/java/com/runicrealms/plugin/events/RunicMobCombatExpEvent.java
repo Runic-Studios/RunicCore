@@ -50,4 +50,11 @@ public class RunicMobCombatExpEvent extends RunicCombatExpEvent {
         return super.getFinalAmount(calculateLevelDiff(this.getRawAmount(), this.getPlayer().getLevel(), mobLevel));
     }
 
+    @Override
+    public int getExpFromBonus(BonusType type) {
+        Double bonus = bonuses.get(type);
+        if (bonus == null) return 0;
+        return (int) Math.round(calculateLevelDiff(this.getRawAmount(), this.getPlayer().getLevel(), mobLevel) * bonus);
+    }
+
 }

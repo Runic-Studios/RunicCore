@@ -153,7 +153,7 @@ public class BoostManager implements BoostAPI, Listener {
         long projectedMinimumRestartTimestamp = System.currentTimeMillis() + (boost.getDuration() + RESTART_BUFFER_DURATION_MIN) * 60000L;
         if (currentRestartTimestamp <= projectedMinimumRestartTimestamp) {
             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "runicrestart delay " + (boost.getDuration() + RESTART_BUFFER_DURATION_MIN) + " quiet");
-            Bukkit.broadcastMessage(ColorUtil.format("&4[Notice] &cServer restart has been delayed due to active booster!"));
+            Bukkit.broadcastMessage(ColorUtil.format("&4[Notice] &cServer restart has been delayed due to active boost!"));
             hasDelayedRestart = true;
         }
     }
