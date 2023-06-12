@@ -123,6 +123,7 @@ import com.runicrealms.plugin.modtools.AFKListener;
 import com.runicrealms.plugin.modtools.TempbanListener;
 import com.runicrealms.plugin.modtools.VanishManager;
 import com.runicrealms.plugin.party.PartyChannel;
+import com.runicrealms.plugin.party.PartyChannelCommand;
 import com.runicrealms.plugin.party.PartyCommand;
 import com.runicrealms.plugin.party.PartyDamageListener;
 import com.runicrealms.plugin.party.PartyManager;
@@ -551,6 +552,10 @@ public class RunicCore extends JavaPlugin implements Listener {
         commandManager.registerCommand(new TempbanCMD());
         commandManager.registerCommand(new TempunbanCMD());
         commandManager.registerCommand(new TPHereCMD());
+
+        partyChannel = new PartyChannel();
+        RunicChat.getRunicChatAPI().registerChatChannel(partyChannel);
+        commandManager.registerCommand(new PartyChannelCommand(partyChannel));
     }
 
     private void registerEvents() {
@@ -635,8 +640,6 @@ public class RunicCore extends JavaPlugin implements Listener {
         pm.registerEvents(new DonorPerksUIListener(), this);
         pm.registerEvents(new TempbanListener(), this);
         pm.registerEvents(new AFKListener(), this);
-        partyChannel = new PartyChannel();
-        RunicChat.getRunicChatAPI().registerChatChannel(partyChannel);
     }
 
     private void registerOldStyleCommands() {

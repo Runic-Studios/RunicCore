@@ -75,7 +75,12 @@ public class TempbanCMD extends BaseCommand {
                 }
             });
             RunicCommon.getLuckPermsAPI().savePayload(RunicCommon.getLuckPermsAPI().createPayload(uuid, (data) -> data.set("runic.tempban.timestamp", unbanTimestamp)));
-            sender.sendMessage(ChatColor.GREEN + "Temporarily banned " + targetName + " for " + hours + " hours.");
+            String name;
+            if (sender instanceof Player senderPlayer) name = senderPlayer.getName();
+            else name = "CONSOLE";
+            Bukkit.getOnlinePlayers().stream().filter((player) -> player.hasPermission("runicchat.staff")).forEach(player ->
+                    sender.sendMessage(ChatColor.GREEN + "[Staff] " + name + " temporarily banned " + targetName + " for " + hours + " hours.")
+            );
         });
     }
 

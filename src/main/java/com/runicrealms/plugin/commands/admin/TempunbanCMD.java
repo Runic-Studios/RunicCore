@@ -17,6 +17,7 @@ import net.luckperms.api.node.types.PermissionNode;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -66,7 +67,12 @@ public class TempunbanCMD extends BaseCommand {
                     Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + targetName + " permission unset runic.tempbanned");
                     Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + targetName + " meta unset runic.tempban.timestamp");
                 });
-                sender.sendMessage(ChatColor.GREEN + "That user has now been temp-unbanned!");
+                String name;
+                if (sender instanceof Player senderPlayer) name = senderPlayer.getName();
+                else name = "CONSOLE";
+                Bukkit.getOnlinePlayers().stream().filter((player) -> player.hasPermission("runicchat.staff")).forEach(player ->
+                        sender.sendMessage(ChatColor.GREEN + "[Staff] " + name + " temp-unbanned " + targetName)
+                );
             });
         });
     }
