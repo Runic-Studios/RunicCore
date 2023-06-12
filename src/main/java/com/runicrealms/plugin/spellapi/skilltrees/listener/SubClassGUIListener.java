@@ -9,6 +9,7 @@ import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
@@ -16,13 +17,14 @@ import org.bukkit.inventory.ItemStack;
 
 public class SubClassGUIListener implements Listener {
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.NORMAL)
     public void onInventoryClick(InventoryClickEvent event) {
 
         /*
         Preliminary checks
          */
         if (event.getClickedInventory() == null) return;
+        if (event.isCancelled()) return;
         if (!(event.getView().getTopInventory().getHolder() instanceof SubClassGUI)) return;
         if (event.getClickedInventory().getType() == InventoryType.PLAYER) {
             event.setCancelled(true);

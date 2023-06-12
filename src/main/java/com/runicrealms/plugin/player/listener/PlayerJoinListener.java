@@ -2,6 +2,7 @@ package com.runicrealms.plugin.player.listener;
 
 import co.aikar.taskchain.TaskChain;
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.database.DatabaseManager;
 import com.runicrealms.plugin.model.CoreCharacterData;
 import com.runicrealms.plugin.model.CorePlayerData;
 import com.runicrealms.plugin.player.utilities.HealthUtils;
@@ -160,7 +161,7 @@ public class PlayerJoinListener implements Listener {
                             "\n" + ChatColor.GREEN + "Try again in a moment");
         } else {
             try (Jedis jedis = RunicDatabase.getAPI().getRedisAPI().getNewJedisResource()) {
-                if (jedis.exists(event.getUniqueId() + ":" + PlayerQuitListener.DATA_SAVING_KEY)) {
+                if (jedis.exists(event.getUniqueId() + ":" + DatabaseManager.DATA_SAVING_KEY)) {
                     event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER,
                             ChatColor.GREEN + "You recently played and your data is saving!" +
                                     "\n" + ChatColor.GREEN + "Try again in a moment");
