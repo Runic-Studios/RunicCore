@@ -8,6 +8,7 @@ import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.api.TabAPI;
 import com.runicrealms.plugin.api.event.TabUpdateEvent;
 import com.runicrealms.plugin.common.util.ColorUtil;
+import com.runicrealms.plugin.common.util.Pair;
 import com.runicrealms.plugin.party.Party;
 import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.model.user.User;
@@ -24,9 +25,29 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 public class TabListManager implements Listener, TabAPI {
+
+    private static final List<String> RANK_COLOR_ORDER = List.of(
+            ChatColor.DARK_RED.toString(),
+            ChatColor.RED.toString(),
+            ChatColor.LIGHT_PURPLE.toString(),
+            ChatColor.DARK_GREEN.toString(),
+            ChatColor.GREEN.toString(),
+            ChatColor.DARK_PURPLE.toString(),
+            ChatColor.YELLOW.toString(),
+            ChatColor.BLUE.toString(),
+            ChatColor.AQUA.toString(),
+            ChatColor.GOLD.toString(),
+            ChatColor.WHITE.toString(),
+            ChatColor.GRAY.toString()
+    );
 
     private final Tabbed tabbed;
 
@@ -88,16 +109,16 @@ public class TabListManager implements Listener, TabAPI {
         // Fill column with online players, stop after second column
         try {
 
-            Iterator<? extends Player> iterator = Bukkit.getOnlinePlayers().iterator();
+            Iterator<Pair<? extends Player, String>> iterator = sortPlayersByRank(Bukkit.getOnlinePlayers()).iterator();
             for (int j = 0; j < 2; j++) {
                 for (int i = 1; i <= 19; i++) {
-                    Player online = null;
+                    Pair<? extends Player, String> online = null;
                     while (iterator.hasNext() && online == null) {
                         online = iterator.next();
-                        if (RunicCore.getVanishAPI().getVanishedPlayers().contains(online)) online = null;
+                        if (RunicCore.getVanishAPI().getVanishedPlayers().contains(online.first)) online = null;
                     }
                     if (online != null) {
-                        tableTabList.set(j, i, new TextTabItem(getTablistNameColor(online) + online.getName(), getPing(online), Skins.getPlayer(online)));
+                        tableTabList.set(j, i, new TextTabItem(online.second, getPing(online.first), Skins.getPlayer(online.first)));
                     } else {
                         tableTabList.remove(j, i);
                     }
@@ -164,12 +185,35 @@ public class TabListManager implements Listener, TabAPI {
             tab.set(2, 0, new TextTabItem
                     (ChatColor.GREEN + "" + ChatColor.BOLD + "  Party [" + party.getSize() + "]", 0, Skins.getDot(ChatColor.GREEN)));
             int k = 0;
-            for (Player member : party.getMembersWithLeader()) {
+            for (Pair<? extends Player, String> sortedMember : sortPlayersByRank(party.getMembersWithLeader())) {
                 if (k > 19) break;
-                tab.set(2, k + 1, new TextTabItem(getTablistNameColor(member) + member.getName() + " " + getHealthChatColor(member) + (int) member.getHealth() + "❤", getPing(member), Skins.getPlayer(member)));
+                Player member = sortedMember.first;
+                String memberColoredName = sortedMember.second;
+                tab.set(2, k + 1, new TextTabItem(memberColoredName + " " + getHealthChatColor(member) + (int) member.getHealth() + "❤", getPing(member), Skins.getPlayer(member)));
                 k++;
             }
         }
+    }
+
+    @Override
+    public List<Pair<? extends Player, String>> sortPlayersByRank(Collection<? extends Player> players) {
+        Map<Player, String> playerRankColors = new HashMap<>();
+        for (Player player : players) {
+            playerRankColors.put(player, getTablistNameColor(player));
+        }
+        List<? extends Player> playersList = new ArrayList<>(players);
+        playersList.sort((playerOne, playerTwo) -> {
+            int indexOne = RANK_COLOR_ORDER.indexOf(playerRankColors.get(playerOne));
+            int indexTwo = RANK_COLOR_ORDER.indexOf(playerRankColors.get(playerTwo));
+            if (indexOne == -1) indexOne = Integer.MAX_VALUE;
+            if (indexTwo == -1) indexTwo = Integer.MAX_VALUE;
+            return Integer.compare(indexOne, indexTwo);
+        });
+        List<Pair<? extends Player, String>> finalList = new ArrayList<>(players.size());
+        for (Player player : playersList) {
+            finalList.add(new Pair<>(player, playerRankColors.get(player) + player.getName()));
+        }
+        return finalList;
     }
 
     /**

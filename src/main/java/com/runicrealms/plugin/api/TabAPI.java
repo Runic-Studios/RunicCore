@@ -1,7 +1,11 @@
 package com.runicrealms.plugin.api;
 
 import com.keenant.tabbed.tablist.TableTabList;
+import com.runicrealms.plugin.common.util.Pair;
 import org.bukkit.entity.Player;
+
+import java.util.Collection;
+import java.util.List;
 
 public interface TabAPI {
 
@@ -38,4 +42,10 @@ public interface TabAPI {
      * Gets a player's name color in for the tab list.
      */
     String getTablistNameColor(Player player);
+
+    /**
+     * Sorts the players in the tab-list by their name color (i.e. rank).
+     * Returns a list pairs of players and their colored names in order.
+     */
+    List<Pair<? extends Player, String>> sortPlayersByRank(Collection<? extends Player> players);
 }
