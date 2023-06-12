@@ -58,7 +58,9 @@ import java.util.logging.Level;
  * @author Skyfallin
  */
 public class DatabaseManager implements CharacterAPI, DataAPI, PlayerDataAPI, Listener, CoreWriteOperation {
-    private static final int CHARACTER_SAVE_PERIOD = 30; // Seconds
+    // Player is prevented from joining network while data is saving, or for a max of 30 seconds
+    public static final String DATA_SAVING_KEY = "isSavingData";
+    private static final int DATA_LOCKOUT_TIMEOUT = 30;
     private final ConcurrentHashMap<UUID, Pair<Integer, CharacterClass>> loadedCharacterMap; // stores the current character the player is playing
     private final Map<UUID, CorePlayerData> corePlayerDataMap; // For caching session data in-memory
     private MongoClient mongoClient;
@@ -115,6 +117,17 @@ public class DatabaseManager implements CharacterAPI, DataAPI, PlayerDataAPI, Li
     @Override
     public int getMaxCharacterSlot() {
         return 10;
+    }
+
+    @Override
+    public void preventLogin(UUID uuid) {
+        String database = RunicDatabase.getAPI().getDataAPI().getMongoDatabase().getName();
+        Bukkit.getScheduler().runTaskAsynchronously(RunicCore.getInstance(), () -> {
+            try (Jedis jedis = RunicDatabase.getAPI().getRedisAPI().getNewJedisResource()) {
+                jedis.set(database + ":" + uuid + ":" + DATA_SAVING_KEY, "true");
+                jedis.expire(database + ":" + uuid + ":" + DATA_SAVING_KEY, DATA_LOCKOUT_TIMEOUT);
+            }
+        });
     }
 
     @Override

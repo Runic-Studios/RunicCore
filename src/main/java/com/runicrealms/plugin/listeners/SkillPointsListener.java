@@ -86,7 +86,7 @@ public class SkillPointsListener implements Listener {
         player.sendMessage
                 (
                         ChatColor.RED + "[!] " + ChatColor.LIGHT_PURPLE + "You have " + ChatColor.WHITE + points +
-                                ChatColor.LIGHT_PURPLE + " skill points to spend! Visit your " + ChatColor.GREEN + ChatColor.BOLD +
+                                ChatColor.LIGHT_PURPLE + " skill point(s) to spend! Visit your " + ChatColor.GREEN + ChatColor.BOLD +
                                 "SKILL TREE" + ChatColor.LIGHT_PURPLE + " to purchase new perks!"
                 );
     }
