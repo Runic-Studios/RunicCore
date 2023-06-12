@@ -2,6 +2,7 @@ package com.runicrealms.plugin.party;
 
 import com.runicrealms.api.chat.ChatChannel;
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.common.util.ColorUtil;
 import me.clip.placeholderapi.PlaceholderAPI;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -46,13 +47,16 @@ public class PartyChannel extends ChatChannel {
     @Override
     public TextComponent getTextComponent(Player player, String finalMessage) {
         TextComponent textComponent = new TextComponent(finalMessage);
+        String title = PlaceholderAPI.setPlaceholders(player, "%core_prefix%");
+        if (title.isEmpty()) title = "None";
+        String titleColor = ColorUtil.format(PlaceholderAPI.setPlaceholders(player, "%core_name_color%"));
         textComponent.setHoverEvent(new HoverEvent
                 (
                         HoverEvent.Action.SHOW_TEXT,
-                        new Text(PlaceholderAPI.setPlaceholders(player,
-                                ChatColor.DARK_AQUA + "Title: " + ChatColor.AQUA + "%core_prefix%" +
+                        new Text(
+                                ChatColor.DARK_AQUA + "Title: " + titleColor + title +
                                         ChatColor.GREEN + "\n%core_class% lv. %core_level%"
-                        ))
+                        )
                 )
         );
         return textComponent;

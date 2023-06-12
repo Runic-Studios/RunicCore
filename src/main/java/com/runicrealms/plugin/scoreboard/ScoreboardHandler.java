@@ -191,7 +191,7 @@ public class ScoreboardHandler implements ScoreboardAPI {
         setupPlayerCombatInfo(player, scoreboard, obj);
         updatePlayerCombatInfo(player, scoreboard);
         player.setScoreboard(scoreboard);
-        Bukkit.getScheduler().runTaskAsynchronously(RunicCore.getInstance(), () -> Bukkit.getPluginManager().callEvent(new ScoreboardUpdateEvent(player, scoreboard)));
+        Bukkit.getScheduler().runTaskLaterAsynchronously(RunicCore.getInstance(), () -> Bukkit.getPluginManager().callEvent(new ScoreboardUpdateEvent(player, scoreboard)), 1L);
     }
 
     /**
