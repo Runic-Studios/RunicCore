@@ -43,7 +43,10 @@ public class ArmorTypeListener implements Listener {
         Player player = event.getPlayer();
         String className = RunicDatabase.getAPI().getCharacterAPI().getPlayerClass(player);
         RunicItemTemplate template = RunicItemsAPI.getItemStackTemplate(equippedItem);
-        if (!(template instanceof RunicItemArmorTemplate armorTemplate)) return;
+        if (!(template instanceof RunicItemArmorTemplate armorTemplate)) {
+            event.setCancelled(true);
+            return;
+        }
         if (armorTemplate.getRunicClass() == RunicItemClass.ANY) return;
         if (!armorTemplate.getRunicClass().toCharacterClass().getName().equalsIgnoreCase(className)) {
             player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
