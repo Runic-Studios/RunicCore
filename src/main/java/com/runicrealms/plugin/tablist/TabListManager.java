@@ -98,7 +98,7 @@ public class TabListManager implements Listener, TabAPI {
         // header, footer
         tableTabList.setHeaderFooter
                 (ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "Runic Realms\n"
-                                + ChatColor.GREEN + ChatColor.BOLD + "Patch 2.0.3 - The Second Age!",
+                                + ChatColor.GREEN + ChatColor.BOLD + "Patch 2.0.4 - The Second Age!",
                         ChatColor.DARK_GREEN + "Our Website: " + ChatColor.GREEN + "www.runicrealms.com" +
                                 "\n" + ChatColor.DARK_PURPLE + "Our Discord: " + ChatColor.LIGHT_PURPLE + "discord.gg/5FjVVd4");
 
