@@ -1,12 +1,13 @@
 package com.runicrealms.plugin.player.listener;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.common.event.ArmorEquipEvent;
 import com.runicrealms.plugin.events.SpellCastEvent;
 import com.runicrealms.plugin.player.RegenManager;
 import com.runicrealms.plugin.rdb.RunicDatabase;
 import com.runicrealms.plugin.rdb.event.CharacterLoadedEvent;
 import com.runicrealms.runicitems.Stat;
+import com.runicrealms.runicitems.item.event.RunicStatUpdateEvent;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -51,17 +52,11 @@ public class ManaListener implements Listener {
     }
 
     @EventHandler
-    public void onArmorEquip(ArmorEquipEvent event) {
+    public void onArmorEquip(RunicStatUpdateEvent event) {
         if (!RunicDatabase.getAPI().getCharacterAPI().getLoadedCharacters().contains(event.getPlayer().getUniqueId()))
             return;
         Player player = event.getPlayer();
-        // delay by 1 tick to calculate new armor values, not old
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                calculateMaxMana(player);
-            }
-        }.runTaskLater(RunicCore.getInstance(), 1L);
+        Bukkit.getScheduler().runTask(RunicCore.getInstance(), () -> calculateMaxMana(player));
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
