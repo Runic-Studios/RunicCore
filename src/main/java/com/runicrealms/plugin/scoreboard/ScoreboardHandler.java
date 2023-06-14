@@ -36,7 +36,7 @@ public class ScoreboardHandler implements ScoreboardAPI {
     private static final String NO_CLASS_STRING = ChatColor.YELLOW + "Class: " + ChatColor.GREEN + "None";
     private static final String NO_PROF_STRING = ChatColor.YELLOW + "Prof: " + ChatColor.GREEN + "None";
     private static final String NO_GUILD_STRING = ChatColor.YELLOW + "Guild: " + ChatColor.GREEN + "None";
-    private static final String OUTLAW_DISABLED_STRING = ChatColor.YELLOW + "Outlaw: " + ChatColor.GREEN + "OFF";
+    private static final String OUTLAW_DISABLED_STRING = ChatColor.YELLOW + "Status: " + ChatColor.GREEN + "Lawful";
 
     /**
      * Create running task to update health / mana display
@@ -105,7 +105,7 @@ public class ScoreboardHandler implements ScoreboardAPI {
         if (!isOutlaw) {
             display = OUTLAW_DISABLED_STRING;
         } else {
-            display = ChatColor.YELLOW + "Outlaw: " + ChatColor.RED + "ON";
+            display = ChatColor.YELLOW + "Status: " + ChatColor.RED + "Outlaw";
         }
         return display;
     }
