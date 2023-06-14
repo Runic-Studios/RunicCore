@@ -2,11 +2,11 @@ package com.runicrealms.plugin.scoreboard;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.api.event.ScoreboardUpdateEvent;
-import com.runicrealms.plugin.common.event.ArmorEquipEvent;
 import com.runicrealms.plugin.player.utilities.HealthUtils;
 import com.runicrealms.plugin.rdb.RunicDatabase;
 import com.runicrealms.plugin.rdb.event.CharacterLoadedEvent;
 import com.runicrealms.plugin.utilities.NametagHandler;
+import com.runicrealms.runicitems.item.event.RunicStatUpdateEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -21,12 +21,11 @@ public class ScoreboardListener implements Listener {
 
     /**
      * Updates health and scoreboard on armor equip
-     * This NEEDS to be delayed by at least several ticks, or it won't update correctly
      */
     @EventHandler
-    public void onArmorEquip(ArmorEquipEvent event) {
+    public void onArmorEquip(RunicStatUpdateEvent event) {
         Player player = event.getPlayer();
-        Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), () -> HealthUtils.setPlayerMaxHealth(player), 5L);
+        Bukkit.getScheduler().runTask(RunicCore.getInstance(), () -> HealthUtils.setPlayerMaxHealth(player));
     }
 
     /**

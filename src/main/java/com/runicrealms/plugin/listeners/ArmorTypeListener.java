@@ -1,8 +1,11 @@
 package com.runicrealms.plugin.listeners;
 
-import com.runicrealms.plugin.ItemType;
 import com.runicrealms.plugin.common.event.ArmorEquipEvent;
 import com.runicrealms.plugin.rdb.RunicDatabase;
+import com.runicrealms.runicitems.RunicItemsAPI;
+import com.runicrealms.runicitems.item.template.RunicItemArmorTemplate;
+import com.runicrealms.runicitems.item.template.RunicItemTemplate;
+import com.runicrealms.runicitems.item.util.RunicItemClass;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -29,7 +32,7 @@ public class ArmorTypeListener implements Listener {
         };
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onArmorEquip(ArmorEquipEvent event) {
         if (event.isCancelled()) return;
         if (event.getType() == null) return;
@@ -39,45 +42,16 @@ public class ArmorTypeListener implements Listener {
         ItemStack equippedItem = event.getNewArmorPiece();
         Player player = event.getPlayer();
         String className = RunicDatabase.getAPI().getCharacterAPI().getPlayerClass(player);
-        ItemType itemType = ItemType.matchType(equippedItem);
-        switch (itemType) {
-            case PLATE -> {
-                if (!className.equalsIgnoreCase("Warrior")) {
-                    player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
-                    event.setCancelled(true);
-                    player.sendMessage(armorMessage(className));
-                }
-            }
-            case GILDED -> {
-                if (!className.equalsIgnoreCase("Cleric")) {
-                    player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
-                    event.setCancelled(true);
-                    player.sendMessage(armorMessage(className));
-                }
-            }
-            case MAIL -> {
-                if (!className.equalsIgnoreCase("Archer")) {
-                    player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
-                    event.setCancelled(true);
-                    player.sendMessage(armorMessage(className));
-                }
-            }
-            case LEATHER -> {
-                if (!className.equalsIgnoreCase("Rogue")) {
-                    player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
-                    event.setCancelled(true);
-                    player.sendMessage(armorMessage(className));
-                }
-            }
-            case CLOTH -> {
-                if (!className.equalsIgnoreCase("Mage")) {
-                    player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
-                    event.setCancelled(true);
-                    player.sendMessage(armorMessage(className));
-                }
-            }
-            default -> {
-            }
+        RunicItemTemplate template = RunicItemsAPI.getItemStackTemplate(equippedItem);
+        if (!(template instanceof RunicItemArmorTemplate armorTemplate)) {
+            event.setCancelled(true);
+            return;
+        }
+        if (armorTemplate.getRunicClass() == RunicItemClass.ANY) return;
+        if (!armorTemplate.getRunicClass().toCharacterClass().getName().equalsIgnoreCase(className)) {
+            player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
+            event.setCancelled(true);
+            player.sendMessage(armorMessage(className));
         }
     }
 }

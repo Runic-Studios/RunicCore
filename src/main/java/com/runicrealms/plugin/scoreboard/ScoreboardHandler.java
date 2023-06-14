@@ -9,15 +9,20 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Score;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
-public class ScoreboardHandler implements ScoreboardAPI {
+public class ScoreboardHandler implements ScoreboardAPI, Listener {
 
     // basic info
     private static final String CLASS_TEAM_STRING = "c";
@@ -37,11 +42,14 @@ public class ScoreboardHandler implements ScoreboardAPI {
     private static final String NO_PROF_STRING = ChatColor.YELLOW + "Prof: " + ChatColor.GREEN + "None";
     private static final String NO_GUILD_STRING = ChatColor.YELLOW + "Guild: " + ChatColor.GREEN + "None";
     private static final String OUTLAW_DISABLED_STRING = ChatColor.YELLOW + "Status: " + ChatColor.GREEN + "Lawful";
+    private final Map<UUID, Short> playerIndexes = new HashMap<>();
+    private short PLAYER_INDEX = 0;
 
     /**
      * Create running task to update health / mana display
      */
     public ScoreboardHandler() {
+        Bukkit.getPluginManager().registerEvents(this, RunicCore.getInstance());
         Bukkit.getScheduler().runTaskTimerAsynchronously(RunicCore.getInstance(), () -> {
             for (UUID uuid : RunicDatabase.getAPI().getCharacterAPI().getLoadedCharacters()) {
                 Player player = Bukkit.getPlayer(uuid);
@@ -49,6 +57,19 @@ public class ScoreboardHandler implements ScoreboardAPI {
                 updatePlayerCombatInfo(player, player.getScoreboard());
             }
         }, 100L, 4L);
+    }
+
+    private short getNextPlayerIndex() {
+        return PLAYER_INDEX++;
+    }
+
+    private String getPlayerIndex(UUID player) {
+        Short index = playerIndexes.get(player);
+        if (index == null) {
+            index = getNextPlayerIndex();
+            playerIndexes.put(player, index);
+        }
+        return index.toString();
     }
 
     private String healthAsString(final Player player) {
@@ -138,11 +159,11 @@ public class ScoreboardHandler implements ScoreboardAPI {
      * @param obj        the main scoreboard objective defined in 'setupScoreboard'
      */
     private void setupPlayerCombatInfo(final Player player, final Scoreboard scoreboard, final Objective obj) {
-        String playerNameSubString = player.getName().length() > 16 ? player.getName().substring(0, 16) : player.getName();
-        Team playerHealth = scoreboard.registerNewTeam(playerNameSubString + HEALTH_TEAM_STRING);
+        String index = getPlayerIndex(player.getUniqueId());
+        Team playerHealth = scoreboard.registerNewTeam(index + HEALTH_TEAM_STRING);
         playerHealth.addEntry(HEALTH_ENTRY_STRING);
         obj.getScore(HEALTH_ENTRY_STRING).setScore(2);
-        Team playerMana = scoreboard.registerNewTeam(playerNameSubString + MANA_TEAM_STRING);
+        Team playerMana = scoreboard.registerNewTeam(index + MANA_TEAM_STRING);
         playerMana.addEntry(MANA_ENTRY_STRING);
         obj.getScore(MANA_ENTRY_STRING).setScore(1);
     }
@@ -156,18 +177,19 @@ public class ScoreboardHandler implements ScoreboardAPI {
      * @param obj        the main scoreboard objective defined in 'setupScoreboard'
      */
     private void setupPlayerInfo(final Player player, final Scoreboard scoreboard, final Objective obj) {
-        String playerNameSubString = player.getName().length() > 16 ? player.getName().substring(0, 16) : player.getName();
-        Team playerClass = scoreboard.registerNewTeam(playerNameSubString + CLASS_TEAM_STRING);
+        String index = getPlayerIndex(player.getUniqueId());
+
+        Team playerClass = scoreboard.registerNewTeam(index + CLASS_TEAM_STRING);
         playerClass.addEntry(CLASS_ENTRY_STRING);
         obj.getScore(CLASS_ENTRY_STRING).setScore(7);
         playerClass.setPrefix(playerClass(player)); // setup class prefix ONCE
-        Team playerProf = scoreboard.registerNewTeam(playerNameSubString + PROF_TEAM_STRING);
+        Team playerProf = scoreboard.registerNewTeam(index + PROF_TEAM_STRING);
         playerProf.addEntry(PROF_ENTRY_STRING);
         obj.getScore(PROF_ENTRY_STRING).setScore(6);
-        Team playerGuild = scoreboard.registerNewTeam(playerNameSubString + GUILD_TEAM_STRING);
+        Team playerGuild = scoreboard.registerNewTeam(index + GUILD_TEAM_STRING);
         playerGuild.addEntry(GUILD_ENTRY_STRING);
         obj.getScore(GUILD_ENTRY_STRING).setScore(5);
-        Team playerOutlaw = scoreboard.registerNewTeam(playerNameSubString + OUTLAW_TEAM_STRING);
+        Team playerOutlaw = scoreboard.registerNewTeam(index + OUTLAW_TEAM_STRING);
         playerOutlaw.addEntry(OUTLAW_ENTRY_STRING);
         obj.getScore(OUTLAW_ENTRY_STRING).setScore(4);
     }
@@ -204,17 +226,17 @@ public class ScoreboardHandler implements ScoreboardAPI {
     @Override
     public void updatePlayerInfo(final Player player, final ScoreboardUpdateEvent event) {
         Scoreboard scoreboard = event.getScoreboard();
-        String playerNameSubString = player.getName().length() > 16 ? player.getName().substring(0, 16) : player.getName();
+        String index = getPlayerIndex(player.getUniqueId());
 
-        Team playerClass = scoreboard.getTeam(playerNameSubString + CLASS_TEAM_STRING);
+        Team playerClass = scoreboard.getTeam(index + CLASS_TEAM_STRING);
         if (playerClass != null) playerClass.setPrefix(playerClass(player));
 
-        Team playerProf = scoreboard.getTeam(playerNameSubString + PROF_TEAM_STRING);
+        Team playerProf = scoreboard.getTeam(index + PROF_TEAM_STRING);
         if (playerProf != null) playerProf.setPrefix(playerProf(event.getProfession(), event.getProfessionLevel()));
-        Team playerGuild = scoreboard.getTeam(playerNameSubString + GUILD_TEAM_STRING);
+        Team playerGuild = scoreboard.getTeam(index + GUILD_TEAM_STRING);
         if (playerGuild != null) playerGuild.setPrefix(playerGuild(event.getGuild()));
         assert playerGuild != null;
-        Team playerOutlaw = scoreboard.getTeam(playerNameSubString + OUTLAW_TEAM_STRING);
+        Team playerOutlaw = scoreboard.getTeam(index + OUTLAW_TEAM_STRING);
         if (playerOutlaw != null) playerOutlaw.setPrefix(playerOutlaw(event.isOutlaw()));
     }
 
@@ -235,15 +257,20 @@ public class ScoreboardHandler implements ScoreboardAPI {
      */
     private void updatePlayerCombatInfo(final Player player, final Scoreboard scoreboard) {
         try {
-            String playerNameSubString = player.getName().length() > 16 ? player.getName().substring(0, 16) : player.getName();
-            Team playerHealth = scoreboard.getTeam(playerNameSubString + HEALTH_TEAM_STRING);
+            String index = getPlayerIndex(player.getUniqueId());
+            Team playerHealth = scoreboard.getTeam(index + HEALTH_TEAM_STRING);
             assert playerHealth != null;
             playerHealth.setPrefix(healthAsString(player));
-            Team playerMana = scoreboard.getTeam(playerNameSubString + MANA_TEAM_STRING);
+            Team playerMana = scoreboard.getTeam(index + MANA_TEAM_STRING);
             assert playerMana != null;
             playerMana.setPrefix(manaAsString(player));
         } catch (NullPointerException e) {
             // wrapped in try-catch in-case scoreboard can't set up in time
         }
+    }
+
+    @EventHandler
+    public void onQuit(PlayerQuitEvent event) {
+        playerIndexes.remove(event.getPlayer().getUniqueId());
     }
 }

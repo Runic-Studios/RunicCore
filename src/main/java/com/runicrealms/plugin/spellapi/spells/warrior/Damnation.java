@@ -77,8 +77,9 @@ public class Damnation extends Spell implements DurationSpell, MagicDamageSpell,
         double bonusRadius = radiusPerSouls * souls;
         double totalRadius = radius + bonusRadius;
         // Cancel the future task to reset souls
-        SoulReaper.getReaperTaskMap().get(player).reset(0, () -> {
-        });
+        if (SoulReaper.getReaperTaskMap().containsKey(player))
+            SoulReaper.getReaperTaskMap().get(player).reset(0, () -> {
+            });
         // Manually reset souls
         SoulReaper.cleanupTask(player, "Soul Reaper has been consumed!");
         new BukkitRunnable() {
