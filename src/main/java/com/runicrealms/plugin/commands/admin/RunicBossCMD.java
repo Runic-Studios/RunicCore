@@ -6,12 +6,12 @@ import co.aikar.commands.annotation.CommandCompletion;
 import co.aikar.commands.annotation.CommandPermission;
 import co.aikar.commands.annotation.Conditions;
 import co.aikar.commands.annotation.Default;
-import com.gmail.filoghost.holographicdisplays.api.Hologram;
-import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
-import com.gmail.filoghost.holographicdisplays.api.line.TextLine;
 import com.runicrealms.plugin.DungeonLocation;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.item.lootchests.BossChest;
+import me.filoghost.holographicdisplays.api.HolographicDisplaysAPI;
+import me.filoghost.holographicdisplays.api.hologram.Hologram;
+import me.filoghost.holographicdisplays.api.hologram.line.TextHologramLine;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
@@ -111,13 +111,13 @@ public class RunicBossCMD extends BaseCommand {
      */
     private void spawnHologram(DungeonLocation dungeonLocation) {
         Location location = dungeonLocation.getChestLocation().clone().add(0, 2, 0);
-        Hologram hologram = HologramsAPI.createHologram(RunicCore.getInstance(), location);
-        hologram.appendTextLine(ChatColor.GOLD + "" + ChatColor.BOLD + dungeonLocation.getDisplay() + " Spoils");
-        hologram.appendTextLine(ChatColor.WHITE + "" + CHEST_DURATION + ChatColor.GRAY + " second(s) remaining");
+        Hologram hologram = HolographicDisplaysAPI.get(RunicCore.getInstance()).createHologram(location);
+        hologram.getLines().appendText(ChatColor.GOLD + "" + ChatColor.BOLD + dungeonLocation.getDisplay() + " Spoils");
+        hologram.getLines().appendText(ChatColor.WHITE + "" + CHEST_DURATION + ChatColor.GRAY + " second(s) remaining");
         AtomicInteger count = new AtomicInteger(CHEST_DURATION);
         int hologramTask = Bukkit.getScheduler().scheduleSyncRepeatingTask(RunicCore.getInstance(), () -> {
             count.getAndDecrement();
-            ((TextLine) hologram.getLine(1)).setText(ChatColor.WHITE + "" + count + ChatColor.GRAY + " second(s) remaining");
+            ((TextHologramLine) hologram.getLines().get(1)).setText(ChatColor.WHITE + "" + count + ChatColor.GRAY + " second(s) remaining");
         }, 20L, 20L);
         Bukkit.getScheduler().scheduleSyncDelayedTask(RunicCore.getInstance(), () -> {
             Bukkit.getScheduler().cancelTask(hologramTask);

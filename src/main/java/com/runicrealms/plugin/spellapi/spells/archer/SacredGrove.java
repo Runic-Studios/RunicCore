@@ -1,7 +1,5 @@
 package com.runicrealms.plugin.spellapi.spells.archer;
 
-import com.gmail.filoghost.holographicdisplays.api.Hologram;
-import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.common.CharacterClass;
 import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
@@ -11,6 +9,8 @@ import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.spellapi.spelltypes.WarmupSpell;
 import com.runicrealms.plugin.spellapi.spellutil.particles.HorizontalCircleFrame;
+import me.filoghost.holographicdisplays.api.HolographicDisplaysAPI;
+import me.filoghost.holographicdisplays.api.hologram.Hologram;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
@@ -160,11 +160,11 @@ public class SacredGrove extends Spell implements DurationSpell, HealingSpell, R
     private void spawnFlower(Player player, Location location) {
         Material oldMaterial = location.getBlock().getType();
         location.getBlock().setType(Material.DANDELION, false);
-        Hologram hologram = HologramsAPI.createHologram(RunicCore.getInstance(), location.getBlock().getLocation().add(0.5, 2.5, 0.5));
-        hologram.appendTextLine(ChatColor.WHITE + player.getName() + "'s " + ChatColor.GRAY + "Seedling");
+        Hologram hologram = HolographicDisplaysAPI.get(RunicCore.getInstance()).createHologram(location.getBlock().getLocation().add(0.5, 2.5, 0.5));
+        hologram.getLines().appendText(ChatColor.WHITE + player.getName() + "'s " + ChatColor.GRAY + "Seedling");
         Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), () -> {
-            hologram.clearLines();
-            hologram.appendTextLine(ChatColor.WHITE + player.getName() + "'s " + ChatColor.GREEN + "Wild Growth");
+            hologram.getLines().clear();
+            hologram.getLines().appendText(ChatColor.WHITE + player.getName() + "'s " + ChatColor.GREEN + "Wild Growth");
             location.getBlock().setType(Material.SUNFLOWER, false);
             Bisected blockData = (Bisected) location.getBlock().getBlockData();
             blockData.setHalf(Bisected.Half.BOTTOM);

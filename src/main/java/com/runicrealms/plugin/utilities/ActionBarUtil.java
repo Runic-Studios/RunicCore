@@ -2,11 +2,8 @@ package com.runicrealms.plugin.utilities;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.common.util.ColorUtil;
-import net.minecraft.server.v1_16_R3.ChatMessageType;
-import net.minecraft.server.v1_16_R3.IChatBaseComponent;
-import net.minecraft.server.v1_16_R3.IChatBaseComponent.ChatSerializer;
-import net.minecraft.server.v1_16_R3.PacketPlayOutChat;
-import org.bukkit.craftbukkit.v1_16_R3.entity.CraftPlayer;
+import net.md_5.bungee.api.ChatMessageType;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
@@ -48,10 +45,7 @@ public class ActionBarUtil {
      * @param rawMessage   the json format message to send.
      */
     private static void sendRawActionBarMessage(@NotNull Player bukkitPlayer, @NotNull String rawMessage) {
-        CraftPlayer player = (CraftPlayer) bukkitPlayer;
-        IChatBaseComponent chatBaseComponent = ChatSerializer.a(rawMessage);
-        PacketPlayOutChat packetPlayOutChat = new PacketPlayOutChat(chatBaseComponent, ChatMessageType.GAME_INFO, player.getUniqueId());
-        player.getHandle().playerConnection.sendPacket(packetPlayOutChat);
+        bukkitPlayer.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(rawMessage));
     }
 
     /**

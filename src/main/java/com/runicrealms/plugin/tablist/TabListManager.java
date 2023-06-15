@@ -12,11 +12,9 @@ import com.runicrealms.plugin.common.util.Pair;
 import com.runicrealms.plugin.party.Party;
 import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.model.user.User;
-import net.minecraft.server.v1_16_R3.EntityPlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.attribute.Attribute;
-import org.bukkit.craftbukkit.v1_16_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -76,8 +74,7 @@ public class TabListManager implements Listener, TabAPI {
 
     @Override
     public int getPing(Player player) {
-        EntityPlayer entityPlayer = ((CraftPlayer) player).getHandle();
-        return entityPlayer.ping;
+        return player.getPing();
     }
 
     @Override

@@ -2,7 +2,7 @@ package com.runicrealms.plugin.listeners;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.events.EnemyVerifyEvent;
-import io.lumine.xikage.mythicmobs.MythicMobs;
+import io.lumine.mythic.bukkit.MythicBukkit;
 import org.bukkit.World;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
@@ -37,7 +37,7 @@ public class EnemyVerifyListener implements Listener {
             return;
         }
 
-        if (victim instanceof Horse && !MythicMobs.inst().getMobManager().isActiveMob(victim.getUniqueId())) {
+        if (victim instanceof Horse && !MythicBukkit.inst().getMobManager().isActiveMob(victim.getUniqueId())) {
             event.setCancelled(true);
             return;
         }

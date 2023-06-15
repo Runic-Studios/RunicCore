@@ -9,8 +9,8 @@ import com.runicrealms.plugin.rdb.RunicDatabase;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import com.runicrealms.runicitems.RunicItemsAPI;
 import com.runicrealms.runicitems.item.RunicItemWeapon;
-import io.lumine.xikage.mythicmobs.MythicMobs;
-import io.lumine.xikage.mythicmobs.mobs.ActiveMob;
+import io.lumine.mythic.bukkit.MythicBukkit;
+import io.lumine.mythic.core.mobs.ActiveMob;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -76,10 +76,10 @@ public class BowListener implements Listener {
             // mobs
             event.setCancelled(true);
             double dmgAmt = event.getDamage();
-            if (MythicMobs.inst().getMobManager().isActiveMob(Objects.requireNonNull(shooter).getUniqueId())) {
-                if (MythicMobs.inst().getMobManager().isActiveMob(event.getEntity().getUniqueId()))
+            if (MythicBukkit.inst().getMobManager().isActiveMob(Objects.requireNonNull(shooter).getUniqueId())) {
+                if (MythicBukkit.inst().getMobManager().isActiveMob(event.getEntity().getUniqueId()))
                     return; // don't let mobs shoot each other
-                ActiveMob mm = MythicMobs.inst().getAPIHelper().getMythicMobInstance(shooter);
+                ActiveMob mm = MythicBukkit.inst().getAPIHelper().getMythicMobInstance(shooter);
                 dmgAmt = mm.getDamage();
             }
             MobDamageEvent mobDamageEvent = new MobDamageEvent((int) Math.ceil(dmgAmt), event.getDamager(), (LivingEntity) event.getEntity(), false);
@@ -233,7 +233,7 @@ public class BowListener implements Listener {
     @EventHandler(priority = EventPriority.HIGH)
     public void onMobTargetMob(EntityTargetEvent event) {
         if (event.getTarget() == null) return; // has a target
-        if (!MythicMobs.inst().getMobManager().getActiveMob(event.getTarget().getUniqueId()).isPresent())
+        if (!MythicBukkit.inst().getMobManager().getActiveMob(event.getTarget().getUniqueId()).isPresent())
             return; // target is a mythic mob
         event.setCancelled(true);
     }

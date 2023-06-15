@@ -4,7 +4,7 @@ import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.events.MagicDamageEvent;
 import com.runicrealms.plugin.events.PhysicalDamageEvent;
 import com.runicrealms.plugin.rdb.RunicDatabase;
-import io.lumine.xikage.mythicmobs.MythicMobs;
+import io.lumine.mythic.bukkit.MythicBukkit;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.ArmorStand;
@@ -29,7 +29,7 @@ public final class MobMechanicsListener implements Listener {
      */
     private static void createMythicHealthDisplay(LivingEntity livingEntity) {
         int numColorBars = calculateNumColors(livingEntity);
-        MythicMobs.inst().getAPIHelper().castSkill(livingEntity, "UpdateHealthBar_" + numColorBars);
+        MythicBukkit.inst().getAPIHelper().castSkill(livingEntity, "UpdateHealthBar_" + numColorBars);
     }
 
     /**
@@ -117,7 +117,7 @@ public final class MobMechanicsListener implements Listener {
         String healthBar = ChatColor.YELLOW + "" + "["
                 + createHealthDisplay(livingEntity, damage)
                 + ChatColor.YELLOW + "]";
-        if (MythicMobs.inst().getMobManager().getActiveMob(livingEntity.getUniqueId()).isPresent()) // delay by 1 tick to display correct health
+        if (MythicBukkit.inst().getMobManager().getActiveMob(livingEntity.getUniqueId()).isPresent()) // delay by 1 tick to display correct health
             Bukkit.getScheduler().scheduleSyncDelayedTask(RunicCore.getInstance(), () -> createMythicHealthDisplay(livingEntity));
         else
             livingEntity.setCustomName(healthBar);

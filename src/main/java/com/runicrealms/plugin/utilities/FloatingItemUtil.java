@@ -1,10 +1,11 @@
 package com.runicrealms.plugin.utilities;
 
-import net.minecraft.server.v1_16_R3.PacketPlayOutEntityDestroy;
+import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.events.PacketContainer;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_16_R3.entity.CraftPlayer;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
@@ -88,8 +89,9 @@ public class FloatingItemUtil {
         // send packets to make item invisible for all other players
         for (Player p : Bukkit.getServer().getOnlinePlayers()) {
             if (p == pl) continue;
-            PacketPlayOutEntityDestroy packet = new PacketPlayOutEntityDestroy(item.getEntityId());
-            ((CraftPlayer) p).getHandle().playerConnection.sendPacket(packet);
+            PacketContainer packet = ProtocolLibrary.getProtocolManager().createPacket(PacketType.Play.Server.ENTITY_DESTROY);
+            packet.getIntegerArrays().write(0, new int[]{item.getEntityId()});
+            ProtocolLibrary.getProtocolManager().sendServerPacket(p, packet);
         }
 
         // tell the item when to despawn, based on duration (in seconds)
@@ -111,8 +113,9 @@ public class FloatingItemUtil {
         // send packets to make item invisible for all other players
         for (Player p : Bukkit.getServer().getOnlinePlayers()) {
             if (p == pl) continue;
-            PacketPlayOutEntityDestroy packet = new PacketPlayOutEntityDestroy(item.getEntityId());
-            ((CraftPlayer) p).getHandle().playerConnection.sendPacket(packet);
+            PacketContainer packet = ProtocolLibrary.getProtocolManager().createPacket(PacketType.Play.Server.ENTITY_DESTROY);
+            packet.getIntegerArrays().write(0, new int[]{item.getEntityId()});
+            ProtocolLibrary.getProtocolManager().sendServerPacket(p, packet);
         }
 
         // tell the item when to despawn, based on duration (in seconds)
@@ -139,8 +142,9 @@ public class FloatingItemUtil {
         // send packets to make item invisible for other players
         for (Player online : Bukkit.getServer().getOnlinePlayers()) {
             if (online == pl) continue;
-            PacketPlayOutEntityDestroy packet = new PacketPlayOutEntityDestroy(droppedItem.getEntityId());
-            ((CraftPlayer) online).getHandle().playerConnection.sendPacket(packet);
+            PacketContainer packet = ProtocolLibrary.getProtocolManager().createPacket(PacketType.Play.Server.ENTITY_DESTROY);
+            packet.getIntegerArrays().write(0, new int[]{droppedItem.getEntityId()});
+            ProtocolLibrary.getProtocolManager().sendServerPacket(online, packet);
         }
 
         // tell the item when to despawn, based on duration (in seconds)

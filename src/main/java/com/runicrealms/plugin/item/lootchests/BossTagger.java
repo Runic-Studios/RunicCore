@@ -2,11 +2,11 @@ package com.runicrealms.plugin.item.lootchests;
 
 import com.runicrealms.plugin.events.MagicDamageEvent;
 import com.runicrealms.plugin.events.PhysicalDamageEvent;
-import io.lumine.xikage.mythicmobs.MythicMobs;
-import io.lumine.xikage.mythicmobs.api.bukkit.events.MythicMobDeathEvent;
-import io.lumine.xikage.mythicmobs.api.bukkit.events.MythicMobSpawnEvent;
-import io.lumine.xikage.mythicmobs.mobs.ActiveMob;
-import io.lumine.xikage.mythicmobs.mobs.MythicMob;
+import io.lumine.mythic.api.mobs.MythicMob;
+import io.lumine.mythic.bukkit.MythicBukkit;
+import io.lumine.mythic.bukkit.events.MythicMobDeathEvent;
+import io.lumine.mythic.bukkit.events.MythicMobSpawnEvent;
+import io.lumine.mythic.core.mobs.ActiveMob;
 import org.bukkit.ChatColor;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Entity;
@@ -58,8 +58,8 @@ public class BossTagger implements Listener {
      * @return true if it is the name of a dungeon boss
      */
     public static boolean isBoss(Entity entity) {
-        if (!MythicMobs.inst().getMobManager().getActiveMob(entity.getUniqueId()).isPresent()) return false;
-        ActiveMob am = MythicMobs.inst().getMobManager().getActiveMob(entity.getUniqueId()).get();
+        if (!MythicBukkit.inst().getMobManager().getActiveMob(entity.getUniqueId()).isPresent()) return false;
+        ActiveMob am = MythicBukkit.inst().getMobManager().getActiveMob(entity.getUniqueId()).get();
         return BOSS_INTERNAL_NAMES.contains(am.getMobType());
     }
 

@@ -1,7 +1,5 @@
 package com.runicrealms.plugin.spellapi.spells.cleric;
 
-import com.gmail.filoghost.holographicdisplays.api.Hologram;
-import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.api.event.BasicAttackEvent;
 import com.runicrealms.plugin.common.CharacterClass;
@@ -11,6 +9,8 @@ import com.runicrealms.plugin.spellapi.spelltypes.RadiusSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.spellapi.spellutil.particles.HorizontalCircleFrame;
+import me.filoghost.holographicdisplays.api.HolographicDisplaysAPI;
+import me.filoghost.holographicdisplays.api.hologram.Hologram;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
@@ -156,8 +156,8 @@ public class Diminuendo extends Spell implements DurationSpell, RadiusSpell {
     private void spawnJukebox(Player player, Location location) {
         Material oldMaterial = location.getBlock().getType();
         location.getBlock().setType(Material.JUKEBOX, false);
-        Hologram hologram = HologramsAPI.createHologram(RunicCore.getInstance(), location.getBlock().getLocation().add(0.5, 2.5, 0.5));
-        hologram.appendTextLine(ChatColor.WHITE + player.getName() + "'s " + ChatColor.GRAY + "Jukebox");
+        Hologram hologram = HolographicDisplaysAPI.get(RunicCore.getInstance()).createHologram(location.getBlock().getLocation().add(0.5, 2.5, 0.5));
+        hologram.getLines().appendText(ChatColor.WHITE + player.getName() + "'s " + ChatColor.GRAY + "Jukebox");
         Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), () -> {
             hologram.delete();
             location.getBlock().setType(oldMaterial);
