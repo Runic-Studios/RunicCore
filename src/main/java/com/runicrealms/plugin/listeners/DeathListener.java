@@ -4,6 +4,7 @@ import com.runicrealms.plugin.CityLocation;
 import com.runicrealms.plugin.DungeonLocation;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.common.DonorRank;
+import com.runicrealms.plugin.common.util.ColorUtil;
 import com.runicrealms.plugin.events.LeaveCombatEvent;
 import com.runicrealms.plugin.events.RunicDeathEvent;
 import com.runicrealms.plugin.player.death.Gravestone;
@@ -13,12 +14,7 @@ import com.runicrealms.runicitems.RunicItemsAPI;
 import com.runicrealms.runicitems.item.RunicItem;
 import com.runicrealms.runicitems.item.stats.RunicItemTag;
 import com.runicrealms.runicitems.util.ItemUtils;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Color;
-import org.bukkit.Particle;
-import org.bukkit.Sound;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -33,8 +29,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DeathListener implements Listener {
-    private final String DUNGEON_DEATH_MESSAGE = ChatColor.RED + "You died in an instance! Your inventory has been returned.";
     private static final String NO_LOCATION_FOUND = ChatColor.RED + "No nearby respawn point could be found, so you have been returned to your hearthstone location.";
+    private final String DUNGEON_DEATH_MESSAGE = ChatColor.RED + "You died in an instance! Your inventory has been returned.";
 
     /**
      * This method controls the dropping of items.
@@ -94,7 +90,7 @@ public class DeathListener implements Listener {
             // If the player should drop items, create their Gravestone
             if (droppedItemsInventory != null && !droppedItemsInventory.isEmpty()) {
                 boolean victimHasPriority = event.getKiller().length == 0 || !(event.getKiller()[0] instanceof Player);
-                DonorRank rank = event.getKiller().length == 0 ? DonorRank.NONE : DonorRank.getDonorRank((Player) event.getKiller()[0]);
+                DonorRank rank = DonorRank.getDonorRank(event.getVictim());
                 new Gravestone(victim, event.getLocation(), droppedItemsInventory, victimHasPriority, rank.getGravestonePriorityDuration() * 60, rank.getGravestoneDuration() * 60);
             }
         }
@@ -125,10 +121,10 @@ public class DeathListener implements Listener {
             });
         } else {
             victim.teleport(CityLocation.getLocationFromItemStack(victim.getInventory().getItem(8)));
-            victim.sendMessage("&cYou have died! Your armor and hotbar have been returned. " +
+            victim.sendMessage(ColorUtil.format("&cYou have died! Your armor and hotbar have been returned. " +
                     "Any soulbound, quest, and untradeable items have been returned also. " +
                     "Your &4&lGRAVESTONE &chas the remainder of your items and will last for " +
-                    RunicCore.getGravestoneManager().getGravestoneMap().get(victim.getUniqueId()).getPriorityTime() + "s until it can be looted by others.");
+                    RunicCore.getGravestoneManager().getGravestoneMap().get(victim.getUniqueId()).getPriorityTime() + "s until it can be looted by others."));
         }
 
         // Particles, sounds
