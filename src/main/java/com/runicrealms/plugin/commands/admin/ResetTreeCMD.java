@@ -32,10 +32,6 @@ public class ResetTreeCMD extends BaseCommand implements Listener {
         Bukkit.getPluginManager().registerEvents(this, RunicCore.getInstance());
     }
 
-    /**
-     * @param player
-     * @return
-     */
     public static int getCostFromLevel(Player player) {
         if (player.getLevel() <= 24) {
             return 0;
@@ -50,9 +46,9 @@ public class ResetTreeCMD extends BaseCommand implements Listener {
 
     public static String getCostStringFromLevel(int cost) {
         if (cost == 0) {
-            return ChatColor.GOLD.toString() + ChatColor.BOLD + cost + "c";
-        } else {
             return ChatColor.GREEN.toString() + ChatColor.BOLD + "FREE";
+        } else {
+            return ChatColor.GOLD.toString() + ChatColor.BOLD + cost + "c";
         }
     }
 
@@ -89,11 +85,10 @@ public class ResetTreeCMD extends BaseCommand implements Listener {
         try {
             Player toReset = Bukkit.getPlayer(args[0]);
             if (toReset != null) {
-                int cost = getCostFromLevel(toReset);
                 toReset.sendMessage
                         (
                                 ChatColor.LIGHT_PURPLE + "You are about to reset your skill points! Based on your level, the cost will be " +
-                                        getCostStringFromLevel(cost) + ChatColor.LIGHT_PURPLE + ". To confirm, type " +
+                                        getCostStringFromLevel(getCostFromLevel(toReset)) + ChatColor.LIGHT_PURPLE + ". To confirm, type " +
                                         ChatColor.GREEN + ChatColor.BOLD + "YES" + ChatColor.LIGHT_PURPLE + " or " + ChatColor.RED + ChatColor.BOLD + "NO"
                         );
                 chatters.add(toReset.getUniqueId());
