@@ -5,7 +5,6 @@ import co.aikar.commands.annotation.*;
 import com.runicrealms.api.event.ChatChannelMessageEvent;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.model.SkillTreeData;
-import com.runicrealms.plugin.player.utilities.PlayerLevelUtil;
 import com.runicrealms.runicitems.util.CurrencyUtil;
 import com.runicrealms.runicitems.util.ItemUtils;
 import org.bukkit.Bukkit;
@@ -38,20 +37,22 @@ public class ResetTreeCMD extends BaseCommand implements Listener {
      * @return
      */
     public static int getCostFromLevel(Player player) {
-        if (player.getLevel() == PlayerLevelUtil.getMaxLevel()) {
-            return 256;
-        } else if (player.getLevel() < PlayerLevelUtil.getMaxLevel() && player.getLevel() >= 30) {
-            return 128;
-        } else {
+        if (player.getLevel() <= 24) {
             return 0;
+        } else if (player.getLevel() <= 40) {
+            return 50;
+        } else if (player.getLevel() <= 59) {
+            return 100;
+        } else {
+            return 250;
         }
     }
 
-    public static String getCostStringFromLevel(Player player) {
-        if (player.getLevel() >= 30) {
-            return ChatColor.GOLD + "" + ChatColor.BOLD + getCostFromLevel(player) + "c";
+    public static String getCostStringFromLevel(int cost) {
+        if (cost == 0) {
+            return ChatColor.GOLD.toString() + ChatColor.BOLD + cost + "c";
         } else {
-            return ChatColor.GREEN + "" + ChatColor.BOLD + "FREE";
+            return ChatColor.GREEN.toString() + ChatColor.BOLD + "FREE";
         }
     }
 
@@ -87,16 +88,15 @@ public class ResetTreeCMD extends BaseCommand implements Listener {
         }
         try {
             Player toReset = Bukkit.getPlayer(args[0]);
-            if (toReset != null && !toReset.isOp()) {
+            if (toReset != null) {
+                int cost = getCostFromLevel(toReset);
                 toReset.sendMessage
                         (
                                 ChatColor.LIGHT_PURPLE + "You are about to reset your skill points! Based on your level, the cost will be " +
-                                        getCostStringFromLevel(toReset) + ChatColor.LIGHT_PURPLE + ". To confirm, type " +
+                                        getCostStringFromLevel(cost) + ChatColor.LIGHT_PURPLE + ". To confirm, type " +
                                         ChatColor.GREEN + ChatColor.BOLD + "YES" + ChatColor.LIGHT_PURPLE + " or " + ChatColor.RED + ChatColor.BOLD + "NO"
                         );
                 chatters.add(toReset.getUniqueId());
-            } else {
-                SkillTreeData.resetSkillTrees(toReset);
             }
         } catch (Exception e) {
             Bukkit.getLogger().info(ChatColor.RED + "Player not found!");
