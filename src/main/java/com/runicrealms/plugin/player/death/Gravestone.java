@@ -20,8 +20,8 @@ import org.bukkit.inventory.ItemStack;
 import java.util.UUID;
 
 public class Gravestone {
-    public static final int PRIORITY_TIME = 180; // Seconds
-    public static final int DURATION = 300; // Seconds
+    private final int priorityTime; // Seconds
+    private final int duration; // Seconds
     private final UUID uuid;
     private final Location location;
     private final Hologram hologram;
@@ -38,7 +38,7 @@ public class Gravestone {
      * @param inventory containing the items they dropped
      * @param priority  true if the player did not die in PvP
      */
-    public Gravestone(Player player, Inventory inventory, boolean priority) {
+    public Gravestone(Player player, Inventory inventory, boolean priority, int priorityTime, int duration) {
         this.uuid = player.getUniqueId();
         this.location = player.getLocation();
         this.inventory = inventory;
@@ -46,13 +46,15 @@ public class Gravestone {
         this.startTime = System.currentTimeMillis();
         this.shulkerBox = spawnGravestone(player);
         this.hologram = buildHologram(player);
+        this.priorityTime = priorityTime;
+        this.duration = duration;
         RunicCore.getGravestoneManager().getGravestoneMap().put(uuid, this);
     }
 
     /**
      * @param location specify exact location to spawn gravestone. useful if player combat logged
      */
-    public Gravestone(Player player, Location location, Inventory inventory, boolean priority) {
+    public Gravestone(Player player, Location location, Inventory inventory, boolean priority, int priorityTime, int duration) {
         this.uuid = player.getUniqueId();
         this.location = location;
         this.inventory = inventory;
@@ -60,6 +62,8 @@ public class Gravestone {
         this.startTime = System.currentTimeMillis();
         this.shulkerBox = spawnGravestone(player);
         this.hologram = buildHologram(player);
+        this.priorityTime = priorityTime;
+        this.duration = duration;
         RunicCore.getGravestoneManager().getGravestoneMap().put(uuid, this);
     }
 
@@ -67,8 +71,8 @@ public class Gravestone {
         // Spawn the hologram a few blocks above
         Hologram hologram = HolographicDisplaysAPI.get(RunicCore.getInstance()).createHologram(shulkerBox.getLocation().add(0.5f, 2.5f, 0.5f));
         hologram.getLines().appendText(ChatColor.RED + player.getName() + "'s Gravestone");
-        String priorityFormatted = String.format("%dm%ds", PRIORITY_TIME / 60, 0);
-        String durationFormatted = String.format("%dm%ds", DURATION / 60, 0);
+        String priorityFormatted = String.format("%dm%ds", priorityTime / 60, 0);
+        String durationFormatted = String.format("%dm%ds", duration / 60, 0);
         hologram.getLines().appendText(org.bukkit.ChatColor.YELLOW + "Priority: " + priorityFormatted); // Add the updated line
         hologram.getLines().appendText(org.bukkit.ChatColor.GRAY + "Time left: " + durationFormatted); // Add the updated line
         // Link the hologram to this gravestone
@@ -144,6 +148,14 @@ public class Gravestone {
             return shulkerBox;
         }
         return null;
+    }
+
+    public int getPriorityTime() {
+        return this.priorityTime;
+    }
+
+    public int getDuration() {
+        return this.duration;
     }
 
 }
