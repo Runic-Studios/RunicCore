@@ -126,8 +126,8 @@ public class GravestoneManager implements Listener {
                 long currentTime = System.currentTimeMillis();
                 long elapsedTimeInSeconds = (currentTime - gravestone.getStartTime()) / 1000; // Convert from milliseconds to seconds
 
-                int remainingPriorityTime = Gravestone.PRIORITY_TIME - (int) elapsedTimeInSeconds;
-                int duration = Gravestone.DURATION - (int) elapsedTimeInSeconds;
+                int remainingPriorityTime = gravestone.getPriorityTime() - (int) elapsedTimeInSeconds;
+                int duration = gravestone.getDuration() - (int) elapsedTimeInSeconds;
 
                 // Remove gravestone if time is up
                 if (duration <= 0) {

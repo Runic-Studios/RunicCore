@@ -1,6 +1,7 @@
 package com.runicrealms.plugin.listeners;
 
 import com.runicrealms.plugin.common.event.ArmorEquipEvent;
+import com.runicrealms.plugin.common.util.ArmorType;
 import com.runicrealms.plugin.rdb.RunicDatabase;
 import com.runicrealms.runicitems.RunicItemsAPI;
 import com.runicrealms.runicitems.item.template.RunicItemArmorTemplate;
@@ -36,6 +37,7 @@ public class ArmorTypeListener implements Listener {
     public void onArmorEquip(ArmorEquipEvent event) {
         if (event.isCancelled()) return;
         if (event.getType() == null) return;
+        if (event.getType() == ArmorType.OFFHAND) return;
         if (event.getNewArmorPiece() == null) return;
         if (event.getNewArmorPiece().getType().equals(Material.AIR)) return;
 
