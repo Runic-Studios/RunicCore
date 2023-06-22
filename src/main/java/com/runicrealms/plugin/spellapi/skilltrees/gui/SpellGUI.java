@@ -36,23 +36,18 @@ public class SpellGUI implements InventoryHolder {
     /**
      * Returns a dummy 'perk' that is used to represent the default spell for each class.
      *
-     * @return a perk that can be used to build an itemstack
+     * @return a perk that can be used to build an item stack
      */
     private Perk determineDefaultSpellPerk() {
-        switch (RunicDatabase.getAPI().getCharacterAPI().getPlayerClass(player)) {
-            case "Archer":
-                return ArcherTreeUtil.DEFAULT_ARCHER_SPELL_PERK;
-            case "Cleric":
-                return ClericTreeUtil.DEFAULT_CLERIC_SPELL_PERK;
-            case "Mage":
-                return MageTreeUtil.DEFAULT_MAGE_SPELL_PERK;
-            case "Rogue":
-                return RogueTreeUtil.DEFAULT_ROGUE_SPELL_PERK;
-            case "Warrior":
-                return WarriorTreeUtil.DEFAULT_WARRIOR_SPELL_PERK;
-            default:
-                throw new IllegalStateException("Unexpected value: getting default spell perk. Check SpellGUI.java in RunicCore");
-        }
+        return switch (RunicDatabase.getAPI().getCharacterAPI().getPlayerClass(player)) {
+            case "Archer" -> ArcherTreeUtil.DEFAULT_ARCHER_SPELL_PERK;
+            case "Cleric" -> ClericTreeUtil.DEFAULT_CLERIC_SPELL_PERK;
+            case "Mage" -> MageTreeUtil.DEFAULT_MAGE_SPELL_PERK;
+            case "Rogue" -> RogueTreeUtil.DEFAULT_ROGUE_SPELL_PERK;
+            case "Warrior" -> WarriorTreeUtil.DEFAULT_WARRIOR_SPELL_PERK;
+            default ->
+                    throw new IllegalStateException("Unexpected value: getting default spell perk. Check SpellGUI.java in RunicCore");
+        };
     }
 
     @NotNull
@@ -74,14 +69,12 @@ public class SpellGUI implements InventoryHolder {
      * skill tree.
      *
      * @param treePosition (which of the three sub-trees?) (1, 2, 3)
-     * @param index        which index to begin filling items
      */
-    private int grabUnlockedSpellsFromTree(SkillTreePosition treePosition, int index) {
+    private void grabUnlockedSpellsFromTree(SkillTreePosition treePosition) {
         int slot = RunicDatabase.getAPI().getCharacterAPI().getCharacterSlot(player.getUniqueId());
-        if (RunicCore.getSkillTreeAPI().getSkillTreeDataMap(player.getUniqueId(), slot) == null)
-            return index;
+        if (RunicCore.getSkillTreeAPI().getSkillTreeDataMap(player.getUniqueId(), slot) == null) return;
         if (RunicCore.getSkillTreeAPI().getSkillTreeDataMap(player.getUniqueId(), slot).get(treePosition) == null)
-            return index;
+            return;
         for (Perk perk : RunicCore.getSkillTreeAPI().getSkillTreeDataMap(player.getUniqueId(), slot).get(treePosition).getPerks()) {
             if (perk.getCurrentlyAllocatedPoints() < perk.getCost()) continue;
             if (!(perk instanceof PerkSpell)) continue;
@@ -89,10 +82,8 @@ public class SpellGUI implements InventoryHolder {
                 continue;
             if (RunicCore.getSpellAPI().getSpell(((PerkSpell) perk).getSpellName()).isPassive())
                 continue;
-            this.getInventory().setItem(index, SkillTreeGUI.buildPerkItem(perk, false, ChatColor.LIGHT_PURPLE + "» Click to activate"));
-            index++;
+            this.getInventory().setItem(this.inventory.firstEmpty(), SkillTreeGUI.buildPerkItem(perk, false, ChatColor.LIGHT_PURPLE + "» Click to activate"));
         }
-        return index;
     }
 
     /**
@@ -100,12 +91,12 @@ public class SpellGUI implements InventoryHolder {
      */
     private void openMenu() {
         this.inventory.clear();
+        GUIUtil.fillInventoryBorders(this.inventory);
         this.inventory.setItem(0, GUIUtil.BACK_BUTTON);
-        this.inventory.setItem(9, SkillTreeGUI.buildPerkItem(determineDefaultSpellPerk(),
+        this.inventory.setItem(this.inventory.firstEmpty(), SkillTreeGUI.buildPerkItem(determineDefaultSpellPerk(),
                 false, ChatColor.LIGHT_PURPLE + "» Click to activate"));
-        int i = 10;
-        i = grabUnlockedSpellsFromTree(SkillTreePosition.FIRST, i);
-        i = grabUnlockedSpellsFromTree(SkillTreePosition.SECOND, i);
-        grabUnlockedSpellsFromTree(SkillTreePosition.THIRD, i);
+        grabUnlockedSpellsFromTree(SkillTreePosition.FIRST);
+        grabUnlockedSpellsFromTree(SkillTreePosition.SECOND);
+        grabUnlockedSpellsFromTree(SkillTreePosition.THIRD);
     }
 }
