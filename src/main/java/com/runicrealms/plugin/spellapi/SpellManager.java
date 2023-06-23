@@ -533,7 +533,7 @@ public class SpellManager implements Listener, SpellAPI {
                                 removeCooldown(player, spell);
                             else {
                                 double cooldown = getUserCooldown(player, spell);
-                                String formattedCooldown = String.format("%.2f", cooldown);
+                                String formattedCooldown = String.format("%.1f", cooldown);
                                 cdString.add(ChatColor.RED + String.valueOf(ChatColor.BOLD) + spell.getName() + ChatColor.RED + ChatColor.BOLD + ": " + ChatColor.YELLOW + formattedCooldown + "s");
                             }
                         }

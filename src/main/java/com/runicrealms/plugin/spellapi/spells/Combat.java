@@ -42,6 +42,8 @@ public class Combat extends Spell {
     public void onMagicDamage(MagicDamageEvent event) {
         if (event.isCancelled()) return;
         resetCombatTimerDisplay(event.getPlayer());
+        if (event.getVictim() instanceof Player victim)
+            resetCombatTimerDisplay(victim);
     }
 
     /**
@@ -69,6 +71,8 @@ public class Combat extends Spell {
     public void onPhysicalDamage(PhysicalDamageEvent event) {
         if (event.isCancelled()) return;
         resetCombatTimerDisplay(event.getPlayer());
+        if (event.getVictim() instanceof Player victim)
+            resetCombatTimerDisplay(victim);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST) // last
