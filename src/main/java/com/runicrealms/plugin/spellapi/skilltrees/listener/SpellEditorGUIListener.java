@@ -5,6 +5,7 @@ import com.runicrealms.plugin.model.SpellField;
 import com.runicrealms.plugin.spellapi.skilltrees.gui.RuneGUI;
 import com.runicrealms.plugin.spellapi.skilltrees.gui.SpellEditorGUI;
 import com.runicrealms.plugin.spellapi.skilltrees.gui.SpellGUI;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -48,7 +49,10 @@ public class SpellEditorGUIListener implements Listener {
 
         if (material == GUIUtil.BACK_BUTTON.getType())
             player.openInventory(new RuneGUI(player).getInventory());
-        else if (event.getRawSlot() == SpellEditorGUI.SPELL_ONE_INDEX)
+        else if (material == Material.MILK_BUCKET) {
+            player.closeInventory();
+            Bukkit.dispatchCommand(Bukkit.getServer().getConsoleSender(), "resettree " + player.getName());
+        } else if (event.getRawSlot() == SpellEditorGUI.SPELL_ONE_INDEX)
             player.openInventory(new SpellGUI(player, SpellField.HOT_BAR_ONE).getInventory());
         else if (event.getRawSlot() == SpellEditorGUI.SPELL_TWO_INDEX)
             if (SpellEditorGUI.hasSlotUnlocked(player, SpellEditorGUI.getSlotReq2()))

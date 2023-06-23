@@ -1,7 +1,13 @@
 package com.runicrealms.plugin.commands.admin;
 
 import co.aikar.commands.BaseCommand;
-import co.aikar.commands.annotation.*;
+import co.aikar.commands.annotation.CatchUnknown;
+import co.aikar.commands.annotation.CommandAlias;
+import co.aikar.commands.annotation.CommandCompletion;
+import co.aikar.commands.annotation.CommandPermission;
+import co.aikar.commands.annotation.Conditions;
+import co.aikar.commands.annotation.Default;
+import co.aikar.commands.annotation.Syntax;
 import com.runicrealms.api.event.ChatChannelMessageEvent;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.model.SkillTreeData;
@@ -67,7 +73,7 @@ public class ResetTreeCMD extends BaseCommand implements Listener {
             player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 0.5f, 1.0f);
             player.sendMessage(ChatColor.RED + "You don't have enough gold!");
         } else {
-            player.sendMessage(ChatColor.GRAY + "You ended the conversation.");
+            player.sendMessage(ChatColor.GRAY + "You cancelled the reset request.");
         }
         chatters.remove(player.getUniqueId());
     }
