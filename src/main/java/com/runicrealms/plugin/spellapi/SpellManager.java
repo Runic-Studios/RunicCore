@@ -6,6 +6,7 @@ import com.runicrealms.plugin.api.event.SpellShieldEvent;
 import com.runicrealms.plugin.events.SpellHealEvent;
 import com.runicrealms.plugin.model.SpellData;
 import com.runicrealms.plugin.rdb.RunicDatabase;
+import com.runicrealms.plugin.spellapi.spells.Combat;
 import com.runicrealms.plugin.spellapi.spells.Potion;
 import com.runicrealms.plugin.spellapi.spells.archer.Ambush;
 import com.runicrealms.plugin.spellapi.spells.archer.Barrage;
@@ -289,6 +290,35 @@ public class SpellManager implements Listener, SpellAPI {
     }
 
     @Override
+    public void increaseCooldown(Player player, Spell spell, double duration) {
+        // Ensure duration isn't negative
+        if (duration < 0) {
+            throw new IllegalArgumentException("Duration must be positive");
+        }
+        if (!this.cooldownMap.containsKey(player.getUniqueId())) return;
+        ConcurrentHashMap<Spell, Long> playerSpellsOnCooldown = this.cooldownMap.get(player.getUniqueId());
+        if (!playerSpellsOnCooldown.containsKey(spell)) return;
+        long durationToAdd = (long) duration * 1000;
+        playerSpellsOnCooldown.put(spell, playerSpellsOnCooldown.get(spell) + durationToAdd);
+        this.cooldownMap.put(player.getUniqueId(), playerSpellsOnCooldown);
+    }
+
+    @Override
+    public void increaseCooldown(Player player, String spell, double duration) {
+        // Ensure duration isn't negative
+        if (duration < 0) {
+            throw new IllegalArgumentException("Duration must be positive");
+        }
+        if (!this.cooldownMap.containsKey(player.getUniqueId())) return;
+        ConcurrentHashMap<Spell, Long> playerSpellsOnCooldown = this.cooldownMap.get(player.getUniqueId());
+        Optional<Spell> spellOptional = playerSpellsOnCooldown.keySet().stream().filter(key -> key.getName().equalsIgnoreCase(spell)).findAny();
+        if (spellOptional.isEmpty()) return;
+        long durationToAdd = (long) (duration * 1000);
+        playerSpellsOnCooldown.put(spellOptional.get(), playerSpellsOnCooldown.get(spellOptional.get()) + durationToAdd);
+        this.cooldownMap.put(player.getUniqueId(), playerSpellsOnCooldown);
+    }
+
+    @Override
     public void reduceCooldown(Player player, String spell, double duration) {
         if (!this.cooldownMap.containsKey(player.getUniqueId())) return;
         ConcurrentHashMap<Spell, Long> playerSpellsOnCooldown = this.cooldownMap.get(player.getUniqueId());
@@ -296,6 +326,27 @@ public class SpellManager implements Listener, SpellAPI {
         if (spellOptional.isEmpty()) return;
         long durationToReduce = (long) (duration * 1000);
         playerSpellsOnCooldown.put(spellOptional.get(), playerSpellsOnCooldown.get(spellOptional.get()) - durationToReduce);
+        this.cooldownMap.put(player.getUniqueId(), playerSpellsOnCooldown);
+    }
+
+    @Override
+    public void setCooldown(Player player, Spell spell, double duration) {
+        if (!this.cooldownMap.containsKey(player.getUniqueId())) return;
+        ConcurrentHashMap<Spell, Long> playerSpellsOnCooldown = this.cooldownMap.get(player.getUniqueId());
+        if (!playerSpellsOnCooldown.containsKey(spell)) return;
+        long durationToSet = (long) duration * 1000;
+        playerSpellsOnCooldown.put(spell, durationToSet);
+        this.cooldownMap.put(player.getUniqueId(), playerSpellsOnCooldown);
+    }
+
+    @Override
+    public void setCooldown(Player player, String spell, double duration) {
+        if (!this.cooldownMap.containsKey(player.getUniqueId())) return;
+        ConcurrentHashMap<Spell, Long> playerSpellsOnCooldown = this.cooldownMap.get(player.getUniqueId());
+        Optional<Spell> spellOptional = playerSpellsOnCooldown.keySet().stream().filter(key -> key.getName().equalsIgnoreCase(spell)).findAny();
+        if (spellOptional.isEmpty()) return;
+        long durationToSet = (long) (duration * 1000);
+        playerSpellsOnCooldown.put(spellOptional.get(), durationToSet);
         this.cooldownMap.put(player.getUniqueId(), playerSpellsOnCooldown);
     }
 
@@ -323,7 +374,8 @@ public class SpellManager implements Listener, SpellAPI {
         return this.spellList;
     }
 
-    private int getUserCooldown(Player player, Spell spell) {
+    @Override
+    public double getUserCooldown(Player player, Spell spell) {
         double cooldownRemaining = 0;
 
         if (isOnCooldown(player, spell.getName())) {
@@ -332,7 +384,7 @@ public class SpellManager implements Listener, SpellAPI {
                 cooldownRemaining = (cd.get(spell) + ((spell.getCooldown() + 1) * 1000)) - System.currentTimeMillis();
             }
         }
-        return ((int) (cooldownRemaining / 1000));
+        return cooldownRemaining / 1000;
     }
 
     /**
@@ -433,6 +485,7 @@ public class SpellManager implements Listener, SpellAPI {
         Items
          */
         this.spellList.add(new Potion());
+        this.spellList.add(new Combat());
         /*
         Artifacts
          */
@@ -469,7 +522,6 @@ public class SpellManager implements Listener, SpellAPI {
         new BukkitRunnable() {
             @Override
             public void run() {
-
                 for (Player player : Bukkit.getOnlinePlayers()) {
                     if (cooldownMap.containsKey(player.getUniqueId())) {
                         ConcurrentHashMap<Spell, Long> spells = cooldownMap.get(player.getUniqueId());
@@ -479,8 +531,11 @@ public class SpellManager implements Listener, SpellAPI {
                         for (Spell spell : spells.keySet()) {
                             if (getUserCooldown(player, spell) <= 0)
                                 removeCooldown(player, spell);
-                            else
-                                cdString.add(ChatColor.RED + "" + ChatColor.BOLD + spell.getName() + ChatColor.RED + ChatColor.BOLD + ": " + ChatColor.YELLOW + getUserCooldown(player, spell) + "s");
+                            else {
+                                double cooldown = getUserCooldown(player, spell);
+                                String formattedCooldown = String.format("%.2f", cooldown);
+                                cdString.add(ChatColor.RED + String.valueOf(ChatColor.BOLD) + spell.getName() + ChatColor.RED + ChatColor.BOLD + ": " + ChatColor.YELLOW + formattedCooldown + "s");
+                            }
                         }
 
                         player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(ChatColor.RED + String.join(ChatColor.YELLOW + " ", cdString)));
@@ -489,4 +544,5 @@ public class SpellManager implements Listener, SpellAPI {
             }
         }.runTaskTimerAsynchronously(this.plugin, 0, 5L); // every 0.25s
     }
+
 }

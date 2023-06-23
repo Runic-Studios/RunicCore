@@ -6,7 +6,7 @@ import com.runicrealms.plugin.events.LeaveCombatEvent;
 import com.runicrealms.plugin.events.MagicDamageEvent;
 import com.runicrealms.plugin.events.MobDamageEvent;
 import com.runicrealms.plugin.events.PhysicalDamageEvent;
-import com.runicrealms.plugin.player.CombatManager;
+import com.runicrealms.plugin.player.CombatType;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -35,7 +35,7 @@ public class CombatListener implements Listener {
     public void onMobDamage(MobDamageEvent event) {
         if (event.isCancelled()) return;
         if (!(event.getVictim() instanceof Player player)) return; // only listen when a player takes damage
-        EnterCombatEvent enterCombatEvent = new EnterCombatEvent(player, CombatManager.CombatType.MOB);
+        EnterCombatEvent enterCombatEvent = new EnterCombatEvent(player, CombatType.MOB);
         Bukkit.getPluginManager().callEvent(enterCombatEvent);
     }
 
@@ -47,7 +47,7 @@ public class CombatListener implements Listener {
     public void onPhysicalDamage(PhysicalDamageEvent event) {
         if (event.isCancelled()) return;
         if (event.getVictim() instanceof Player) return; // handled in RunicPvP
-        EnterCombatEvent enterCombatEvent = new EnterCombatEvent(event.getPlayer(), CombatManager.CombatType.MOB);
+        EnterCombatEvent enterCombatEvent = new EnterCombatEvent(event.getPlayer(), CombatType.MOB);
         Bukkit.getPluginManager().callEvent(enterCombatEvent);
     }
 
@@ -59,7 +59,7 @@ public class CombatListener implements Listener {
     public void onSpellDamage(MagicDamageEvent event) {
         if (event.isCancelled()) return;
         if (event.getVictim() instanceof Player) return; // handled in RunicPvP
-        EnterCombatEvent enterCombatEvent = new EnterCombatEvent(event.getPlayer(), CombatManager.CombatType.MOB);
+        EnterCombatEvent enterCombatEvent = new EnterCombatEvent(event.getPlayer(), CombatType.MOB);
         Bukkit.getPluginManager().callEvent(enterCombatEvent);
     }
 }
