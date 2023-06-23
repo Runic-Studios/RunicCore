@@ -41,6 +41,7 @@ import com.runicrealms.plugin.commands.admin.TempbanCMD;
 import com.runicrealms.plugin.commands.admin.TempunbanCMD;
 import com.runicrealms.plugin.commands.admin.TravelCMD;
 import com.runicrealms.plugin.commands.admin.VanishCMD;
+import com.runicrealms.plugin.commands.player.DiscordCMD;
 import com.runicrealms.plugin.commands.player.ExpCMD;
 import com.runicrealms.plugin.commands.player.HelpCMD;
 import com.runicrealms.plugin.commands.player.MapLink;
@@ -552,6 +553,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         commandManager.registerCommand(new TempbanCMD());
         commandManager.registerCommand(new TempunbanCMD());
         commandManager.registerCommand(new TPHereCMD());
+        commandManager.registerCommand(new DiscordCMD());
 
         partyChannel = new PartyChannel();
         RunicChat.getRunicChatAPI().registerChatChannel(partyChannel);
