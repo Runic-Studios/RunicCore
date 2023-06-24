@@ -22,6 +22,7 @@ public enum TravelLocation {
     NAZMORA("nazmora", "Naz'mora", new Location(Bukkit.getWorld("Alterra"), 2608.5, 33, 998.5, 0, 0)),
     ORC_OUTPOST("orc_outpost", "Orc Outpost", new Location(Bukkit.getWorld("Alterra"), 2428.5, 25, 1754.5, 90, 0)),
     STONEHAVEN("stonehaven", "Stonehaven", new Location(Bukkit.getWorld("Alterra"), -788.5, 38, 749.5, 90, 0)),
+    AZUREMIST("azuremist", "Azuremist Peak", new Location(Bukkit.getWorld("Alterra"), 350.5, 97, 787.5, 180, 0)),
     FROSTS_END("frosts_end", "Frost's End", new Location(Bukkit.getWorld("Alterra"), 1116.5, 33, 2576.5, 90, 0)),
     /*
     Conquest Points

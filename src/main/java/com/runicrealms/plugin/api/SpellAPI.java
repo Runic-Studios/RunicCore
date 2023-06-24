@@ -21,6 +21,15 @@ public interface SpellAPI {
     void addCooldown(final Player player, final Spell spell, double cooldownTime);
 
     /**
+     * Gets the current cooldown of the user's spell
+     *
+     * @param player to check
+     * @param spell  to lookup
+     * @return its remaining cooldown
+     */
+    double getUserCooldown(Player player, Spell spell);
+
+    /**
      * Gets the spell in the associated 'slot' from player spell wrapper.
      *
      * @param player to grab spell for
@@ -35,6 +44,24 @@ public interface SpellAPI {
      * @return a map of players currently affected by shields
      */
     Map<UUID, ShieldPayload> getShieldedPlayers();
+
+    /**
+     * Adds duration to remaining cooldown for spell
+     *
+     * @param player       to add cooldown to
+     * @param spell        to apply cooldown to
+     * @param cooldownTime of spell
+     */
+    void increaseCooldown(final Player player, final Spell spell, double cooldownTime);
+
+    /**
+     * Adds duration to remaining cooldown for spell
+     *
+     * @param player       to add cooldown to
+     * @param spell        to apply cooldown to
+     * @param cooldownTime of spell
+     */
+    void increaseCooldown(final Player player, final String spell, double cooldownTime);
 
     /**
      * Get the spell object matching name
@@ -101,6 +128,24 @@ public interface SpellAPI {
      * @param duration the duration to reduce the CD (in seconds, so 0.5 for half sec)
      */
     void reduceCooldown(Player player, String spell, double duration);
+
+    /**
+     * Sets the cooldown of the given spell for the player to the duration
+     *
+     * @param player   who cast the spell
+     * @param spell    the spell to reduce CD for
+     * @param duration the duration to set the CD (in seconds, so 0.5 for half sec)
+     */
+    void setCooldown(Player player, Spell spell, double duration);
+
+    /**
+     * Sets the cooldown of the given spell for the player to the duration
+     *
+     * @param player   who cast the spell
+     * @param spell    the name of the spell to reduce CD for
+     * @param duration the duration to set the CD (in seconds, so 0.5 for half sec)
+     */
+    void setCooldown(Player player, String spell, double duration);
 
     /**
      * @param caster    who cast the spell

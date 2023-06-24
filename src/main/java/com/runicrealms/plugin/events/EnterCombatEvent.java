@@ -1,7 +1,7 @@
 package com.runicrealms.plugin.events;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.player.CombatManager;
+import com.runicrealms.plugin.player.CombatType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
@@ -14,7 +14,7 @@ public class EnterCombatEvent extends Event implements Cancellable {
     private static final int PARTY_TAG_RANGE = 100;
     private static final HandlerList handlers = new HandlerList();
     private final Player player;
-    private CombatManager.CombatType combatType;
+    private CombatType combatType;
     private boolean isCancelled = false;
 
     /**
@@ -22,7 +22,7 @@ public class EnterCombatEvent extends Event implements Cancellable {
      *
      * @param player the player who will be tagged in combat
      */
-    public EnterCombatEvent(Player player, CombatManager.CombatType combatType) {
+    public EnterCombatEvent(Player player, CombatType combatType) {
         this.player = player;
         this.combatType = combatType;
     }
@@ -34,7 +34,7 @@ public class EnterCombatEvent extends Event implements Cancellable {
     /**
      * Both the player AND their party are tagged in combat
      */
-    public static void tagPlayerAndPartyInCombat(Player player, CombatManager.CombatType combatType) {
+    public static void tagPlayerAndPartyInCombat(Player player, CombatType combatType) {
         RunicCore.getCombatAPI().enterCombat(player.getUniqueId(), combatType);
         tagPlayerPartyInCombat(player, combatType);
     }
@@ -44,7 +44,7 @@ public class EnterCombatEvent extends Event implements Cancellable {
      *
      * @param player the player who initiated the combat tag
      */
-    private static void tagPlayerPartyInCombat(Player player, CombatManager.CombatType combatType) {
+    private static void tagPlayerPartyInCombat(Player player, CombatType combatType) {
         if (RunicCore.getPartyAPI().getParty(player.getUniqueId()) == null) return;
         for (Player member : RunicCore.getPartyAPI().getParty(player.getUniqueId()).getMembersWithLeader()) {
             if (member == player) continue;
@@ -55,11 +55,11 @@ public class EnterCombatEvent extends Event implements Cancellable {
         }
     }
 
-    public CombatManager.CombatType getCombatType() {
+    public CombatType getCombatType() {
         return combatType;
     }
 
-    public void setCombatType(CombatManager.CombatType combatType) {
+    public void setCombatType(CombatType combatType) {
         this.combatType = combatType;
     }
 

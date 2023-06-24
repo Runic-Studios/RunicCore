@@ -1,6 +1,7 @@
 package com.runicrealms.plugin.spellapi.skilltrees.gui;
 
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.commands.admin.ResetTreeCMD;
 import com.runicrealms.plugin.common.util.ChatUtils;
 import com.runicrealms.plugin.common.util.ColorUtil;
 import com.runicrealms.plugin.common.util.GUIUtil;
@@ -25,8 +26,8 @@ public class SpellEditorGUI implements InventoryHolder {
 
     public static final int SPELL_ONE_INDEX = 10;
     public static final int SPELL_TWO_INDEX = 16;
-    public static final int SPELL_THREE_INDEX = 46;
-    public static final int SPELL_FOUR_INDEX = 52;
+    public static final int SPELL_THREE_INDEX = 37;
+    public static final int SPELL_FOUR_INDEX = 43;
     private static final int SLOT_REQ_2 = 10;
     private static final int SLOT_REQ_3 = 15;
     private static final int SLOT_REQ_4 = 20;
@@ -71,6 +72,20 @@ public class SpellEditorGUI implements InventoryHolder {
         return SLOT_REQ_4;
     }
 
+    private ItemStack resetButton() {
+        ItemStack infoItem = new ItemStack(Material.MILK_BUCKET);
+        ItemMeta meta = infoItem.getItemMeta();
+        assert meta != null;
+        meta.setDisplayName(ChatColor.LIGHT_PURPLE + "Reset Skill Trees");
+        List<String> lore = new ArrayList<>();
+        lore.add("");
+        lore.addAll(ChatUtils.formattedText("&6&lCLICK &7to reset and refund your skill points! Current cost: " +
+                ResetTreeCMD.getCostStringFromLevel(ResetTreeCMD.getCostFromLevel(player))));
+        meta.setLore(lore);
+        infoItem.setItemMeta(meta);
+        return infoItem;
+    }
+
     private ItemStack ancientRunestone() {
         ItemStack skillTreeButton = new ItemStack(Material.POPPED_CHORUS_FRUIT);
         try {
@@ -85,7 +100,7 @@ public class SpellEditorGUI implements InventoryHolder {
             String spellTwo = "&d[L] &7Spell Left-click: &f" + playerSpellData.getSpellLeftClick();
             String spellThree = "&d[R] &7Spell Right-click: &f" + playerSpellData.getSpellRightClick();
             String spellFour = "&d[" + slotFour + "] &7Spell Slot Four: &f" + playerSpellData.getSpellSwapHands();
-            List<String> lore = new ArrayList<String>() {
+            List<String> lore = new ArrayList<>() {
                 {
                     add(ColorUtil.format(spellOne));
                     add(ColorUtil.format(spellTwo));
@@ -119,8 +134,10 @@ public class SpellEditorGUI implements InventoryHolder {
      */
     private void openMenu() {
         this.inventory.clear();
+        GUIUtil.fillInventoryBorders(this.inventory);
         this.inventory.setItem(0, GUIUtil.BACK_BUTTON);
-        this.inventory.setItem(31, ancientRunestone());
+        this.inventory.setItem(4, ancientRunestone());
+        this.inventory.setItem(5, resetButton());
         this.inventory.setItem(SPELL_ONE_INDEX, spellButton(1, 0));
         this.inventory.setItem(SPELL_TWO_INDEX, spellButton(2, SLOT_REQ_2));
         this.inventory.setItem(SPELL_THREE_INDEX, spellButton(3, SLOT_REQ_3));

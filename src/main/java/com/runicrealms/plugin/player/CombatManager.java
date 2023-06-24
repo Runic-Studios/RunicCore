@@ -81,11 +81,6 @@ public class CombatManager implements CombatAPI, Listener {
         }, 0, 20L);
     }
 
-    public enum CombatType {
-        MOB,
-        PLAYER
-    }
-
     static class CombatPayload {
         private final Player player;
         private long lastRefreshTime;
