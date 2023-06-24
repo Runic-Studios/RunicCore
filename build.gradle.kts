@@ -16,7 +16,6 @@ dependencies {
     compileOnly(commonLibs.springdatamongodb)
     compileOnly(commonLibs.holographicdisplays)
     compileOnly(commonLibs.spigot)
-    compileOnly(commonLibs.craftbukkit)
     compileOnly(commonLibs.mongodbdriversync)
     compileOnly(commonLibs.mongodbdrivercore)
     compileOnly(commonLibs.jedis)

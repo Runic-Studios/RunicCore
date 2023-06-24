@@ -1,8 +1,9 @@
 package com.runicrealms.plugin.utilities;
 
-import com.gmail.filoghost.holographicdisplays.api.Hologram;
-import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
 import com.runicrealms.plugin.RunicCore;
+import me.filoghost.holographicdisplays.api.HolographicDisplaysAPI;
+import me.filoghost.holographicdisplays.api.hologram.Hologram;
+import me.filoghost.holographicdisplays.api.hologram.VisibilitySettings;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -34,14 +35,14 @@ public class HologramUtil {
         if (zDif == 0) {
             zDif = 0.5;
         }
-        Hologram hologram = HologramsAPI.createHologram(RunicCore.getInstance(), location.add(xDif, yDif, zDif));
-        hologram.appendTextLine(lineToDisplay);
+        Hologram hologram = HolographicDisplaysAPI.get(RunicCore.getInstance()).createHologram(location.add(xDif, yDif, zDif));
+        hologram.getLines().appendText(lineToDisplay);
         if (players == null) {
-            hologram.getVisibilityManager().setVisibleByDefault(true);
+            hologram.getVisibilitySettings().setGlobalVisibility(VisibilitySettings.Visibility.VISIBLE);
         } else {
-            hologram.getVisibilityManager().setVisibleByDefault(false);
+            hologram.getVisibilitySettings().setGlobalVisibility(VisibilitySettings.Visibility.HIDDEN);
             for (Player player : players) {
-                hologram.getVisibilityManager().showTo(player);
+                hologram.getVisibilitySettings().setIndividualVisibility(player, VisibilitySettings.Visibility.VISIBLE);
             }
         }
         Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), hologram::delete, 30L); // 1.5s

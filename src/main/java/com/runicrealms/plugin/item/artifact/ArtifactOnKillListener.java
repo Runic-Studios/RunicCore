@@ -5,7 +5,7 @@ import com.runicrealms.plugin.events.RunicDeathEvent;
 import com.runicrealms.plugin.item.artifact.event.RunicArtifactOnKillEvent;
 import com.runicrealms.runicitems.item.util.RunicArtifactAbilityTrigger;
 import com.runicrealms.runicitems.util.ArtifactUtil;
-import io.lumine.xikage.mythicmobs.api.bukkit.events.MythicMobDeathEvent;
+import io.lumine.mythic.bukkit.events.MythicMobDeathEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;

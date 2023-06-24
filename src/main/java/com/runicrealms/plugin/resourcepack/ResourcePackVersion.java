@@ -8,7 +8,8 @@ public enum ResourcePackVersion {
     // Every version is the same now actually
     MC_1_16("https://www.dropbox.com/s/xtjoq09us61nrp3/RR%20Resourcepack%206.8.23.2.zip?dl=1", 578, 754),
     MC_1_17("https://www.dropbox.com/s/xtjoq09us61nrp3/RR%20Resourcepack%206.8.23.2.zip?dl=1", 754, 756),
-    MC_1_18("https://www.dropbox.com/s/xtjoq09us61nrp3/RR%20Resourcepack%206.8.23.2.zip?dl=1", 756, 9999);
+    MC_1_18("https://www.dropbox.com/s/xtjoq09us61nrp3/RR%20Resourcepack%206.8.23.2.zip?dl=1", 756, 9999),
+    MC_1_19("https://www.dropbox.com/s/xtjoq09us61nrp3/RR%20Resourcepack%206.8.23.2.zip?dl=1", 756, 9999);
 
     private final String link;
     private final Integer minVersion;

@@ -1,7 +1,7 @@
 package com.runicrealms.plugin.spellapi.spellutil;
 
-import io.lumine.xikage.mythicmobs.MythicMobs;
-import io.lumine.xikage.mythicmobs.mobs.ActiveMob;
+import io.lumine.mythic.bukkit.MythicBukkit;
+import io.lumine.mythic.core.mobs.ActiveMob;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
@@ -76,8 +76,8 @@ public class KnockbackUtil {
      */
     public static void knockBackMob(Player damager, Entity entity, boolean isRanged) {
         // No boss knockback!
-        if (MythicMobs.inst().getMobManager().getActiveMob(entity.getUniqueId()).isPresent()) {
-            ActiveMob am = MythicMobs.inst().getMobManager().getActiveMob(entity.getUniqueId()).get();
+        if (MythicBukkit.inst().getMobManager().getActiveMob(entity.getUniqueId()).isPresent()) {
+            ActiveMob am = MythicBukkit.inst().getMobManager().getActiveMob(entity.getUniqueId()).get();
             if (am.hasFaction() && am.getFaction().equalsIgnoreCase("boss")) {
                 return;
             }

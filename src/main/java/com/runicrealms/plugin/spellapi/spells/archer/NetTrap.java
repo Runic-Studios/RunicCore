@@ -1,7 +1,5 @@
 package com.runicrealms.plugin.spellapi.spells.archer;
 
-import com.gmail.filoghost.holographicdisplays.api.Hologram;
-import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.events.MagicDamageEvent;
 import com.runicrealms.plugin.events.PhysicalDamageEvent;
@@ -13,6 +11,8 @@ import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.spellapi.spelltypes.WarmupSpell;
 import com.runicrealms.plugin.spellapi.spellutil.particles.Circle;
+import me.filoghost.holographicdisplays.api.HolographicDisplaysAPI;
+import me.filoghost.holographicdisplays.api.hologram.Hologram;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -55,8 +55,8 @@ public class NetTrap extends Spell implements DurationSpell, RadiusSpell, Warmup
     public void executeSpell(Player player, SpellItemType type) {
         Location location = player.getLocation();
         Location castLocation = new Location(location.getWorld(), location.getBlockX() + 0.5, location.getBlockY(), location.getBlockZ() + 0.5);
-        Hologram hologram = HologramsAPI.createHologram(RunicCore.getInstance(), castLocation.getBlock().getLocation().add(0.5, 1.0, 0.5));
-        hologram.appendItemLine(new ItemStack(Material.RABBIT_HIDE));
+        Hologram hologram = HolographicDisplaysAPI.get(RunicCore.getInstance()).createHologram(castLocation.getBlock().getLocation().add(0.5, 1.0, 0.5));
+        hologram.getLines().appendItem(new ItemStack(Material.RABBIT_HIDE));
         player.getWorld().playSound(player.getLocation(), Sound.BLOCK_ANVIL_PLACE, 0.5f, 2.0f);
         new BukkitRunnable() {
             int count = 1;
