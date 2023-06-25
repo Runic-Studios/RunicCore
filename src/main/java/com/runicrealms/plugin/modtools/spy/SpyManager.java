@@ -2,6 +2,7 @@ package com.runicrealms.plugin.modtools.spy;
 
 import com.runicrealms.RunicChat;
 import com.runicrealms.api.chat.ChatChannel;
+import com.runicrealms.api.event.ChatChannelMessageEvent;
 import com.runicrealms.channels.StaffChannel;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.common.util.ChatUtils;
@@ -11,6 +12,7 @@ import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.scheduler.BukkitTask;
@@ -18,6 +20,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -78,11 +81,7 @@ public final class SpyManager implements Listener {
             RunicCore.getVanishAPI().hidePlayer(spy);
         }
 
-        for (ChatChannel channel : RunicChat.getRunicChatAPI().getChatChannels()) {
-            if (channel.isSpyable() && !RunicChat.getRunicChatAPI().isSpyingOnChannel(spy, channel)) {
-                RunicChat.getRunicChatAPI().setSpy(spy, channel, true);
-            }
-        }
+        RunicChat.getRunicChatAPI().setWhisperSpy(spy, target, true);
 
         spy.setGameMode(GameMode.SPECTATOR);
         spy.teleport(target.getLocation(), PlayerTeleportEvent.TeleportCause.PLUGIN);
@@ -122,14 +121,16 @@ public final class SpyManager implements Listener {
             RunicCore.getVanishAPI().showPlayer(spy);
         }
 
-        for (ChatChannel channel : RunicChat.getRunicChatAPI().getChatChannels()) {
-            if (channel.isSpyable() && RunicChat.getRunicChatAPI().isSpyingOnChannel(spy, channel)) {
-                RunicChat.getRunicChatAPI().setSpy(spy, channel, false);
-            }
-        }
-
         spy.setGameMode(GameMode.ADVENTURE);
         spy.teleport(info.getOrigin(), PlayerTeleportEvent.TeleportCause.PLUGIN);
+
+        Player target = Bukkit.getPlayer(info.getTarget());
+
+        if (target == null) {
+            throw new IllegalStateException("Target cannot be null");
+        }
+
+        RunicChat.getRunicChatAPI().setWhisperSpy(spy, target, false);
     }
 
     @EventHandler
@@ -141,6 +142,21 @@ public final class SpyManager implements Listener {
     private void onPlayerTeleport(@NotNull PlayerTeleportEvent event) {
         if (event.getCause() == PlayerTeleportEvent.TeleportCause.SPECTATE && this.spies.containsKey(event.getPlayer().getUniqueId())) {
             event.setCancelled(true);
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
+    private void onChatChannelMessage(@NotNull ChatChannelMessageEvent event) {
+        for (UUID uuid : this.spies.keySet()) {
+            SpyInfo info = this.spies.get(uuid);
+
+            List<UUID> recipients = event.getRecipients().stream().map(Player::getUniqueId).toList();
+
+            if (recipients.contains(info.getTarget()) &&
+                    !recipients.contains(uuid) &&
+                    event.getSpies().stream().map(Player::getUniqueId).noneMatch(id -> id.equals(uuid))) {
+                event.getSpies().add(Bukkit.getPlayer(uuid));
+            }
         }
     }
 
