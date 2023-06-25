@@ -18,6 +18,7 @@ import com.runicrealms.plugin.api.ScoreboardAPI;
 import com.runicrealms.plugin.api.ShopAPI;
 import com.runicrealms.plugin.api.SkillTreeAPI;
 import com.runicrealms.plugin.api.SpellAPI;
+import com.runicrealms.plugin.api.SpyAPI;
 import com.runicrealms.plugin.api.StatAPI;
 import com.runicrealms.plugin.api.StatusEffectAPI;
 import com.runicrealms.plugin.api.TabAPI;
@@ -123,6 +124,8 @@ import com.runicrealms.plugin.model.TitleManager;
 import com.runicrealms.plugin.modtools.AFKListener;
 import com.runicrealms.plugin.modtools.TempbanListener;
 import com.runicrealms.plugin.modtools.VanishManager;
+import com.runicrealms.plugin.modtools.spy.SpyCommand;
+import com.runicrealms.plugin.modtools.spy.SpyManager;
 import com.runicrealms.plugin.party.PartyChannel;
 import com.runicrealms.plugin.party.PartyChannelCommand;
 import com.runicrealms.plugin.party.PartyCommand;
@@ -223,6 +226,7 @@ public class RunicCore extends JavaPlugin implements Listener {
     private static BoostAPI boostAPI;
     private static VanishAPI vanishAPI;
     private static CoreWriteOperation coreWriteOperation;
+    private static SpyAPI spyAPI;
 
     // getters for handlers
     public static RunicCore getInstance() {
@@ -349,6 +353,10 @@ public class RunicCore extends JavaPlugin implements Listener {
         return vanishAPI;
     }
 
+    public static SpyAPI getSpyAPI() {
+        return spyAPI;
+    }
+
     /**
      * @return a TaskChain for thread context switching
      */
@@ -399,6 +407,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         boostAPI = null;
         vanishAPI = null;
         coreWriteOperation = null;
+        spyAPI = null;
     }
 
     @Override
@@ -469,6 +478,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         ambientSoundHandler = new AmbientSoundHandler();
         boostAPI = new BoostManager();
         vanishAPI = new VanishManager();
+        spyAPI = new SpyManager();
         new DaylightCycleListener();
         new NpcListener();
         new ArtifactOnCastListener();
@@ -554,6 +564,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         commandManager.registerCommand(new TempunbanCMD());
         commandManager.registerCommand(new TPHereCMD());
         commandManager.registerCommand(new DiscordCMD());
+        commandManager.registerCommand(new SpyCommand());
 
         partyChannel = new PartyChannel();
         RunicChat.getRunicChatAPI().registerChatChannel(partyChannel);

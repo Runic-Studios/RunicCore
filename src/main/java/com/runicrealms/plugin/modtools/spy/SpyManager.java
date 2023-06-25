@@ -5,11 +5,11 @@ import com.runicrealms.api.chat.ChatChannel;
 import com.runicrealms.api.event.ChatChannelMessageEvent;
 import com.runicrealms.channels.StaffChannel;
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.api.SpyAPI;
 import com.runicrealms.plugin.common.util.ChatUtils;
 import com.runicrealms.plugin.rdb.event.CharacterQuitEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
-import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -31,7 +31,7 @@ import java.util.UUID;
  * @author BoBoBalloon
  * @since 6/24/23
  */
-public final class SpyManager implements Listener {
+public final class SpyManager implements SpyAPI, Listener {
     private final Map<UUID, SpyInfo> spies;
 
     public SpyManager() {
@@ -157,77 +157,6 @@ public final class SpyManager implements Listener {
                     event.getSpies().stream().map(Player::getUniqueId).noneMatch(id -> id.equals(uuid))) {
                 event.getSpies().add(Bukkit.getPlayer(uuid));
             }
-        }
-    }
-
-    /**
-     * A class that contains all information needed by the plugin for the spy
-     *
-     * @author BoBoBalloon
-     * @since 6/24/23
-     */
-    private static class SpyInfo {
-        private final UUID target;
-        private final Location origin;
-        private final BukkitTask task;
-        private Location center;
-        //cache of inventory here if player logs out
-
-
-        public SpyInfo(@NotNull UUID target, @NotNull Location origin, @NotNull BukkitTask task, @NotNull Location center) {
-            this.target = target;
-            this.origin = origin;
-            this.task = task;
-            this.center = center;
-        }
-
-        /**
-         * A method that returns the uuid of the user being spied on
-         *
-         * @return the uuid of the user being spied on
-         */
-        @NotNull
-        public UUID getTarget() {
-            return this.target;
-        }
-
-        /**
-         * A method that returns the location of the spy before they were set into spy mode
-         *
-         * @return the location of the spy before they were set into spy mode
-         */
-        @NotNull
-        public Location getOrigin() {
-            return this.origin;
-        }
-
-        /**
-         * Gets an instance of the repeating task that makes sure the spy is nearby the spied
-         *
-         * @return the repeating task that makes sure the spy is nearby the spied
-         */
-        @NotNull
-        public BukkitTask getTask() {
-            return this.task;
-        }
-
-        /**
-         * A method that gets the current target location of the user being spied on
-         *
-         * @return the current target location of the user being spied on
-         */
-        @NotNull
-        public Location getCenter() {
-            return this.center;
-        }
-
-        /**
-         * A method that sets the current target location of the user being spied on
-         *
-         * @param center the current target location of the user being spied on
-         */
-        public void setCenter(@NotNull Location center) {
-            this.center = center;
         }
     }
 }
