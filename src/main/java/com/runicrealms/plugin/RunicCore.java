@@ -10,6 +10,8 @@ import com.comphenix.protocol.ProtocolManager;
 import com.runicrealms.RunicChat;
 import com.runicrealms.plugin.api.CombatAPI;
 import com.runicrealms.plugin.api.CoreWriteOperation;
+import com.runicrealms.plugin.api.FieldBossAPI;
+import com.runicrealms.plugin.api.LootAPI;
 import com.runicrealms.plugin.api.LootTableAPI;
 import com.runicrealms.plugin.api.PartyAPI;
 import com.runicrealms.plugin.api.PlayerDataAPI;
@@ -62,6 +64,8 @@ import com.runicrealms.plugin.donor.boost.ui.BoostConfirmUIListener;
 import com.runicrealms.plugin.donor.boost.ui.BoostsUIListener;
 import com.runicrealms.plugin.donor.ui.DonorPerksUIListener;
 import com.runicrealms.plugin.donor.ui.DonorUIListener;
+import com.runicrealms.plugin.fieldboss.FieldBossCommand;
+import com.runicrealms.plugin.fieldboss.FieldBossManager;
 import com.runicrealms.plugin.item.artifact.ArtifactOnCastListener;
 import com.runicrealms.plugin.item.artifact.ArtifactOnHitListener;
 import com.runicrealms.plugin.item.artifact.ArtifactOnKillListener;
@@ -116,6 +120,8 @@ import com.runicrealms.plugin.listeners.StaffListener;
 import com.runicrealms.plugin.listeners.SwapHandsListener;
 import com.runicrealms.plugin.listeners.WeaponSkinListener;
 import com.runicrealms.plugin.listeners.WorldChangeListener;
+import com.runicrealms.plugin.loot.ClientLootManager;
+import com.runicrealms.plugin.loot.LootManager;
 import com.runicrealms.plugin.luckperms.LuckPermsManager;
 import com.runicrealms.plugin.model.MongoTask;
 import com.runicrealms.plugin.model.SettingsManager;
@@ -223,6 +229,8 @@ public class RunicCore extends JavaPlugin implements Listener {
     private static BoostAPI boostAPI;
     private static VanishAPI vanishAPI;
     private static CoreWriteOperation coreWriteOperation;
+    private static FieldBossAPI fieldBossAPI;
+    private static LootAPI lootAPI;
 
     // getters for handlers
     public static RunicCore getInstance() {
@@ -349,6 +357,14 @@ public class RunicCore extends JavaPlugin implements Listener {
         return vanishAPI;
     }
 
+    public static FieldBossAPI getFieldBossAPI() {
+        return fieldBossAPI;
+    }
+
+    public static LootAPI getLootAPI() {
+        return lootAPI;
+    }
+
     /**
      * @return a TaskChain for thread context switching
      */
@@ -399,6 +415,8 @@ public class RunicCore extends JavaPlugin implements Listener {
         boostAPI = null;
         vanishAPI = null;
         coreWriteOperation = null;
+        fieldBossAPI = null;
+        lootAPI = null;
     }
 
     @Override
@@ -469,12 +487,15 @@ public class RunicCore extends JavaPlugin implements Listener {
         ambientSoundHandler = new AmbientSoundHandler();
         boostAPI = new BoostManager();
         vanishAPI = new VanishManager();
+        fieldBossAPI = new FieldBossManager();
+        lootAPI = new LootManager();
         new DaylightCycleListener();
         new NpcListener();
         new ArtifactOnCastListener();
         new ArtifactOnHitListener();
         new ArtifactOnKillListener();
         new PlayerQueueManager();
+        new ClientLootManager(lootAPI.getRegenerativeLootChests());
 
 
         // ACF commands
@@ -554,6 +575,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         commandManager.registerCommand(new TempunbanCMD());
         commandManager.registerCommand(new TPHereCMD());
         commandManager.registerCommand(new DiscordCMD());
+        commandManager.registerCommand(new FieldBossCommand());
 
         partyChannel = new PartyChannel();
         RunicChat.getRunicChatAPI().registerChatChannel(partyChannel);

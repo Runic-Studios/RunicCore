@@ -1,0 +1,74 @@
+package com.runicrealms.plugin.loot;
+
+import com.runicrealms.runicitems.RunicItemsAPI;
+import org.bukkit.inventory.ItemStack;
+
+import java.util.List;
+import java.util.Random;
+
+public class LootTable {
+
+    private final String identifier;
+    private final List<LootItem> items;
+    private final int totalWeight;
+
+    public LootTable(String identifier, List<LootItem> items) {
+        this.identifier = identifier;
+        this.items = items;
+        this.totalWeight = items.stream().mapToInt(item -> item.weight).sum();
+    }
+
+    public String getIdentifier() {
+        return this.identifier;
+    }
+
+    public ItemStack generateLoot(LootChest chest) {
+        Random rand = new Random();
+        int value = rand.nextInt(totalWeight);
+        for (LootItem item : items) {
+            value -= item.weight;
+            if (value < 0) {
+                return item.generateItem(chest);
+            }
+        }
+        throw new IllegalStateException("Unreachable");
+    }
+
+    public List<LootItem> getItems() {
+        return this.items;
+    }
+
+    public static class LootItem {
+        private final String templateID;
+        private final int weight;
+        private final int minStackSize;
+        private final int maxStackSize;
+
+        public LootItem(String templateID, int weight, int minStackSize, int maxStackSize) {
+            this.templateID = templateID;
+            this.weight = weight;
+            if (minStackSize > maxStackSize)
+                throw new IllegalArgumentException("LootItem min stack size cannot exceed max stack size!");
+            this.minStackSize = minStackSize;
+            this.maxStackSize = maxStackSize;
+        }
+
+        public ItemStack generateItem(LootChest chest) {
+            return RunicItemsAPI.generateItemFromTemplate(templateID, new Random().nextInt(maxStackSize - minStackSize + 1) + minStackSize).generateItem();
+        }
+
+    }
+
+    public static class LootScriptItem extends LootItem {
+
+        public LootScriptItem(int weight) {
+            super("", weight, 1, 1);
+        }
+
+        @Override
+        public ItemStack generateItem(LootChest chest) {
+            return RunicItemsAPI.generateItemInRange(chest.getItemMinLevel(), chest.getItemMaxLevel(), 1).generateItem();
+        }
+    }
+
+}
