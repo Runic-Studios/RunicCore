@@ -25,28 +25,28 @@ public class GameModeCMD extends BaseCommand {
         }
     }
 
-    @Subcommand("creative")
+    @Subcommand("creative|1")
     @CommandPermission("runiccore.gamemode.creative")
     public void onCommandCreative(Player player) {
         player.setGameMode(GameMode.CREATIVE);
         player.sendMessage(ChatColor.GREEN + "Set your gamemode to creative");
     }
 
-    @Subcommand("adventure")
+    @Subcommand("adventure|2")
     @CommandPermission("runiccore.gamemode.adventure")
     public void onCommandAdventure(Player player) {
         player.setGameMode(GameMode.ADVENTURE);
         player.sendMessage(ChatColor.GREEN + "Set your gamemode to adventure");
     }
 
-    @Subcommand("survival")
+    @Subcommand("survival|0")
     @CommandPermission("runiccore.gamemode.survival")
     public void onCommandSurvival(Player player) {
         player.setGameMode(GameMode.SURVIVAL);
         player.sendMessage(ChatColor.GREEN + "Set your gamemode to survival");
     }
 
-    @Subcommand("spectator")
+    @Subcommand("spectator|3")
     @CommandPermission("runiccore.gamemode.spectator")
     public void onCommandSpectator(Player player) {
         player.setGameMode(GameMode.SPECTATOR);

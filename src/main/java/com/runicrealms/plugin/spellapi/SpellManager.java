@@ -381,7 +381,7 @@ public class SpellManager implements Listener, SpellAPI {
         if (isOnCooldown(player, spell.getName())) {
             ConcurrentHashMap<Spell, Long> cd = this.cooldownMap.get(player.getUniqueId());
             if (cd.keySet().stream().anyMatch(n -> n.getName().equalsIgnoreCase(spell.getName()))) {
-                cooldownRemaining = (cd.get(spell) + ((spell.getCooldown() + 1) * 1000)) - System.currentTimeMillis();
+                cooldownRemaining = (cd.get(spell) + (spell.getCooldown() * 1000)) - System.currentTimeMillis();
             }
         }
         return cooldownRemaining / 1000;

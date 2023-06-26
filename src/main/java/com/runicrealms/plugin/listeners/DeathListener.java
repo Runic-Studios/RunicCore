@@ -14,7 +14,12 @@ import com.runicrealms.runicitems.RunicItemsAPI;
 import com.runicrealms.runicitems.item.RunicItem;
 import com.runicrealms.runicitems.item.stats.RunicItemTag;
 import com.runicrealms.runicitems.util.ItemUtils;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Color;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
+import org.bukkit.World;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -121,10 +126,15 @@ public class DeathListener implements Listener {
             });
         } else {
             victim.teleport(CityLocation.getLocationFromItemStack(victim.getInventory().getItem(8)));
+
+            Gravestone gravestone = RunicCore.getGravestoneManager().getGravestoneMap().get(victim.getUniqueId());
+
+            String gravestoneReminder = gravestone != null ? "Your &4&lGRAVESTONE &chas the remainder of your items and will last for " +
+                    gravestone.getPriorityTime() + "s until it can be looted by others." : "";
+
             victim.sendMessage(ColorUtil.format("&cYou have died! Your armor and hotbar have been returned. " +
-                    "Any soulbound, quest, and untradeable items have been returned also. " +
-                    "Your &4&lGRAVESTONE &chas the remainder of your items and will last for " +
-                    RunicCore.getGravestoneManager().getGravestoneMap().get(victim.getUniqueId()).getPriorityTime() + "s until it can be looted by others."));
+                    "Any soulbound, quest, and untradeable items have also been returned. " +
+                    gravestoneReminder));
         }
 
         // Particles, sounds
