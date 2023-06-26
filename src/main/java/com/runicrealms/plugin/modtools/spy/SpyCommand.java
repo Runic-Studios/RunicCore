@@ -27,15 +27,16 @@ import org.jetbrains.annotations.NotNull;
 @Conditions("is-player")
 public class SpyCommand extends BaseCommand {
     @CatchUnknown
+    @Default
     private void onHelp(@NotNull CommandSender sender) {
-        this.send(sender, "&cImproper arguments: " + System.lineSeparator()
-                + "&9/spy <player> - &6enabled/disables spy mode on the given target" + System.lineSeparator()
-                + "&9/spy stop - &6disables spy mode" + System.lineSeparator()
-                + "&9/spy inventory - &6opens a preview of the target's inventory" + System.lineSeparator()
-                + "&9/spy bank - &6opens a preview of the target's bank");
+        this.send(sender, "&cImproper arguments:\n"
+                + "\t&9- /spy on <player> - &6enabled/disables spy mode on the given target\n"
+                + "\t&9- /spy stop - &6disables spy mode\n"
+                + "\t&9- /spy inventory - &6opens a preview of the target's inventory\n"
+                + "\t&9- /spy bank - &6opens a preview of the target's bank");
     }
 
-    @Default
+    @Subcommand("on")
     @CommandCompletion("@players @nothing")
     private void onSpy(@NotNull Player player, @NotNull String[] args) {
         if (args.length != 1) {
@@ -46,6 +47,11 @@ public class SpyCommand extends BaseCommand {
         String arg = args[0];
 
         Player target = Bukkit.getPlayerExact(arg);
+
+        if (player.equals(target)) {
+            this.send(player, "&cYou cannot spy on yourself!");
+            return;
+        }
 
         if (target == null) {
             this.send(player, "&cCould not find player " + arg + "!");
@@ -127,6 +133,6 @@ public class SpyCommand extends BaseCommand {
      * @param text   the message
      */
     private void send(@NotNull CommandSender sender, @NotNull String text) {
-        sender.sendMessage(ColorUtil.format("&r&d[&5Runic&9Spy&d] > &r" + text));
+        sender.sendMessage(ColorUtil.format("&r&d[&5Runic&2Spy&d] > &r" + text));
     }
 }

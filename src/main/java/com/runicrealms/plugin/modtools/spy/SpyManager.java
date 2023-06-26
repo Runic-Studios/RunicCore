@@ -7,6 +7,7 @@ import com.runicrealms.channels.StaffChannel;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.api.SpyAPI;
 import com.runicrealms.plugin.common.util.ChatUtils;
+import com.runicrealms.plugin.common.util.ColorUtil;
 import com.runicrealms.plugin.rdb.event.CharacterQuitEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -60,6 +61,10 @@ public final class SpyManager implements SpyAPI, Listener {
      */
     @Override
     public void setSpy(@NotNull Player spy, @NotNull Player target) {
+        if (spy.equals(target)) {
+            return;
+        }
+
         if (this.spies.containsKey(spy.getUniqueId())) {
             this.removeSpy(spy);
         }
@@ -179,8 +184,9 @@ public final class SpyManager implements SpyAPI, Listener {
 
     @EventHandler(ignoreCancelled = true)
     private void onPlayerCommandPreprocess(@NotNull PlayerCommandPreprocessEvent event) {
-        if (this.spies.containsKey(event.getPlayer().getUniqueId()) && !event.getMessage().startsWith("/spy")) {
+        if (this.spies.containsKey(event.getPlayer().getUniqueId()) && !event.getMessage().startsWith("/spy") && !event.getMessage().startsWith("/whois")) {
             event.setCancelled(true);
+            event.getPlayer().sendMessage(ColorUtil.format("&r&cYou can only execute the spy and whois command while in spy mode!"));
         }
     }
 }
