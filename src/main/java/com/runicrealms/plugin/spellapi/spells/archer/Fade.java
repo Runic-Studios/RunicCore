@@ -44,7 +44,7 @@ public class Fade extends Spell implements DurationSpell {
 
         PacketContainer packet = ProtocolLibrary.getProtocolManager().createPacket(PacketType.Play.Server.PLAYER_INFO);
         packet.getPlayerInfoAction().write(0, EnumWrappers.PlayerInfoAction.ADD_PLAYER);
-        packet.getPlayerInfoDataLists().write(0, Collections.singletonList(
+        packet.getPlayerInfoDataLists().write(1, Collections.singletonList(
                 new PlayerInfoData(
                         WrappedGameProfile.fromPlayer(player),
                         0,

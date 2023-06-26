@@ -14,6 +14,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
@@ -36,6 +37,7 @@ public final class SpyManager implements SpyAPI, Listener {
 
     public SpyManager() {
         this.spies = new HashMap<>();
+        Bukkit.getPluginManager().registerEvents(this, RunicCore.getInstance());
     }
 
     /**
@@ -44,6 +46,7 @@ public final class SpyManager implements SpyAPI, Listener {
      * @param spy the moderator spying on another user
      * @return the necessary info or null if the player is not in spy mode
      */
+    @Override
     @Nullable
     public SpyInfo getInfo(@NotNull Player spy) {
         return this.spies.get(spy.getUniqueId());
@@ -55,6 +58,7 @@ public final class SpyManager implements SpyAPI, Listener {
      * @param spy    the player in spy mode
      * @param target the player being spied on
      */
+    @Override
     public void setSpy(@NotNull Player spy, @NotNull Player target) {
         if (this.spies.containsKey(spy.getUniqueId())) {
             this.removeSpy(spy);
@@ -88,15 +92,9 @@ public final class SpyManager implements SpyAPI, Listener {
 
         this.spies.put(spy.getUniqueId(), new SpyInfo(target.getUniqueId(), spy.getLocation(), task, target.getLocation()));
 
-        Optional<ChatChannel> optional = RunicChat.getRunicChatAPI().getChatChannels().stream()
-                .filter(channel -> channel instanceof StaffChannel)
-                .findAny();
+        ChatChannel staffChannel = this.getStaffChannel();
 
-        if (optional.isEmpty()) {
-            return;
-        }
-
-        ChatChannel staffChannel = optional.get();
+        RunicChat.getRunicChatAPI().setPlayerChatChannel(spy, staffChannel);
 
         for (Player player : staffChannel.getRecipients(spy)) {
             ChatUtils.sendCenteredMessage(player, "&r&9&l" + spy.getName() + " is spying on " + target.getName());
@@ -108,6 +106,7 @@ public final class SpyManager implements SpyAPI, Listener {
      *
      * @param spy the moderator spying on another player
      */
+    @Override
     public void removeSpy(@NotNull Player spy) {
         SpyInfo info = this.spies.remove(spy.getUniqueId());
 
@@ -131,6 +130,24 @@ public final class SpyManager implements SpyAPI, Listener {
         }
 
         RunicChat.getRunicChatAPI().setWhisperSpy(spy, target, false);
+    }
+
+    /**
+     * A method that returns the staff channel
+     *
+     * @return the staff channel
+     */
+    @NotNull
+    private ChatChannel getStaffChannel() {
+        Optional<ChatChannel> optional = RunicChat.getRunicChatAPI().getChatChannels().stream()
+                .filter(channel -> channel instanceof StaffChannel)
+                .findAny();
+
+        if (optional.isEmpty()) {
+            throw new IllegalStateException("There must be a staff channel registered!");
+        }
+
+        return optional.get();
     }
 
     @EventHandler
@@ -157,6 +174,13 @@ public final class SpyManager implements SpyAPI, Listener {
                     event.getSpies().stream().map(Player::getUniqueId).noneMatch(id -> id.equals(uuid))) {
                 event.getSpies().add(Bukkit.getPlayer(uuid));
             }
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    private void onPlayerCommandPreprocess(@NotNull PlayerCommandPreprocessEvent event) {
+        if (this.spies.containsKey(event.getPlayer().getUniqueId()) && !event.getMessage().startsWith("/spy")) {
+            event.setCancelled(true);
         }
     }
 }
