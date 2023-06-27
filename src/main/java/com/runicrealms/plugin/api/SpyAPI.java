@@ -35,4 +35,18 @@ public interface SpyAPI {
      * @param spy the moderator spying on another player
      */
     void removeSpy(@NotNull Player spy);
+
+    /**
+     * A method that starts a preview on the targeter user's inventory
+     *
+     * @param spy the spy looking to preview their target's inventory
+     */
+    void previewInventory(@NotNull Player spy);
+
+    /**
+     * A method that starts a preview on the targeter user's bank
+     *
+     * @param spy the spy looking to preview their target's bank
+     */
+    void previewBank(@NotNull Player spy);
 }

@@ -48,13 +48,13 @@ public class SpyCommand extends BaseCommand {
 
         Player target = Bukkit.getPlayerExact(arg);
 
-        if (player.equals(target)) {
-            this.send(player, "&cYou cannot spy on yourself!");
+        if (target == null) {
+            this.send(player, "&cCould not find player " + arg + "!");
             return;
         }
 
-        if (target == null) {
-            this.send(player, "&cCould not find player " + arg + "!");
+        if (player.getUniqueId().equals(target.getUniqueId())) {
+            this.send(player, "&cYou cannot spy on yourself!");
             return;
         }
 
@@ -62,7 +62,7 @@ public class SpyCommand extends BaseCommand {
 
         SpyInfo info = api.getInfo(player);
 
-        if (info != null && info.getTarget().equals(target.getUniqueId())) {
+        if (info != null && info.getTarget().getUniqueId().equals(target.getUniqueId())) {
             api.removeSpy(player);
             this.send(player, "&9Stopped spying on " + arg + ".");
             return;
@@ -86,14 +86,7 @@ public class SpyCommand extends BaseCommand {
 
         api.removeSpy(player);
 
-        Player target = Bukkit.getPlayer(info.getTarget());
-
-        if (target == null) {
-            this.send(player, "&cFailed to get player name... &9Exiting spy mode.");
-            return;
-        }
-
-        this.send(player, "&9Stopped spying on " + target.getName() + ".");
+        this.send(player, "&9Stopped spying on " + info.getTarget().getName() + ".");
     }
 
     @Subcommand("inventory|inv")
@@ -108,7 +101,8 @@ public class SpyCommand extends BaseCommand {
             return;
         }
 
-        this.send(player, "&cIncomplete implementation");
+        api.previewInventory(player);
+        this.send(player, "&9Previewing " + info.getTarget().getName() + "'s inventory!");
     }
 
     @Subcommand("bank")
@@ -123,7 +117,8 @@ public class SpyCommand extends BaseCommand {
             return;
         }
 
-        this.send(player, "&cIncomplete implementation");
+        api.previewBank(player);
+        this.send(player, "&9Previewing " + info.getTarget().getName() + "'s bank!");
     }
 
     /**

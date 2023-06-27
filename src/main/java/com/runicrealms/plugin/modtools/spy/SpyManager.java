@@ -15,8 +15,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -61,8 +64,12 @@ public final class SpyManager implements SpyAPI, Listener {
      */
     @Override
     public void setSpy(@NotNull Player spy, @NotNull Player target) {
-        if (spy.equals(target)) {
+        if (spy.getUniqueId().equals(target.getUniqueId())) {
             return;
+        }
+
+        if (this.spies.containsKey(target.getUniqueId())) {
+            this.removeSpy(target);
         }
 
         if (this.spies.containsKey(spy.getUniqueId())) {
@@ -76,13 +83,14 @@ public final class SpyManager implements SpyAPI, Listener {
                 throw new IllegalStateException("This cannot be run until the spy is registered!");
             }
 
-            if (info.getCenter().distance(spy.getLocation()) < 200) {
-                return;
-            }
-
             Bukkit.getScheduler().runTask(RunicCore.getInstance(), () -> {
-                info.setCenter(target.getLocation());
-                spy.teleport(info.getCenter(), PlayerTeleportEvent.TeleportCause.PLUGIN);
+                if (info.getTarget().isOnline()) {
+                    info.setCenter(target.getLocation());
+                }
+
+                if (info.getCenter().distance(spy.getLocation()) >= 200) {
+                    spy.teleport(info.getCenter(), PlayerTeleportEvent.TeleportCause.PLUGIN);
+                }
             });
         }, 20, 100);
 
@@ -95,7 +103,7 @@ public final class SpyManager implements SpyAPI, Listener {
         spy.setGameMode(GameMode.SPECTATOR);
         spy.teleport(target.getLocation(), PlayerTeleportEvent.TeleportCause.PLUGIN);
 
-        this.spies.put(spy.getUniqueId(), new SpyInfo(target.getUniqueId(), spy.getLocation(), task, target.getLocation()));
+        this.spies.put(spy.getUniqueId(), new SpyInfo(target, spy.getLocation(), task, target.getLocation()));
 
         ChatChannel staffChannel = this.getStaffChannel();
 
@@ -127,14 +135,42 @@ public final class SpyManager implements SpyAPI, Listener {
 
         spy.setGameMode(GameMode.ADVENTURE);
         spy.teleport(info.getOrigin(), PlayerTeleportEvent.TeleportCause.PLUGIN);
+        RunicChat.getRunicChatAPI().setWhisperSpy(spy, info.getTarget(), false);
+    }
 
-        Player target = Bukkit.getPlayer(info.getTarget());
+    /**
+     * A method that starts a preview on the targeter user's inventory
+     *
+     * @param spy the spy looking to preview their target's inventory
+     */
+    @Override
+    public void previewInventory(@NotNull Player spy) {
+        SpyInfo info = this.spies.get(spy.getUniqueId());
 
-        if (target == null) {
-            throw new IllegalStateException("Target cannot be null");
+        if (info == null) {
+            return;
         }
 
-        RunicChat.getRunicChatAPI().setWhisperSpy(spy, target, false);
+        spy.closeInventory();
+
+        InventoryPreview preview = new InventoryPreview(info.getContents(), info.getArmor());
+        spy.openInventory(preview.getInventory());
+    }
+
+    /**
+     * A method that starts a preview on the targeter user's bank
+     *
+     * @param spy the spy looking to preview their target's bank
+     */
+    @Override
+    public void previewBank(@NotNull Player spy) {
+        SpyInfo info = this.spies.get(spy.getUniqueId());
+
+        if (info == null) {
+            return;
+        }
+
+        spy.closeInventory();
     }
 
     /**
@@ -157,7 +193,17 @@ public final class SpyManager implements SpyAPI, Listener {
 
     @EventHandler
     private void onCharacterLeave(@NotNull CharacterQuitEvent event) {
-        this.removeSpy(event.getPlayer());
+        this.removeSpy(event.getPlayer()); //remove spy if they exist
+
+        for (Map.Entry<UUID, SpyInfo> pair : this.spies.entrySet()) {
+            SpyInfo info = pair.getValue();
+
+            if (info.getTarget().getUniqueId().equals(event.getPlayer().getUniqueId())) {
+                info.setContents(event.getPlayer().getInventory().getContents());
+                info.setArmor(event.getPlayer().getInventory().getArmorContents());
+                //set bank pages preview here
+            }
+        }
     }
 
     @EventHandler(ignoreCancelled = true)
@@ -174,7 +220,7 @@ public final class SpyManager implements SpyAPI, Listener {
 
             List<UUID> recipients = event.getRecipients().stream().map(Player::getUniqueId).toList();
 
-            if (recipients.contains(info.getTarget()) &&
+            if (recipients.contains(info.getTarget().getUniqueId()) &&
                     !recipients.contains(uuid) &&
                     event.getSpies().stream().map(Player::getUniqueId).noneMatch(id -> id.equals(uuid))) {
                 event.getSpies().add(Bukkit.getPlayer(uuid));
@@ -187,6 +233,22 @@ public final class SpyManager implements SpyAPI, Listener {
         if (this.spies.containsKey(event.getPlayer().getUniqueId()) && !event.getMessage().startsWith("/spy") && !event.getMessage().startsWith("/whois")) {
             event.setCancelled(true);
             event.getPlayer().sendMessage(ColorUtil.format("&r&cYou can only execute the spy and whois command while in spy mode!"));
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    private void onInventoryClick(@NotNull InventoryClickEvent event) {
+        Inventory inventory = event.getClickedInventory();
+
+        if (inventory != null && inventory.getHolder() instanceof InventoryPreview) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    private void onInventoryDrag(@NotNull InventoryDragEvent event) {
+        if (event.getInventory().getHolder() instanceof InventoryPreview) {
+            event.setCancelled(true);
         }
     }
 }
