@@ -54,7 +54,7 @@ public class LootChestManager {
                 double z = locations.getDouble(id + ".z");
                 Location loc = new Location(world, x, y, z);
                 LootChest lootChest = new LootChest(id, lootChestTier, loc);
-                lootChests.add(lootChest);
+//                lootChests.add(lootChest);
                 lootChest.getLocation().getBlock().setType(Material.CHEST);
             }
         } catch (NullPointerException e) {

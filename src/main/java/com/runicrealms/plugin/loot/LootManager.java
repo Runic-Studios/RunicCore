@@ -34,8 +34,10 @@ public class LootManager implements LootAPI {
 
     public LootManager() {
         Bukkit.getScheduler().runTaskAsynchronously(RunicCore.getInstance(), () -> {
+            File lootFolder = new File(RunicCore.getInstance().getDataFolder(), "loot");
+
             // LOOT TABLES
-            File lootTableFolder = RunicCommon.getConfigAPI().getSubFolder(RunicCore.getInstance().getDataFolder(), "loot-tables");
+            File lootTableFolder = RunicCommon.getConfigAPI().getSubFolder(lootFolder, "loot-tables");
             // Map of loot table identifier -> config
             Map<String, FileConfiguration> configs = new HashMap<>();
             // map of loot table identifier -> list of other loot table identifiers that are subtables of it
@@ -80,7 +82,7 @@ public class LootManager implements LootAPI {
 
 
             // LOOT CHEST TEMPLATES
-            File chestTypesFolder = RunicCommon.getConfigAPI().getSubFolder(RunicCore.getInstance().getDataFolder(), "chest-types");
+            File chestTypesFolder = RunicCommon.getConfigAPI().getSubFolder(lootFolder, "chest-types");
 
             for (File chestTypeFile : Objects.requireNonNull(chestTypesFolder.listFiles())) {
                 if (!chestTypeFile.isDirectory() && (chestTypeFile.getName().endsWith(".yml") || chestTypeFile.getName().endsWith(".yaml"))) {
@@ -91,7 +93,7 @@ public class LootManager implements LootAPI {
             }
 
             // LOOT CHESTS.yml
-            regenLootChestsFile = new File(RunicCore.getInstance().getDataFolder(), "regenerative-chests.yml");
+            regenLootChestsFile = new File(lootFolder, "regenerative-chests.yml");
             if (!regenLootChestsFile.exists()) {
                 try {
                     if (!regenLootChestsFile.createNewFile())
@@ -106,7 +108,7 @@ public class LootManager implements LootAPI {
                 if (regenLootChestsConfig.contains("chests") && regenLootChestsConfig.isConfigurationSection("chests")) {
                     for (String chestID : Objects.requireNonNull(regenLootChestsConfig.getConfigurationSection("chests")).getKeys(false)) {
                         try {
-                            RegenerativeLootChest chest = parseRegenerativeLootCheset(regenLootChestsConfig.getConfigurationSection("chests." + chestID), chestID);
+                            RegenerativeLootChest chest = parseRegenerativeLootChest(regenLootChestsConfig.getConfigurationSection("chests." + chestID), chestID);
                             regenLootChests.put(chest.getLocation(), chest);
                         } catch (Exception exception) {
                             Bukkit.getLogger().log(Level.SEVERE, "ERROR loading regenerative-chests.yml chest ID " + chestID + ":");
@@ -197,13 +199,10 @@ public class LootManager implements LootAPI {
         int maxCount = config.getInt("count.max");
         if (minCount == 0 || maxCount == 0)
             throw new IllegalArgumentException("Loot chest template " + identifier + " must have count.min and count.max!");
-        int minLevel = config.getInt("level-min");
-        if (minLevel == 0)
-            throw new IllegalArgumentException("Loot chest template " + identifier + " must have level-min");
-        return new LootChestTemplate(identifier, lootTables.get(lootTable), minCount, maxCount, minLevel);
+        return new LootChestTemplate(identifier, lootTables.get(lootTable), minCount, maxCount, 27);
     }
 
-    private RegenerativeLootChest parseRegenerativeLootCheset(ConfigurationSection section, String chestID) {
+    private RegenerativeLootChest parseRegenerativeLootChest(ConfigurationSection section, String chestID) {
         if (section == null)
             throw new IllegalArgumentException("Chest " + chestID + " does not exist in configuration");
         ConfigurationSection locationSection = section.getConfigurationSection("location");

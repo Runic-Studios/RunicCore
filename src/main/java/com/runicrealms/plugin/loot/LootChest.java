@@ -7,6 +7,8 @@ import org.bukkit.entity.Player;
 
 public class LootChest {
 
+    protected static final BlockData AIR_BLOCK_DATA = Material.AIR.createBlockData();
+
     protected final LootChestLocation location;
     protected final LootChestTemplate lootChestTemplate;
     protected final int minLevel;
@@ -55,8 +57,12 @@ public class LootChest {
         this.lootChestTemplate.generateInventory(this).open(player);
     }
 
-    public void setChestBlock(Player player) {
+    public void showToPlayer(Player player) {
         player.sendBlockChange(location.getBukkitLocation(), blockData);
+    }
+
+    public void hideFromPlayer(Player player) {
+        player.sendBlockChange(location.getBukkitLocation(), AIR_BLOCK_DATA);
     }
 
     @Override

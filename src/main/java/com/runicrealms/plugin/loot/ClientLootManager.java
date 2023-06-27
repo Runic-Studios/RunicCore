@@ -27,15 +27,13 @@ public class ClientLootManager {
         for (LootChest chest : lootChests) {
             chestGrid.insertElement(chest.getLocation().getBukkitLocation(), chest);
         }
-        ProtocolLibrary.getProtocolManager().addPacketListener(new PacketAdapter(RunicCore.getInstance(), PacketType.Play.Client.BLOCK_PLACE) {
+        ProtocolLibrary.getProtocolManager().addPacketListener(new PacketAdapter(RunicCore.getInstance(), PacketType.Play.Client.USE_ITEM) {
             @Override
             public void onPacketReceiving(PacketEvent event) {
-                if (event.getPacketType() == PacketType.Play.Client.BLOCK_PLACE) {
+                if (event.getPacketType() == PacketType.Play.Client.USE_ITEM) {
                     BlockPosition blockPosition = event.getPacket().getBlockPositionModifier().read(0);
-                    System.out.println("Player " + event.getPlayer().getName() + " right-clicked block at " + blockPosition);
+                    System.out.println("Player " + event.getPlayer().getName() + " right-clicked block at " + blockPosition.toString());
                     // TODO
-//                    BlockPosition position = event.getPacket().getBlockPositionModifier().read(0);
-//                    position.
                 }
             }
         });
@@ -53,12 +51,12 @@ public class ClientLootManager {
         for (Map.Entry<LootChest, Boolean> entry : chests.entrySet()) {
             if (entry.getValue()) {
                 if (!surrounding.contains(entry.getKey())) {
-                    // DESPAWN CHEST
+                    entry.getKey().hideFromPlayer(player);
                     chests.put(entry.getKey(), false);
                 }
             } else {
                 if (surrounding.contains(entry.getKey())) {
-                    // SPAWN CHEST
+                    entry.getKey().showToPlayer(player);
                     chests.put(entry.getKey(), true);
                 }
             }
