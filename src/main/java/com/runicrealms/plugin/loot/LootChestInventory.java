@@ -8,16 +8,13 @@ import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.function.Consumer;
 
 public class LootChestInventory implements Listener, InventoryHolder {
 
     private final List<Consumer<Player>> onOpenActions = new LinkedList<>();
+    private final List<Consumer<Player>> onCloseActions = new LinkedList<>();
     private final Inventory inventory;
 
     public LootChestInventory(Collection<ItemStack> items,
@@ -50,8 +47,20 @@ public class LootChestInventory implements Listener, InventoryHolder {
 
     public void open(Player player) {
         onOpenActions.forEach(action -> action.accept(player));
+        onOpenActions.clear();
         player.openInventory(inventory);
     }
 
+    public void onClose(Consumer<Player> onClose) {
+        onCloseActions.add(onClose);
+    }
+
+    public void close(Player player) {
+        if (player.getOpenInventory().getTopInventory().getHolder() == this) {
+            player.closeInventory();
+            onCloseActions.forEach(action -> action.accept(player));
+            onCloseActions.clear();
+        }
+    }
 
 }

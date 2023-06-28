@@ -33,12 +33,12 @@ public interface LootAPI {
      * Adds a world loot chest to the configuration file.
      * Regeneration time is in seconds.
      */
-    void addRegenerativeLootChestToConfig(RegenerativeLootChest regenerativeLootChest);
+    void createRegenerativeLootChest(RegenerativeLootChest regenerativeLootChest);
 
     /**
      * Removes a world loot chest from the configuration file.
      */
-    void removeRegenerativeLootChestFromConfig(RegenerativeLootChest regenerativeLootChest);
+    void deleteRegenerativeLootChest(RegenerativeLootChest regenerativeLootChest);
 
 
     /**

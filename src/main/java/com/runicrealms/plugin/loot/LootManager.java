@@ -13,21 +13,22 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.logging.Level;
 
 // today's sponsor is chat gpt!
 public class LootManager implements LootAPI {
+    /*
+    TODO:
+    - Chest open animation
+    - Make timed loot chests loaded from config
+    - Add it to file pull
+    -
+     */
 
     private final Map<String, LootTable> lootTables = new HashMap<>();
     private final Map<String, LootChestTemplate> lootChestTemplates = new HashMap<>();
-    private final Map<LootChestLocation, RegenerativeLootChest> regenLootChests = new HashMap<>();
+    private final Map<Location, RegenerativeLootChest> regenLootChests = new HashMap<>();
     private FileConfiguration regenLootChestsConfig;
     private File regenLootChestsFile;
     private int nextRegenLootChestID = 0;
@@ -109,7 +110,7 @@ public class LootManager implements LootAPI {
                     for (String chestID : Objects.requireNonNull(regenLootChestsConfig.getConfigurationSection("chests")).getKeys(false)) {
                         try {
                             RegenerativeLootChest chest = parseRegenerativeLootChest(regenLootChestsConfig.getConfigurationSection("chests." + chestID), chestID);
-                            regenLootChests.put(chest.getLocation(), chest);
+                            regenLootChests.put(chest.getPosition().getLocation(), chest);
                         } catch (Exception exception) {
                             Bukkit.getLogger().log(Level.SEVERE, "ERROR loading regenerative-chests.yml chest ID " + chestID + ":");
                             exception.printStackTrace();
@@ -120,6 +121,9 @@ public class LootManager implements LootAPI {
                 Bukkit.getLogger().log(Level.SEVERE, "ERROR loading regenerative-chests.yml:");
                 exception.printStackTrace();
             }
+
+            // LOAD CLIENT CHESTS
+            new ClientLootManager(getRegenerativeLootChests());
         });
     }
 
@@ -231,17 +235,17 @@ public class LootManager implements LootAPI {
             throw new IllegalArgumentException("Title missing for chest " + chestID);
         if (chestTemplate == null || regenerationTime == 0)
             throw new IllegalArgumentException("Chest template or regeneration time missing for chest " + chestID);
-        return new RegenerativeLootChest(new LootChestLocation(location, direction), lootChestTemplates.get(chestTemplate), minLevel, itemMinLevel, itemMaxLevel, regenerationTime, title);
+        return new RegenerativeLootChest(new LootChestPosition(location, direction), lootChestTemplates.get(chestTemplate), minLevel, itemMinLevel, itemMaxLevel, regenerationTime, title);
     }
 
     @Override
-    public void addRegenerativeLootChestToConfig(RegenerativeLootChest regenerativeLootChest) {
+    public void createRegenerativeLootChest(RegenerativeLootChest regenerativeLootChest) {
         int id = nextRegenLootChestID;
-        regenLootChestsConfig.set("chests." + id + ".location.world", Objects.requireNonNull(regenerativeLootChest.getLocation().getBukkitLocation().getWorld()).getName());
-        regenLootChestsConfig.set("chests." + id + ".location.x", regenerativeLootChest.getLocation().getBukkitLocation().getBlockX());
-        regenLootChestsConfig.set("chests." + id + ".location.y", regenerativeLootChest.getLocation().getBukkitLocation().getBlockY());
-        regenLootChestsConfig.set("chests." + id + ".location.z", regenerativeLootChest.getLocation().getBukkitLocation().getBlockZ());
-        regenLootChestsConfig.set("chests." + id + ".location.direction", regenerativeLootChest.getLocation().getDirection().toString());
+        regenLootChestsConfig.set("chests." + id + ".location.world", Objects.requireNonNull(regenerativeLootChest.getPosition().getLocation().getWorld()).getName());
+        regenLootChestsConfig.set("chests." + id + ".location.x", regenerativeLootChest.getPosition().getLocation().getBlockX());
+        regenLootChestsConfig.set("chests." + id + ".location.y", regenerativeLootChest.getPosition().getLocation().getBlockY());
+        regenLootChestsConfig.set("chests." + id + ".location.z", regenerativeLootChest.getPosition().getLocation().getBlockZ());
+        regenLootChestsConfig.set("chests." + id + ".location.direction", regenerativeLootChest.getPosition().getDirection().toString());
         regenLootChestsConfig.set("chests." + id + ".template", regenerativeLootChest.getLootChestTemplate().getIdentifier());
         regenLootChestsConfig.set("chests." + id + ".regeneration-time", regenerativeLootChest.getRegenerationTime());
         regenLootChestsConfig.set("chests." + id + ".min-level", regenerativeLootChest.getMinLevel());
@@ -250,20 +254,21 @@ public class LootManager implements LootAPI {
         regenLootChestsConfig.set("chests." + id + ".title", regenerativeLootChest.getInventoryTitle());
         nextRegenLootChestID++;
         regenLootChestsConfig.set("next-id", nextRegenLootChestID);
-        saveRegenerativeLootChestConfigAsync();
+        saveRegenLootChestConfigAsync();
+        regenLootChests.put(regenerativeLootChest.getPosition().getLocation(), regenerativeLootChest);
     }
 
     @Override
-    public void removeRegenerativeLootChestFromConfig(RegenerativeLootChest regenerativeLootChest) {
+    public void deleteRegenerativeLootChest(RegenerativeLootChest regenerativeLootChest) {
         try {
             for (String key : Objects.requireNonNull(regenLootChestsConfig.getConfigurationSection("chests")).getKeys(false)) {
                 if (Objects.requireNonNull(regenLootChestsConfig.getString("chests." + key + ".location.world"))
-                        .equalsIgnoreCase(Objects.requireNonNull(regenerativeLootChest.getLocation().getBukkitLocation().getWorld()).getName())
-                        && regenLootChestsConfig.getInt("chests." + key + ".location.x") == regenerativeLootChest.getLocation().getBukkitLocation().getBlockX()
-                        && regenLootChestsConfig.getInt("chests." + key + ".location.y") == regenerativeLootChest.getLocation().getBukkitLocation().getBlockY()
-                        && regenLootChestsConfig.getInt("chests." + key + ".location.z") == regenerativeLootChest.getLocation().getBukkitLocation().getBlockZ()) {
+                        .equalsIgnoreCase(Objects.requireNonNull(regenerativeLootChest.getPosition().getLocation().getWorld()).getName())
+                        && regenLootChestsConfig.getInt("chests." + key + ".location.x") == regenerativeLootChest.getPosition().getLocation().getBlockX()
+                        && regenLootChestsConfig.getInt("chests." + key + ".location.y") == regenerativeLootChest.getPosition().getLocation().getBlockY()
+                        && regenLootChestsConfig.getInt("chests." + key + ".location.z") == regenerativeLootChest.getPosition().getLocation().getBlockZ()) {
                     regenLootChestsConfig.set("chests." + key, null);
-                    saveRegenerativeLootChestConfigAsync();
+                    saveRegenLootChestConfigAsync();
                     return;
                 }
             }
@@ -289,7 +294,7 @@ public class LootManager implements LootAPI {
         return regenLootChests.values();
     }
 
-    private void saveRegenerativeLootChestConfigAsync() {
+    private void saveRegenLootChestConfigAsync() {
         Bukkit.getScheduler().runTaskAsynchronously(RunicCore.getInstance(), () -> {
             try {
                 regenLootChestsConfig.save(regenLootChestsFile);

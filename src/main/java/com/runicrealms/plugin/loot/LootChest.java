@@ -5,11 +5,11 @@ import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.Directional;
 import org.bukkit.entity.Player;
 
-public class LootChest {
+public abstract class LootChest {
 
     protected static final BlockData AIR_BLOCK_DATA = Material.AIR.createBlockData();
 
-    protected final LootChestLocation location;
+    protected final LootChestPosition position;
     protected final LootChestTemplate lootChestTemplate;
     protected final int minLevel;
     protected final int itemMinLevel;
@@ -18,23 +18,24 @@ public class LootChest {
 
     protected final BlockData blockData;
 
-    public LootChest(LootChestLocation location, LootChestTemplate lootChestTemplate, int minLevel, int itemMinLevel, int itemMaxLevel, String inventoryTitle) {
+    public LootChest(LootChestPosition position, LootChestTemplate lootChestTemplate, int minLevel, int itemMinLevel, int itemMaxLevel, String inventoryTitle) {
         this.inventoryTitle = inventoryTitle;
-        this.location = location;
+        this.position = position;
         this.minLevel = minLevel;
         this.itemMinLevel = itemMinLevel;
         this.itemMaxLevel = itemMaxLevel;
         this.lootChestTemplate = lootChestTemplate;
         this.blockData = Material.CHEST.createBlockData();
-        ((Directional) this.blockData).setFacing(this.location.getDirection());
+        ((Directional) this.blockData).setFacing(this.position.getDirection());
+
     }
 
     public String getInventoryTitle() {
         return this.inventoryTitle;
     }
 
-    public LootChestLocation getLocation() {
-        return this.location;
+    public LootChestPosition getPosition() {
+        return this.position;
     }
 
     public int getMinLevel() {
@@ -53,22 +54,33 @@ public class LootChest {
         return this.lootChestTemplate;
     }
 
+    protected LootChestInventory generateInventory() {
+        return lootChestTemplate.generateInventory(this);
+    }
+
     public void openInventory(Player player) {
-        this.lootChestTemplate.generateInventory(this).open(player);
+        generateInventory().open(player);
     }
 
     public void showToPlayer(Player player) {
-        player.sendBlockChange(location.getBukkitLocation(), blockData);
+        if (this.position.getLocation().getBlock().getType() != Material.AIR) {
+            this.position.getLocation().getBlock().setType(Material.AIR);
+        }
+        player.sendBlockChange(position.getLocation(), blockData);
     }
 
     public void hideFromPlayer(Player player) {
-        player.sendBlockChange(location.getBukkitLocation(), AIR_BLOCK_DATA);
+        player.sendBlockChange(position.getLocation(), AIR_BLOCK_DATA);
     }
 
     @Override
     public boolean equals(Object object) {
-        if (!(object instanceof LootChest lootChest)) return false;
-        return lootChest.location.equals(location);
+        return (object instanceof LootChest lootChest) && lootChest.position.equals(position);
     }
+
+    /**
+     * Declares if this loot chest should have its block updated automatically by the ClientLootManager.
+     */
+    public abstract boolean shouldUpdateDisplay();
 
 }

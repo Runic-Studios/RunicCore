@@ -5,7 +5,7 @@ public class RegenerativeLootChest extends LootChest {
     private final int regenerationTime;
 
     public RegenerativeLootChest(
-            LootChestLocation location,
+            LootChestPosition location,
             LootChestTemplate lootChestTemplate,
             int minLevel,
             int itemMinLevel, int itemMaxLevel,
@@ -17,5 +17,10 @@ public class RegenerativeLootChest extends LootChest {
 
     public int getRegenerationTime() {
         return this.regenerationTime;
+    }
+
+    @Override
+    public boolean shouldUpdateDisplay() {
+        return true;
     }
 }
