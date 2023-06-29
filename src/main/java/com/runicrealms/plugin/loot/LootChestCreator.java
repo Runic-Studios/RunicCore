@@ -49,7 +49,7 @@ public class LootChestCreator extends BaseCommand implements Listener {
                     onUsePacketEvent(event);
                 }
             }
-        });
+        }).start();
     }
 
     private static boolean isInt(String number) {

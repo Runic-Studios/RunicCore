@@ -59,7 +59,7 @@ public class ClientLootManager implements Listener {
                     onUseItemPacket(event);
                 }
             }
-        });
+        }).start();
     }
 
     public void updateClientChests(Player player) {
