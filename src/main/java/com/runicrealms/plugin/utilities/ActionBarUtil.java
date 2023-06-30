@@ -32,7 +32,7 @@ public class ActionBarUtil {
      * @param message      the message to send.
      */
     private static void sendActionBarMessage(@NotNull Player bukkitPlayer, @NotNull String message) {
-        sendRawActionBarMessage(bukkitPlayer, "{\"text\": \"" + message + "\"}");
+        sendRawActionBarMessage(bukkitPlayer, message);
     }
 
     /**
