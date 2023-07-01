@@ -19,7 +19,6 @@ depend:
   - RunicItems
   - HolographicDisplays
   - ProtocolLib
-  - Tabbed
   - ViaVersion
   - LuckPerms
 commands:

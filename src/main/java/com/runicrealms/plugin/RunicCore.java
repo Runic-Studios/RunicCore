@@ -22,7 +22,6 @@ import com.runicrealms.plugin.api.SkillTreeAPI;
 import com.runicrealms.plugin.api.SpellAPI;
 import com.runicrealms.plugin.api.StatAPI;
 import com.runicrealms.plugin.api.StatusEffectAPI;
-import com.runicrealms.plugin.api.TabAPI;
 import com.runicrealms.plugin.api.TitleAPI;
 import com.runicrealms.plugin.api.VanishAPI;
 import com.runicrealms.plugin.character.gui.CharacterGuiManager;
@@ -177,7 +176,6 @@ import com.runicrealms.plugin.spellapi.skilltrees.listener.SkillTreeGUIListener;
 import com.runicrealms.plugin.spellapi.skilltrees.listener.SpellEditorGUIListener;
 import com.runicrealms.plugin.spellapi.skilltrees.listener.SpellGUIListener;
 import com.runicrealms.plugin.spellapi.skilltrees.listener.SubClassGUIListener;
-import com.runicrealms.plugin.tablist.TabListManager;
 import com.runicrealms.plugin.utilities.FilterUtil;
 import com.runicrealms.plugin.utilities.NametagHandler;
 import com.runicrealms.plugin.utilities.PlaceholderAPI;
@@ -206,7 +204,6 @@ public class RunicCore extends JavaPlugin implements Listener {
     private static PartyAPI partyAPI;
     private static ScoreboardAPI scoreboardAPI;
     private static SpellAPI spellAPI;
-    private static TabAPI tabAPI;
     private static LootTableAPI lootTableAPI;
     private static MobTagger mobTagger;
     private static BossTagger bossTagger;
@@ -259,10 +256,6 @@ public class RunicCore extends JavaPlugin implements Listener {
 
     public static SpellAPI getSpellAPI() {
         return spellAPI;
-    }
-
-    public static TabAPI getTabAPI() {
-        return tabAPI;
     }
 
     public static LootTableAPI getLootTableAPI() {
@@ -393,7 +386,6 @@ public class RunicCore extends JavaPlugin implements Listener {
         partyAPI = null;
         scoreboardAPI = null;
         spellAPI = null;
-        tabAPI = null;
         lootTableAPI = null;
         mobTagger = null;
         bossTagger = null;
@@ -471,7 +463,6 @@ public class RunicCore extends JavaPlugin implements Listener {
         partyAPI = new PartyManager();
         scoreboardAPI = new ScoreboardHandler();
         spellAPI = new SpellManager();
-        tabAPI = new TabListManager(this);
         lootTableAPI = new LootTableManager();
         regionAPI = new RegionHelper();
         mobTagger = new MobTagger();

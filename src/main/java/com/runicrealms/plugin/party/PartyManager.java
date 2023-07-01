@@ -81,16 +81,12 @@ public class PartyManager implements Listener, PartyAPI {
                 party.sendMessageInChannel("This party has been disbanded &7Reason: leader disconnected");
                 for (Player member : party.getMembers()) {
                     updatePlayerParty(member.getUniqueId(), null);
-                    RunicCore.getTabAPI().setupTab(member);
                 }
                 RunicCore.getPartyAPI().updatePlayerParty(party.getLeader().getUniqueId(), null);
                 RunicCore.getPartyAPI().getParties().remove(party);
             } else {
                 party.getMembers().remove(event.getPlayer());
                 party.sendMessageInChannel(event.getPlayer().getName() + " has been removed from the party &7Reason: disconnected");
-                for (Player member : party.getMembersWithLeader()) {
-                    RunicCore.getTabAPI().setupTab(member);
-                }
             }
             this.playerParties.remove(event.getPlayer().getUniqueId());
         }

@@ -8,6 +8,7 @@ import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.WrappedServerPing;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.api.VanishAPI;
+import com.runicrealms.plugin.api.event.PlayerVanishEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -61,7 +62,7 @@ public class VanishManager implements VanishAPI, Listener {
             throw new IllegalArgumentException("Cannot hide player that is already vanished.");
         vanishedPlayers.add(player);
         for (Player online : Bukkit.getOnlinePlayers()) online.hidePlayer(RunicCore.getInstance(), player);
-        RunicCore.getTabAPI().refreshAllTabLists();
+        Bukkit.getPluginManager().callEvent(new PlayerVanishEvent(player));
     }
 
     @Override
@@ -70,6 +71,6 @@ public class VanishManager implements VanishAPI, Listener {
             throw new IllegalArgumentException("Cannot show player that is not vanished.");
         vanishedPlayers.remove(player);
         for (Player online : Bukkit.getOnlinePlayers()) online.showPlayer(RunicCore.getInstance(), player);
-        RunicCore.getTabAPI().refreshAllTabLists();
+        Bukkit.getPluginManager().callEvent(new PlayerVanishEvent(player));
     }
 }

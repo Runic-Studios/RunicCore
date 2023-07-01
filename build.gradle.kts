@@ -34,7 +34,6 @@ dependencies {
     compileOnly(project(":Projects:Database"))
     compileOnly(commonLibs.paper)
     compileOnly(commonLibs.protocollib)
-    compileOnly(commonLibs.tabbed)
     compileOnly(commonLibs.worldguardcore)
     compileOnly(commonLibs.worldguardlegacy)
     compileOnly(commonLibs.viaversion)
