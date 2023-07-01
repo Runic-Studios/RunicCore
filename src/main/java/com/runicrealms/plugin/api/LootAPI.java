@@ -1,5 +1,7 @@
 package com.runicrealms.plugin.api;
 
+import com.runicrealms.plugin.loot.BossTimedLoot;
+import com.runicrealms.plugin.loot.CustomTimedLoot;
 import com.runicrealms.plugin.loot.LootChestTemplate;
 import com.runicrealms.plugin.loot.LootTable;
 import com.runicrealms.plugin.loot.RegenerativeLootChest;
@@ -62,5 +64,17 @@ public interface LootAPI {
      * Begins displaying a timed loot chest
      */
     void displayTimedLootChest(Player player, TimedLootChest chest);
+
+    /**
+     * Gets the boss timed loot with a given identifier, or null if none exists
+     */
+    @Nullable
+    BossTimedLoot getBossTimedLoot(String mmID);
+
+    /**
+     * Gets the custom timed loot with a given identifier, or null if none exists
+     */
+    @Nullable
+    CustomTimedLoot getCustomTimedLoot(String identifier);
 
 }

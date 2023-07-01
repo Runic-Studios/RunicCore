@@ -59,6 +59,10 @@ public class TimedLootChest extends LootChest {
         }.runTaskTimer(RunicCore.getInstance(), 0, 20);
     }
 
+    public int getDuration() {
+        return this.duration;
+    }
+
     @Override
     protected LootChestInventory generateInventory(Player player) {
         LootChestInventory inventory = super.generateInventory(player);

@@ -5,6 +5,7 @@ import com.runicrealms.plugin.common.RunicCommon;
 import com.runicrealms.plugin.events.MagicDamageEvent;
 import com.runicrealms.plugin.events.PhysicalDamageEvent;
 import com.runicrealms.plugin.events.RunicDeathEvent;
+import com.runicrealms.plugin.loot.BossTimedLoot;
 import io.lumine.mythic.api.exceptions.InvalidMobTypeException;
 import io.lumine.mythic.bukkit.MythicBukkit;
 import io.lumine.mythic.bukkit.events.MythicMobDeathEvent;
@@ -24,7 +25,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
@@ -56,10 +56,11 @@ public class FieldBoss implements Listener {
     private final Location circleCentre;
     private final double circleRadius;
     private final @Nullable GuildScore guildScore;
+    private final BossTimedLoot loot;
     private final Set<Location> domeParticleLocations = new HashSet<>();
     private final Set<Location> circleParticleLocations = new HashSet<>();
     private @Nullable ActiveState active; // null means inactive
-    private @Nullable BukkitTask spoilsTask; // null means spoils active
+    private boolean spoilsActive = false;
 
     public FieldBoss(String identifier,
                      String bossName,
@@ -69,7 +70,8 @@ public class FieldBoss implements Listener {
                      Location tributeChest,
                      Location circleCentre,
                      double circleRadius,
-                     @Nullable GuildScore guildScore) {
+                     @Nullable GuildScore guildScore,
+                     BossTimedLoot loot) {
         this.identifier = identifier;
         this.bossName = bossName;
         this.mmID = mmID;
@@ -79,6 +81,7 @@ public class FieldBoss implements Listener {
         this.circleCentre = circleCentre;
         this.circleRadius = circleRadius;
         this.guildScore = guildScore;
+        this.loot = loot;
         try (MythicBukkit mythicBukkit = MythicBukkit.inst()) {
             if (mythicBukkit.getAPIHelper().getMythicMob(mmID) == null)
                 throw new IllegalArgumentException("Field Boss " + identifier + " has invalid MM ID " + mmID);
@@ -94,7 +97,15 @@ public class FieldBoss implements Listener {
         return this.identifier;
     }
 
-    public void activate() {
+    public void attemptActivate(Player player) {
+        if (spoilsActive) {
+            player.sendMessage(ChatColor.RED + "Field boss cannot be activated while spoils are still active!");
+            return;
+        }
+        activate();
+    }
+
+    private void activate() {
         if (!Bukkit.isPrimaryThread()) {
             Bukkit.getScheduler().runTask(RunicCore.getInstance(), () -> active = new ActiveState());
         } else {
@@ -134,22 +145,6 @@ public class FieldBoss implements Listener {
             double z = circleCentre.getZ() + circleRadius * Math.sin(angle);
             double y = circleCentre.getY();
             circleParticleLocations.add(new Location(circleCentre.getWorld(), x, y, z));
-        }
-    }
-
-    @EventHandler
-    public void onPlayerOpenChest(PlayerInteractEvent event) {
-        if (event.getClickedBlock() != null
-                && event.getClickedBlock().getType() == Material.CHEST
-                && event.getClickedBlock().getLocation().getWorld() == tributeChest.getWorld()
-                && event.getClickedBlock().getX() == tributeChest.getBlockX()
-                && event.getClickedBlock().getY() == tributeChest.getBlockY()
-                && event.getClickedBlock().getZ() == tributeChest.getBlockZ()) {
-            if (spoilsTask == null) {
-
-            } else {
-
-            }
         }
     }
 
@@ -346,7 +341,7 @@ public class FieldBoss implements Listener {
             if (event.getEntity().getUniqueId().equals(entityID)) {
                 if (guildScore != null)
                     guildScore.getDistribution().distribute(damageDealt, event.getMob().getEntity().getMaxHealth());
-                deactivate();
+                deactivate(true);
             }
         }
 
@@ -355,19 +350,25 @@ public class FieldBoss implements Listener {
             participants.remove(event.getPlayer());
         }
 
-        private void deactivate() {
+        private void deactivate(boolean success) {
             if (state != State.ACTIVE)
                 throw new IllegalStateException("Cannot deactivate active state when still in warmup!");
             HandlerList.unregisterAll(this);
             particleTask.cancel();
             if (movementTask != null) movementTask.cancel();
             getPlayersInDome().forEach((player) -> player.playSound(player.getLocation(), Sound.ENTITY_WITHER_DEATH, 0.8f, 2.0f));
-            participants.forEach((player) -> player.sendMessage(ChatColor.GREEN + "You defeated the " + ChatColor.YELLOW + bossName + ChatColor.GREEN + "! Collect the spoils from the chest near you."));
             active = null;
-            for (Map.Entry<UUID, Integer> entry : damageDealt.entrySet()) {
-                Player target = Bukkit.getPlayer(entry.getKey());
-                if (target == null) continue;
-                target.sendMessage(ChatColor.GREEN + "You dealt " + ChatColor.DARK_GREEN + ChatColor.BOLD + entry.getValue() + ChatColor.GREEN + " damage to the boss!");
+            if (success) {
+                for (UUID player : damageDealt.keySet()) {
+                    Player online = Bukkit.getPlayer(player);
+                    if (online == null) continue;
+                    online.sendMessage(ChatColor.GREEN + "You defeated the " + ChatColor.YELLOW + bossName + ChatColor.GREEN + "! Collect the spoils from the chest near you.");
+                    RunicCore.getLootAPI().displayTimedLootChest(online, loot.getLootChest());
+                }
+                Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), () -> {
+                    spoilsActive = false;
+                }, loot.getLootChest().getDuration() * 20L);
+                spoilsActive = true;
             }
             damageDealt.clear();
         }

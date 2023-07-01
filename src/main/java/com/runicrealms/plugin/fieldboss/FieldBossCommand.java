@@ -13,7 +13,7 @@ import org.bukkit.entity.Player;
 @CommandAlias("fieldboss")
 @CommandPermission("runic.op")
 public class FieldBossCommand extends BaseCommand {
-    
+
     private static boolean isDouble(String number) {
         try {
             Double.parseDouble(number);
@@ -35,7 +35,7 @@ public class FieldBossCommand extends BaseCommand {
             executor.sendMessage(ChatColor.RED + "Usage: /fieldboss activate <identifier>");
             return;
         }
-        RunicCore.getFieldBossAPI().getFieldBoss(args[0]).activate();
+        RunicCore.getFieldBossAPI().getFieldBoss(args[0]).attemptActivate(executor);
 //        FieldBoss boss = new FieldBoss(identifier, mmID, executor.getLocation(), radius);
 //        bosses.put(boss.getIdentifier(), boss);
 //        boss.activate();

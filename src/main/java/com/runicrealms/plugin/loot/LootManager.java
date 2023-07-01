@@ -25,7 +25,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.logging.Level;
-import java.util.stream.Collectors;
 
 // today's sponsor is chat gpt!
 public class LootManager implements LootAPI {
@@ -35,11 +34,14 @@ public class LootManager implements LootAPI {
     - Add it to file pull
     - add loot quality
     - integrate model engine
+    - add packet adapter for entity interact
      */
 
     private final Map<String, LootTable> lootTables = new HashMap<>();
     private final Map<String, LootChestTemplate> lootChestTemplates = new HashMap<>();
     private final Map<Location, RegenerativeLootChest> regenLootChests = new HashMap<>();
+    private final Map<String, BossTimedLoot> bossTimedLoot = new HashMap<>();
+    private final Map<String, CustomTimedLoot> customTimedLoot = new HashMap<>();
     private FileConfiguration regenLootChestsConfig;
     private File regenLootChestsFile;
     private int nextRegenLootChestID = 0;
@@ -155,15 +157,17 @@ public class LootManager implements LootAPI {
                 }
             }
 
-            new BossTimedLootManager(timedLoot.stream()
+            timedLoot.stream()
                     .filter(loot -> loot instanceof BossTimedLoot)
                     .map(loot -> (BossTimedLoot) loot)
-                    .collect(Collectors.toSet()));
+                    .forEach(loot -> bossTimedLoot.put(loot.getMmBossID(), loot));
+            new BossTimedLootManager(bossTimedLoot.values());
 
-            new CustomTimedLootManager(timedLoot.stream()
+            timedLoot.stream()
                     .filter(loot -> loot instanceof CustomTimedLoot)
                     .map(loot -> (CustomTimedLoot) loot)
-                    .collect(Collectors.toSet()));
+                    .forEach(loot -> customTimedLoot.put(loot.getIdentifier(), loot));
+            new CustomTimedLootManager(customTimedLoot.values());
         });
     }
 
@@ -434,6 +438,18 @@ public class LootManager implements LootAPI {
     @Override
     public void displayTimedLootChest(Player player, TimedLootChest chest) {
         clientLootManager.displayTimedLootChest(player, chest);
+    }
+
+    @Nullable
+    @Override
+    public BossTimedLoot getBossTimedLoot(String mmID) {
+        return bossTimedLoot.get(mmID);
+    }
+
+    @Nullable
+    @Override
+    public CustomTimedLoot getCustomTimedLoot(String identifier) {
+        return customTimedLoot.get(identifier);
     }
 
     private void saveRegenLootChestConfigAsync() {

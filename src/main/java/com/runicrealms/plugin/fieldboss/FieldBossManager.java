@@ -3,6 +3,7 @@ package com.runicrealms.plugin.fieldboss;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.api.FieldBossAPI;
 import com.runicrealms.plugin.common.RunicCommon;
+import com.runicrealms.plugin.loot.BossTimedLoot;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -98,6 +99,9 @@ public class FieldBossManager implements FieldBossAPI, Listener {
                 throw new IllegalArgumentException("Field boss config guild-score.distribution.type invalid value: " + distributionType);
             }
         }
+        BossTimedLoot loot = RunicCore.getLootAPI().getBossTimedLoot(mmID);
+        if (loot == null)
+            throw new IllegalArgumentException("Field boss config must have a corresponding timed-loot boss loot config with the same MM-iD of " + mmID);
         return new FieldBoss(identifier,
                 name,
                 mmID,
@@ -106,7 +110,8 @@ public class FieldBossManager implements FieldBossAPI, Listener {
                 tributeChest,
                 circleCentre,
                 circleRadius,
-                guildScore);
+                guildScore,
+                loot);
     }
 
     @Override
