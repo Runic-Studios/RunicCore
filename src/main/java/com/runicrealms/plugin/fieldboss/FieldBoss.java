@@ -1,13 +1,13 @@
 package com.runicrealms.plugin.fieldboss;
 
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.common.RunicCommon;
 import com.runicrealms.plugin.events.MagicDamageEvent;
 import com.runicrealms.plugin.events.PhysicalDamageEvent;
 import com.runicrealms.plugin.events.RunicDeathEvent;
 import io.lumine.mythic.api.exceptions.InvalidMobTypeException;
 import io.lumine.mythic.bukkit.MythicBukkit;
 import io.lumine.mythic.bukkit.events.MythicMobDeathEvent;
-import io.lumine.mythic.bukkit.events.MythicMobDespawnEvent;
 import me.filoghost.holographicdisplays.api.HolographicDisplaysAPI;
 import me.filoghost.holographicdisplays.api.hologram.Hologram;
 import me.filoghost.holographicdisplays.api.hologram.VisibilitySettings;
@@ -21,6 +21,7 @@ import org.bukkit.Sound;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -30,7 +31,9 @@ import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -41,6 +44,7 @@ public class FieldBoss implements Listener {
 
     private static final double DOME_PARTICLE_DENSITY = 0.1; // particles per square block
     private static final double CIRCLE_PARTICLE_COUNT = 32;
+    // TODO use:
     private static final int ADDITIONAL_ATTENTION_RADIUS = 30; // block number added to radius in which players will be notified of field boss stuff happening
 
     private final String identifier;
@@ -51,6 +55,7 @@ public class FieldBoss implements Listener {
     private final Location tributeChest;
     private final Location circleCentre;
     private final double circleRadius;
+    private final @Nullable GuildScore guildScore;
     private final Set<Location> domeParticleLocations = new HashSet<>();
     private final Set<Location> circleParticleLocations = new HashSet<>();
     private @Nullable ActiveState active; // null means inactive
@@ -63,7 +68,8 @@ public class FieldBoss implements Listener {
                      double domeRadius,
                      Location tributeChest,
                      Location circleCentre,
-                     double circleRadius) {
+                     double circleRadius,
+                     @Nullable GuildScore guildScore) {
         this.identifier = identifier;
         this.bossName = bossName;
         this.mmID = mmID;
@@ -72,8 +78,11 @@ public class FieldBoss implements Listener {
         this.tributeChest = tributeChest;
         this.circleCentre = circleCentre;
         this.circleRadius = circleRadius;
-        if (MythicBukkit.inst().getAPIHelper().getMythicMob(mmID) == null)
-            throw new IllegalArgumentException("Field Boss " + identifier + " has invalid MM ID " + mmID);
+        this.guildScore = guildScore;
+        try (MythicBukkit mythicBukkit = MythicBukkit.inst()) {
+            if (mythicBukkit.getAPIHelper().getMythicMob(mmID) == null)
+                throw new IllegalArgumentException("Field Boss " + identifier + " has invalid MM ID " + mmID);
+        }
         if (tributeChest.getBlock().getType() != Material.CHEST) tributeChest.getBlock().setType(Material.CHEST);
         if (Bukkit.isPrimaryThread())
             Bukkit.getScheduler().runTaskAsynchronously(RunicCore.getInstance(), this::loadParticleLocations);
@@ -137,7 +146,7 @@ public class FieldBoss implements Listener {
                 && event.getClickedBlock().getY() == tributeChest.getBlockY()
                 && event.getClickedBlock().getZ() == tributeChest.getBlockZ()) {
             if (spoilsTask == null) {
-                
+
             } else {
 
             }
@@ -158,6 +167,68 @@ public class FieldBoss implements Listener {
                         && player.getLocation().distanceSquared(domeCentre) <= radiusSquared);
     }
 
+    public static class GuildScore {
+
+        private int amount;
+        private Distribution distribution;
+
+        private GuildScore() {
+        }
+
+        public static GuildScore split(int amount, double participationSplit, double damageSplit) {
+            GuildScore guildScore = new GuildScore();
+            guildScore.amount = amount;
+            guildScore.distribution = guildScore.new SplitDistribution(participationSplit, damageSplit);
+            return guildScore;
+        }
+
+        public Distribution getDistribution() {
+            return this.distribution;
+        }
+
+        public interface Distribution {
+
+            void distribute(Map<UUID, Integer> damageDealt, double maxHealth);
+
+        }
+
+        public class SplitDistribution implements Distribution {
+
+            private final double participationSplit;
+            private final double damageSplit;
+
+            public SplitDistribution(double participationSplit, double damageSplit) {
+                this.participationSplit = participationSplit;
+                this.damageSplit = damageSplit;
+            }
+
+            @Override
+            public void distribute(Map<UUID, Integer> damageDealt, double maxHealth) {
+                Map<UUID, Integer> damageScores = new HashMap<>();
+                if (damageDealt.size() == 1) {
+                    damageScores.put(damageDealt.keySet().stream().findFirst().orElseThrow(), amount);
+                } else {
+                    double totalSplit = participationSplit + damageSplit;
+                    double participationPercent = participationSplit / totalSplit;
+                    double damagePercent = damageSplit / totalSplit;
+
+                    int damageScoreTotal = (int) Math.round(amount * participationPercent);
+                    double participationScoreTotal = amount * damagePercent;
+                    double participationScoreForEach = participationScoreTotal / ((double) damageDealt.size());
+
+                    for (UUID damager : damageDealt.keySet()) {
+                        double percentDamage = (double) damageDealt.get(damager) / maxHealth;
+                        damageScores.put(damager, (int) Math.round(damageScoreTotal * percentDamage + participationScoreForEach));
+                    }
+
+                    RunicCommon.getGuildsAPI().addBulkGuildScore(damageScores, true);
+                }
+            }
+
+        }
+
+    }
+
     /**
      * Represents an active field boss. This includes a field boss during its warmup state.
      */
@@ -166,6 +237,7 @@ public class FieldBoss implements Listener {
         private final UUID entityID;
         private final Set<Player> participants = new HashSet<>();
         private final BukkitTask particleTask;
+        private final Map<UUID, Integer> damageDealt = new HashMap<>();
         private @Nullable BukkitTask movementTask;
         private State state = State.WARMUP;
 
@@ -178,8 +250,10 @@ public class FieldBoss implements Listener {
                 }
             }.runTaskTimerAsynchronously(RunicCore.getInstance(), 0, 4);
             try {
-                Entity mob = MythicBukkit.inst().getAPIHelper().spawnMythicMob(mmID, domeCentre);
-                this.entityID = mob.getUniqueId();
+                try (MythicBukkit mythicBukkit = MythicBukkit.inst()) {
+                    Entity mob = mythicBukkit.getAPIHelper().spawnMythicMob(mmID, domeCentre);
+                    this.entityID = mob.getUniqueId();
+                }
             } catch (InvalidMobTypeException exception) {
                 throw new IllegalArgumentException("Invalid mythic mobs ID: " + mmID);
             }
@@ -240,18 +314,26 @@ public class FieldBoss implements Listener {
             }
         }
 
-        @EventHandler
+        @EventHandler(priority = EventPriority.HIGHEST)
         public void onMagicDamage(MagicDamageEvent event) {
             if (!event.getVictim().getUniqueId().equals(entityID)) return;
             if (state == State.WARMUP || !participants.contains(event.getPlayer()))
                 event.setCancelled(true);
+            else trackBossDamage(event.getPlayer(), event.getAmount());
         }
 
-        @EventHandler
+        @EventHandler(priority = EventPriority.HIGHEST)
         public void onPhysicalDamage(PhysicalDamageEvent event) {
             if (!event.getVictim().getUniqueId().equals(entityID)) return;
             if (state == State.WARMUP || !participants.contains(event.getPlayer()))
                 event.setCancelled(true);
+            else trackBossDamage(event.getPlayer(), event.getAmount());
+        }
+
+        private void trackBossDamage(Player player, int amount) {
+            if (!damageDealt.containsKey(player.getUniqueId()))
+                damageDealt.put(player.getUniqueId(), 0);
+            damageDealt.put(player.getUniqueId(), damageDealt.get(player.getUniqueId()) + amount);
         }
 
         @EventHandler
@@ -261,12 +343,11 @@ public class FieldBoss implements Listener {
 
         @EventHandler
         public void onMythicMobDeath(MythicMobDeathEvent event) {
-            if (event.getEntity().getUniqueId().equals(entityID)) deactivate();
-        }
-
-        @EventHandler
-        public void onMythicMobDespawn(MythicMobDespawnEvent event) {
-            if (event.getEntity().getUniqueId().equals(entityID)) deactivate();
+            if (event.getEntity().getUniqueId().equals(entityID)) {
+                if (guildScore != null)
+                    guildScore.getDistribution().distribute(damageDealt, event.getMob().getEntity().getMaxHealth());
+                deactivate();
+            }
         }
 
         @EventHandler
@@ -283,6 +364,12 @@ public class FieldBoss implements Listener {
             getPlayersInDome().forEach((player) -> player.playSound(player.getLocation(), Sound.ENTITY_WITHER_DEATH, 0.8f, 2.0f));
             participants.forEach((player) -> player.sendMessage(ChatColor.GREEN + "You defeated the " + ChatColor.YELLOW + bossName + ChatColor.GREEN + "! Collect the spoils from the chest near you."));
             active = null;
+            for (Map.Entry<UUID, Integer> entry : damageDealt.entrySet()) {
+                Player target = Bukkit.getPlayer(entry.getKey());
+                if (target == null) continue;
+                target.sendMessage(ChatColor.GREEN + "You dealt " + ChatColor.DARK_GREEN + ChatColor.BOLD + entry.getValue() + ChatColor.GREEN + " damage to the boss!");
+            }
+            damageDealt.clear();
         }
 
         public enum State {

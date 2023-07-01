@@ -3,12 +3,14 @@ package com.runicrealms.plugin.loot;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.api.LootAPI;
 import com.runicrealms.plugin.common.RunicCommon;
+import com.runicrealms.plugin.common.util.ColorUtil;
 import com.runicrealms.runicitems.RunicItemsAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
@@ -17,19 +19,22 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 
 // today's sponsor is chat gpt!
 public class LootManager implements LootAPI {
     /*
     TODO:
-    - Chest open animation
-    - Make timed loot chests loaded from config
+    - add particles
     - Add it to file pull
-    -
+    - add loot quality
+    - integrate model engine
      */
 
     private final Map<String, LootTable> lootTables = new HashMap<>();
@@ -38,6 +43,8 @@ public class LootManager implements LootAPI {
     private FileConfiguration regenLootChestsConfig;
     private File regenLootChestsFile;
     private int nextRegenLootChestID = 0;
+
+    private ClientLootManager clientLootManager;
 
     public LootManager() {
         Bukkit.getScheduler().runTaskAsynchronously(RunicCore.getInstance(), () -> {
@@ -129,7 +136,34 @@ public class LootManager implements LootAPI {
             }
 
             // LOAD CLIENT CHESTS
-            new ClientLootManager(getRegenerativeLootChests());
+            this.clientLootManager = new ClientLootManager(getRegenerativeLootChests());
+
+            // LOAD TIMED LOOT
+            Set<TimedLoot> timedLoot = new HashSet<>();
+            File timedLootFolder = RunicCommon.getConfigAPI().getSubFolder(lootFolder, "timed-loot");
+
+            for (File timedLootFile : Objects.requireNonNull(timedLootFolder.listFiles())) {
+                if (!timedLootFile.isDirectory() && (timedLootFile.getName().endsWith(".yml") || timedLootFile.getName().endsWith(".yaml"))) {
+                    try {
+                        FileConfiguration config = RunicCommon.getConfigAPI().getYamlConfigFromFile(timedLootFile.getName(), chestTypesFolder);
+                        TimedLoot loot = parseTimedLoot(config);
+                        timedLoot.add(loot);
+                    } catch (Exception exception) {
+                        Bukkit.getLogger().log(Level.SEVERE, "ERROR loading timed loot " + timedLootFile.getName() + ":");
+                        exception.printStackTrace();
+                    }
+                }
+            }
+
+            new BossTimedLootManager(timedLoot.stream()
+                    .filter(loot -> loot instanceof BossTimedLoot)
+                    .map(loot -> (BossTimedLoot) loot)
+                    .collect(Collectors.toSet()));
+
+            new CustomTimedLootManager(timedLoot.stream()
+                    .filter(loot -> loot instanceof CustomTimedLoot)
+                    .map(loot -> (CustomTimedLoot) loot)
+                    .collect(Collectors.toSet()));
         });
     }
 
@@ -225,7 +259,7 @@ public class LootManager implements LootAPI {
         BlockFace direction = BlockFace.valueOf(Objects.requireNonNull(locationSection.getString("direction")).toUpperCase());
         if (world == null || x == 0 || y == 0 || z == 0)
             throw new IllegalArgumentException("One or more location values missing for chest " + chestID);
-        Location location = new Location(Objects.requireNonNull(Bukkit.getWorld(world)), x, y, z);
+        Location location = new Location(Objects.requireNonNull(Bukkit.getWorld(world), "World " + world + " does not exist for chest " + chestID), x, y, z);
         String chestTemplate = section.getString("template");
         int regenerationTime = section.getInt("regeneration-time");
         ConfigurationSection itemLevelSection = section.getConfigurationSection("item-level");
@@ -241,7 +275,100 @@ public class LootManager implements LootAPI {
             throw new IllegalArgumentException("Title missing for chest " + chestID);
         if (chestTemplate == null || regenerationTime == 0)
             throw new IllegalArgumentException("Chest template or regeneration time missing for chest " + chestID);
-        return new RegenerativeLootChest(new LootChestPosition(location, direction), lootChestTemplates.get(chestTemplate), minLevel, itemMinLevel, itemMaxLevel, regenerationTime, title);
+        LootChestConditions conditions;
+        if (section.isConfigurationSection("conditions")) {
+            conditions = LootChestConditions.loadFromConfig(Objects.requireNonNull(section.getConfigurationSection("conditions")));
+        } else {
+            conditions = new LootChestConditions();
+        }
+        return new RegenerativeLootChest(
+                new LootChestPosition(location, direction),
+                lootChestTemplates.get(chestTemplate),
+                conditions,
+                minLevel,
+                itemMinLevel, itemMaxLevel,
+                regenerationTime,
+                title);
+    }
+
+    private TimedLoot parseTimedLoot(FileConfiguration config) {
+        ConfigurationSection section = config.getConfigurationSection("chest");
+        if (section == null) throw new IllegalArgumentException("Timed loot needs to have chest key!");
+        ConfigurationSection locationSection = section.getConfigurationSection("location");
+        if (locationSection == null)
+            throw new IllegalArgumentException("Location section missing for timed loot " + config.getName());
+        String world = locationSection.getString("world");
+        int x = locationSection.getInt("x");
+        int y = locationSection.getInt("y");
+        int z = locationSection.getInt("z");
+        BlockFace direction = BlockFace.valueOf(Objects.requireNonNull(locationSection.getString("direction")).toUpperCase());
+        if (world == null || x == 0 || y == 0 || z == 0)
+            throw new IllegalArgumentException("One or more location values missing for timed loot " + config.getName());
+        Location location = new Location(Objects.requireNonNull(Bukkit.getWorld(world), "Timed loot world " + world + " does not exist!"), x, y, z);
+        String chestTemplate = section.getString("template");
+        ConfigurationSection itemLevelSection = section.getConfigurationSection("item-level");
+        if (itemLevelSection == null)
+            throw new IllegalArgumentException("Item level section missing for timed loot " + config.getName());
+        int minLevel = section.getInt("min-level");
+        int itemMinLevel = itemLevelSection.getInt("min");
+        int itemMaxLevel = itemLevelSection.getInt("max");
+        if (itemMinLevel == 0 || itemMaxLevel == 0)
+            throw new IllegalArgumentException("One or more item level values missing for timed loot " + config.getName());
+        String title = section.getString("title");
+        if (title == null)
+            throw new IllegalArgumentException("Title missing for timed loot " + config.getName());
+        if (chestTemplate == null)
+            throw new IllegalArgumentException("Chest template or regeneration time missing for timed loot " + config.getName());
+        LootChestConditions conditions;
+        if (section.isConfigurationSection("conditions")) {
+            conditions = LootChestConditions.loadFromConfig(Objects.requireNonNull(section.getConfigurationSection("conditions")));
+        } else {
+            conditions = new LootChestConditions();
+        }
+        int duration = section.getInt("duration");
+        if (duration == 0)
+            throw new IllegalArgumentException("Timed loot chest " + config.getName() + " missing duration!");
+        ConfigurationSection hologramLocationSection = section.getConfigurationSection("hologram.location");
+        if (hologramLocationSection == null)
+            throw new IllegalArgumentException("Hologram location section missing for timed loot " + config.getName());
+        String holoWorld = hologramLocationSection.getString("world");
+        int holoX = hologramLocationSection.getInt("x");
+        int holoY = hologramLocationSection.getInt("y");
+        int holoZ = hologramLocationSection.getInt("z");
+        if (holoWorld == null || holoX == 0 || holoY == 0 || holoZ == 0)
+            throw new IllegalArgumentException("One or more hologram-location values missing for timed loot " + config.getName());
+        Location hologramLocation = new Location(Objects.requireNonNull(Bukkit.getWorld(holoWorld), "Timed loot hologram location world " + holoWorld + " does not exist!"), holoX, holoY, holoZ);
+        List<String> hologramLines = section.getStringList("hologram.lines");
+        if (hologramLines.isEmpty())
+            throw new IllegalArgumentException("Hologram.lines missing from timed loot " + config.getName());
+        String type = config.getString("type");
+        TimedLootChest chest = new TimedLootChest(
+                new LootChestPosition(location, direction),
+                lootChestTemplates.get(chestTemplate),
+                conditions,
+                minLevel,
+                itemMinLevel, itemMaxLevel,
+                title,
+                duration,
+                hologramLocation,
+                (hologram, time) -> {
+                    hologram.getLines().clear();
+                    for (String line : hologramLines) {
+                        hologram.getLines().appendText(ColorUtil.format(line.replaceAll("%text%", line)));
+                    }
+                });
+        if ("boss".equalsIgnoreCase(type)) {
+            String mmID = config.getString("boss.mm-id");
+            double lootDamageThreshold = config.getDouble("boss.loot-damage-threshold");
+            if (mmID == null)
+                throw new IllegalArgumentException("Boss timed loot chest missing boss.mm-id");
+            return new BossTimedLoot(chest, mmID, lootDamageThreshold);
+        } else if ("custom".equalsIgnoreCase(type)) {
+            String identifier = config.getString("custom.identifier");
+            if (identifier == null)
+                throw new IllegalArgumentException("Timed loot missing identifier " + config.getName());
+            return new CustomTimedLoot(chest, identifier);
+        } else throw new IllegalArgumentException("Bad type for timed loot chest: " + type);
     }
 
     @Override
@@ -258,6 +385,10 @@ public class LootManager implements LootAPI {
         regenLootChestsConfig.set("chests." + id + ".item-level.min", regenerativeLootChest.getItemMinLevel());
         regenLootChestsConfig.set("chests." + id + ".item-level.max", regenerativeLootChest.getItemMaxLevel());
         regenLootChestsConfig.set("chests." + id + ".title", regenerativeLootChest.getInventoryTitle());
+        if (regenerativeLootChest.getConditions().getConditionsList().size() > 0) {
+            ConfigurationSection conditionsSection = regenLootChestsConfig.createSection("chests." + id + ".conditions");
+            regenerativeLootChest.getConditions().addToConfig(conditionsSection);
+        }
         nextRegenLootChestID++;
         regenLootChestsConfig.set("next-id", nextRegenLootChestID);
         saveRegenLootChestConfigAsync();
@@ -298,6 +429,11 @@ public class LootManager implements LootAPI {
     @Override
     public Collection<RegenerativeLootChest> getRegenerativeLootChests() {
         return regenLootChests.values();
+    }
+
+    @Override
+    public void displayTimedLootChest(Player player, TimedLootChest chest) {
+        clientLootManager.displayTimedLootChest(player, chest);
     }
 
     private void saveRegenLootChestConfigAsync() {

@@ -20,11 +20,14 @@ public class LootChestInventory implements Listener, InventoryHolder {
     private final List<Consumer<Player>> onOpenActions = new LinkedList<>();
     private final List<Consumer<Player>> onCloseActions = new LinkedList<>();
     private final Inventory inventory;
+    private final LootChest lootChest;
 
-    public LootChestInventory(Collection<ItemStack> items,
+    public LootChestInventory(LootChest lootChest,
+                              Collection<ItemStack> items,
                               int inventorySize,
                               String inventoryTitle,
                               Consumer<Player> onOpenAction) {
+        this.lootChest = lootChest;
         if (inventorySize % 9 != 0 || inventorySize < items.size())
             throw new IllegalArgumentException("Cannot create LootChest with invalid inventory size " + inventorySize);
         this.inventory = Bukkit.createInventory(this, inventorySize, inventoryTitle);
@@ -45,14 +48,18 @@ public class LootChestInventory implements Listener, InventoryHolder {
         return this.inventory;
     }
 
+    public LootChest getLootChest() {
+        return this.lootChest;
+    }
+
     public void onOpen(Consumer<Player> onOpen) {
         onOpenActions.add(onOpen);
     }
 
     public void open(Player player) {
+        player.openInventory(inventory);
         onOpenActions.forEach(action -> action.accept(player));
         onOpenActions.clear();
-        player.openInventory(inventory);
     }
 
     public void onClose(Consumer<Player> onClose) {
@@ -63,8 +70,8 @@ public class LootChestInventory implements Listener, InventoryHolder {
         if (player.getOpenInventory().getTopInventory().getHolder() == this) {
             player.closeInventory();
             onCloseActions.forEach(action -> action.accept(player));
-            onCloseActions.clear();
         }
+        onCloseActions.clear();
     }
 
 }

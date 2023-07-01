@@ -38,10 +38,14 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * Handles displaying the client sided loot chest to players
+ * and opening/closing chest inventories
+ */
 public class ClientLootManager implements Listener {
 
     private final MultiWorldGrid<LootChest> chestGrid = new MultiWorldGrid<>(new GridBounds(-4096, -4096, 4096, 4096), (short) 32); // Load chests efficiently
-    private final Map<Player, Map<Location, ClientLootChest>> loadedChests = new HashMap<>(); // Chests that each player can see in the world
+    private final Map<Player, Map<WorldLootChestIdentifier, ClientLootChest>> loadedChests = new HashMap<>(); // Chests that each player can see in the world
     private final Map<UUID, ConcurrentHashMap<RegenerativeLootChest, Long>> lastOpened = new HashMap<>(); // For cooldowns
 
     public ClientLootManager(Collection<? extends LootChest> lootChests) {
@@ -59,32 +63,32 @@ public class ClientLootManager implements Listener {
                     onUseItemPacket(event);
                 }
             }
-        });
+        }).start();
     }
 
     public void updateClientChests(Player player) {
-        Map<Location, ClientLootChest> chests = loadedChests.computeIfAbsent(player, key -> {
-            Map<Location, ClientLootChest> emptyChests = new HashMap<>();
+        Map<WorldLootChestIdentifier, ClientLootChest> chests = loadedChests.computeIfAbsent(player, key -> {
+            Map<WorldLootChestIdentifier, ClientLootChest> emptyChests = new HashMap<>();
             for (LootChest chest : RunicCore.getLootAPI().getRegenerativeLootChests()) {
-                emptyChests.put(chest.getPosition().getLocation(), new ClientLootChest(chest, false));
+                emptyChests.put(new BlockWorldLootChestIdentifier(chest.getPosition().getLocation()), new ClientLootChest(chest, false));
             }
             return emptyChests;
         });
         Set<LootChest> surrounding = chestGrid.getSurroundingElements(player.getLocation(), (short) 2);
-        for (Map.Entry<Location, ClientLootChest> entry : chests.entrySet()) {
-            LootChest chest = entry.getValue().lootChest;
-            boolean displayed = entry.getValue().displayed;
+        for (ClientLootChest clientChest : chests.values()) {
+            LootChest chest = clientChest.lootChest;
+            boolean displayed = clientChest.displayed;
             if (!chest.shouldUpdateDisplay()) continue;
             if (displayed) {
                 if (!surrounding.contains(chest)) {
                     chest.hideFromPlayer(player);
-                    entry.getValue().displayed = false;
+                    clientChest.displayed = false;
                 }
             } else {
                 if (surrounding.contains(chest)) {
                     if (chest instanceof RegenerativeLootChest regenChest && isOnCooldown(player, regenChest)) continue;
                     chest.showToPlayer(player);
-                    entry.getValue().displayed = true;
+                    clientChest.displayed = true;
                 }
             }
         }
@@ -102,12 +106,13 @@ public class ClientLootManager implements Listener {
         for (Player player : Bukkit.getOnlinePlayers()) updateClientChests(player);
     }
 
-    public void addTimedChest(Player player, TimedLootChest chest) {
-        loadedChests.get(player).put(chest.getPosition().getLocation(), new ClientLootChest(chest, true));
+    public void displayTimedLootChest(Player player, TimedLootChest chest) {
+        WorldLootChestIdentifier identifier = new BlockWorldLootChestIdentifier(chest.getPosition().getLocation());
+        loadedChests.get(player).put(identifier, new ClientLootChest(chest, true));
         chest.beginDisplay(player, () -> {
-            Map<Location, ClientLootChest> loaded = loadedChests.get(player);
+            Map<WorldLootChestIdentifier, ClientLootChest> loaded = loadedChests.get(player);
             if (loaded != null) {
-                loaded.remove(chest.getPosition().getLocation());
+                loaded.remove(identifier);
             }
         });
     }
@@ -171,8 +176,7 @@ public class ClientLootManager implements Listener {
         player.getWorld().playSound(location, Sound.ENTITY_ZOMBIE_BREAK_WOODEN_DOOR, 0.1f, 1);
         player.getWorld().playSound(player.getLocation(), Sound.BLOCK_CHEST_OPEN, 0.5f, 1);
         lootChest.openInventory(player);
-
-        // TODO add chest open animation
+        lootChest.packetOpenForPlayer(player);
     }
 
     @EventHandler
@@ -192,9 +196,12 @@ public class ClientLootManager implements Listener {
 
     @EventHandler
     public void onLootChestClose(InventoryCloseEvent event) {
-        if (event.getPlayer() instanceof Player
+        if (event.getPlayer() instanceof Player player
                 && event.getView().getTopInventory().getHolder() instanceof LootChestInventory holder) {
-            holder.close((Player) event.getPlayer());
+            holder.close(player);
+            player.playSound(holder.getLootChest().getPosition().getLocation(), Sound.BLOCK_CHEST_CLOSE, 1.0f, 1.0f);
+            holder.getLootChest().packetCloseForPlayer(player);
+            Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), () -> holder.getLootChest().hideFromPlayer(player), 5); // TODO test timing
         }
     }
 
@@ -204,12 +211,15 @@ public class ClientLootManager implements Listener {
         Location location = position.toLocation(event.getPlayer().getWorld());
         Block block = location.getBlock();
         if (block.getType() != Material.CHEST) return;
-        Map<Location, ClientLootChest> loaded = loadedChests.get(event.getPlayer());
+        Map<WorldLootChestIdentifier, ClientLootChest> loaded = loadedChests.get(event.getPlayer());
         if (loaded == null) return;
-        ClientLootChest chest = loaded.get(location);
+        ClientLootChest chest = loaded.get(new BlockWorldLootChestIdentifier(location));
         if (chest == null) return;
         event.setCancelled(true);
         Bukkit.getScheduler().runTask(RunicCore.getInstance(), () -> chest.lootChest.openInventory(event.getPlayer()));
+    }
+
+    private interface WorldLootChestIdentifier {
     }
 
     private static class ClientLootChest {
@@ -219,6 +229,20 @@ public class ClientLootManager implements Listener {
         private ClientLootChest(LootChest lootChest, boolean displayed) {
             this.lootChest = lootChest;
             this.displayed = displayed;
+        }
+    }
+
+    private record BlockWorldLootChestIdentifier(Location location) implements WorldLootChestIdentifier {
+        @Override
+        public boolean equals(Object object) {
+            return object instanceof BlockWorldLootChestIdentifier identifier && identifier.location.equals(location);
+        }
+    }
+
+    private record EntityWorldLootChestIdentifier(UUID entityID) implements WorldLootChestIdentifier {
+        @Override
+        public boolean equals(Object object) {
+            return object instanceof EntityWorldLootChestIdentifier identifier && identifier.entityID.equals(entityID);
         }
     }
 

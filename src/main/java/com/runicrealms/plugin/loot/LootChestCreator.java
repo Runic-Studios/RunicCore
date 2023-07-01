@@ -49,7 +49,7 @@ public class LootChestCreator extends BaseCommand implements Listener {
                     onUsePacketEvent(event);
                 }
             }
-        });
+        }).start();
     }
 
     private static boolean isInt(String number) {
@@ -215,6 +215,7 @@ public class LootChestCreator extends BaseCommand implements Listener {
             RunicCore.getLootAPI().createRegenerativeLootChest(new RegenerativeLootChest(
                             new LootChestPosition(location, getDirectionFacingPlayer(event.getPlayer().getLocation())),
                             chestInfo.template,
+                            new LootChestConditions(),
                             chestInfo.minLevel,
                             chestInfo.itemMinLevel, chestInfo.itemMaxLevel,
                             chestInfo.regenerationTime,

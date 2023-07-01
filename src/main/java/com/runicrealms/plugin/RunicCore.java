@@ -432,6 +432,9 @@ public class RunicCore extends JavaPlugin implements Listener {
         RunicCommon.registerConfigAPI(new ConfigManager());
         RunicCommon.registerLuckPermsAPI(new LuckPermsManager());
 
+        // Register command manager
+        commandManager = new PaperCommandManager(this);
+
         ConverterAPI converterAPI = new ConverterHandler();
         RedisAPI redisAPI = new RedisManager();
         DatabaseManager databaseManager = new DatabaseManager();
@@ -496,9 +499,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         new ArtifactOnKillListener();
         new PlayerQueueManager();
 
-
-        // ACF commands
-        commandManager = new PaperCommandManager(this);
+        // register commands
         registerACFCommands();
         commandManager.getCommandConditions().addCondition("is-console-or-op", context -> {
             if (!(context.getIssuer().getIssuer() instanceof ConsoleCommandSender) && !context.getIssuer().getIssuer().isOp()) // ops can execute console commands

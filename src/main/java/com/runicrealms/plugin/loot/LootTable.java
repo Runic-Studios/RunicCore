@@ -1,6 +1,7 @@
 package com.runicrealms.plugin.loot;
 
 import com.runicrealms.runicitems.RunicItemsAPI;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.List;
@@ -22,13 +23,13 @@ public class LootTable {
         return this.identifier;
     }
 
-    public ItemStack generateLoot(LootChest chest) {
+    public ItemStack generateLoot(LootHolder lootHolder, Player player) {
         Random rand = new Random();
         int value = rand.nextInt(totalWeight);
         for (LootItem item : items) {
             value -= item.weight;
             if (value < 0) {
-                return item.generateItem(chest);
+                return item.generateItem(lootHolder, player);
             }
         }
         throw new IllegalStateException("Unreachable");
@@ -53,7 +54,7 @@ public class LootTable {
             this.maxStackSize = maxStackSize;
         }
 
-        public ItemStack generateItem(LootChest chest) {
+        public ItemStack generateItem(LootHolder lootHolder, Player player) {
             return RunicItemsAPI.generateItemFromTemplate(templateID, new Random().nextInt(maxStackSize - minStackSize + 1) + minStackSize).generateItem();
         }
 
@@ -66,8 +67,8 @@ public class LootTable {
         }
 
         @Override
-        public ItemStack generateItem(LootChest chest) {
-            return RunicItemsAPI.generateItemInRange(chest.getItemMinLevel(), chest.getItemMaxLevel(), 1).generateItem();
+        public ItemStack generateItem(LootHolder lootHolder, Player player) {
+            return RunicItemsAPI.generateItemInRange(lootHolder.getItemMinLevel(player), lootHolder.getItemMaxLevel(player), 1).generateItem();
         }
     }
 

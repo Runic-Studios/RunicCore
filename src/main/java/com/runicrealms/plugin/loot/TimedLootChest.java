@@ -23,18 +23,22 @@ public class TimedLootChest extends LootChest {
     public TimedLootChest(
             LootChestPosition position,
             LootChestTemplate lootChestTemplate,
+            LootChestConditions conditions,
             int minLevel,
             int itemMinLevel, int itemMaxLevel,
             String inventoryTitle,
             int duration,
             Location hologramLocation,
             BiConsumer<Hologram, Integer> hologramEditor) {
-        super(position, lootChestTemplate, minLevel, itemMinLevel, itemMaxLevel, inventoryTitle);
+        super(position, lootChestTemplate, conditions, minLevel, itemMinLevel, itemMaxLevel, inventoryTitle);
         this.duration = duration;
         this.hologramLocation = hologramLocation;
         this.hologramEditor = hologramEditor;
     }
 
+    /**
+     * WARNING: this method should not be called outside the LootManager and ClientLootManager classes!
+     */
     public void beginDisplay(Player player, Runnable onFinish) {
         finishTasks.put(player.getUniqueId(), onFinish);
         AtomicInteger counter = new AtomicInteger(this.duration);
@@ -56,8 +60,8 @@ public class TimedLootChest extends LootChest {
     }
 
     @Override
-    protected LootChestInventory generateInventory() {
-        LootChestInventory inventory = super.generateInventory();
+    protected LootChestInventory generateInventory(Player player) {
+        LootChestInventory inventory = super.generateInventory(player);
         inventory.onClose(target -> {
             hideFromPlayer(target);
             Runnable finish = finishTasks.remove(target.getUniqueId());

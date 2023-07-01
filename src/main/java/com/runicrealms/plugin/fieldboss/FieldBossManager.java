@@ -84,6 +84,20 @@ public class FieldBossManager implements FieldBossAPI, Listener {
         } catch (Exception exception) {
             throw new IllegalArgumentException("Field boss config does not contain proper circle keys!");
         }
+        FieldBoss.GuildScore guildScore = null;
+        if (config.contains("guild-score") && config.getInt("guild-score.amount") != 0) {
+            String distributionType = config.getString("guild-score.distribution.type");
+            int amount = config.getInt("guild-score.amount");
+            if ("split".equalsIgnoreCase(distributionType)) {
+                double participationSplit = config.getDouble("guild-score.distribution.split.participation");
+                double damageSplit = config.getDouble("guild-score.distribution.split.damage");
+                if (participationSplit == 0 || damageSplit == 0)
+                    throw new IllegalArgumentException("Field boss config guild-score.distribution.split must contain participation and damage keys!");
+                guildScore = FieldBoss.GuildScore.split(amount, participationSplit, damageSplit);
+            } else {
+                throw new IllegalArgumentException("Field boss config guild-score.distribution.type invalid value: " + distributionType);
+            }
+        }
         return new FieldBoss(identifier,
                 name,
                 mmID,
@@ -91,7 +105,8 @@ public class FieldBossManager implements FieldBossAPI, Listener {
                 domeRadius,
                 tributeChest,
                 circleCentre,
-                circleRadius);
+                circleRadius,
+                guildScore);
     }
 
     @Override

@@ -3,7 +3,9 @@ package com.runicrealms.plugin.api;
 import com.runicrealms.plugin.loot.LootChestTemplate;
 import com.runicrealms.plugin.loot.LootTable;
 import com.runicrealms.plugin.loot.RegenerativeLootChest;
+import com.runicrealms.plugin.loot.TimedLootChest;
 import org.bukkit.Location;
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
@@ -55,5 +57,10 @@ public interface LootAPI {
      * Gets all possible regenerative loot chests.
      */
     Collection<RegenerativeLootChest> getRegenerativeLootChests();
+
+    /**
+     * Begins displaying a timed loot chest
+     */
+    void displayTimedLootChest(Player player, TimedLootChest chest);
 
 }

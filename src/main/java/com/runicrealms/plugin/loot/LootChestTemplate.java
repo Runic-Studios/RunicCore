@@ -1,5 +1,6 @@
 package com.runicrealms.plugin.loot;
 
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.HashSet;
@@ -26,12 +27,12 @@ public class LootChestTemplate {
         this.inventorySize = inventorySize;
     }
 
-    public LootChestInventory generateInventory(LootChest lootChest) {
+    public LootChestInventory generateInventory(LootChest lootChest, Player player) {
         Random rand = new Random();
         int itemCount = rand.nextInt(maxCount - minCount + 1) + minCount;
         Set<ItemStack> items = new HashSet<>();
-        for (int i = 0; i < itemCount; i++) items.add(lootTable.generateLoot(lootChest));
-        return new LootChestInventory(items, inventorySize, lootChest.getInventoryTitle(), null);
+        for (int i = 0; i < itemCount; i++) items.add(lootTable.generateLoot(lootChest, player));
+        return new LootChestInventory(lootChest, items, inventorySize, lootChest.getInventoryTitle(), null);
     }
 
     public String getIdentifier() {
