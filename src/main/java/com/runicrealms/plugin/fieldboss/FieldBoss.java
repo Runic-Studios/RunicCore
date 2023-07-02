@@ -1,5 +1,8 @@
 package com.runicrealms.plugin.fieldboss;
 
+import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.events.PacketContainer;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.common.RunicCommon;
 import com.runicrealms.plugin.events.MagicDamageEvent;
@@ -17,8 +20,8 @@ import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.Particle;
 import org.bukkit.Sound;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -31,34 +34,35 @@ import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class FieldBoss implements Listener {
 
     private static final double DOME_PARTICLE_DENSITY = 0.1; // particles per square block
     private static final double CIRCLE_PARTICLE_COUNT = 32;
-    // TODO use:
     private static final int ADDITIONAL_ATTENTION_RADIUS = 30; // block number added to radius in which players will be notified of field boss stuff happening
 
+    private static final int DEATH_TIMEOUT_MILLIS = 1000 * 60 * 2;
     private final String identifier;
     private final String bossName;
     private final String mmID;
     private final Location domeCentre; // Centre of the dome, not where the shrine is
     private final double domeRadius;
-    private final Location tributeChest;
     private final Location circleCentre;
     private final double circleRadius;
     private final @Nullable GuildScore guildScore;
     private final BossTimedLoot loot;
-    private final Set<Location> domeParticleLocations = new HashSet<>();
-    private final Set<Location> circleParticleLocations = new HashSet<>();
+    private final Map<ActiveState.PlayerState, Set<PacketContainer>> domeParticles = new HashMap<>();
+    private final Set<PacketContainer> circleParticles = new HashSet<>();
     private @Nullable ActiveState active; // null means inactive
     private boolean spoilsActive = false;
 
@@ -67,7 +71,6 @@ public class FieldBoss implements Listener {
                      String mmID,
                      Location domeCentre,
                      double domeRadius,
-                     Location tributeChest,
                      Location circleCentre,
                      double circleRadius,
                      @Nullable GuildScore guildScore,
@@ -77,7 +80,6 @@ public class FieldBoss implements Listener {
         this.mmID = mmID;
         this.domeCentre = domeCentre;
         this.domeRadius = domeRadius;
-        this.tributeChest = tributeChest;
         this.circleCentre = circleCentre;
         this.circleRadius = circleRadius;
         this.guildScore = guildScore;
@@ -86,23 +88,63 @@ public class FieldBoss implements Listener {
             if (mythicBukkit.getAPIHelper().getMythicMob(mmID) == null)
                 throw new IllegalArgumentException("Field Boss " + identifier + " has invalid MM ID " + mmID);
         }
-        if (tributeChest.getBlock().getType() != Material.CHEST) tributeChest.getBlock().setType(Material.CHEST);
+        if (!Objects.equals(domeCentre.getWorld(), circleCentre.getWorld()))
+            throw new IllegalArgumentException("Dome and circle must be in the same world!");
         if (Bukkit.isPrimaryThread())
-            Bukkit.getScheduler().runTaskAsynchronously(RunicCore.getInstance(), this::loadParticleLocations);
-        else loadParticleLocations();
+            Bukkit.getScheduler().runTaskAsynchronously(RunicCore.getInstance(), this::loadParticles);
+        else loadParticles();
         Bukkit.getPluginManager().registerEvents(this, RunicCore.getInstance());
+    }
+
+    private static PacketContainer createDustParticlePacket(double x, double y, double z, Color color) {
+        PacketContainer packet = new PacketContainer(PacketType.Play.Server.WORLD_PARTICLES);
+        packet.getIntegers().write(0, 14); // Particle ID, 14 is dust
+        packet.getBooleans().write(0, true); // Long distance
+        packet.getDoubles().write(0, x); // X
+        packet.getDoubles().write(1, y); // Y
+        packet.getDoubles().write(2, z); // Z
+        packet.getFloat().write(0, 0f); // offset x
+        packet.getFloat().write(1, 0f); // offset y
+        packet.getFloat().write(2, 0f); // offset z
+        packet.getFloat().write(3, 0f); // max speed
+        packet.getIntegers().write(1, 1); // particle count
+        packet.getFloat().write(4, ((float) color.getRed()) / 255f); // dust data red
+        packet.getFloat().write(5, ((float) color.getGreen()) / 255f);
+        packet.getFloat().write(6, ((float) color.getBlue()) / 255f);
+        packet.getFloat().write(4, 1f); // dust data scale
+        return packet;
+    }
+
+    private static PacketContainer createFireworkParticlePacket(double x, double y, double z) {
+        PacketContainer packet = new PacketContainer(PacketType.Play.Server.WORLD_PARTICLES);
+        packet.getIntegers().write(0, 26); // Particle ID, 26 is firework
+        packet.getBooleans().write(0, true); // Long distance
+        packet.getDoubles().write(0, x); // X
+        packet.getDoubles().write(1, y); // Y
+        packet.getDoubles().write(2, z); // Z
+        packet.getFloat().write(0, 0f); // offset x
+        packet.getFloat().write(1, 0f); // offset y
+        packet.getFloat().write(2, 0f); // offset z
+        packet.getFloat().write(3, 0f); // max speed
+        packet.getIntegers().write(1, 1); // particle count
+        return packet;
     }
 
     public String getIdentifier() {
         return this.identifier;
     }
 
-    public void attemptActivate(Player player) {
+    public boolean attemptActivate(CommandSender sender) {
         if (spoilsActive) {
-            player.sendMessage(ChatColor.RED + "Field boss cannot be activated while spoils are still active!");
-            return;
+            sender.sendMessage(ChatColor.RED + "Field boss cannot be activated while spoils are still active!");
+            return false;
+        }
+        if (active != null) {
+            sender.sendMessage(ChatColor.RED + "Field boss cannot be activated while it is still active!");
+            return false;
         }
         activate();
+        return true;
     }
 
     private void activate() {
@@ -123,7 +165,14 @@ public class FieldBoss implements Listener {
         return this.active;
     }
 
-    private void loadParticleLocations() {
+    private void loadParticles() {
+        Map<Color, Set<PacketContainer>> possibleColors = new HashMap<>();
+        Arrays.stream(ActiveState.PlayerState.values())
+                .filter(state -> state.domeParticleColor != null)
+                .map(state -> state.domeParticleColor)
+                .distinct()
+                .forEach(color -> possibleColors.put(color, new HashSet<>()));
+
         // Thank you chat gpt
         double surfaceArea = 4 * Math.PI * Math.pow(domeRadius, 2); // surface area of sphere
         int count = (int) (DOME_PARTICLE_DENSITY * surfaceArea); // number of particles
@@ -136,30 +185,22 @@ public class FieldBoss implements Listener {
             double z = Math.sin(phi) * radiusAtY;
             Location particleLocation = domeCentre.clone().add(new Location(domeCentre.getWorld(), x * domeRadius, y * domeRadius, z * domeRadius));
             if (particleLocation.getBlock().getType() != Material.AIR) continue;
-            domeParticleLocations.add(particleLocation);
+            for (Color color : possibleColors.keySet()) {
+                possibleColors.get(color).add(createDustParticlePacket(particleLocation.getX(), particleLocation.getY(), particleLocation.getZ(), color));
+            }
+        }
+
+        for (ActiveState.PlayerState state : ActiveState.PlayerState.values()) {
+            domeParticles.put(state, possibleColors.get(state.domeParticleColor));
         }
 
         for (int i = 0; i < CIRCLE_PARTICLE_COUNT; i++) {
             double angle = 2 * Math.PI * i / CIRCLE_PARTICLE_COUNT;
             double x = circleCentre.getX() + circleRadius * Math.cos(angle);
-            double z = circleCentre.getZ() + circleRadius * Math.sin(angle);
             double y = circleCentre.getY();
-            circleParticleLocations.add(new Location(circleCentre.getWorld(), x, y, z));
+            double z = circleCentre.getZ() + circleRadius * Math.sin(angle);
+            circleParticles.add(createFireworkParticlePacket(x, y, z));
         }
-    }
-
-    private Stream<? extends Player> getPlayersInDome() {
-        double radiusSquared = domeRadius * domeRadius;
-        return Bukkit.getOnlinePlayers().stream().filter((player) ->
-                player.getWorld() == domeCentre.getWorld()
-                        && player.getLocation().distanceSquared(domeCentre) <= radiusSquared);
-    }
-
-    private Stream<? extends Player> getPlayersInArea() {
-        double radiusSquared = (domeRadius + 30) * (domeRadius + 30);
-        return Bukkit.getOnlinePlayers().stream().filter((player) ->
-                player.getWorld() == domeCentre.getWorld()
-                        && player.getLocation().distanceSquared(domeCentre) <= radiusSquared);
     }
 
     public static class GuildScore {
@@ -229,19 +270,35 @@ public class FieldBoss implements Listener {
      */
     public class ActiveState implements Listener {
 
+        private final Map<Player, PlayerState> playerStates = new ConcurrentHashMap<>();
+
         private final UUID entityID;
-        private final Set<Player> participants = new HashSet<>();
+        private final Map<Player, Long> participants = new HashMap<>(); // Long represents last death timestamp, for cooldown
         private final BukkitTask particleTask;
         private final Map<UUID, Integer> damageDealt = new HashMap<>();
+        private final BukkitTask playerStateTask;
         private @Nullable BukkitTask movementTask;
         private State state = State.WARMUP;
 
         private ActiveState() {
             Bukkit.getPluginManager().registerEvents(this, RunicCore.getInstance());
+            updatePlayerStates();
+            playerStateTask = new BukkitRunnable() {
+                @Override
+                public void run() {
+                    updatePlayerStates();
+                }
+            }.runTaskTimerAsynchronously(RunicCore.getInstance(), 20, 20);
             particleTask = new BukkitRunnable() {
                 @Override
                 public void run() {
-                    spawnDomeParticles();
+                    for (Player player : Bukkit.getOnlinePlayers()) {
+                        PlayerState playerState = playerStates.get(player);
+                        if (playerState == null) continue;
+                        if (playerState.canSpectate) {
+                            domeParticles.get(playerState).forEach(packet -> ProtocolLibrary.getProtocolManager().sendServerPacket(player, packet));
+                        }
+                    }
                 }
             }.runTaskTimerAsynchronously(RunicCore.getInstance(), 0, 4);
             try {
@@ -252,21 +309,59 @@ public class FieldBoss implements Listener {
             } catch (InvalidMobTypeException exception) {
                 throw new IllegalArgumentException("Invalid mythic mobs ID: " + mmID);
             }
-            new WarmupCircle(() -> {
-                state = State.ACTIVE;
-                movementTask = new BukkitRunnable() {
-                    @Override
-                    public void run() {
-                        teleportDomePlayers();
-                    }
-                }.runTaskTimerAsynchronously(RunicCore.getInstance(), 0, 8);
-            });
+            new WarmupCircle(() -> movementTask = new BukkitRunnable() {
+                @Override
+                public void run() {
+                    teleportDomePlayers();
+                }
+            }.runTaskTimerAsynchronously(RunicCore.getInstance(), 0, 8));
         }
 
-        private void spawnDomeParticles() {
-            assert domeCentre.getWorld() != null;
-            for (Location particleLocation : domeParticleLocations) {
-                domeCentre.getWorld().spawnParticle(Particle.REDSTONE, particleLocation, 1, 0, 0, 0, 0, state.particleDustOptions, true);
+        private boolean canEnterFight(Player player) {
+            Long lastDeath = participants.get(player);
+            if (lastDeath == null) return false; // not a participant
+            return lastDeath + DEATH_TIMEOUT_MILLIS <= System.currentTimeMillis();
+        }
+
+        private void updatePlayerStates() {
+            double radiusSquared = domeRadius * domeRadius;
+            double additionalAttentionRadius = (domeRadius + ADDITIONAL_ATTENTION_RADIUS) * (domeRadius + ADDITIONAL_ATTENTION_RADIUS);
+            double circleRadiusSquared = circleRadius * circleRadius;
+            for (Player player : Bukkit.getOnlinePlayers()) {
+                if (!player.getWorld().equals(domeCentre.getWorld())) {
+                    playerStates.put(player, PlayerState.NOT_PRESENT);
+                    continue;
+                }
+                if (state == State.WARMUP) {
+                    if (player.getLocation().distanceSquared(circleCentre) <= circleRadiusSquared) {
+                        playerStates.put(player, PlayerState.WARMUP_IN_CIRCLE);
+                    } else {
+                        double distanceSquared = player.getLocation().distanceSquared(domeCentre);
+                        if (distanceSquared <= additionalAttentionRadius) {
+                            playerStates.put(player, PlayerState.WARMUP_SPECTATING);
+                        } else {
+                            playerStates.put(player, PlayerState.NOT_PRESENT);
+                        }
+                    }
+                } else if (state == State.ACTIVE) {
+                    boolean canEnterFight = canEnterFight(player);
+                    double distanceSquared = player.getLocation().distanceSquared(domeCentre);
+                    if (canEnterFight) {
+                        if (distanceSquared <= radiusSquared) {
+                            playerStates.put(player, PlayerState.ACTIVE_IN_DOME);
+                        } else if (distanceSquared <= additionalAttentionRadius) {
+                            playerStates.put(player, PlayerState.ACTIVE_CAN_ENTER_DOME);
+                        } else {
+                            playerStates.put(player, PlayerState.NOT_PRESENT);
+                        }
+                    } else {
+                        if (distanceSquared <= additionalAttentionRadius) {
+                            playerStates.put(player, PlayerState.ACTIVE_SPECTATING_DOME);
+                        } else {
+                            playerStates.put(player, PlayerState.NOT_PRESENT);
+                        }
+                    }
+                }
             }
         }
 
@@ -277,7 +372,9 @@ public class FieldBoss implements Listener {
             for (Player player : Bukkit.getOnlinePlayers()) {
                 if (player.getWorld() != domeCentre.getWorld()) continue;
                 double distanceSquared = player.getLocation().distanceSquared(domeCentre);
-                if (participants.contains(player)) { // Inside the dome
+                PlayerState state = playerStates.get(player);
+                if (state == null) continue;
+                if (state.lockedInsideDome) { // Inside the dome
                     if (distanceSquared > radiusCheatingInsideSquared) { // Player is cheating? they are far away from the dome, teleport them back in
                         Vector direction = player.getLocation().toVector().subtract(domeCentre.toVector()).normalize();
                         Location newLocation = domeCentre.clone().add(direction.multiply(domeRadius - 1));
@@ -291,7 +388,7 @@ public class FieldBoss implements Listener {
                         Vector newVelocity = player.getVelocity().multiply(0.5).add(direction.multiply(0.5));
                         Bukkit.getScheduler().runTask(RunicCore.getInstance(), () -> player.setVelocity(newVelocity));
                     }
-                } else { // Outside the dome
+                } else if (state.lockedOutsideDome) { // Outside the dome
                     if (distanceSquared < radiusCheatingOutsideSquared) { // Player is cheating? they are far into the dome, teleport them back out
                         Vector direction = player.getLocation().toVector().subtract(domeCentre.toVector()).normalize();
                         Location newLocation = domeCentre.clone().add(direction.multiply(domeRadius + 1));
@@ -312,16 +409,18 @@ public class FieldBoss implements Listener {
         @EventHandler(priority = EventPriority.HIGHEST)
         public void onMagicDamage(MagicDamageEvent event) {
             if (!event.getVictim().getUniqueId().equals(entityID)) return;
-            if (state == State.WARMUP || !participants.contains(event.getPlayer()))
-                event.setCancelled(true);
+            PlayerState state = playerStates.get(event.getPlayer());
+            if (state == null) return;
+            if (!state.isFighting) event.setCancelled(true);
             else trackBossDamage(event.getPlayer(), event.getAmount());
         }
 
         @EventHandler(priority = EventPriority.HIGHEST)
         public void onPhysicalDamage(PhysicalDamageEvent event) {
             if (!event.getVictim().getUniqueId().equals(entityID)) return;
-            if (state == State.WARMUP || !participants.contains(event.getPlayer()))
-                event.setCancelled(true);
+            PlayerState state = playerStates.get(event.getPlayer());
+            if (state == null) return;
+            if (!state.isFighting) event.setCancelled(true);
             else trackBossDamage(event.getPlayer(), event.getAmount());
         }
 
@@ -333,7 +432,8 @@ public class FieldBoss implements Listener {
 
         @EventHandler
         public void onRunicDeath(RunicDeathEvent event) {
-            participants.remove(event.getVictim());
+            if (participants.containsKey(event.getVictim()))
+                participants.put(event.getVictim(), System.currentTimeMillis());
         }
 
         @EventHandler
@@ -348,15 +448,22 @@ public class FieldBoss implements Listener {
         @EventHandler
         public void onPlayerQuit(PlayerQuitEvent event) {
             participants.remove(event.getPlayer());
+            playerStates.remove(event.getPlayer());
         }
 
-        private void deactivate(boolean success) {
+        public void deactivate(boolean success) {
             if (state != State.ACTIVE)
                 throw new IllegalStateException("Cannot deactivate active state when still in warmup!");
             HandlerList.unregisterAll(this);
             particleTask.cancel();
+            playerStateTask.cancel();
             if (movementTask != null) movementTask.cancel();
-            getPlayersInDome().forEach((player) -> player.playSound(player.getLocation(), Sound.ENTITY_WITHER_DEATH, 0.8f, 2.0f));
+            for (Player player : Bukkit.getOnlinePlayers()) {
+                PlayerState playerState = playerStates.get(player);
+                if (playerState == null) continue;
+                if (playerState.canSpectate)
+                    player.playSound(player.getLocation(), Sound.ENTITY_WITHER_DEATH, 0.8f, 2.0f);
+            }
             active = null;
             if (success) {
                 for (UUID player : damageDealt.keySet()) {
@@ -373,15 +480,41 @@ public class FieldBoss implements Listener {
             damageDealt.clear();
         }
 
-        public enum State {
-            ACTIVE(new Particle.DustOptions(Color.RED, 1)),
-            WARMUP(new Particle.DustOptions(Color.YELLOW, 1));
+        private enum PlayerState {
+            // These occur during State.ACTIVE:
+            ACTIVE_IN_DOME(true, true, true, true, false, false, Color.RED),
+            ACTIVE_SPECTATING_DOME(true, false, false, false, true, false, Color.RED),
+            ACTIVE_CAN_ENTER_DOME(true, true, false, false, false, false, Color.GREEN),
+            ACTIVE_WAIT_ENTER_DOME(true, true, false, false, true, false, Color.RED),
 
-            private final Particle.DustOptions particleDustOptions;
+            // These occur during State.WARMUP:
+            WARMUP_IN_CIRCLE(true, true, true, false, false, true, Color.OLIVE),
+            WARMUP_SPECTATING(true, false, false, false, false, false, Color.YELLOW),
 
-            State(Particle.DustOptions particleDustOptions) {
-                this.particleDustOptions = particleDustOptions;
+            // Applies to both states:
+            NOT_PRESENT(false, false, false, false, true, false, null);
+
+            private final boolean canSpectate; // Will the player receive messages/sounds relating to field boss?
+            private final boolean isParticipant; // Will the player receive loot once it is done (are they one of the people fighting the boss)
+            private final boolean isFighting; // Are they actively fighting the boss (can they damage it/can it target them)
+            private final boolean lockedInsideDome; // Are they locked inside the dome
+            private final boolean lockedOutsideDome; // Are they locked outside the dome
+            private final boolean isInCircle; // Are they in the summoning circle?
+            private final Color domeParticleColor; // What color should the dome particles be for them
+
+            PlayerState(boolean canSpectate, boolean isParticipant, boolean isFighting, boolean lockedInsideDome, boolean lockedOutsideDome, boolean isInCircle, Color domeParticleColor) {
+                this.canSpectate = canSpectate;
+                this.isParticipant = isParticipant;
+                this.isFighting = isFighting;
+                this.lockedInsideDome = lockedInsideDome;
+                this.lockedOutsideDome = lockedOutsideDome;
+                this.isInCircle = isInCircle;
+                this.domeParticleColor = domeParticleColor;
             }
+        }
+
+        public enum State {
+            ACTIVE, WARMUP
         }
 
         public class WarmupCircle {
@@ -407,19 +540,27 @@ public class FieldBoss implements Listener {
                 hologram.getLines().appendText(ChatColor.DARK_RED.toString() + ChatColor.BOLD + "FIELD BOSS");
                 hologram.getLines().appendText(ChatColor.RED + "Stand in the summoning circle");
                 hologram.getLines().appendText(ChatColor.RED + "to fight " + ChatColor.YELLOW + bossName);
-                getPlayersInArea().forEach((player) -> {
-                    player.sendTitle(ChatColor.GREEN + "Stand in the Circle", ChatColor.DARK_GREEN + "To fight " + ChatColor.YELLOW + ChatColor.BOLD + bossName, 10, 60, 10);
-                    player.sendMessage(ChatColor.GREEN + "Stand in the summoning circle to fight " + ChatColor.YELLOW + ChatColor.BOLD + bossName);
-                    player.playSound(player.getLocation(), Sound.ENTITY_ENDER_DRAGON_HURT, 1.0f, 0.8f);
-                });
+                for (Player player : Bukkit.getOnlinePlayers()) {
+                    PlayerState playerState = playerStates.get(player);
+                    if (playerState == null) continue;
+                    if (playerState.canSpectate) {
+                        player.sendTitle(ChatColor.GREEN + "Stand in the Circle", ChatColor.DARK_GREEN + "To fight " + ChatColor.YELLOW + ChatColor.BOLD + bossName, 10, 60, 10);
+                        player.sendMessage(ChatColor.GREEN + "Stand in the summoning circle to fight " + ChatColor.YELLOW + ChatColor.BOLD + bossName);
+                        player.playSound(player.getLocation(), Sound.ENTITY_ENDER_DRAGON_HURT, 1.0f, 0.8f);
+                    }
+                }
                 new BukkitRunnable() {
                     @Override
                     public void run() {
                         int counterCurrent = counter.get();
                         if (counterCurrent == 15 || counterCurrent == 10 || counterCurrent <= 5) {
-                            getPlayersInArea().forEach(player -> {
-                                player.sendMessage(ChatColor.DARK_GREEN.toString() + counter + " seconds" + ChatColor.GREEN + " until field boss activates...");
-                            });
+                            for (Player player : Bukkit.getOnlinePlayers()) {
+                                PlayerState playerState = playerStates.get(player);
+                                if (playerState == null) continue;
+                                if (playerState.canSpectate) {
+                                    player.sendMessage(ChatColor.DARK_GREEN.toString() + counter + " seconds" + ChatColor.GREEN + " until field boss activates...");
+                                }
+                            }
                         }
                         counterCurrent = counter.decrementAndGet();
                         if (counterCurrent <= 0) {
@@ -434,25 +575,45 @@ public class FieldBoss implements Listener {
 
             private void spawnCircleParticles() {
                 assert circleCentre.getWorld() != null;
-                for (Location particleLocation : circleParticleLocations) {
-                    circleCentre.getWorld().spawnParticle(Particle.FIREWORKS_SPARK, particleLocation, 1, 0, 0, 0, 0, null, true);
+                for (Player player : Bukkit.getOnlinePlayers()) {
+                    PlayerState playerState = playerStates.get(player);
+                    if (playerState == null) continue;
+                    if (playerState.canSpectate) {
+                        circleParticles.forEach(packet -> ProtocolLibrary.getProtocolManager().sendServerPacket(player, packet));
+                    }
                 }
             }
 
-            private void deactivate() {
-                double circleRadiusSquared = circleRadius * circleRadius;
-                participants.addAll(Bukkit.getOnlinePlayers().stream()
-                        .filter((player) -> player.getWorld() == circleCentre.getWorld()
-                                && player.getLocation().distanceSquared(circleCentre) <= circleRadiusSquared)
-                        .collect(Collectors.toUnmodifiableSet()));
+            private void deactivate() { // Order of events in this function is EXTREMELY important
+                updatePlayerStates(); // Update to get circle positions
+                for (Player player : Bukkit.getOnlinePlayers()) {
+                    PlayerState playerState = playerStates.get(player);
+                    if (playerState == null) continue;
+                    if (playerState.isInCircle) {
+                        participants.put(player, 0L);
+                    }
+                }
+                state = State.ACTIVE;
+                updatePlayerStates(); // Update now that we are active state, and we have assigned participants
+                String playersFighting = participants.keySet().stream().map(Player::getName).collect(Collectors.joining(", "));
+                participants.keySet().forEach(player -> player.sendMessage(ChatColor.GREEN + "Players fighting field boss: " + playersFighting));
                 double radiusSquared = domeRadius * domeRadius;
                 Bukkit.getOnlinePlayers().stream()
-                        .filter((player) -> !participants.contains(player)
+                        .filter((player) -> playerStates.get(player) == null || !playerStates.get(player).isParticipant
                                 && player.getWorld() == domeCentre.getWorld()
                                 && player.getLocation().distanceSquared(domeCentre) <= radiusSquared)
-                        .forEach((player) -> Bukkit.getScheduler().runTask(RunicCore.getInstance(), () -> player.teleport(circleCentre)));
-                participants.forEach((player) -> player.sendTitle(ChatColor.DARK_RED + bossName, ChatColor.RED + "Field Boss", 10, 30, 10));
-                getPlayersInArea().forEach((player) -> player.playSound(player.getLocation(), Sound.ENTITY_WITHER_SPAWN, 0.8f, 2.0f));
+                        .forEach((player) -> Bukkit.getScheduler().runTask(RunicCore.getInstance(), () -> {
+                            player.teleport(circleCentre);
+                            player.sendMessage(ChatColor.RED + "You did not stand in the summoning circle and cannot fight the field boss!");
+                        }));
+                participants.keySet().forEach((player) -> player.sendTitle(ChatColor.DARK_RED + bossName, ChatColor.RED + "Field Boss", 10, 30, 10));
+                for (Player player : Bukkit.getOnlinePlayers()) {
+                    PlayerState playerState = playerStates.get(player);
+                    if (playerState == null) continue;
+                    if (playerState.canSpectate) {
+                        player.playSound(player.getLocation(), Sound.ENTITY_WITHER_SPAWN, 0.8f, 2.0f);
+                    }
+                }
                 onFinish.run();
             }
 

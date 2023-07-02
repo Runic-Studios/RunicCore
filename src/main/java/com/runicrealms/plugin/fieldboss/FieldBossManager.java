@@ -61,17 +61,6 @@ public class FieldBossManager implements FieldBossAPI, Listener {
         } catch (Exception exception) {
             throw new IllegalArgumentException("Field boss config does not contain proper dome keys!");
         }
-        Location tributeChest;
-        try {
-            tributeChest = new Location(
-                    Bukkit.getWorld(Objects.requireNonNull(config.getString("tribute-chest.world"))),
-                    config.getDouble("tribute-chest.x"),
-                    config.getDouble("tribute-chest.y"),
-                    config.getDouble("tribute-chest.z")
-            );
-        } catch (Exception exception) {
-            throw new IllegalArgumentException("Field boss config does not contain proper dome keys!");
-        }
         Location circleCentre;
         double circleRadius;
         try {
@@ -107,7 +96,6 @@ public class FieldBossManager implements FieldBossAPI, Listener {
                 mmID,
                 domeCentre,
                 domeRadius,
-                tributeChest,
                 circleCentre,
                 circleRadius,
                 guildScore,
@@ -121,8 +109,6 @@ public class FieldBossManager implements FieldBossAPI, Listener {
 
     @Override
     public FieldBoss getFieldBoss(String identifier) {
-        if (!bosses.containsKey(identifier))
-            throw new IllegalArgumentException("Cannot get field boss with identifier " + identifier + " because it doesn't exist!");
         return bosses.get(identifier);
     }
 }

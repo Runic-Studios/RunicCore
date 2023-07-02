@@ -8,53 +8,60 @@ import co.aikar.commands.annotation.Default;
 import co.aikar.commands.annotation.Subcommand;
 import com.runicrealms.plugin.RunicCore;
 import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
+import org.bukkit.command.CommandSender;
 
 @CommandAlias("fieldboss")
 @CommandPermission("runic.op")
 public class FieldBossCommand extends BaseCommand {
-
-    private static boolean isDouble(String number) {
-        try {
-            Double.parseDouble(number);
-            return true;
-        } catch (Exception exception) {
-            return false;
-        }
-    }
-
+    
     @Default
     @CatchUnknown
-    public void onCommand(Player executor) {
-        executor.sendMessage(ChatColor.RED + "Usage: /fieldboss activate|deactivate");
+    public void onCommand(CommandSender sender) {
+        sender.sendMessage(ChatColor.RED + "Usage: /fieldboss activate|deactivate <identifier> [success]");
     }
 
     @Subcommand("activate")
-    public void onActivateCommand(Player executor, String[] args) {
+    public void onActivateCommand(CommandSender sender, String[] args) {
         if (args.length != 1) {
-            executor.sendMessage(ChatColor.RED + "Usage: /fieldboss activate <identifier>");
+            sender.sendMessage(ChatColor.RED + "Usage: /fieldboss activate <identifier> [success]");
             return;
         }
-        RunicCore.getFieldBossAPI().getFieldBoss(args[0]).attemptActivate(executor);
-//        FieldBoss boss = new FieldBoss(identifier, mmID, executor.getLocation(), radius);
-//        bosses.put(boss.getIdentifier(), boss);
-//        boss.activate();
-        executor.sendMessage(ChatColor.GREEN + "Activated field boss");
+        FieldBoss boss = RunicCore.getFieldBossAPI().getFieldBoss(args[0]);
+        if (boss == null) {
+            sender.sendMessage(ChatColor.RED + args[0] + " is not a valid field boss identifier!");
+            return;
+        }
+        boolean success = boss.attemptActivate(sender);
+        if (success) sender.sendMessage(ChatColor.GREEN + "Activated field boss");
     }
 
-//    @Subcommand("deactivate")
-//    public void onDeactivateCommand(Player executor, String[] args) {
-//        if (args.length != 1) {
-//            executor.sendMessage(ChatColor.RED + "Usage: /fieldboss deactivate <identifier>");
-//            return;
-//        }
-//        if (!bosses.containsKey(args[0])) {
-//            executor.sendMessage(ChatColor.RED + "Fieldboss with identifier " + args[0] + " not found");
-//            return;
-//        }
-//        bosses.get(args[0]).deactivate();
-//        bosses.remove(args[0]);
-//        executor.sendMessage(ChatColor.GREEN + "Deactivated fieldboss with identifier " + args[0]);
-//    }
+    @Subcommand("deactivate")
+    public void onDeactivateCommand(CommandSender sender, String[] args) {
+        if (args.length < 1) {
+            sender.sendMessage(ChatColor.RED + "Usage: /fieldboss deactivate <identifier> [success]");
+            return;
+        }
+        boolean success = false;
+        if (args.length >= 2) {
+            if (args[1].equalsIgnoreCase("true")) {
+                success = true;
+            } else if (!args[1].equalsIgnoreCase("false")) {
+                sender.sendMessage(ChatColor.RED + "Unknown success value " + args[1]);
+                return;
+            }
+        }
+        FieldBoss boss = RunicCore.getFieldBossAPI().getFieldBoss(args[0]);
+        if (boss == null) {
+            sender.sendMessage(ChatColor.RED + args[0] + " is not a valid field boss identifier!");
+            return;
+        }
+        FieldBoss.ActiveState state = boss.getActiveState();
+        if (state == null) {
+            sender.sendMessage(ChatColor.RED + "Cannot deactivate field boss because it is not active!");
+            return;
+        }
+        state.deactivate(success);
+        sender.sendMessage(ChatColor.GREEN + "Deactivated field boss with identifier " + args[0]);
+    }
 
 }
