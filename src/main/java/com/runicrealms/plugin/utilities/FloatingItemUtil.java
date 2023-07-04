@@ -51,7 +51,7 @@ public class FloatingItemUtil {
         droppedItem.setVelocity(vec);
         droppedItem.setPickupDelay(Integer.MAX_VALUE);
 //        // tell the item when to despawn, based on duration (in seconds)
-//        setAge(duration, droppedItem);
+        setAge(duration, droppedItem);
         return droppedItem;
     }
 
@@ -156,19 +156,6 @@ public class FloatingItemUtil {
      * @param item
      */
     private static void setAge(int duration, Item item) {
-        try {
-            Field itemField = item.getClass().getDeclaredField("item");
-            Field ageField;
-            Object entityItem;
-
-            itemField.setAccessible(true);
-            entityItem = itemField.get(item);
-
-            ageField = entityItem.getClass().getDeclaredField("age");
-            ageField.setAccessible(true);
-            ageField.set(entityItem, 6000 - (20 * duration));
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            e.printStackTrace();
-        }
+        item.setTicksLived(6000 - (20 * duration));
     }
 }
