@@ -157,6 +157,7 @@ public class RunicItemShopManager implements Listener, ShopAPI {
 
     @EventHandler
     public void onNpcClick(NpcClickEvent event) {
+        if(event.isCancelled()) return;
         if (clickCooldowns.containsKey(event.getPlayer().getUniqueId())) {
             if (clickCooldowns.get(event.getPlayer().getUniqueId()) + 2000 > System.currentTimeMillis()) {
                 return;
