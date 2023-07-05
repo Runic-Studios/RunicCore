@@ -83,10 +83,16 @@ public class PlayerMenuListener implements Listener {
                     packet4.getIntegers().write(2, 4); // Slot ID
                     packet4.getItemModifier().write(0, donorPerksIcon(player)); // Item
 
+                    PacketContainer packet5 = ProtocolLibrary.getProtocolManager().createPacket(PacketType.Play.Server.SET_SLOT);
+                    packet5.getIntegers().write(0, 0); // Window ID
+                    packet5.getIntegers().write(2, 0); // Slot ID
+                    packet5.getItemModifier().write(0, mountMenuIcon(player)); // Item
+
                     ProtocolLibrary.getProtocolManager().sendServerPacket(player, packet1);
                     ProtocolLibrary.getProtocolManager().sendServerPacket(player, packet2);
                     ProtocolLibrary.getProtocolManager().sendServerPacket(player, packet3);
                     ProtocolLibrary.getProtocolManager().sendServerPacket(player, packet4);
+                    ProtocolLibrary.getProtocolManager().sendServerPacket(player, packet5);
                 }
             }
         }, 100L, 10L);
@@ -117,6 +123,7 @@ public class PlayerMenuListener implements Listener {
     }
 
     private void clearPlayerCraftingSlots(InventoryView view) {
+        view.setItem(0, null);
         view.setItem(1, null);
         view.setItem(2, null);
         view.setItem(3, null);
@@ -178,6 +185,26 @@ public class PlayerMenuListener implements Listener {
 
                                 &6&lCLICK
                                 &7To view and activate donor perks!"""
+                );
+    }
+
+    /**
+     * The info item for the mount menu icon
+     *
+     * @param player to display menu for
+     * @return an ItemStack to display
+     */
+    private ItemStack mountMenuIcon(Player player) {
+        return item
+                (
+                        player,
+                        Material.SADDLE,
+                        ChatColor.YELLOW + "Mount Menu",
+                        """
+
+                                &6&lCLICK
+                                &7To view your mount appearances
+                                &7and riding achievements!"""
                 );
     }
 

@@ -176,7 +176,6 @@ import com.runicrealms.plugin.spellapi.skilltrees.listener.SkillTreeGUIListener;
 import com.runicrealms.plugin.spellapi.skilltrees.listener.SpellEditorGUIListener;
 import com.runicrealms.plugin.spellapi.skilltrees.listener.SpellGUIListener;
 import com.runicrealms.plugin.spellapi.skilltrees.listener.SubClassGUIListener;
-import com.runicrealms.plugin.utilities.FilterUtil;
 import com.runicrealms.plugin.utilities.NametagHandler;
 import com.runicrealms.plugin.utilities.PlaceholderAPI;
 import com.runicrealms.plugin.utilities.RegionHelper;
@@ -509,12 +508,6 @@ public class RunicCore extends JavaPlugin implements Listener {
 
         // enable message
         getLogger().info(" §aRunicCore has been enabled.");
-
-        // save filter txt
-        this.saveResource("swearWords.txt", false);
-
-        // load filter
-        FilterUtil.loadFromFile(new File(this.getDataFolder(), "swearWords.txt"));
 
         // register our events, config, commands
         this.registerEvents();

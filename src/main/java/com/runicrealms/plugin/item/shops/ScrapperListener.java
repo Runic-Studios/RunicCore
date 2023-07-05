@@ -20,6 +20,7 @@ public class ScrapperListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST) // first
     public void onNpcClick(NpcClickEvent event) {
+        if(event.isCancelled()) return;
         if (!ItemScrapper.SCRAPPER_NPC_IDS.contains(event.getNpc().getId())) return;
         event.getPlayer().playSound(event.getPlayer().getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1.0f);
         ItemScrapper itemScrapper = new ItemScrapper(event.getPlayer());
