@@ -39,6 +39,7 @@ dependencies {
     compileOnly(commonLibs.viaversion)
     compileOnly(commonLibs.acf)
     compileOnly(commonLibs.luckperms)
+    compileOnly(commonLibs.modelengine)
 }
 
 java {

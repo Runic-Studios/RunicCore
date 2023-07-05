@@ -47,11 +47,17 @@ import java.util.stream.Collectors;
 
 public class FieldBoss implements Listener {
 
+    /*
+    TODO:
+    - Add tribute chest, organic way to activate
+    - Only allow boss to aggro on players fighting it
+     */
+
     private static final double DOME_PARTICLE_DENSITY = 0.1; // particles per square block
     private static final double CIRCLE_PARTICLE_COUNT = 32;
     private static final int ADDITIONAL_ATTENTION_RADIUS = 30; // block number added to radius in which players will be notified of field boss stuff happening
-
     private static final int DEATH_TIMEOUT_MILLIS = 1000 * 60 * 2;
+
     private final String identifier;
     private final String bossName;
     private final String mmID;
@@ -492,7 +498,7 @@ public class FieldBoss implements Listener {
             WARMUP_SPECTATING(true, false, false, false, false, false, Color.YELLOW),
 
             // Applies to both states:
-            NOT_PRESENT(false, false, false, false, true, false, null);
+            NOT_PRESENT(false, false, false, false, false, false, null);
 
             private final boolean canSpectate; // Will the player receive messages/sounds relating to field boss?
             private final boolean isParticipant; // Will the player receive loot once it is done (are they one of the people fighting the boss)

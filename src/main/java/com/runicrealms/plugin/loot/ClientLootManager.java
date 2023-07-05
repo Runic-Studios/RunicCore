@@ -58,7 +58,6 @@ public class ClientLootManager implements Listener {
         ProtocolLibrary.getProtocolManager().getAsynchronousManager().registerAsyncHandler(new PacketAdapter(RunicCore.getInstance(), ListenerPriority.HIGH, PacketType.Play.Client.USE_ITEM) {
             @Override
             public void onPacketReceiving(PacketEvent event) {
-                if (event.isCancelled()) return;
                 if (event.getPacketType() == PacketType.Play.Client.USE_ITEM) {
                     onUseItemPacket(event);
                 }
@@ -219,7 +218,9 @@ public class ClientLootManager implements Listener {
         Bukkit.getScheduler().runTask(RunicCore.getInstance(), () -> chest.lootChest.openInventory(event.getPlayer()));
     }
 
-    private interface WorldLootChestIdentifier {
+    private abstract static class WorldLootChestIdentifier {
+        @Override
+        public abstract boolean equals(Object obj);
     }
 
     private static class ClientLootChest {
@@ -232,18 +233,34 @@ public class ClientLootManager implements Listener {
         }
     }
 
-    private record BlockWorldLootChestIdentifier(Location location) implements WorldLootChestIdentifier {
+    private static class BlockWorldLootChestIdentifier extends WorldLootChestIdentifier {
+
+        private final Location location;
+
+        private BlockWorldLootChestIdentifier(Location location) {
+            this.location = location;
+        }
+
         @Override
         public boolean equals(Object object) {
             return object instanceof BlockWorldLootChestIdentifier identifier && identifier.location.equals(location);
         }
+
     }
 
-    private record EntityWorldLootChestIdentifier(UUID entityID) implements WorldLootChestIdentifier {
+    private static class EntityWorldLootChestIdentifier extends WorldLootChestIdentifier {
+
+        private final UUID entityID;
+
+        private EntityWorldLootChestIdentifier(UUID entityID) {
+            this.entityID = entityID;
+        }
+
         @Override
         public boolean equals(Object object) {
             return object instanceof EntityWorldLootChestIdentifier identifier && identifier.entityID.equals(entityID);
         }
+
     }
 
 }

@@ -2,7 +2,7 @@ package com.runicrealms.plugin.loot;
 
 public abstract class TimedLoot {
 
-    private TimedLootChest lootChest;
+    private final TimedLootChest lootChest;
 
     public TimedLoot(TimedLootChest lootChest) {
         this.lootChest = lootChest;
