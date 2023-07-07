@@ -84,6 +84,7 @@ import com.runicrealms.plugin.spellapi.spells.rogue.FromTheShadows;
 import com.runicrealms.plugin.spellapi.spells.rogue.Harpoon;
 import com.runicrealms.plugin.spellapi.spells.rogue.Hereticize;
 import com.runicrealms.plugin.spellapi.spells.rogue.Kneebreak;
+import com.runicrealms.plugin.spellapi.spells.rogue.Leap;
 import com.runicrealms.plugin.spellapi.spells.rogue.Lunge;
 import com.runicrealms.plugin.spellapi.spells.rogue.Scurvy;
 import com.runicrealms.plugin.spellapi.spells.rogue.SilverBolt;
@@ -456,6 +457,7 @@ public class SpellManager implements Listener, SpellAPI {
         this.spellList.add(new FromTheShadows());
         this.spellList.add(new Scurvy());
         this.spellList.add(new CallOfTheDeep());
+        this.spellList.add(new Leap());
         this.spellList.add(new Adrenaline());
         this.spellList.add(new Unstoppable());
         this.spellList.add(new Smite());

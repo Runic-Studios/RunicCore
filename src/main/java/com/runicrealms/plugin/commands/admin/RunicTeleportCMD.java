@@ -7,9 +7,9 @@ import co.aikar.commands.annotation.CommandCompletion;
 import co.aikar.commands.annotation.CommandPermission;
 import co.aikar.commands.annotation.Conditions;
 import co.aikar.commands.annotation.Default;
-import com.runicrealms.plugin.CityLocation;
 import com.runicrealms.plugin.DungeonLocation;
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.SafeZoneLocation;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
@@ -29,8 +29,8 @@ public class RunicTeleportCMD extends BaseCommand {
     public RunicTeleportCMD() {
         RunicCore.getCommandManager().getCommandCompletions().registerAsyncCompletion("locations", context -> {
             Set<String> locations = new HashSet<>();
-            for (CityLocation cityLocation : CityLocation.values()) {
-                locations.add(cityLocation.getIdentifier());
+            for (SafeZoneLocation safeZoneLocation : SafeZoneLocation.values()) {
+                locations.add(safeZoneLocation.getIdentifier());
             }
             for (DungeonLocation dungeonLocation : DungeonLocation.values()) {
                 locations.add(dungeonLocation.getIdentifier());
@@ -54,8 +54,8 @@ public class RunicTeleportCMD extends BaseCommand {
         if (player == null) return;
         String locationString = args[1];
         Location location;
-        if (CityLocation.getFromIdentifier(locationString) != CityLocation.TUTORIAL) { // the default is not null for this one
-            location = CityLocation.getLocationFromIdentifier(locationString);
+        if (SafeZoneLocation.getFromIdentifier(locationString) != SafeZoneLocation.TUTORIAL) { // the default is not null for this one
+            location = SafeZoneLocation.getLocationFromIdentifier(locationString);
         } else if (DungeonLocation.getFromIdentifier(locationString) != null) {
             location = DungeonLocation.getLocationFromIdentifier(locationString);
         } else {

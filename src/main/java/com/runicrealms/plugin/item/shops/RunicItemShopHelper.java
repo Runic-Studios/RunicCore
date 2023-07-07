@@ -1,7 +1,7 @@
 package com.runicrealms.plugin.item.shops;
 
-import com.runicrealms.plugin.CityLocation;
 import com.runicrealms.plugin.DungeonLocation;
+import com.runicrealms.plugin.SafeZoneLocation;
 import com.runicrealms.plugin.TravelLocation;
 import com.runicrealms.plugin.TravelType;
 import com.runicrealms.plugin.common.util.ChatUtils;
@@ -257,8 +257,8 @@ public class RunicItemShopHelper {
     private RunicItemRunnable runHearthstoneChange(String location) {
         return player -> {
             player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 1.0f);
-            player.sendMessage(ChatColor.AQUA + "You have changed your hearthstone location to " + CityLocation.getFromIdentifier(location).getDisplay() + "!");
-            player.getInventory().setItem(8, CityLocation.getFromIdentifier(location).getItemStack());
+            player.sendMessage(ChatColor.AQUA + "You have changed your hearthstone location to " + SafeZoneLocation.getFromIdentifier(location).getDisplay() + "!");
+            player.getInventory().setItem(8, SafeZoneLocation.getFromIdentifier(location).getItemStack());
         };
     }
 

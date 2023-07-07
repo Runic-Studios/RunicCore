@@ -1,8 +1,8 @@
 package com.runicrealms.plugin.listeners;
 
-import com.runicrealms.plugin.CityLocation;
 import com.runicrealms.plugin.DungeonLocation;
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.SafeZoneLocation;
 import com.runicrealms.plugin.common.DonorRank;
 import com.runicrealms.plugin.common.util.ColorUtil;
 import com.runicrealms.plugin.events.LeaveCombatEvent;
@@ -120,12 +120,12 @@ public class DeathListener implements Listener {
                 if (dungeonLocation != null)
                     victim.teleport(dungeonLocation.getLocation());
                 else {
-                    victim.teleport(CityLocation.getLocationFromItemStack(victim.getInventory().getItem(8)));
+                    victim.teleport(SafeZoneLocation.getLocationFromItemStack(victim.getInventory().getItem(8)));
                     victim.sendMessage(NO_LOCATION_FOUND);
                 }
             });
         } else {
-            victim.teleport(CityLocation.getLocationFromItemStack(victim.getInventory().getItem(8)));
+            victim.teleport(SafeZoneLocation.getLocationFromItemStack(victim.getInventory().getItem(8)));
 
             Gravestone gravestone = RunicCore.getGravestoneManager().getGravestoneMap().get(victim.getUniqueId());
 

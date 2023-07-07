@@ -4,7 +4,7 @@ public class SpellData {
     public static final String DEFAULT_ARCHER = "Barrage";
     public static final String DEFAULT_CLERIC = "Sacred Spring";
     public static final String DEFAULT_MAGE = "Fireball";
-    public static final String DEFAULT_ROGUE = "Sprint";
+    public static final String DEFAULT_ROGUE = "Leap";
     public static final String DEFAULT_WARRIOR = "Slam";
     private String spellHotbarOne = "";
     private String spellLeftClick = "";

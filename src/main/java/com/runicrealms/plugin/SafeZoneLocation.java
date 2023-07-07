@@ -7,7 +7,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.inventory.ItemStack;
 
-public enum CityLocation {
+public enum SafeZoneLocation {
 
     TUTORIAL("tutorial", "Tutorial",
             new Location(Bukkit.getWorld("Alterra"), -2277.5, 23, 1676.5, -250, 0), HearthstoneItemUtil.HEARTHSTONE_ITEMSTACK),
@@ -35,19 +35,33 @@ public enum CityLocation {
             new Location(Bukkit.getWorld("Alterra"), 1962.5, 42, 349.5, 270, 0), HearthstoneItemUtil.HEARTHSTONE_NAHEEN_ITEMSTACK),
     NAZMORA("nazmora", "Naz'mora",
             new Location(Bukkit.getWorld("Alterra"), 2587.5, 33, 979.5, 270, 0), HearthstoneItemUtil.HEARTHSTONE_NAZMORA_ITEMSTACK),
+    ORC_OUTPOST("orc_outpost", "Orc Outpost",
+            new Location(Bukkit.getWorld("Alterra"), 2587.5, 33, 979.5, 270, 0), null, false),
     STONEHAVEN("stonehaven", "Stonehaven",
-            new Location(Bukkit.getWorld("Alterra"), -788.5, 37, 749.5, 90, 0), HearthstoneItemUtil.HEARTHSTONE_STONEHAVEN_ITEMSTACK);
+            new Location(Bukkit.getWorld("Alterra"), -788.5, 37, 749.5, 90, 0), HearthstoneItemUtil.HEARTHSTONE_STONEHAVEN_ITEMSTACK),
+    FROSTS_END("frosts_end", "Frost's End",
+            new Location(Bukkit.getWorld("Alterra"), -788.5, 37, 749.5, 90, 0), null, false);
 
     private final String identifier;
     private final String display;
     private final Location location;
     private final ItemStack itemStack;
+    private final boolean isCity; // True if it should be included in the fast travel
 
-    CityLocation(String identifier, String display, Location location, ItemStack itemStack) {
+    SafeZoneLocation(String identifier, String display, Location location, ItemStack itemStack) {
         this.identifier = identifier;
         this.display = display;
         this.location = location;
         this.itemStack = itemStack;
+        this.isCity = true;
+    }
+
+    SafeZoneLocation(String identifier, String display, Location location, ItemStack itemStack, boolean isCity) {
+        this.identifier = identifier;
+        this.display = display;
+        this.location = location;
+        this.itemStack = itemStack;
+        this.isCity = isCity;
     }
 
     /**
@@ -56,12 +70,12 @@ public enum CityLocation {
      * @param identifier the location of the hearthstone
      * @return an enum
      */
-    public static CityLocation getFromIdentifier(String identifier) {
-        for (CityLocation cityLocation : CityLocation.values()) {
-            if (cityLocation.getIdentifier().equals(identifier))
-                return cityLocation;
+    public static SafeZoneLocation getFromIdentifier(String identifier) {
+        for (SafeZoneLocation safeZoneLocation : SafeZoneLocation.values()) {
+            if (safeZoneLocation.getIdentifier().equals(identifier))
+                return safeZoneLocation;
         }
-        return CityLocation.TUTORIAL;
+        return SafeZoneLocation.TUTORIAL;
     }
 
     /**
@@ -71,15 +85,16 @@ public enum CityLocation {
      * @return a Location object
      */
     public static Location getLocationFromIdentifier(String identifier) {
-        for (CityLocation cityLocation : CityLocation.values()) {
-            if (cityLocation.identifier.equals(identifier))
-                return cityLocation.getLocation();
+        for (SafeZoneLocation safeZoneLocation : SafeZoneLocation.values()) {
+            if (!safeZoneLocation.isCity) continue; // Ignore quest hubs which don't have hearthstones
+            if (safeZoneLocation.identifier.equals(identifier))
+                return safeZoneLocation.getLocation();
         }
-        return CityLocation.TUTORIAL.getLocation();
+        return SafeZoneLocation.TUTORIAL.getLocation();
     }
 
     /**
-     * Returns the location of a hearthstone based on the identifier of the itemstack
+     * Returns the location of a hearthstone based on the identifier of the item stack
      *
      * @param hearthstone is the player's hearthstone
      * @return a Location object
@@ -88,6 +103,10 @@ public enum CityLocation {
         RunicItem runicItemHearthstone = RunicItemsAPI.getRunicItemFromItemStack(hearthstone);
         String identifier = runicItemHearthstone.getData().get("location");
         return getLocationFromIdentifier(identifier);
+    }
+
+    public boolean isCity() {
+        return isCity;
     }
 
     public String getIdentifier() {
