@@ -6,8 +6,10 @@ import com.runicrealms.plugin.events.EnvironmentDamage;
 import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.PhysicalDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.RadiusSpell;
+import com.runicrealms.plugin.spellapi.spelltypes.RunicStatusEffect;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
+import com.runicrealms.plugin.spellapi.spellutil.particles.HorizontalCircleFrame;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
@@ -19,14 +21,15 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public class Leap extends Spell implements DurationSpell, PhysicalDamageSpell, RadiusSpell {
+public class Dash extends Spell implements DurationSpell, PhysicalDamageSpell, RadiusSpell {
     private static final Set<Player> LUNGE_SET = new HashSet<>();
     private double damage;
     private double damagePerLevel;
@@ -35,10 +38,10 @@ public class Leap extends Spell implements DurationSpell, PhysicalDamageSpell, R
     private double radius;
     private double verticalPower;
 
-    public Leap() {
-        super("Leap", CharacterClass.ROGUE);
-        this.setDescription("You leap forward into the air! Upon landing, you deal " +
-                "(" + damage + " + &f" + damagePerLevel + "x&7 lvl) physical⚔ damage to nearby &7&omonsters&7.");
+    public Dash() {
+        super("Dash", CharacterClass.ROGUE);
+        this.setDescription("You dash forward, dealing (" + damage + " + &f" + damagePerLevel + "x&7 lvl) " +
+                "physical⚔ damage to all enemies you pass through!");
     }
 
     @Override
@@ -51,30 +54,36 @@ public class Leap extends Spell implements DurationSpell, PhysicalDamageSpell, R
         double cappedY = Math.min(launchPath.getY(), 0.95);
         launchPath.setY(cappedY);
         // Particles, sounds
-        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 0.5f, 1.2f);
-        player.getWorld().spawnParticle(Particle.REDSTONE, player.getLocation(),
-                25, 0.5f, 0.5f, 0.5f, 0, new Particle.DustOptions(Color.fromRGB(210, 180, 140), 20));
-        player.setVelocity(launchPath); // .multiply(launchMultiplier)
+        addStatusEffect(player, RunicStatusEffect.SPEED_III, duration, false);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_FIREWORK_ROCKET_BLAST, 0.5F, 1.0F);
+        new HorizontalCircleFrame(1, false).playParticle(player, Particle.TOTEM, player.getLocation(), Color.FUCHSIA);
+        new HorizontalCircleFrame(1, false).playParticle(player, Particle.TOTEM, player.getEyeLocation(), Color.FUCHSIA);
+        player.setVelocity(launchPath);
         LUNGE_SET.add(player);
+        BukkitRunnable bukkitRunnable = damageNearbyEntities(player);
+        bukkitRunnable.runTaskTimer(plugin, 0, 1L);
         Bukkit.getScheduler().runTaskLaterAsynchronously(RunicCore.getInstance(),
-                () -> LUNGE_SET.remove(player), (int) duration * 20L);
+                () -> {
+                    LUNGE_SET.remove(player);
+                    bukkitRunnable.cancel();
+                }, (int) duration * 20L);
     }
 
-    @EventHandler
-    public void onPlayerMove(PlayerMoveEvent event) {
-        if (LUNGE_SET.isEmpty()) return;
-        if (!LUNGE_SET.contains(event.getPlayer())) return;
-        Player player = event.getPlayer();
-        if (!player.isOnGround()) return;
-        Bukkit.getScheduler().runTask(RunicCore.getInstance(), () -> {
-            LUNGE_SET.remove(player);
-            for (Entity entity : player.getWorld().getNearbyEntities(player.getLocation(), radius, radius, radius, target -> isValidEnemy(player, target))) {
-                if (entity instanceof Player) continue;
-                // todo: landing particle
-                DamageUtil.damageEntityPhysical(damage, (LivingEntity) entity, player, false, false, this);
+    private BukkitRunnable damageNearbyEntities(Player player) {
+        Spell spell = this;
+        Set<Entity> damagedEntities = new HashSet<>();
+        return new BukkitRunnable() {
+            @Override
+            public void run() {
+                Collection<Entity> nearbyEntities = player.getWorld().getNearbyEntities(player.getLocation(), radius, radius, radius, target -> isValidEnemy(player, target) && !damagedEntities.contains(target));
+                for (Entity entity : nearbyEntities) {
+                    DamageUtil.damageEntityPhysical(damage, (LivingEntity) entity, player, false, false, spell);
+                    damagedEntities.add(entity);
+                }
             }
-        });
+        };
     }
+
 
     @Override
     public double getDuration() {
