@@ -39,9 +39,9 @@ public class Cannonfire extends Spell implements DurationSpell, PhysicalDamageSp
         super("Cannonfire", CharacterClass.ROGUE);
         this.hasBeenHit = new HashMap<>();
         this.setDescription("You fire a flurry of " + TOTAL_PELLETS + " shrapnel fragments! " +
-                "On hit, each fragment will deal " +
-                "(" + damage + " + &f" + (int) damagePerLevel + "x&7 lvl) physical⚔ damage, " +
-                "silence the target for " + duration + "s, and launch them back!");
+                "On hit, each fragment deals " +
+                "(" + damage + " + &f" + damagePerLevel + "x&7 lvl) physical⚔ damage, " +
+                "slows the target for " + duration + "s, and launches them back!");
     }
 
     @Override
@@ -61,7 +61,7 @@ public class Cannonfire extends Spell implements DurationSpell, PhysicalDamageSp
         victim.getWorld().playSound(victim.getLocation(), Sound.ENTITY_DRAGON_FIREBALL_EXPLODE, 0.5f, 1.0f);
         victim.getWorld().spawnParticle(Particle.EXPLOSION_LARGE, victim.getLocation(), 1, 0, 0, 0, 0);
         DamageUtil.damageEntityPhysical(damage, (LivingEntity) victim, shooter, false, false, spell);
-        addStatusEffect((LivingEntity) victim, RunicStatusEffect.SILENCE, duration, true);
+        addStatusEffect((LivingEntity) victim, RunicStatusEffect.SLOW_II, duration, true);
         Vector force = shooter.getLocation().toVector().subtract(victim.getLocation().toVector()).normalize().multiply(knockbackMultiplier);
         victim.setVelocity(force);
     }

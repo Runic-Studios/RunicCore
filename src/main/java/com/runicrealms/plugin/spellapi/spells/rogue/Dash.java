@@ -2,7 +2,7 @@ package com.runicrealms.plugin.spellapi.spells.rogue;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.common.CharacterClass;
-import com.runicrealms.plugin.events.EnvironmentDamage;
+import com.runicrealms.plugin.events.MobDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.PhysicalDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.RadiusSpell;
@@ -41,7 +41,8 @@ public class Dash extends Spell implements DurationSpell, PhysicalDamageSpell, R
     public Dash() {
         super("Dash", CharacterClass.ROGUE);
         this.setDescription("You dash forward, dealing (" + damage + " + &f" + damagePerLevel + "x&7 lvl) " +
-                "physical⚔ damage to all enemies you pass through!");
+                "physical⚔ damage to all enemies you pass through! While dashing, " +
+                "you are immune to damage from monsters.");
     }
 
     @Override
@@ -114,14 +115,13 @@ public class Dash extends Spell implements DurationSpell, PhysicalDamageSpell, R
     }
 
     /**
-     * Disable fall damage for players who are lunging
+     * Disable mob damage for players who are dashing
      */
     @EventHandler(priority = EventPriority.LOW)
-    public void onFallDamage(EnvironmentDamage event) {
+    public void onFallDamage(MobDamageEvent event) {
         if (!(event.getVictim() instanceof Player player)) return;
         if (!LUNGE_SET.contains(player)) return;
-        if (event.getCause() == EnvironmentDamage.DamageCauses.FALL_DAMAGE)
-            event.setCancelled(true);
+        event.setCancelled(true);
     }
 
     @Override
