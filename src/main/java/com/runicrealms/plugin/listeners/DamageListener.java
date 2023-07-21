@@ -7,7 +7,7 @@ import com.runicrealms.plugin.events.RunicDeathEvent;
 import com.runicrealms.plugin.rdb.RunicDatabase;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import com.runicrealms.runicitems.RunicItemsAPI;
-import com.runicrealms.runicitems.item.RunicItemWeapon;;
+import com.runicrealms.runicitems.item.RunicItemWeapon;
 import io.lumine.mythic.bukkit.MythicBukkit;
 import io.lumine.mythic.core.mobs.ActiveMob;
 import org.bukkit.Bukkit;
@@ -123,7 +123,6 @@ public class DamageListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onDamage(EntityDamageByEntityEvent e) {
-
         if (e.getCause() == EntityDamageByEntityEvent.DamageCause.CUSTOM) return;
         if (e.getDamager() instanceof SmallFireball) return;
         if (e.getDamager() instanceof Arrow) return;

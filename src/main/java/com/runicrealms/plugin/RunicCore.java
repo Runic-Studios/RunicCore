@@ -107,6 +107,7 @@ import com.runicrealms.plugin.listeners.MobMechanicsListener;
 import com.runicrealms.plugin.listeners.MobTagger;
 import com.runicrealms.plugin.listeners.NoJockeysListener;
 import com.runicrealms.plugin.listeners.NpcListener;
+import com.runicrealms.plugin.listeners.PlayerInteractCorrectionListener;
 import com.runicrealms.plugin.listeners.PreCommandListener;
 import com.runicrealms.plugin.listeners.ResourcePackListener;
 import com.runicrealms.plugin.listeners.RuneListener;
@@ -188,8 +189,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
-
-import java.io.File;
 
 public class RunicCore extends JavaPlugin implements Listener {
 
@@ -649,6 +648,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         pm.registerEvents(new DonorPerksUIListener(), this);
         pm.registerEvents(new TempbanListener(), this);
         pm.registerEvents(new AFKListener(), this);
+        pm.registerEvents(new PlayerInteractCorrectionListener(), this);
     }
 
     private void registerOldStyleCommands() {

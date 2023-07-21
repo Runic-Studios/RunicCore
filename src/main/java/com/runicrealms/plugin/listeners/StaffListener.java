@@ -41,14 +41,14 @@ import java.util.concurrent.ThreadLocalRandom;
 public class StaffListener implements Listener {
     public static final int STAFF_COOLDOWN = 15; // ticks (0.75s)
     private static final int MAX_DIST = 9;
-    private static final double RAY_SIZE = 0.5D;
+    private static final double RAY_SIZE = 0.8; //0.5
 
     /**
      * Verifies that the player's held item is a runic weapon and a staff.
-     * Returns true if the item is a staff, the player can wield it, high enough level, etc.
+     * Returns a pair whose first arg is true if the item is a staff and the second arg is the item weapon, the player can wield it, high enough level, etc.
      *
      * @param player who is holding the staff
-     * @return true if all checks pass
+     * @return the pair whose first arg is true if all checks pass
      */
     public static Pair<Boolean, RunicItemWeapon> verifyStaff(Player player, ItemStack itemStack) {
         RunicItem runicItem = RunicItemsAPI.getRunicItemFromItemStack(itemStack);
@@ -116,6 +116,7 @@ public class StaffListener implements Listener {
         if (event.getItem().getType() == Material.AIR) return;
         if (event.getHand() != EquipmentSlot.HAND) return;
         if (event.getItem().getType() != Material.WOODEN_HOE) return;
+
         // Retrieve the weapon type and try to fire staff attack
         TaskChain<?> chain = RunicCore.newChain();
         chain
