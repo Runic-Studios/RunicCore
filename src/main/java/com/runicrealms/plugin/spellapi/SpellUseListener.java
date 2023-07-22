@@ -16,6 +16,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerSwapHandItemsEvent;
@@ -158,6 +159,23 @@ public class SpellUseListener implements Listener {
         castSpell(event.getPlayer(), 1, RunicDatabase.getAPI().getCharacterAPI().getPlayerClass(event.getPlayer()).equalsIgnoreCase("archer"));
     }
 
+    //if player swaps hotbar and is casting reset them
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    public void onPlayerItemHeld(PlayerItemHeldEvent event) {
+        if (event.getNewSlot() == event.getPreviousSlot()) {
+            return;
+        }
+
+        BukkitTask task = casters.remove(event.getPlayer().getUniqueId());
+
+        if (task == null) {
+            return;
+        }
+
+        task.cancel();
+        event.getPlayer().resetTitle();
+    }
+
     @EventHandler
     public void onSwapHands(PlayerSwapHandItemsEvent e) {
         if (!casters.containsKey(e.getPlayer().getUniqueId())) return;
@@ -180,6 +198,25 @@ public class SpellUseListener implements Listener {
         else if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
             activateSpellMode(player, ClickType.RIGHT, 3, isArcher);
         }
+    }
+
+    //trigger left click spell even if player hits mob
+    @EventHandler(priority = EventPriority.HIGH)
+    public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
+        if (!(event.getDamager() instanceof Player player) || !casters.containsKey(player.getUniqueId())) {
+            return;
+        }
+
+        if (player.getGameMode() == GameMode.CREATIVE) return;
+        WeaponType heldItemType = WeaponType.matchType(player.getInventory().getItemInMainHand());
+        if (heldItemType == WeaponType.NONE) return;
+        if (heldItemType == WeaponType.GATHERING_TOOL) return;
+        if (!DamageListener.matchClass(player, false)) return;
+
+        String className = RunicDatabase.getAPI().getCharacterAPI().getPlayerClass(player); // lowercase
+        boolean isArcher = className.equalsIgnoreCase("archer");
+
+        activateSpellMode(player, ClickType.LEFT, 2, isArcher);
     }
 
     private String getActivationOne(Player player) {
