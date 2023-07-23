@@ -5,6 +5,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * This custom event is called when a player is shielded by a spell.
@@ -23,12 +25,16 @@ public class SpellShieldEvent extends Event implements Cancellable {
      * @param caster    who cast the spell
      * @param spell     optional parameter to specify which spell caused the shield. if specified, activates auto-scaling based on shield-per-level
      */
-    public SpellShieldEvent(int amount, Player recipient, Player caster, Spell... spell) {
+    public SpellShieldEvent(int amount, @NotNull Player recipient, @NotNull Player caster, @Nullable Spell spell) {
         this.amount = amount;
         this.recipient = recipient;
         this.player = caster;
-        this.spell = spell.length > 0 ? spell[0] : null;
+        this.spell = spell;
         this.isCancelled = false;
+    }
+
+    public SpellShieldEvent(int amount, @NotNull Player recipient, @NotNull Player caster) {
+        this(amount, recipient, caster, null);
     }
 
     public static HandlerList getHandlerList() {
@@ -49,14 +55,17 @@ public class SpellShieldEvent extends Event implements Cancellable {
         return handlers;
     }
 
+    @NotNull
     public Player getPlayer() {
         return this.player;
     }
 
+    @NotNull
     public Player getRecipient() {
         return this.recipient;
     }
 
+    @Nullable
     public Spell getSpell() {
         return this.spell;
     }
@@ -70,5 +79,4 @@ public class SpellShieldEvent extends Event implements Cancellable {
     public void setCancelled(boolean arg0) {
         this.isCancelled = arg0;
     }
-
 }

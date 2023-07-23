@@ -3,6 +3,7 @@ package com.runicrealms.plugin.api;
 import com.runicrealms.plugin.spellapi.spelltypes.ShieldPayload;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
@@ -18,7 +19,7 @@ public interface SpellAPI {
      * @param spell        to apply cooldown to
      * @param cooldownTime of spell
      */
-    void addCooldown(final Player player, final Spell spell, double cooldownTime);
+    void addCooldown(@NotNull Player player, @NotNull Spell spell, double cooldownTime);
 
     /**
      * Gets the current cooldown of the user's spell
@@ -27,7 +28,7 @@ public interface SpellAPI {
      * @param spell  to lookup
      * @return its remaining cooldown
      */
-    double getUserCooldown(Player player, Spell spell);
+    double getUserCooldown(@NotNull Player player, @NotNull Spell spell);
 
     /**
      * Gets the spell in the associated 'slot' from player spell wrapper.
@@ -36,7 +37,8 @@ public interface SpellAPI {
      * @param number of spell slot (1, 2, 3, 4)
      * @return a Spell object to be used elsewhere
      */
-    Spell getPlayerSpell(Player player, int number);
+    @Nullable
+    Spell getPlayerSpell(@NotNull Player player, int number);
 
     /**
      * Maps a player UUID to a shield object
@@ -52,7 +54,7 @@ public interface SpellAPI {
      * @param spell        to apply cooldown to
      * @param cooldownTime of spell
      */
-    void increaseCooldown(final Player player, final Spell spell, double cooldownTime);
+    void increaseCooldown(@NotNull Player player, @NotNull Spell spell, double cooldownTime);
 
     /**
      * Adds duration to remaining cooldown for spell
@@ -61,7 +63,7 @@ public interface SpellAPI {
      * @param spell        to apply cooldown to
      * @param cooldownTime of spell
      */
-    void increaseCooldown(final Player player, final String spell, double cooldownTime);
+    void increaseCooldown(@NotNull Player player, @NotNull String spell, double cooldownTime);
 
     /**
      * Get the spell object matching name
@@ -69,14 +71,15 @@ public interface SpellAPI {
      * @param name of the spell (e.g. "fireball")
      * @return the spell object
      */
-    Spell getSpell(String name);
+    @Nullable
+    Spell getSpell(@NotNull String name);
 
     /**
      * @param uuid of the player to lookup
      * @return a key set view of their spells which are on cooldown
      */
     @Nullable
-    ConcurrentHashMap.KeySetView<Spell, Long> getSpellsOnCooldown(UUID uuid);
+    ConcurrentHashMap.KeySetView<Spell, Long> getSpellsOnCooldown(@NotNull UUID uuid);
 
     /**
      * @param caster    who cast the spell
@@ -84,7 +87,16 @@ public interface SpellAPI {
      * @param amount    amount to be healed before gem or buff calculations
      * @param spell     an optional reference to some spell for spell scaling
      */
-    void healPlayer(Player caster, Player recipient, double amount, Spell... spell);
+    void healPlayer(@NotNull Player caster, @NotNull Player recipient, double amount, @Nullable Spell spell);
+
+    /**
+     * @param caster    who cast the spell
+     * @param recipient to receive the healing
+     * @param amount    amount to be healed before gem or buff calculations
+     */
+    default void healPlayer(@NotNull Player caster, @NotNull Player recipient, double amount) {
+        this.healPlayer(caster, recipient, amount, null);
+    }
 
     /**
      * Determine whether the player is in casting mode to cancel certain interactions.
@@ -92,7 +104,7 @@ public interface SpellAPI {
      * @param player to check
      * @return boolean value, whether player is in casting set
      */
-    boolean isCasting(Player player);
+    boolean isCasting(@NotNull Player player);
 
     /**
      * Check whether the current spell is on cooldown
@@ -101,7 +113,7 @@ public interface SpellAPI {
      * @param spellName name of the spell
      * @return true if spell is on cooldown
      */
-    boolean isOnCooldown(Player player, String spellName);
+    boolean isOnCooldown(@NotNull Player player, @NotNull String spellName);
 
     /**
      * Check if the current player is affected by a shield spell
@@ -109,7 +121,7 @@ public interface SpellAPI {
      * @param uuid of player to check
      * @return true if the player has a shield
      */
-    boolean isShielded(UUID uuid);
+    boolean isShielded(@NotNull UUID uuid);
 
     /**
      * Reduces the cooldown of the given spell for the player by the duration (CDR)
@@ -118,7 +130,7 @@ public interface SpellAPI {
      * @param spell    the spell to reduce CD for
      * @param duration the duration to reduce the CD (in seconds, so 0.5 for half sec)
      */
-    void reduceCooldown(Player player, Spell spell, double duration);
+    void reduceCooldown(@NotNull Player player, @NotNull Spell spell, double duration);
 
     /**
      * Reduces the cooldown of the given spell for the player by the duration (CDR)
@@ -127,7 +139,7 @@ public interface SpellAPI {
      * @param spell    the name of the spell to reduce CD for
      * @param duration the duration to reduce the CD (in seconds, so 0.5 for half sec)
      */
-    void reduceCooldown(Player player, String spell, double duration);
+    void reduceCooldown(@NotNull Player player, @NotNull String spell, double duration);
 
     /**
      * Sets the cooldown of the given spell for the player to the duration
@@ -136,7 +148,7 @@ public interface SpellAPI {
      * @param spell    the spell to reduce CD for
      * @param duration the duration to set the CD (in seconds, so 0.5 for half sec)
      */
-    void setCooldown(Player player, Spell spell, double duration);
+    void setCooldown(@NotNull Player player, @NotNull Spell spell, double duration);
 
     /**
      * Sets the cooldown of the given spell for the player to the duration
@@ -145,7 +157,7 @@ public interface SpellAPI {
      * @param spell    the name of the spell to reduce CD for
      * @param duration the duration to set the CD (in seconds, so 0.5 for half sec)
      */
-    void setCooldown(Player player, String spell, double duration);
+    void setCooldown(@NotNull Player player, @NotNull String spell, double duration);
 
     /**
      * @param caster    who cast the spell
@@ -153,6 +165,14 @@ public interface SpellAPI {
      * @param amount    amount to be healed before gem or buff calculations
      * @param spell     an optional reference to some spell for spell scaling
      */
-    void shieldPlayer(Player caster, Player recipient, double amount, Spell... spell);
+    void shieldPlayer(@NotNull Player caster, @NotNull Player recipient, double amount, @Nullable Spell spell);
 
+    /**
+     * @param caster    who cast the spell
+     * @param recipient to receive the shield
+     * @param amount    amount to be healed before gem or buff calculations
+     */
+    default void shieldPlayer(@NotNull Player caster, @NotNull Player recipient, double amount) {
+        this.shieldPlayer(caster, recipient, amount, null);
+    }
 }

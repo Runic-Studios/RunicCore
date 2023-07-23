@@ -122,6 +122,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -147,7 +149,7 @@ public class SpellManager implements Listener, SpellAPI {
     }
 
     @Override
-    public void addCooldown(final Player player, final Spell spell, double cooldownTime) {
+    public void addCooldown(@NotNull Player player, @NotNull Spell spell, double cooldownTime) {
         if (this.cooldownMap.containsKey(player.getUniqueId())) {
             ConcurrentHashMap<Spell, Long> playerSpellsOnCooldown = this.cooldownMap.get(player.getUniqueId());
             playerSpellsOnCooldown.put(spell, System.currentTimeMillis());
@@ -208,12 +210,12 @@ public class SpellManager implements Listener, SpellAPI {
     }
 
     @Override
-    public Spell getSpell(String name) {
+    public Spell getSpell(@NotNull String name) {
         return this.getSpellByName(name);
     }
 
     @Override
-    public ConcurrentHashMap.KeySetView<Spell, Long> getSpellsOnCooldown(UUID uuid) {
+    public ConcurrentHashMap.KeySetView<Spell, Long> getSpellsOnCooldown(@NotNull UUID uuid) {
         if (cooldownMap.containsKey(uuid)) {
             return cooldownMap.get(uuid).keySet();
         } else {
@@ -223,11 +225,9 @@ public class SpellManager implements Listener, SpellAPI {
 
     @SuppressWarnings("deprecation")
     @Override
-    public void healPlayer(Player caster, Player recipient, double amount, Spell... spell) {
+    public void healPlayer(@NotNull Player caster, @NotNull Player recipient, double amount, @Nullable Spell spell) {
         // Call our custom heal event for interaction with buffs/de buffs
-        SpellHealEvent event = spell.length > 0
-                ? new SpellHealEvent((int) amount, recipient, caster, spell)
-                : new SpellHealEvent((int) amount, recipient, caster);
+        SpellHealEvent event = new SpellHealEvent((int) amount, recipient, caster, spell);
         Bukkit.getPluginManager().callEvent(event);
         if (event.isCancelled()) return;
         amount = event.getAmount();
@@ -268,7 +268,7 @@ public class SpellManager implements Listener, SpellAPI {
     }
 
     @Override
-    public boolean isOnCooldown(Player player, String spellName) {
+    public boolean isOnCooldown(Player player, @NotNull String spellName) {
         if (!this.cooldownMap.containsKey(player.getUniqueId()))
             return false;
         ConcurrentHashMap<Spell, Long> playerSpellsOnCooldown = this.cooldownMap.get(player.getUniqueId());
@@ -276,12 +276,12 @@ public class SpellManager implements Listener, SpellAPI {
     }
 
     @Override
-    public boolean isShielded(UUID uuid) {
+    public boolean isShielded(@NotNull UUID uuid) {
         return this.shieldedPlayers.containsKey(uuid);
     }
 
     @Override
-    public void reduceCooldown(Player player, Spell spell, double duration) {
+    public void reduceCooldown(Player player, @NotNull Spell spell, double duration) {
         if (!this.cooldownMap.containsKey(player.getUniqueId())) return;
         ConcurrentHashMap<Spell, Long> playerSpellsOnCooldown = this.cooldownMap.get(player.getUniqueId());
         if (!playerSpellsOnCooldown.containsKey(spell)) return;
@@ -291,7 +291,7 @@ public class SpellManager implements Listener, SpellAPI {
     }
 
     @Override
-    public void increaseCooldown(Player player, Spell spell, double duration) {
+    public void increaseCooldown(@NotNull Player player, @NotNull Spell spell, double duration) {
         // Ensure duration isn't negative
         if (duration < 0) {
             throw new IllegalArgumentException("Duration must be positive");
@@ -305,7 +305,7 @@ public class SpellManager implements Listener, SpellAPI {
     }
 
     @Override
-    public void increaseCooldown(Player player, String spell, double duration) {
+    public void increaseCooldown(@NotNull Player player, @NotNull String spell, double duration) {
         // Ensure duration isn't negative
         if (duration < 0) {
             throw new IllegalArgumentException("Duration must be positive");
@@ -320,7 +320,7 @@ public class SpellManager implements Listener, SpellAPI {
     }
 
     @Override
-    public void reduceCooldown(Player player, String spell, double duration) {
+    public void reduceCooldown(Player player, @NotNull String spell, double duration) {
         if (!this.cooldownMap.containsKey(player.getUniqueId())) return;
         ConcurrentHashMap<Spell, Long> playerSpellsOnCooldown = this.cooldownMap.get(player.getUniqueId());
         Optional<Spell> spellOptional = playerSpellsOnCooldown.keySet().stream().filter(key -> key.getName().equalsIgnoreCase(spell)).findAny();
@@ -331,7 +331,7 @@ public class SpellManager implements Listener, SpellAPI {
     }
 
     @Override
-    public void setCooldown(Player player, Spell spell, double duration) {
+    public void setCooldown(Player player, @NotNull Spell spell, double duration) {
         if (!this.cooldownMap.containsKey(player.getUniqueId())) return;
         ConcurrentHashMap<Spell, Long> playerSpellsOnCooldown = this.cooldownMap.get(player.getUniqueId());
         if (!playerSpellsOnCooldown.containsKey(spell)) return;
@@ -341,7 +341,7 @@ public class SpellManager implements Listener, SpellAPI {
     }
 
     @Override
-    public void setCooldown(Player player, String spell, double duration) {
+    public void setCooldown(@NotNull Player player, @NotNull String spell, double duration) {
         if (!this.cooldownMap.containsKey(player.getUniqueId())) return;
         ConcurrentHashMap<Spell, Long> playerSpellsOnCooldown = this.cooldownMap.get(player.getUniqueId());
         Optional<Spell> spellOptional = playerSpellsOnCooldown.keySet().stream().filter(key -> key.getName().equalsIgnoreCase(spell)).findAny();
@@ -352,12 +352,9 @@ public class SpellManager implements Listener, SpellAPI {
     }
 
     @Override
-    public void shieldPlayer(Player caster, Player recipient, double amount, Spell... spell) {
+    public void shieldPlayer(@NotNull Player caster, @NotNull Player recipient, double amount, @Nullable Spell spell) {
         // Call our custom shield event for interaction with buffs/de buffs
-        SpellShieldEvent event = spell.length > 0
-                ? new SpellShieldEvent((int) amount, recipient, caster, spell)
-                : new SpellShieldEvent((int) amount, recipient, caster);
-        Bukkit.getPluginManager().callEvent(event);
+        Bukkit.getPluginManager().callEvent(new SpellShieldEvent((int) amount, recipient, caster, spell));
     }
 
     public Spell getSpellByName(String name) {
@@ -376,7 +373,7 @@ public class SpellManager implements Listener, SpellAPI {
     }
 
     @Override
-    public double getUserCooldown(Player player, Spell spell) {
+    public double getUserCooldown(@NotNull Player player, Spell spell) {
         double cooldownRemaining = 0;
 
         if (isOnCooldown(player, spell.getName())) {
