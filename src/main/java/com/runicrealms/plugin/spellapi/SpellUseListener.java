@@ -2,6 +2,7 @@ package com.runicrealms.plugin.spellapi;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.WeaponType;
+import com.runicrealms.plugin.events.PhysicalDamageEvent;
 import com.runicrealms.plugin.events.SpellCastEvent;
 import com.runicrealms.plugin.listeners.DamageListener;
 import com.runicrealms.plugin.rdb.RunicDatabase;
@@ -12,11 +13,11 @@ import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerSwapHandItemsEvent;
@@ -182,7 +183,7 @@ public class SpellUseListener implements Listener {
         castSpell(e.getPlayer(), 4, RunicDatabase.getAPI().getCharacterAPI().getPlayerClass(e.getPlayer()).equalsIgnoreCase("archer"));
     }
 
-    @EventHandler(priority = EventPriority.HIGH)
+    @EventHandler(priority = EventPriority.HIGH) //can't check if cancelled since right clicking air is cancelled
     public void onWeaponInteract(PlayerInteractEvent event) {
         if (event.getHand() != EquipmentSlot.HAND) return;
         if (event.getPlayer().getGameMode() == GameMode.CREATIVE) return;
@@ -195,28 +196,30 @@ public class SpellUseListener implements Listener {
         boolean isArcher = className.equalsIgnoreCase("archer");
         if (event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK)
             activateSpellMode(player, ClickType.LEFT, 2, isArcher);
-        else if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+        else if (event.useInteractedBlock() == Event.Result.DENY && (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)) {
+            //When right clicking the ground this event sometimes fires twice (useInteractedBlock returns ALLOW in one and DENY in the other), the hand is already accounted for at the top so I implemented a band-aid fix -BoBoBalloon
             activateSpellMode(player, ClickType.RIGHT, 3, isArcher);
         }
     }
 
     //trigger left click spell even if player hits mob
-    @EventHandler(priority = EventPriority.HIGH)
-    public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
-        if (!(event.getDamager() instanceof Player player) || !casters.containsKey(player.getUniqueId())) {
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    public void onPhysicalDamage(PhysicalDamageEvent event) {
+        if (!casters.containsKey(event.getPlayer().getUniqueId()) || event.getPlayer().getGameMode() == GameMode.CREATIVE) {
             return;
         }
 
-        if (player.getGameMode() == GameMode.CREATIVE) return;
-        WeaponType heldItemType = WeaponType.matchType(player.getInventory().getItemInMainHand());
-        if (heldItemType == WeaponType.NONE) return;
-        if (heldItemType == WeaponType.GATHERING_TOOL) return;
-        if (!DamageListener.matchClass(player, false)) return;
+        WeaponType heldItemType = WeaponType.matchType(event.getPlayer().getInventory().getItemInMainHand());
 
-        String className = RunicDatabase.getAPI().getCharacterAPI().getPlayerClass(player); // lowercase
+        if (heldItemType == WeaponType.NONE || heldItemType == WeaponType.GATHERING_TOOL || !DamageListener.matchClass(event.getPlayer(), false)) {
+            return;
+        }
+
+        String className = RunicDatabase.getAPI().getCharacterAPI().getPlayerClass(event.getPlayer()); // lowercase
         boolean isArcher = className.equalsIgnoreCase("archer");
 
-        activateSpellMode(player, ClickType.LEFT, 2, isArcher);
+        activateSpellMode(event.getPlayer(), ClickType.LEFT, 2, isArcher);
+        event.setCancelled(true);
     }
 
     private String getActivationOne(Player player) {
@@ -227,7 +230,7 @@ public class SpellUseListener implements Listener {
         return RunicCore.getSettingsManager().getSettingsData(player.getUniqueId()).getSpellSlotFourDisplay();
     }
 
-    enum ClickType {
+    private enum ClickType {
         LEFT,
         RIGHT
     }
