@@ -8,6 +8,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -26,10 +27,13 @@ public class RunicShopItem {
      * @param requiredItems list of pairs of string name(s) of template ID for RunicItem currency and an amount of that item
      * @param shopItem      to be purchased
      */
-    public RunicShopItem(List<Pair<String, Integer>> requiredItems, ItemStack shopItem) {
+    public RunicShopItem(@NotNull List<Pair<String, Integer>> requiredItems, @NotNull ItemStack shopItem) {
         this.requiredItems = requiredItems;
         this.shopItem = shopItem;
-        this.runicItemRunnable = runDefaultBuy();
+        this.runicItemRunnable = player -> {
+            // attempt to give player item (does not drop on floor)
+            RunicItemsAPI.addItem(player.getInventory(), shopItem, true);
+        };
     }
 
     /**
@@ -37,7 +41,7 @@ public class RunicShopItem {
      *
      * @param cost of the item in gold coins
      */
-    public RunicShopItem(int cost, ItemStack shopItem, RunicItemRunnable runicItemRunnable) {
+    public RunicShopItem(int cost, @NotNull ItemStack shopItem, @NotNull RunicItemRunnable runicItemRunnable) {
         this.requiredItems = Collections.singletonList(Pair.pair("coin", cost));
         this.shopItem = shopItem;
         this.runicItemRunnable = runicItemRunnable;
@@ -48,7 +52,7 @@ public class RunicShopItem {
      *
      * @param runicItemRunnable a custom runnable to be executed upon item purchase
      */
-    public RunicShopItem(List<Pair<String, Integer>> requiredItems, ItemStack shopItem, RunicItemRunnable runicItemRunnable) {
+    public RunicShopItem(@NotNull List<Pair<String, Integer>> requiredItems, @NotNull ItemStack shopItem, @NotNull RunicItemRunnable runicItemRunnable) {
         this.requiredItems = requiredItems;
         this.shopItem = shopItem;
         this.runicItemRunnable = runicItemRunnable;
@@ -57,8 +61,8 @@ public class RunicShopItem {
     /**
      * @param extraConditions a set of extra conditions which must be met to purchase item
      */
-    public RunicShopItem(List<Pair<String, Integer>> requiredItems, ItemStack shopItem,
-                         RunicItemRunnable runicItemRunnable, List<ShopCondition> extraConditions) {
+    public RunicShopItem(@NotNull List<Pair<String, Integer>> requiredItems, @NotNull ItemStack shopItem,
+                         @NotNull RunicItemRunnable runicItemRunnable, List<ShopCondition> extraConditions) {
         this.requiredItems = requiredItems;
         this.shopItem = shopItem;
         this.runicItemRunnable = runicItemRunnable;
@@ -133,6 +137,15 @@ public class RunicShopItem {
         return removePayment;
     }
 
+    /**
+     * A method that returns if the only required items are coins and the required amount is less than or equal to zero
+     *
+     * @return if the only required items are coins and the required amount is less than or equal to zero
+     */
+    public boolean isFree() {
+        return this.requiredItems.size() == 1 && this.requiredItems.get(0).first.equalsIgnoreCase("coin") && this.requiredItems.get(0).second <= 0;
+    }
+
     /*
     MAKE SURE somewhere that there is space in the player's inventory.
      */
@@ -140,15 +153,7 @@ public class RunicShopItem {
         runicItemRunnable.run(player);
     }
 
-    private RunicItemRunnable runDefaultBuy() {
-        return player -> {
-            // attempt to give player item (does not drop on floor)
-            RunicItemsAPI.addItem(player.getInventory(), shopItem, true);
-        };
-    }
-
     public void setRemovePayment(boolean removePayment) {
         this.removePayment = removePayment;
     }
-
 }

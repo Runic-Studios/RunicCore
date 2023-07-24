@@ -132,7 +132,8 @@ public class RunicItemShopManager implements Listener, ShopAPI {
             }
         }
         if (!requirementsMet) return;
-        if (runicShopItem.removePayment()) {
+        player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5f, 1.0f);
+        if (runicShopItem.removePayment() && !runicShopItem.isFree()) {
             for (Pair<String, Integer> pair : runicShopItem.getRequiredItems()) {
                 ItemUtils.takeItem
                         (
@@ -141,7 +142,6 @@ public class RunicItemShopManager implements Listener, ShopAPI {
                                 pair.second
                         );
             }
-            player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5f, 1.0f);
             player.updateInventory();
             player.sendMessage(ChatColor.GREEN + "You purchased " + displayName + ChatColor.GREEN + "!");
         }
@@ -157,7 +157,7 @@ public class RunicItemShopManager implements Listener, ShopAPI {
 
     @EventHandler
     public void onNpcClick(NpcClickEvent event) {
-        if(event.isCancelled()) return;
+        if (event.isCancelled()) return;
         if (clickCooldowns.containsKey(event.getPlayer().getUniqueId())) {
             if (clickCooldowns.get(event.getPlayer().getUniqueId()) + 2000 > System.currentTimeMillis()) {
                 return;

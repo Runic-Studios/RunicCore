@@ -51,6 +51,7 @@ import com.runicrealms.plugin.commands.player.RunicVoteCMD;
 import com.runicrealms.plugin.commands.player.SpawnCMD;
 import com.runicrealms.plugin.commands.player.WhoIsCMD;
 import com.runicrealms.plugin.common.RunicCommon;
+import com.runicrealms.plugin.common.util.ColorUtil;
 import com.runicrealms.plugin.config.ConfigManager;
 import com.runicrealms.plugin.converter.ConverterHandler;
 import com.runicrealms.plugin.database.DatabaseManager;
@@ -193,6 +194,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class RunicCore extends JavaPlugin implements Listener {
 
     private static final int BASE_OUTLAW_RATING = 1500;
+    public static final String VERSION_TITLE = ColorUtil.format("&b&l2.0.6 - PLACEHOLDER");
 
     private static RunicCore instance;
     private static TaskChainFactory taskChainFactory;

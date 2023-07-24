@@ -259,6 +259,7 @@ public class RunicItemShopHelper {
             player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 1.0f);
             player.sendMessage(ChatColor.AQUA + "You have changed your hearthstone location to " + SafeZoneLocation.getFromIdentifier(location).getDisplay() + "!");
             player.getInventory().setItem(8, SafeZoneLocation.getFromIdentifier(location).getItemStack());
+            player.closeInventory();
         };
     }
 
@@ -266,6 +267,7 @@ public class RunicItemShopHelper {
         return player -> {
             // attempt to give player item (does not drop on floor)
             Bukkit.dispatchCommand(Bukkit.getServer().getConsoleSender(), "resettree " + player.getName());
+            player.closeInventory();
         };
     }
 }

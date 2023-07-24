@@ -1,31 +1,48 @@
 package com.runicrealms.plugin.listeners;
 
+import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.common.util.ColorUtil;
-import org.bukkit.Bukkit;
+import com.runicrealms.plugin.rdb.RunicDatabase;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.server.ServerListPingEvent;
+import org.jetbrains.annotations.NotNull;
 
 public class ServerListPingListener implements Listener {
 
+    private static final String PREFIX = ColorUtil.format("                    &d&lRUNIC REALMS&r" + "\n              ");
     private static String SERVER_MOTD;
 
-    static {
-        int port = Bukkit.getPort();
-        switch (port) {
-            case 25566:
-                SERVER_MOTD = ColorUtil.format("                    &d&lRUNIC REALMS&r" + "\n              &a&lWRITER SERVER");
-            case 25567:
-                SERVER_MOTD = ColorUtil.format("                    &d&lRUNIC REALMS&r" + "\n              &a&lBUILD SERVER");
-            case 25568:
-                SERVER_MOTD = ColorUtil.format("                    &d&lRUNIC REALMS&r" + "\n              &a&lDEV SERVER");
-            default:
-                SERVER_MOTD = ColorUtil.format("                    &d&lRUNIC REALMS&r" + "\n              &a&l2.0 - The Second Age!");
-        }
+    @EventHandler
+    public void onServerListPing(ServerListPingEvent event) {
+        event.setMotd(getMOTD());
     }
 
-    @EventHandler
-    public void onServerListPing(final ServerListPingEvent event) {
-        event.setMotd(SERVER_MOTD);
+    /**
+     * Get the lazy init variable of the server motd
+     *
+     * @return lazy init variable of the server motd
+     */
+    @NotNull
+    private static String getMOTD() {
+        if (SERVER_MOTD != null) {
+            return SERVER_MOTD;
+        }
+
+        String database;
+        try {
+            database = RunicDatabase.getDatabaseName();
+        } catch (Exception e) {
+            database = null;
+        }
+
+        if (database == null) {
+            return PREFIX + RunicCore.VERSION_TITLE;
+        }
+
+        String description = database.equals("writer") ? ColorUtil.format("     &a&lWRITER SERVER") : database.equals("dev") ? ColorUtil.format("  &a&lDEVELOPER SERVER") : RunicCore.VERSION_TITLE;
+
+        SERVER_MOTD = PREFIX + description;
+        return SERVER_MOTD;
     }
 }
