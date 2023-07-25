@@ -95,6 +95,11 @@ public class RunicShopItem {
             runicItemArmor.setIsMenuDisplay(true);
             itemStack = runicItemArmor.generateGUIItem();
         }
+
+        if (runicShopItem.isFree()) {
+            return itemStack;
+        }
+
         ItemStack iconWithLore = itemStack.clone();
         ItemMeta meta = iconWithLore.getItemMeta();
         assert meta != null;
