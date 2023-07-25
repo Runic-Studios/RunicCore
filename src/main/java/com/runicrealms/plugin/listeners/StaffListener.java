@@ -7,6 +7,7 @@ import com.runicrealms.plugin.api.event.StaffAttackEvent;
 import com.runicrealms.plugin.common.util.Pair;
 import com.runicrealms.plugin.events.EnemyVerifyEvent;
 import com.runicrealms.plugin.rdb.RunicDatabase;
+import com.runicrealms.plugin.rdb.event.CharacterQuitEvent;
 import com.runicrealms.plugin.spellapi.spellutil.VectorUtil;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import com.runicrealms.runicitems.RunicItemsAPI;
@@ -26,11 +27,15 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.RayTraceResult;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -43,67 +48,10 @@ public class StaffListener implements Listener {
     private static final int MAX_DIST = 9;
     private static final double RAY_SIZE = 0.8; //0.5
 
-    /**
-     * Verifies that the player's held item is a runic weapon and a staff.
-     * Returns a pair whose first arg is true if the item is a staff and the second arg is the item weapon, the player can wield it, high enough level, etc.
-     *
-     * @param player who is holding the staff
-     * @return the pair whose first arg is true if all checks pass
-     */
-    public static Pair<Boolean, RunicItemWeapon> verifyStaff(Player player, ItemStack itemStack) {
-        RunicItem runicItem = RunicItemsAPI.getRunicItemFromItemStack(itemStack);
-        if (runicItem == null) return Pair.pair(false, null);
-        if (!(runicItem instanceof RunicItemWeapon runicItemWeapon)) return Pair.pair(false, null);
-        Material runicItemType = runicItemWeapon.getDisplayableItem().getMaterial();
-        double cooldown = player.getCooldown(runicItemType);
-        if (cooldown != 0) return Pair.pair(false, null);
+    private final Map<UUID, Long> droppedItem;
 
-        // Check for mage
-        String className = RunicDatabase.getAPI().getCharacterAPI().getPlayerClass(player);
-        if (className == null) return Pair.pair(false, null);
-        if (!className.equals("Mage")) return Pair.pair(false, null);
-        if (RunicCore.getSpellAPI().isCasting(player)) return Pair.pair(false, null);
-        int reqLv = runicItemWeapon.getLevel();
-        if (reqLv > player.getLevel()) {
-            player.playSound(player.getLocation(), Sound.BLOCK_FIRE_EXTINGUISH, 0.5f, 1.0f);
-            player.sendMessage(ChatColor.RED + "Your level is too low to wield this!");
-            return Pair.pair(false, null);
-        }
-
-        return Pair.pair(true, runicItemWeapon);
-    }
-
-    /**
-     * Create a PhysicalDamageEvent for our staff attack, verify that the player can use the weapon
-     *
-     * @param player          who summoned staff attack
-     * @param victim          to be damaged
-     * @param runicItemWeapon runic item to read damage values from
-     */
-    private void damageStaff(Player player, LivingEntity victim, RunicItemWeapon runicItemWeapon) {
-        int minDamage = runicItemWeapon.getWeaponDamage().getMin();
-        int maxDamage = runicItemWeapon.getWeaponDamage().getMax();
-
-        // apply attack effects, random damage amount
-        if (maxDamage != 0) {
-            int randomNum = ThreadLocalRandom.current().nextInt(minDamage, maxDamage + 1);
-            DamageUtil.damageEntityPhysical(randomNum, victim, player, true, true);
-        } else {
-            DamageUtil.damageEntityPhysical(maxDamage, victim, player, true, true);
-        }
-
-        player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_HURT, 0.5f, 1);
-    }
-
-    /**
-     * @param player who cast the beam
-     * @param victim the entity hit by the staff beam
-     * @return true if the enemy can be damaged
-     */
-    private boolean isValidEnemy(Player player, Entity victim) {
-        EnemyVerifyEvent enemyVerifyEvent = new EnemyVerifyEvent(player, victim);
-        Bukkit.getServer().getPluginManager().callEvent(enemyVerifyEvent);
-        return !enemyVerifyEvent.isCancelled();
+    public StaffListener() {
+        this.droppedItem = new HashMap<>();
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
@@ -117,6 +65,12 @@ public class StaffListener implements Listener {
         if (event.getHand() != EquipmentSlot.HAND) return;
         if (event.getItem().getType() != Material.WOODEN_HOE) return;
 
+        Long time = this.droppedItem.get(event.getPlayer().getUniqueId());
+
+        if (time != null && time + STAFF_COOLDOWN * 50 >= System.currentTimeMillis()) { //convert staff cooldown from ticks to miliseconds
+            return;
+        }
+
         // Retrieve the weapon type and try to fire staff attack
         TaskChain<?> chain = RunicCore.newChain();
         chain
@@ -124,6 +78,7 @@ public class StaffListener implements Listener {
                 .syncLast(result -> {
                     if (result.first) {
                         event.setCancelled(true);
+                        Bukkit.broadcastMessage("staff attack!"); //remove
                         Bukkit.getPluginManager().callEvent(new StaffAttackEvent(event.getPlayer(), result.second));
                     }
                 })
@@ -134,6 +89,17 @@ public class StaffListener implements Listener {
     public void onStaffAttack(StaffAttackEvent event) {
         if (event.isCancelled()) return;
         staffAttack(event.getPlayer(), event.getRunicItemWeapon());
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST)
+    private void onPlayerDropItem(PlayerDropItemEvent event) {
+        //does not matter if event was cancelled, matters if packet was sent
+        this.droppedItem.put(event.getPlayer().getUniqueId(), System.currentTimeMillis());
+    }
+
+    @EventHandler
+    private void onCharacterQuit(CharacterQuitEvent event) {
+        this.droppedItem.remove(event.getPlayer().getUniqueId());
     }
 
     /**
@@ -170,5 +136,68 @@ public class StaffListener implements Listener {
                         BasicAttackEvent.BASE_STAFF_COOLDOWN,
                         BasicAttackEvent.BASE_STAFF_COOLDOWN
                 ));
+    }
+
+    /**
+     * Create a PhysicalDamageEvent for our staff attack, verify that the player can use the weapon
+     *
+     * @param player          who summoned staff attack
+     * @param victim          to be damaged
+     * @param runicItemWeapon runic item to read damage values from
+     */
+    private void damageStaff(Player player, LivingEntity victim, RunicItemWeapon runicItemWeapon) {
+        int minDamage = runicItemWeapon.getWeaponDamage().getMin();
+        int maxDamage = runicItemWeapon.getWeaponDamage().getMax();
+
+        // apply attack effects, random damage amount
+        if (maxDamage != 0) {
+            int randomNum = ThreadLocalRandom.current().nextInt(minDamage, maxDamage + 1);
+            DamageUtil.damageEntityPhysical(randomNum, victim, player, true, true);
+        } else {
+            DamageUtil.damageEntityPhysical(maxDamage, victim, player, true, true);
+        }
+
+        player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_HURT, 0.5f, 1);
+    }
+
+    /**
+     * @param player who cast the beam
+     * @param victim the entity hit by the staff beam
+     * @return true if the enemy can be damaged
+     */
+    private boolean isValidEnemy(Player player, Entity victim) {
+        EnemyVerifyEvent enemyVerifyEvent = new EnemyVerifyEvent(player, victim);
+        Bukkit.getServer().getPluginManager().callEvent(enemyVerifyEvent);
+        return !enemyVerifyEvent.isCancelled();
+    }
+
+    /**
+     * Verifies that the player's held item is a runic weapon and a staff.
+     * Returns a pair whose first arg is true if the item is a staff and the second arg is the item weapon, the player can wield it, high enough level, etc.
+     *
+     * @param player who is holding the staff
+     * @return the pair whose first arg is true if all checks pass
+     */
+    public static Pair<Boolean, RunicItemWeapon> verifyStaff(Player player, ItemStack itemStack) {
+        RunicItem runicItem = RunicItemsAPI.getRunicItemFromItemStack(itemStack);
+        if (runicItem == null) return Pair.pair(false, null);
+        if (!(runicItem instanceof RunicItemWeapon runicItemWeapon)) return Pair.pair(false, null);
+        Material runicItemType = runicItemWeapon.getDisplayableItem().getMaterial();
+        double cooldown = player.getCooldown(runicItemType);
+        if (cooldown != 0) return Pair.pair(false, null);
+
+        // Check for mage
+        String className = RunicDatabase.getAPI().getCharacterAPI().getPlayerClass(player);
+        if (className == null) return Pair.pair(false, null);
+        if (!className.equals("Mage")) return Pair.pair(false, null);
+        if (RunicCore.getSpellAPI().isCasting(player)) return Pair.pair(false, null);
+        int reqLv = runicItemWeapon.getLevel();
+        if (reqLv > player.getLevel()) {
+            player.playSound(player.getLocation(), Sound.BLOCK_FIRE_EXTINGUISH, 0.5f, 1.0f);
+            player.sendMessage(ChatColor.RED + "Your level is too low to wield this!");
+            return Pair.pair(false, null);
+        }
+
+        return Pair.pair(true, runicItemWeapon);
     }
 }

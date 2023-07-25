@@ -54,7 +54,7 @@ public class PlayerInteractCorrectionListener implements Listener {
             PlayerInteractEvent interactEvent = new PlayerInteractEvent(event.getPlayer(), Action.LEFT_CLICK_AIR, item, null, event.getPlayer().getFacing());
 
             Bukkit.getPluginManager().callEvent(interactEvent);
-        }, 2); //one tick delay is too early for the damage listener
+        }, 2); //one tick delay is too early for the damage listener and three ticks is a noticeable delay for the player
     }
 
     //Listen for all other causes of arm animation and check if they were fired
