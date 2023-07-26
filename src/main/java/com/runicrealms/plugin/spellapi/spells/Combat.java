@@ -24,6 +24,7 @@ public class Combat extends Spell {
 
     public Combat() {
         super("Combat", CharacterClass.ANY);
+        this.setDisplayCastMessage(false);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST) // last

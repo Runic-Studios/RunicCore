@@ -27,6 +27,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
@@ -65,6 +66,10 @@ public class StaffListener implements Listener {
         if (event.getHand() != EquipmentSlot.HAND) return;
         if (event.getItem().getType() != Material.WOODEN_HOE) return;
 
+        if (event.getPlayer().getOpenInventory().getTopInventory().getType() != InventoryType.CRAFTING) {
+            return; //make sure player does not have inventory open while doing this (CRAFTING is default)
+        }
+
         Long time = this.droppedItem.get(event.getPlayer().getUniqueId());
 
         if (time != null && time + STAFF_COOLDOWN * 50 >= System.currentTimeMillis()) { //convert staff cooldown from ticks to miliseconds
@@ -78,7 +83,6 @@ public class StaffListener implements Listener {
                 .syncLast(result -> {
                     if (result.first) {
                         event.setCancelled(true);
-                        Bukkit.broadcastMessage("staff attack!"); //remove
                         Bukkit.getPluginManager().callEvent(new StaffAttackEvent(event.getPlayer(), result.second));
                     }
                 })

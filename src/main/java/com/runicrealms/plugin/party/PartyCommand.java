@@ -12,8 +12,10 @@ import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.common.DonorRank;
 import com.runicrealms.plugin.common.util.ChatUtils;
 import com.runicrealms.plugin.common.util.ColorUtil;
+import com.runicrealms.plugin.model.CoreCharacterData;
 import com.runicrealms.plugin.party.event.LeaveReason;
 import com.runicrealms.plugin.party.event.PartyLeaveEvent;
+import com.runicrealms.plugin.rdb.RunicDatabase;
 import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.node.Node;
 import net.luckperms.api.node.types.PermissionNode;
@@ -29,6 +31,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -385,7 +389,7 @@ public class PartyCommand extends BaseCommand {
                     user.data().add(Node.builder("runic.cooldown.partysummon").expiry(24, TimeUnit.HOURS).build());
                     LuckPermsProvider.get().getUserManager().saveUser(user);
                 } else if (summon.beganPartySummon) {
-                    player.sendMessage(ColorUtil.format(PREFIX + " &cYour party summon has failed because none of your party members stood still."));
+                    player.sendMessage(ColorUtil.format(PREFIX + " &cYour party summon has failed! Your party members must stand still and completed the tutorial!"));
                 }
             });
         });
@@ -446,14 +450,25 @@ public class PartyCommand extends BaseCommand {
             Set<UUID> failedTeleport = new HashSet<>();
 
             for (Player player : party.getMembers()) {
+                Integer level = this.getLevel(player);
+
+                if (level != null && level < 3) {
+                    player.sendMessage(ColorUtil.format(PREFIX + " &aYou are not high enough level to be teleported! Please reach at least level three!"));
+                    failedTeleport.add(player.getUniqueId());
+                    continue;
+                }
+
                 player.sendMessage(ColorUtil.format(PREFIX + " &f" + leader.getName() + "&a has summoned you to their location. &2&lSTAND STILL &r&afor 5 seconds to be teleported."));
             }
+
             final Location teleportLocation = leader.getLocation();
             AtomicInteger iterations = new AtomicInteger();
             BukkitTask timer = Bukkit.getScheduler().runTaskTimer(RunicCore.getInstance(), () -> {
                 for (Player player : party.getMembers()) {
-                    if (finishedTeleport.contains(player.getUniqueId()) || failedTeleport.contains(player.getUniqueId()))
+                    if (finishedTeleport.contains(player.getUniqueId()) || failedTeleport.contains(player.getUniqueId())) {
                         continue;
+                    }
+
                     Location lastLocation = locations.get(player.getUniqueId());
                     Location playerLocation = player.getLocation();
                     locations.put(player.getUniqueId(), playerLocation);
@@ -491,12 +506,29 @@ public class PartyCommand extends BaseCommand {
                         atleastOneSuccess = true;
                         continue;
                     }
-                    leader.sendMessage(ColorUtil.format(PREFIX + " &f" + player.getName() + "&c's teleport failed because they kept moving."));
+                    leader.sendMessage(ColorUtil.format(PREFIX + " &f" + player.getName() + "&c's teleport failed."));
                 }
                 onComplete.complete(atleastOneSuccess);
             }, 20 * 16 + 1);
         }
 
+        /**
+         * A method used to get the level of the player
+         *
+         * @param player the player
+         * @return the level or null if something went wrong
+         */
+        @Nullable
+        private Integer getLevel(@NotNull Player player) {
+            int slot = RunicDatabase.getAPI().getCharacterAPI().getCharacterSlot(player.getUniqueId());
+            CoreCharacterData coreData = RunicCore.getPlayerDataAPI().getCorePlayerData(player.getUniqueId()).getCharacter(slot);
+
+            if (coreData == null) {
+                return null;
+            }
+
+            return coreData.getLevel();
+        }
     }
 
 

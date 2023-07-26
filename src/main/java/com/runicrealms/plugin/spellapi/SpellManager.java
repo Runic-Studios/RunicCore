@@ -24,16 +24,6 @@ import com.runicrealms.plugin.spellapi.spells.archer.Stormborn;
 import com.runicrealms.plugin.spellapi.spells.archer.Sunder;
 import com.runicrealms.plugin.spellapi.spells.archer.Surge;
 import com.runicrealms.plugin.spellapi.spells.archer.ThunderArrow;
-import com.runicrealms.plugin.spellapi.spells.artifact.AdrenalineRush;
-import com.runicrealms.plugin.spellapi.spells.artifact.Bloodlust;
-import com.runicrealms.plugin.spellapi.spells.artifact.BloodyShot;
-import com.runicrealms.plugin.spellapi.spells.artifact.DrainLife;
-import com.runicrealms.plugin.spellapi.spells.artifact.Electrocute;
-import com.runicrealms.plugin.spellapi.spells.artifact.LifeInfusion;
-import com.runicrealms.plugin.spellapi.spells.artifact.LightningArrow;
-import com.runicrealms.plugin.spellapi.spells.artifact.Maelstrom;
-import com.runicrealms.plugin.spellapi.spells.artifact.ThunderousRift;
-import com.runicrealms.plugin.spellapi.spells.artifact.Thundershock;
 import com.runicrealms.plugin.spellapi.spells.cleric.Accelerando;
 import com.runicrealms.plugin.spellapi.spells.cleric.AstralBlessing;
 import com.runicrealms.plugin.spellapi.spells.cleric.Consecration;
@@ -74,7 +64,6 @@ import com.runicrealms.plugin.spellapi.spells.mage.WintersGrasp;
 import com.runicrealms.plugin.spellapi.spells.rogue.Agility;
 import com.runicrealms.plugin.spellapi.spells.rogue.Backstab;
 import com.runicrealms.plugin.spellapi.spells.rogue.CallOfTheDeep;
-import com.runicrealms.plugin.spellapi.spells.rogue.Cannonfire;
 import com.runicrealms.plugin.spellapi.spells.rogue.Castigate;
 import com.runicrealms.plugin.spellapi.spells.rogue.Challenger;
 import com.runicrealms.plugin.spellapi.spells.rogue.Cocoon;
@@ -162,7 +151,7 @@ public class SpellManager implements Listener, SpellAPI {
     }
 
     @Override
-    public Spell getPlayerSpell(Player player, int number) {
+    public Spell getPlayerSpell(@NotNull Player player, int number) {
         Spell spellToCast = null;
         UUID uuid = player.getUniqueId();
         try {
@@ -263,12 +252,12 @@ public class SpellManager implements Listener, SpellAPI {
     }
 
     @Override
-    public boolean isCasting(Player player) {
+    public boolean isCasting(@NotNull Player player) {
         return SpellUseListener.getCasters().containsKey(player.getUniqueId());
     }
 
     @Override
-    public boolean isOnCooldown(Player player, @NotNull String spellName) {
+    public boolean isOnCooldown(@NotNull Player player, @NotNull String spellName) {
         if (!this.cooldownMap.containsKey(player.getUniqueId()))
             return false;
         ConcurrentHashMap<Spell, Long> playerSpellsOnCooldown = this.cooldownMap.get(player.getUniqueId());
@@ -281,7 +270,7 @@ public class SpellManager implements Listener, SpellAPI {
     }
 
     @Override
-    public void reduceCooldown(Player player, @NotNull Spell spell, double duration) {
+    public void reduceCooldown(@NotNull Player player, @NotNull Spell spell, double duration) {
         if (!this.cooldownMap.containsKey(player.getUniqueId())) return;
         ConcurrentHashMap<Spell, Long> playerSpellsOnCooldown = this.cooldownMap.get(player.getUniqueId());
         if (!playerSpellsOnCooldown.containsKey(spell)) return;
@@ -320,7 +309,7 @@ public class SpellManager implements Listener, SpellAPI {
     }
 
     @Override
-    public void reduceCooldown(Player player, @NotNull String spell, double duration) {
+    public void reduceCooldown(@NotNull Player player, @NotNull String spell, double duration) {
         if (!this.cooldownMap.containsKey(player.getUniqueId())) return;
         ConcurrentHashMap<Spell, Long> playerSpellsOnCooldown = this.cooldownMap.get(player.getUniqueId());
         Optional<Spell> spellOptional = playerSpellsOnCooldown.keySet().stream().filter(key -> key.getName().equalsIgnoreCase(spell)).findAny();
@@ -331,7 +320,7 @@ public class SpellManager implements Listener, SpellAPI {
     }
 
     @Override
-    public void setCooldown(Player player, @NotNull Spell spell, double duration) {
+    public void setCooldown(@NotNull Player player, @NotNull Spell spell, double duration) {
         if (!this.cooldownMap.containsKey(player.getUniqueId())) return;
         ConcurrentHashMap<Spell, Long> playerSpellsOnCooldown = this.cooldownMap.get(player.getUniqueId());
         if (!playerSpellsOnCooldown.containsKey(spell)) return;
@@ -373,7 +362,7 @@ public class SpellManager implements Listener, SpellAPI {
     }
 
     @Override
-    public double getUserCooldown(@NotNull Player player, Spell spell) {
+    public double getUserCooldown(@NotNull Player player, @NotNull Spell spell) {
         double cooldownRemaining = 0;
 
         if (isOnCooldown(player, spell.getName())) {
@@ -382,6 +371,7 @@ public class SpellManager implements Listener, SpellAPI {
                 cooldownRemaining = (cd.get(spell) + (spell.getCooldown() * 1000)) - System.currentTimeMillis();
             }
         }
+
         return cooldownRemaining / 1000;
     }
 
@@ -488,17 +478,17 @@ public class SpellManager implements Listener, SpellAPI {
         /*
         Artifacts
          */
-        this.spellList.add(new DrainLife());
-        this.spellList.add(new AdrenalineRush());
-        this.spellList.add(new LifeInfusion());
-        this.spellList.add(new BloodyShot());
-        this.spellList.add(new Bloodlust());
-        this.spellList.add(new Electrocute());
-        this.spellList.add(new LightningArrow());
-        this.spellList.add(new Maelstrom());
-        this.spellList.add(new Thundershock());
-        this.spellList.add(new ThunderousRift());
-        this.spellList.add(new Cannonfire());
+        //this.spellList.add(new DrainLife());
+        //this.spellList.add(new AdrenalineRush());
+        //this.spellList.add(new LifeInfusion());
+        //this.spellList.add(new BloodyShot());
+        //this.spellList.add(new Bloodlust());
+        //this.spellList.add(new Electrocute());
+        //this.spellList.add(new LightningArrow());
+        //this.spellList.add(new Maelstrom());
+        //this.spellList.add(new Thundershock());
+        //this.spellList.add(new ThunderousRift());
+        //this.spellList.add(new Cannonfire());
 //        this.spellList.add(new ScorchedBlade()); sunken artifact passives
 //        this.spellList.add(new BlessingOfFire());
 //        this.spellList.add(new FlamingShield());
@@ -528,9 +518,9 @@ public class SpellManager implements Listener, SpellAPI {
                         List<String> cdString = new ArrayList<>();
 
                         for (Spell spell : spells.keySet()) {
-                            if (getUserCooldown(player, spell) <= 0)
+                            if (getUserCooldown(player, spell) <= 0) {
                                 removeCooldown(player, spell);
-                            else {
+                            } else {
                                 double cooldown = getUserCooldown(player, spell);
                                 String formattedCooldown = String.format("%.1f", cooldown);
                                 cdString.add(ChatColor.RED + String.valueOf(ChatColor.BOLD) + spell.getName() + ChatColor.RED + ChatColor.BOLD + ": " + ChatColor.YELLOW + formattedCooldown + "s");

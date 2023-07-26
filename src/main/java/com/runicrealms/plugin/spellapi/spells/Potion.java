@@ -1,8 +1,8 @@
 package com.runicrealms.plugin.spellapi.spells;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.events.SpellCastEvent;
 import com.runicrealms.plugin.common.CharacterClass;
+import com.runicrealms.plugin.events.SpellCastEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.runicitems.item.event.RunicItemGenericTriggerEvent;
@@ -25,6 +25,7 @@ public class Potion extends Spell {
 
     public Potion() {
         super("Potion", CharacterClass.ANY);
+        this.setDisplayCastMessage(false);
     }
 
     @Override

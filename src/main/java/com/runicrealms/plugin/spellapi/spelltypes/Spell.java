@@ -26,6 +26,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.Map;
 import java.util.UUID;
+import java.util.logging.Level;
 
 public abstract class Spell implements ISpell, Listener {
     private static final String SPELLS_DIRECTORY = "RunicCore/spells";
@@ -36,6 +37,7 @@ public abstract class Spell implements ISpell, Listener {
     private int manaCost;
     private String description = "";
     private boolean isPassive = false;
+    private boolean displayCastMessage = true;
 
     /**
      * Creates this spell object once on startup. Loads its values from flat file
@@ -77,7 +79,11 @@ public abstract class Spell implements ISpell, Listener {
         // cast the spell
         int currentMana = RunicCore.getRegenManager().getCurrentManaList().get(player.getUniqueId());
         RunicCore.getRegenManager().getCurrentManaList().put(player.getUniqueId(), currentMana - this.manaCost);
-        player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(ChatColor.GREEN + "You cast " + ChatColor.WHITE + getName() + ChatColor.GREEN + "!"));
+
+        if (this.displayCastMessage) {
+            player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(ChatColor.GREEN + "You cast " + ChatColor.WHITE + getName() + ChatColor.GREEN + "!"));
+        }
+
         RunicCore.getSpellAPI().addCooldown(player, this, this.getCooldown());
         this.executeSpell(player, type);
         return true;
@@ -197,6 +203,8 @@ public abstract class Spell implements ISpell, Listener {
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
+        } else {
+            RunicCore.getInstance().getLogger().log(Level.SEVERE, "Missing spell data file for " + this.name);
         }
     }
 
@@ -250,5 +258,13 @@ public abstract class Spell implements ISpell, Listener {
 
     public void setIsPassive(boolean isPassive) {
         this.isPassive = isPassive;
+    }
+
+    public boolean isDisplayingCastMessage() {
+        return this.displayCastMessage;
+    }
+
+    public void setDisplayCastMessage(boolean displayCastMessage) {
+        this.displayCastMessage = displayCastMessage;
     }
 }
