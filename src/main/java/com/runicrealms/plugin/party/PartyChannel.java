@@ -1,6 +1,6 @@
 package com.runicrealms.plugin.party;
 
-import com.runicrealms.api.chat.ChatChannel;
+import com.runicrealms.plugin.chat.api.chat.ChatChannel;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.common.util.ColorUtil;
 import me.clip.placeholderapi.PlaceholderAPI;

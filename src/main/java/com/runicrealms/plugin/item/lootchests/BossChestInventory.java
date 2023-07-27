@@ -2,7 +2,7 @@ package com.runicrealms.plugin.item.lootchests;
 
 import com.runicrealms.plugin.DungeonLocation;
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.runicitems.RunicItemsAPI;
+import com.runicrealms.plugin.runicitems.RunicItemsAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;

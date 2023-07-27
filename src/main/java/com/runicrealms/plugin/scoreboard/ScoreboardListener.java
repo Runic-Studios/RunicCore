@@ -6,7 +6,7 @@ import com.runicrealms.plugin.player.utilities.HealthUtils;
 import com.runicrealms.plugin.rdb.RunicDatabase;
 import com.runicrealms.plugin.rdb.event.CharacterLoadedEvent;
 import com.runicrealms.plugin.utilities.NametagHandler;
-import com.runicrealms.runicitems.item.event.RunicStatUpdateEvent;
+import com.runicrealms.plugin.runicitems.item.event.RunicStatUpdateEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;

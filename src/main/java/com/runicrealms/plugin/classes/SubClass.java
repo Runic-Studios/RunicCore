@@ -3,7 +3,7 @@ package com.runicrealms.plugin.classes;
 import com.runicrealms.plugin.common.CharacterClass;
 import com.runicrealms.plugin.model.SkillTreePosition;
 import com.runicrealms.plugin.rdb.RunicDatabase;
-import com.runicrealms.runicitems.util.ItemUtils;
+import com.runicrealms.plugin.runicitems.util.ItemUtils;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import redis.clients.jedis.Jedis;

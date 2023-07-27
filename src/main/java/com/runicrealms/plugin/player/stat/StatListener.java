@@ -11,7 +11,7 @@ import com.runicrealms.plugin.events.SpellCastEvent;
 import com.runicrealms.plugin.events.SpellHealEvent;
 import com.runicrealms.plugin.player.listener.ManaListener;
 import com.runicrealms.plugin.spellapi.spells.Potion;
-import com.runicrealms.runicitems.Stat;
+import com.runicrealms.plugin.runicitems.Stat;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;

@@ -1,9 +1,9 @@
 package com.runicrealms.plugin.item.shops;
 
 import com.runicrealms.plugin.common.util.Pair;
-import com.runicrealms.runicitems.RunicItemsAPI;
-import com.runicrealms.runicitems.item.RunicItem;
-import com.runicrealms.runicitems.item.RunicItemArmor;
+import com.runicrealms.plugin.runicitems.RunicItemsAPI;
+import com.runicrealms.plugin.runicitems.item.RunicItem;
+import com.runicrealms.plugin.runicitems.item.RunicItemArmor;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -88,7 +88,8 @@ public class RunicShopItem {
      * @param runicShopItem the ShopItem wrapper of the item in the store
      * @return a display-able item with lore like price info
      */
-    public static ItemStack iconWithLore(RunicShopItem runicShopItem) {
+    @NotNull
+    public static ItemStack iconWithLore(@NotNull RunicShopItem runicShopItem) {
         ItemStack itemStack = runicShopItem.getShopItem();
         RunicItem runicItem = RunicItemsAPI.getRunicItemFromItemStack(itemStack);
         if (runicItem instanceof RunicItemArmor runicItemArmor) {

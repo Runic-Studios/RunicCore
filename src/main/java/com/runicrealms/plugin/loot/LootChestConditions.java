@@ -1,7 +1,7 @@
 package com.runicrealms.plugin.loot;
 
-import com.runicrealms.runicitems.RunicItemsAPI;
-import com.runicrealms.runicitems.item.template.RunicItemTemplate;
+import com.runicrealms.plugin.runicitems.RunicItemsAPI;
+import com.runicrealms.plugin.runicitems.item.template.RunicItemTemplate;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;

@@ -1,6 +1,6 @@
 package com.runicrealms.plugin.spellapi.skilltrees;
 
-import com.runicrealms.runicitems.Stat;
+import com.runicrealms.plugin.runicitems.Stat;
 import org.bson.Document;
 import org.bukkit.Bukkit;
 

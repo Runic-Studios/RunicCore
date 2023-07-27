@@ -3,7 +3,7 @@ package com.runicrealms.plugin.converter;
 import com.runicrealms.plugin.spellapi.skilltrees.Perk;
 import com.runicrealms.plugin.spellapi.skilltrees.PerkBaseStat;
 import com.runicrealms.plugin.spellapi.skilltrees.PerkSpell;
-import com.runicrealms.runicitems.Stat;
+import com.runicrealms.plugin.runicitems.Stat;
 import org.bson.Document;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.core.convert.converter.Converter;

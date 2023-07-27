@@ -3,7 +3,7 @@ package com.runicrealms.plugin.listeners;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.SafeZoneLocation;
 import com.runicrealms.plugin.rdb.event.CharacterLoadedEvent;
-import com.runicrealms.runicitems.RunicItemsAPI;
+import com.runicrealms.plugin.runicitems.RunicItemsAPI;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.GameMode;

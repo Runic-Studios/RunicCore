@@ -2,10 +2,10 @@ package com.runicrealms.plugin.listeners;
 
 import com.runicrealms.plugin.ItemType;
 import com.runicrealms.plugin.common.event.ArmorEquipEvent;
-import com.runicrealms.runicitems.RunicItemsAPI;
-import com.runicrealms.runicitems.item.RunicItem;
-import com.runicrealms.runicitems.item.RunicItemArmor;
-import com.runicrealms.runicitems.item.RunicItemOffhand;
+import com.runicrealms.plugin.runicitems.RunicItemsAPI;
+import com.runicrealms.plugin.runicitems.item.RunicItem;
+import com.runicrealms.plugin.runicitems.item.RunicItemArmor;
+import com.runicrealms.plugin.runicitems.item.RunicItemOffhand;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;

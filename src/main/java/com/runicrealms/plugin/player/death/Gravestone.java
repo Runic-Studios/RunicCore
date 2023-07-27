@@ -2,7 +2,7 @@ package com.runicrealms.plugin.player.death;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.utilities.BlocksUtil;
-import com.runicrealms.runicitems.RunicItemsAPI;
+import com.runicrealms.plugin.runicitems.RunicItemsAPI;
 import me.filoghost.holographicdisplays.api.HolographicDisplaysAPI;
 import me.filoghost.holographicdisplays.api.hologram.Hologram;
 import net.md_5.bungee.api.ChatColor;

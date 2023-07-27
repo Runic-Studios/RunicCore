@@ -5,8 +5,8 @@ import co.aikar.commands.annotation.CatchUnknown;
 import co.aikar.commands.annotation.CommandAlias;
 import co.aikar.commands.annotation.CommandPermission;
 import co.aikar.commands.annotation.Default;
-import com.runicrealms.RunicChat;
-import com.runicrealms.api.chat.ChatChannel;
+import com.runicrealms.plugin.chat.RunicChat;
+import com.runicrealms.plugin.chat.api.chat.ChatChannel;
 import org.bukkit.entity.Player;
 
 @CommandAlias("p")

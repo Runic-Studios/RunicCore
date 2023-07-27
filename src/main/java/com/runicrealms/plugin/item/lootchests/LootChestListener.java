@@ -1,8 +1,8 @@
 package com.runicrealms.plugin.item.lootchests;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.runicitems.RunicItemsAPI;
-import com.runicrealms.runicitems.item.RunicItem;
+import com.runicrealms.plugin.runicitems.RunicItemsAPI;
+import com.runicrealms.plugin.runicitems.item.RunicItem;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;

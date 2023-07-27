@@ -5,7 +5,7 @@ import com.runicrealms.plugin.common.util.ColorUtil;
 import com.runicrealms.plugin.common.util.GUIUtil;
 import com.runicrealms.plugin.player.utilities.PlayerLevelUtil;
 import com.runicrealms.plugin.rdb.RunicDatabase;
-import com.runicrealms.runicitems.Stat;
+import com.runicrealms.plugin.runicitems.Stat;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;

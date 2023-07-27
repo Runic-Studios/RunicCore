@@ -2,9 +2,9 @@ package com.runicrealms.plugin.player.death;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.events.RunicDeathEvent;
-import com.runicrealms.runicitems.RunicItemsAPI;
-import com.runicrealms.runicitems.item.RunicItem;
-import com.runicrealms.runicrestart.event.PreShutdownEvent;
+import com.runicrealms.plugin.runicitems.RunicItemsAPI;
+import com.runicrealms.plugin.runicitems.item.RunicItem;
+import com.runicrealms.plugin.runicrestart.event.PreShutdownEvent;
 import me.filoghost.holographicdisplays.api.hologram.Hologram;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;

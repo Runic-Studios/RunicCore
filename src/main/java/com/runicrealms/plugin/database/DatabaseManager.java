@@ -21,7 +21,7 @@ import com.runicrealms.plugin.rdb.event.CharacterQuitEvent;
 import com.runicrealms.plugin.rdb.event.MongoSaveEvent;
 import com.runicrealms.plugin.rdb.model.CharacterField;
 import com.runicrealms.plugin.taskchain.TaskChainUtil;
-import com.runicrealms.runicrestart.RunicRestart;
+import com.runicrealms.plugin.runicrestart.RunicRestart;
 import org.bson.types.ObjectId;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;

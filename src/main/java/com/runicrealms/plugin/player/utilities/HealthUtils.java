@@ -1,7 +1,7 @@
 package com.runicrealms.plugin.player.utilities;
 
 import com.runicrealms.plugin.rdb.RunicDatabase;
-import com.runicrealms.runicitems.RunicItemsAPI;
+import com.runicrealms.plugin.runicitems.RunicItemsAPI;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
 

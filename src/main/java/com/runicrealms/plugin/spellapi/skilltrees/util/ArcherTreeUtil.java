@@ -4,7 +4,7 @@ import com.runicrealms.plugin.model.SpellData;
 import com.runicrealms.plugin.spellapi.skilltrees.Perk;
 import com.runicrealms.plugin.spellapi.skilltrees.PerkBaseStat;
 import com.runicrealms.plugin.spellapi.skilltrees.PerkSpell;
-import com.runicrealms.runicitems.Stat;
+import com.runicrealms.plugin.runicitems.Stat;
 
 import java.util.ArrayList;
 import java.util.List;

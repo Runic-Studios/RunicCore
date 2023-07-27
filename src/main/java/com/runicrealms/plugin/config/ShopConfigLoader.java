@@ -6,7 +6,7 @@ import com.runicrealms.plugin.common.util.Pair;
 import com.runicrealms.plugin.exception.ShopLoadException;
 import com.runicrealms.plugin.item.shops.RunicShopGeneric;
 import com.runicrealms.plugin.item.shops.RunicShopItem;
-import com.runicrealms.runicitems.RunicItemsAPI;
+import com.runicrealms.plugin.runicitems.RunicItemsAPI;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -61,7 +61,7 @@ public class ShopConfigLoader {
                     String runicItemId = itemsSection.getString(itemString + ".id");
                     runicShopItem = loadShopItem(itemsSection.getConfigurationSection(itemString), runicItemId);
                 } catch (ShopLoadException exception) {
-                    exception.addMessage(itemString + "", "item: " + itemString);
+                    exception.addMessage(itemString, "item: " + itemString);
                     throw exception;
                 }
                 shopItems.add(runicShopItem);

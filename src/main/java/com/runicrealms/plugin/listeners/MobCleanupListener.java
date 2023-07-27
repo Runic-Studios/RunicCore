@@ -1,6 +1,6 @@
 package com.runicrealms.plugin.listeners;
 
-import com.runicrealms.runicrestart.event.ServerShutdownEvent;
+import com.runicrealms.plugin.runicrestart.event.ServerShutdownEvent;
 import io.lumine.mythic.bukkit.MythicBukkit;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;

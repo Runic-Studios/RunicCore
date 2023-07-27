@@ -1,14 +1,14 @@
 package com.runicrealms.plugin.item.shops;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.api.NpcClickEvent;
+import com.runicrealms.plugin.npcs.api.NpcClickEvent;
 import com.runicrealms.plugin.api.ShopAPI;
 import com.runicrealms.plugin.common.util.Pair;
 import com.runicrealms.plugin.config.ShopConfigLoader;
-import com.runicrealms.runicitems.RunicItemsAPI;
-import com.runicrealms.runicitems.util.ItemUtils;
-import com.runicrealms.runicitems.weaponskin.WeaponSkinObtainEvent;
-import com.runicrealms.runicitems.weaponskin.WeaponSkinUtil;
+import com.runicrealms.plugin.runicitems.RunicItemsAPI;
+import com.runicrealms.plugin.runicitems.util.ItemUtils;
+import com.runicrealms.plugin.runicitems.weaponskin.WeaponSkinObtainEvent;
+import com.runicrealms.plugin.runicitems.weaponskin.WeaponSkinUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;

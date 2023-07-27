@@ -1,11 +1,11 @@
 package com.runicrealms.plugin.item.lootchests;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.runicitems.RunicItemsAPI;
-import com.runicrealms.runicitems.item.RunicItem;
-import com.runicrealms.runicitems.item.stats.RunicItemTag;
-import com.runicrealms.runicitems.weaponskin.WeaponSkinObtainEvent;
-import com.runicrealms.runicitems.weaponskin.WeaponSkinUtil;
+import com.runicrealms.plugin.runicitems.RunicItemsAPI;
+import com.runicrealms.plugin.runicitems.item.RunicItem;
+import com.runicrealms.plugin.runicitems.item.stats.RunicItemTag;
+import com.runicrealms.plugin.runicitems.weaponskin.WeaponSkinObtainEvent;
+import com.runicrealms.plugin.runicitems.weaponskin.WeaponSkinUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;

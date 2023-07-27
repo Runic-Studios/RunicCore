@@ -1,6 +1,6 @@
 package com.runicrealms.plugin.loot;
 
-import com.runicrealms.runicitems.RunicItemsAPI;
+import com.runicrealms.plugin.runicitems.RunicItemsAPI;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 

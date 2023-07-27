@@ -3,7 +3,7 @@ package com.runicrealms.plugin.item.lootchests;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.api.LootTableAPI;
 import com.runicrealms.plugin.api.WeightedRandomBag;
-import com.runicrealms.runicitems.RunicItemsAPI;
+import com.runicrealms.plugin.runicitems.RunicItemsAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.inventory.ItemStack;
 

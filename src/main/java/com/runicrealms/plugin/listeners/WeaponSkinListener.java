@@ -1,7 +1,7 @@
 package com.runicrealms.plugin.listeners;
 
 import com.runicrealms.plugin.rdb.event.CharacterLoadedEvent;
-import com.runicrealms.runicitems.RunicItems;
+import com.runicrealms.plugin.runicitems.RunicItems;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;

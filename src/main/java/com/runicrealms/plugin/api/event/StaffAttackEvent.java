@@ -1,6 +1,6 @@
 package com.runicrealms.plugin.api.event;
 
-import com.runicrealms.runicitems.item.RunicItemWeapon;
+import com.runicrealms.plugin.runicitems.item.RunicItemWeapon;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
