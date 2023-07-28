@@ -26,7 +26,7 @@ public class PlayerVanishEvent extends Event {
 
     private static final HandlerList handlers = new HandlerList();
 
-    @SuppressWarnings("NullableProblems")
+    @NotNull
     @Override
     public HandlerList getHandlers() {
         return handlers;
