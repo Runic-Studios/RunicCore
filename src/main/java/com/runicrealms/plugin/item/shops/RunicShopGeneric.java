@@ -1,6 +1,7 @@
 package com.runicrealms.plugin.item.shops;
 
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.common.util.ColorUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -27,7 +28,7 @@ public class RunicShopGeneric implements RunicItemShop {
      * REMOVE THIS AFTER THE ORE_VENDER DYNAMIC BUG IS FOUND AND FIXED
      */
     private static void debug(String shopName, boolean init) {
-        if (!shopName.equalsIgnoreCase("ore_vender") && !shopName.equalsIgnoreCase("Ore Vendor")) {
+        if (!shopName.equalsIgnoreCase(ColorUtil.format("&eOre Vendor"))) {
             return;
         }
 
