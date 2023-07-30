@@ -251,22 +251,23 @@ public class ArmorEquipListener implements Listener {
                 if (BLOCKED_MATERIALS.contains(mat)) return;
             }
         }
+
         ArmorType newArmorType = ArmorType.matchType(event.getItem());
-        if (newArmorType == null) return;
+
+        if (newArmorType == null) {
+            return;
+        }
+
         if (newArmorType.equals(ArmorType.HELMET)
-                && isAirOrNull(event.getPlayer().getInventory().getHelmet())
                 || newArmorType.equals(ArmorType.CHESTPLATE)
-                && isAirOrNull(event.getPlayer().getInventory().getChestplate())
                 || newArmorType.equals(ArmorType.LEGGINGS)
-                && isAirOrNull(event.getPlayer().getInventory().getLeggings())
-                || newArmorType.equals(ArmorType.BOOTS)
-                && isAirOrNull(event.getPlayer().getInventory().getBoots())) {
+                || newArmorType.equals(ArmorType.BOOTS)) {
             ArmorEquipEvent armorEquipEvent = new ArmorEquipEvent
                     (
                             event.getPlayer(),
                             ArmorEquipEvent.EquipMethod.HOTBAR,
-                            ArmorType.matchType(event.getItem()),
-                            null,
+                            newArmorType,
+                            event.getPlayer().getInventory().getItem(newArmorType.getEquipmentSlot()),
                             event.getItem()
                     );
             Bukkit.getServer().getPluginManager().callEvent(armorEquipEvent);

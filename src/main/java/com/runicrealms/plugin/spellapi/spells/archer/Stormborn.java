@@ -5,13 +5,15 @@ import com.runicrealms.plugin.api.event.RunicBowEvent;
 import com.runicrealms.plugin.common.CharacterClass;
 import com.runicrealms.plugin.events.RangedDamageEvent;
 import com.runicrealms.plugin.events.SpellCastEvent;
+import com.runicrealms.plugin.rdb.event.CharacterQuitEvent;
+import com.runicrealms.plugin.spellapi.spells.Combat;
+import com.runicrealms.plugin.spellapi.spells.Potion;
 import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.RadiusSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spellutil.VectorUtil;
 import com.runicrealms.plugin.spellapi.spellutil.particles.EntityTrail;
 import com.runicrealms.plugin.utilities.DamageUtil;
-import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
@@ -32,7 +34,7 @@ public class Stormborn extends Spell implements MagicDamageSpell, RadiusSpell {
     private static final String ARROW_META_KEY = "data";
     private static final String ARROW_META_VALUE = "storm shot";
     private final Map<UUID, Integer> stormPlayers = new HashMap<>();
-    private final HashMap<UUID, UUID> hasBeenHit = new HashMap<>();
+    private final Map<UUID, Long> hasAlreadyHit = new HashMap<>();
     private double damagePerLevel;
     private double damage;
     private double maxTargets;
@@ -93,23 +95,28 @@ public class Stormborn extends Spell implements MagicDamageSpell, RadiusSpell {
         return arrow;
     }
 
-    @EventHandler(priority = EventPriority.LOW)
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void onPhysicalDamage(RangedDamageEvent event) {
-        if (event.isCancelled()) return;
-        if (!event.isRanged()) return;
-        if (!event.isBasicAttack()) return;
-        Arrow arrow = event.getArrow();
-        if (!arrow.hasMetadata(ARROW_META_KEY)) return;
-        if (!arrow.getMetadata(ARROW_META_KEY).get(0).asString().equalsIgnoreCase(ARROW_META_VALUE))
+        if (!event.isRanged() || !event.isBasicAttack()) {
             return;
-        if (hasBeenHit.containsKey(event.getPlayer().getUniqueId())) {
+        }
+
+        Arrow arrow = event.getArrow();
+        if (!arrow.hasMetadata(ARROW_META_KEY) || !arrow.getMetadata(ARROW_META_KEY).get(0).asString().equalsIgnoreCase(ARROW_META_VALUE)) {
+            return;
+        }
+
+        Long lastHit = this.hasAlreadyHit.get(event.getPlayer().getUniqueId());
+
+        if (lastHit != null && lastHit + 400 > System.currentTimeMillis()) { //less than 8 tick delay (ticks * 50 = milliseconds : 8 x 50 = 400)
             event.setCancelled(true);
             return;
         }
+
         DamageUtil.damageEntitySpell(damage, event.getVictim(), event.getPlayer(), this);
-        hasBeenHit.put(event.getPlayer().getUniqueId(), event.getVictim().getUniqueId()); // prevent concussive hits
+        this.hasAlreadyHit.put(event.getPlayer().getUniqueId(), System.currentTimeMillis()); // prevent concussive hits
+
         ricochetEffect(event.getPlayer(), event.getVictim());
-        Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), () -> hasBeenHit.remove(event.getPlayer().getUniqueId()), 8L);
     }
 
     private void ricochetEffect(Player caster, LivingEntity victim) {
@@ -128,7 +135,6 @@ public class Stormborn extends Spell implements MagicDamageSpell, RadiusSpell {
     public void onRunicBowEvent(RunicBowEvent event) {
         if (!stormPlayers.containsKey(event.getPlayer().getUniqueId())) return;
         event.setCancelled(true);
-        event.getArrow().remove();
         Player player = event.getPlayer();
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_FIREWORK_ROCKET_TWINKLE, 0.25f, 0.75f);
         Vector vector = player.getEyeLocation().getDirection().normalize().multiply(2);
@@ -139,11 +145,19 @@ public class Stormborn extends Spell implements MagicDamageSpell, RadiusSpell {
             stormPlayers.remove(event.getPlayer().getUniqueId());
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onSpellCast(SpellCastEvent event) {
-        if (event.isCancelled()) return;
-        if (!hasPassive(event.getCaster().getUniqueId(), this.getName())) return;
+        if (!hasPassive(event.getCaster().getUniqueId(), this.getName()) || event.getSpell() instanceof Potion || event.getSpell() instanceof Combat) {
+            return;
+        }
+        
         stormPlayers.put(event.getCaster().getUniqueId(), 3);
+    }
+
+    @EventHandler
+    private void onCharacterQuit(CharacterQuitEvent event) {
+        this.stormPlayers.remove(event.getPlayer().getUniqueId());
+        this.hasAlreadyHit.remove(event.getPlayer().getUniqueId());
     }
 
     @Override

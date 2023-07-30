@@ -6,9 +6,9 @@ import com.runicrealms.plugin.api.event.BasicAttackEvent;
 import com.runicrealms.plugin.api.event.RunicBowEvent;
 import com.runicrealms.plugin.events.MobDamageEvent;
 import com.runicrealms.plugin.rdb.RunicDatabase;
-import com.runicrealms.plugin.utilities.DamageUtil;
 import com.runicrealms.plugin.runicitems.RunicItemsAPI;
 import com.runicrealms.plugin.runicitems.item.RunicItemWeapon;
+import com.runicrealms.plugin.utilities.DamageUtil;
 import io.lumine.mythic.bukkit.MythicBukkit;
 import io.lumine.mythic.core.mobs.ActiveMob;
 import org.bukkit.Bukkit;
@@ -86,7 +86,7 @@ public class BowListener implements Listener {
             Bukkit.getPluginManager().callEvent(mobDamageEvent);
             if (!mobDamageEvent.isCancelled())
                 DamageUtil.damageEntityMob(Math.ceil(mobDamageEvent.getAmount()),
-                        (LivingEntity) mobDamageEvent.getVictim(), event.getDamager(), mobDamageEvent.shouldApplyMechanics());
+                        mobDamageEvent.getVictim(), event.getDamager(), mobDamageEvent.shouldApplyMechanics());
         } else {
 
             // bugfix for armor stands
@@ -223,8 +223,14 @@ public class BowListener implements Listener {
         // Set the cooldown
         Bukkit.getPluginManager().callEvent(new BasicAttackEvent(player, Material.BOW, BasicAttackEvent.BASE_BOW_COOLDOWN, BasicAttackEvent.BASE_BOW_COOLDOWN));
 
+        RunicBowEvent bowFireEvent = new RunicBowEvent(player, myArrow);
+
         // Call custom event
-        Bukkit.getPluginManager().callEvent(new RunicBowEvent(player, myArrow));
+        Bukkit.getPluginManager().callEvent(bowFireEvent);
+
+        if (bowFireEvent.isCancelled()) {
+            myArrow.remove();
+        }
     }
 
     /**

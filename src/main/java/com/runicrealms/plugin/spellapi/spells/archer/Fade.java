@@ -1,12 +1,8 @@
 package com.runicrealms.plugin.spellapi.spells.archer;
 
-import com.comphenix.protocol.wrappers.EnumWrappers;
-import com.comphenix.protocol.wrappers.PlayerInfoData;
-import com.comphenix.protocol.wrappers.WrappedChatComponent;
-import com.comphenix.protocol.wrappers.WrappedGameProfile;
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.rdb.RunicDatabase;
 import com.runicrealms.plugin.common.CharacterClass;
+import com.runicrealms.plugin.rdb.RunicDatabase;
 import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.RunicStatusEffect;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
@@ -17,11 +13,7 @@ import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
-import com.comphenix.protocol.ProtocolLibrary;
-import com.comphenix.protocol.PacketType;
-import com.comphenix.protocol.events.PacketContainer;
 
-import java.util.Collections;
 import java.util.UUID;
 
 public class Fade extends Spell implements DurationSpell {
@@ -42,6 +34,8 @@ public class Fade extends Spell implements DurationSpell {
         player.getWorld().spawnParticle(Particle.REDSTONE, player.getEyeLocation(), 15, 0.5f, 0.5f, 0.5f,
                 new Particle.DustOptions(Color.BLACK, 1));
 
+        //we don't need to send this packet as the tab list only sends fake player packets!
+        /*
         PacketContainer packet = ProtocolLibrary.getProtocolManager().createPacket(PacketType.Play.Server.PLAYER_INFO);
         packet.getPlayerInfoAction().write(0, EnumWrappers.PlayerInfoAction.ADD_PLAYER);
         packet.getPlayerInfoDataLists().write(1, Collections.singletonList(
@@ -52,13 +46,14 @@ public class Fade extends Spell implements DurationSpell {
                         WrappedChatComponent.fromText(player.getDisplayName())
                 )
         ));
+         */
 
         // hide the player, prevent them from disappearing in tab
         for (UUID uuid : RunicDatabase.getAPI().getCharacterAPI().getLoadedCharacters()) {
             Player loaded = Bukkit.getPlayer(uuid);
             if (loaded == null) continue;
             loaded.hidePlayer(plugin, player);
-            ProtocolLibrary.getProtocolManager().sendServerPacket(loaded, packet);
+            //ProtocolLibrary.getProtocolManager().sendServerPacket(loaded, packet);
         }
     }
 
