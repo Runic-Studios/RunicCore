@@ -16,6 +16,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
+import org.springframework.data.annotation.Transient;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +28,8 @@ import java.util.stream.Stream;
 public class SkillTreeData {
     public static final int FIRST_POINT_LEVEL = 10;
     private SkillTreePosition position;
+    private int totalAllocatedPoints; // Tracks how many points the player has invested in this Skill Tree
+    @Transient
     private List<Perk> perks = new ArrayList<>();
 
     @SuppressWarnings("unused")
@@ -43,7 +46,7 @@ public class SkillTreeData {
         this.position = position;
         CharacterClass characterClass = CharacterClass.getFromName(playerClass);
         SubClass subClass = SubClass.determineSubClass(characterClass, position);
-        this.perks = getSkillTreeBySubClass(subClass); // load default perks
+        this.perks = getSkillTreeBySubClass(subClass); // load default perks TODO: should NOT be null
     }
 
     /**
@@ -99,7 +102,39 @@ public class SkillTreeData {
                 );
     }
 
-    public long getTotalPoints() {
+    /**
+     * ?
+     *
+     * @param playerClass
+     */
+    public void loadPerksFromDTOs(String playerClass) {
+        int allocatedPoints = this.totalAllocatedPoints;
+        CharacterClass characterClass = CharacterClass.getFromName(playerClass);
+        SubClass subClass = SubClass.determineSubClass(characterClass, position);
+        this.perks = getSkillTreeBySubClass(subClass); // load default perks
+        /*
+        1. Loop through every default perk in-sequence
+        2. Fill it up while we still have 'points'
+        3. -= allocatedPoints
+        4. Stop if allocatedPoints <= 0
+         */
+        for (Perk perk : this.perks) {
+            if (allocatedPoints >= perk.getMaxAllocatedPoints()) {
+                perk.setCurrentlyAllocatedPoints(perk.getMaxAllocatedPoints());
+                allocatedPoints -= perk.getMaxAllocatedPoints();
+            } else {
+                perk.setCurrentlyAllocatedPoints(allocatedPoints);
+                break;
+            }
+        }
+    }
+
+    /**
+     * Tracks the total points the player has invested in this tree
+     *
+     * @return a number representing the total invested points (e.g. 20 points in Tree 1)
+     */
+    public int calculateTotalAllocatedPoints() {
         AtomicInteger result = new AtomicInteger();
         Stream<Perk> boughtPerks = this.perks.stream().filter(perk -> perk.getCurrentlyAllocatedPoints() > 0);
         boughtPerks.forEach(perk -> result.addAndGet(perk.getCurrentlyAllocatedPoints()));
@@ -164,8 +199,10 @@ public class SkillTreeData {
         UUID uuid = player.getUniqueId();
         // Retrieve the updated SkillTreeData from our in-memory storage, ensure it is up-to-date for this tree
         Map<SkillTreePosition, SkillTreeData> updatedSkillTreeData = RunicCore.getSkillTreeAPI().getSkillTreeDataMap(uuid, slot);
+        updatedSkillTreeData.get(this.position).setTotalAllocatedPoints(calculateTotalAllocatedPoints()); // Ensure our DTO is accurate
         updatedSkillTreeData.put(this.position, this);
         // Update in mongo
+        // todo: THIS NEEDS TO RUN ON LOGIN FOR PLAYERS W/ THE OLD FORMAT
         RunicCore.getCoreWriteOperation().updateCorePlayerData
                 (
                         uuid,
@@ -178,6 +215,14 @@ public class SkillTreeData {
                         }
                 );
         return true;
+    }
+
+    public int getTotalAllocatedPoints() {
+        return totalAllocatedPoints;
+    }
+
+    public void setTotalAllocatedPoints(int totalAllocatedPoints) {
+        this.totalAllocatedPoints = totalAllocatedPoints;
     }
 
     public List<Perk> getPerks() {
