@@ -149,7 +149,7 @@ public class CorePlayerData implements SessionDataMongo {
      */
     public SpellData getSpellData(int slot) {
         if (spellDataMap.get(slot) != null) {
-            return spellDataMap.get(slot);
+            return spellDataMap.get(slot).clean();
         }
         return null;
     }

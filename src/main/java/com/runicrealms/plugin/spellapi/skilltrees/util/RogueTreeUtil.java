@@ -1,17 +1,17 @@
 package com.runicrealms.plugin.spellapi.skilltrees.util;
 
 import com.runicrealms.plugin.model.SpellData;
+import com.runicrealms.plugin.runicitems.Stat;
 import com.runicrealms.plugin.spellapi.skilltrees.Perk;
 import com.runicrealms.plugin.spellapi.skilltrees.PerkBaseStat;
 import com.runicrealms.plugin.spellapi.skilltrees.PerkSpell;
-import com.runicrealms.plugin.runicitems.Stat;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class RogueTreeUtil {
 
-    public static Perk DEFAULT_ROGUE_SPELL_PERK = new PerkSpell
+    public static final Perk DEFAULT_ROGUE_SPELL_PERK = new PerkSpell
             (
                     998,
                     0,

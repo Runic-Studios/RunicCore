@@ -1,10 +1,10 @@
 package com.runicrealms.plugin.spellapi.skilltrees.util;
 
 import com.runicrealms.plugin.model.SpellData;
+import com.runicrealms.plugin.runicitems.Stat;
 import com.runicrealms.plugin.spellapi.skilltrees.Perk;
 import com.runicrealms.plugin.spellapi.skilltrees.PerkBaseStat;
 import com.runicrealms.plugin.spellapi.skilltrees.PerkSpell;
-import com.runicrealms.plugin.runicitems.Stat;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +16,7 @@ import java.util.List;
  */
 public class MageTreeUtil {
 
-    public static Perk DEFAULT_MAGE_SPELL_PERK = new PerkSpell(997, 0, 1, 1, SpellData.DEFAULT_MAGE);
+    public static final Perk DEFAULT_MAGE_SPELL_PERK = new PerkSpell(997, 0, 1, 1, SpellData.DEFAULT_MAGE);
 
     public static List<Perk> cryomancerPerkList() {
         List<Perk> perks = new ArrayList<>();

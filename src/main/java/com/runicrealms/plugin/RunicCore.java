@@ -7,7 +7,6 @@ import co.aikar.taskchain.TaskChain;
 import co.aikar.taskchain.TaskChainFactory;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
-import com.runicrealms.plugin.chat.RunicChat;
 import com.runicrealms.plugin.api.CombatAPI;
 import com.runicrealms.plugin.api.CoreWriteOperation;
 import com.runicrealms.plugin.api.FieldBossAPI;
@@ -25,6 +24,7 @@ import com.runicrealms.plugin.api.StatusEffectAPI;
 import com.runicrealms.plugin.api.TitleAPI;
 import com.runicrealms.plugin.api.VanishAPI;
 import com.runicrealms.plugin.character.gui.CharacterGuiManager;
+import com.runicrealms.plugin.chat.RunicChat;
 import com.runicrealms.plugin.commands.admin.ArmorStandCMD;
 import com.runicrealms.plugin.commands.admin.CooldownCMD;
 import com.runicrealms.plugin.commands.admin.FireworkCMD;
@@ -126,6 +126,7 @@ import com.runicrealms.plugin.loot.LootManager;
 import com.runicrealms.plugin.luckperms.LuckPermsManager;
 import com.runicrealms.plugin.model.MongoTask;
 import com.runicrealms.plugin.model.SettingsManager;
+import com.runicrealms.plugin.model.SkillTreePosition;
 import com.runicrealms.plugin.model.TitleManager;
 import com.runicrealms.plugin.modtools.AFKListener;
 import com.runicrealms.plugin.modtools.TempbanListener;
@@ -161,8 +162,10 @@ import com.runicrealms.plugin.rdb.api.ConverterAPI;
 import com.runicrealms.plugin.rdb.api.DataAPI;
 import com.runicrealms.plugin.rdb.api.RedisAPI;
 import com.runicrealms.plugin.rdb.event.MongoSaveEvent;
+import com.runicrealms.plugin.rdb.model.CharacterField;
 import com.runicrealms.plugin.redis.RedisManager;
 import com.runicrealms.plugin.region.RegionEventListener;
+import com.runicrealms.plugin.runicrestart.event.PreShutdownEvent;
 import com.runicrealms.plugin.scoreboard.ScoreboardHandler;
 import com.runicrealms.plugin.scoreboard.ScoreboardListener;
 import com.runicrealms.plugin.sound.ambient.AmbientSoundHandler;
@@ -181,7 +184,7 @@ import com.runicrealms.plugin.spellapi.skilltrees.listener.SubClassGUIListener;
 import com.runicrealms.plugin.utilities.NametagHandler;
 import com.runicrealms.plugin.utilities.PlaceholderAPI;
 import com.runicrealms.plugin.utilities.RegionHelper;
-import com.runicrealms.plugin.runicrestart.event.PreShutdownEvent;
+import org.bson.Document;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.ConsoleCommandSender;
@@ -190,6 +193,14 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
+
+import java.util.List;
+import java.util.UUID;
+import java.util.logging.Level;
 
 public class RunicCore extends JavaPlugin implements Listener {
 
@@ -523,6 +534,54 @@ public class RunicCore extends JavaPlugin implements Listener {
         if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
             new PlaceholderAPI().register();
         }
+
+        Bukkit.getScheduler().runTaskLater(this, () -> {
+            MongoTemplate template = RunicDatabase.getAPI().getDataAPI().getMongoTemplate();
+
+            template.executeQuery(new Query(), "core", document -> {
+                this.getLogger().log(Level.INFO, "-------------------------------------------------------------------------");
+                int[] characterSlots = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+                Document skillTreeDataMap = document.get("skillTreeDataMap", Document.class);
+                for (int slot : characterSlots) {
+                    if (!skillTreeDataMap.containsKey(String.valueOf(slot))) {
+                        this.getLogger().log(Level.INFO, "does not contain slot " + slot);
+                        continue;
+                    }
+
+                    Document characterSlot = skillTreeDataMap.get(String.valueOf(slot), Document.class);
+
+                    for (SkillTreePosition position : SkillTreePosition.values()) {
+                        if (!characterSlot.containsKey(position.name())) {
+                            this.getLogger().log(Level.INFO, "does not contain skill tree position " + position.name());
+                            continue;
+                        }
+
+                        Document subclass = characterSlot.get(position.name(), Document.class);
+
+                        if (!subclass.containsKey("perks")) {
+                            this.getLogger().log(Level.INFO, "this not does contain a perks list... this must already be converted");
+                            continue;
+                        }
+
+                        List<Document> perks = subclass.getList("perks", Document.class);
+
+                        int sum = 0;
+                        for (Document perk : perks) {
+                            sum += perk.getInteger("currentPoints");
+                        }
+
+                        Update update = new Update();
+                        update.unset("skillTreeDataMap." + slot + "." + position.name() + ".perks");
+                        update.set("skillTreeDataMap." + slot + "." + position.name() + ".totalAllocatedPoints", sum);
+                        UUID uuid = document.get(CharacterField.PLAYER_UUID.getField(), UUID.class);
+                        template.updateFirst(new Query(Criteria.where(CharacterField.PLAYER_UUID.getField()).is(uuid)), update, "core");
+
+                        this.getLogger().log(Level.INFO, "total invested in " + position.name() + " = " + sum);
+                    }
+                }
+                this.getLogger().log(Level.INFO, "-------------------------------------------------------------------------");
+            });
+        }, 200);
     }
 
     @EventHandler

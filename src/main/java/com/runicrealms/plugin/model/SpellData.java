@@ -1,5 +1,9 @@
 package com.runicrealms.plugin.model;
 
+import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.spellapi.spelltypes.Spell;
+import org.jetbrains.annotations.NotNull;
+
 public class SpellData {
     public static final String DEFAULT_ARCHER = "Barrage";
     public static final String DEFAULT_CLERIC = "Sacred Spring";
@@ -88,6 +92,32 @@ public class SpellData {
 
     public void setSpellSwapHands(String spellSwapHands) {
         this.spellSwapHands = spellSwapHands;
+    }
+
+    @NotNull
+    public SpellData clean() {
+        Spell one = RunicCore.getSpellAPI().getSpell(this.spellHotbarOne);
+        Spell two = RunicCore.getSpellAPI().getSpell(this.spellLeftClick);
+        Spell three = RunicCore.getSpellAPI().getSpell(this.spellRightClick);
+        Spell four = RunicCore.getSpellAPI().getSpell(this.spellSwapHands);
+
+        if (one == null) {
+            this.spellHotbarOne = "";
+        }
+
+        if (two == null) {
+            this.spellLeftClick = "";
+        }
+
+        if (three == null) {
+            this.spellRightClick = "";
+        }
+
+        if (four == null) {
+            this.spellSwapHands = "";
+        }
+
+        return this;
     }
 
     /**
