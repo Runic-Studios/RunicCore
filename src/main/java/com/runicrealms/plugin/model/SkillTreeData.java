@@ -76,36 +76,47 @@ public class SkillTreeData {
      */
     public static void resetSkillTrees(Player player) {
         UUID uuid = player.getUniqueId();
-        /*
-        Wipe the memoized perk data
-         */
+        // Wipe the memoized perk data
         int slot = RunicDatabase.getAPI().getCharacterAPI().getCharacterSlot(uuid);
         Map<SkillTreePosition, SkillTreeData> skillTreeDataMap = RunicCore.getSkillTreeAPI().getSkillTreeDataMap(uuid, slot);
         SkillTreeData first = skillTreeDataMap.get(SkillTreePosition.FIRST);
         SkillTreeData second = skillTreeDataMap.get(SkillTreePosition.SECOND);
         SkillTreeData third = skillTreeDataMap.get(SkillTreePosition.THIRD);
+        // Set perks to their default values (no allocated points)
         first.setPerks(first.getSkillTreeBySubClass(first.getSubClass(uuid)));
+        first.setTotalAllocatedPoints(0);
         second.setPerks(second.getSkillTreeBySubClass(second.getSubClass(uuid)));
+        second.setTotalAllocatedPoints(0);
         third.setPerks(third.getSkillTreeBySubClass(third.getSubClass(uuid)));
+        third.setTotalAllocatedPoints(0);
         // --------------------------------------------
         SpellData spellData = RunicCore.getSkillTreeAPI().getPlayerSpellData(uuid, slot);
         spellData.resetSpells(RunicDatabase.getAPI().getCharacterAPI().getPlayerClass(uuid)); // reset assigned spells in-memory
         RunicCore.getSkillTreeAPI().getPassives(uuid).clear(); // reset passives
         RunicCore.getStatAPI().getPlayerStatContainer(player.getUniqueId()).resetValues(); // reset stat values
+        // Write skillTreeData to mongo
         RunicCore.getCoreWriteOperation().updateCorePlayerData
                 (
                         uuid,
                         slot,
-                        "spellDataMap",
-                        spellData,
-                        () -> player.sendMessage(ChatColor.LIGHT_PURPLE + "Your skill trees have been reset!")
+                        "skillTreeDataMap",
+                        skillTreeDataMap,
+                        () -> RunicCore.getCoreWriteOperation().updateCorePlayerData // Write spellData to Mongo
+                                (
+                                        uuid,
+                                        slot,
+                                        "spellDataMap",
+                                        spellData,
+                                        () -> player.sendMessage(ChatColor.LIGHT_PURPLE + "Your skill trees have been reset!")
+                                )
                 );
     }
 
     /**
-     * ?
+     * Used when we load Skill Trees from MongoDB to dynamically
+     * allocate points at runtime
      *
-     * @param playerClass
+     * @param playerClass the player's base class (e.g. "Archer)
      */
     public void loadPerksFromDTOs(String playerClass) {
         int allocatedPoints = this.totalAllocatedPoints;
