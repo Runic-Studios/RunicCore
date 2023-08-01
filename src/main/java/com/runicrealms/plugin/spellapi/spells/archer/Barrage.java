@@ -11,6 +11,7 @@ import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashSet;
 import java.util.Map;
@@ -18,7 +19,7 @@ import java.util.Set;
 import java.util.UUID;
 
 public class Barrage extends Spell implements DurationSpell {
-    private final Set<UUID> players = new HashSet<>();
+    private static final Set<UUID> PLAYERS = new HashSet<>();
     private double duration;
     private double percent;
 
@@ -31,9 +32,9 @@ public class Barrage extends Spell implements DurationSpell {
     @Override
     public void executeSpell(Player player, SpellItemType type) {
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_CREEPER_PRIMED, 0.5f, 1.0f);
-        players.add(player.getUniqueId());
+        PLAYERS.add(player.getUniqueId());
         Bukkit.getScheduler().runTaskLaterAsynchronously(RunicCore.getInstance(),
-                () -> players.remove(player.getUniqueId()), (int) duration * 20L);
+                () -> PLAYERS.remove(player.getUniqueId()), (int) duration * 20L);
     }
 
     @Override
@@ -65,7 +66,7 @@ public class Barrage extends Spell implements DurationSpell {
 
     @EventHandler(priority = EventPriority.NORMAL)
     public void onBasicAttack(BasicAttackEvent event) {
-        if (!players.contains(event.getPlayer().getUniqueId())) return;
+        if (!PLAYERS.contains(event.getPlayer().getUniqueId())) return;
         double reducedTicks = event.getOriginalCooldownTicks();
         reducedTicks /= percent;
         int roundedCooldownTicks = (int) (event.getOriginalCooldownTicks() - reducedTicks);
@@ -73,4 +74,13 @@ public class Barrage extends Spell implements DurationSpell {
         event.setCooldownTicks(Math.max(event.getCooldownTicks() - roundedCooldownTicks, BasicAttackEvent.MINIMUM_COOLDOWN_TICKS));
     }
 
+    /**
+     * A method that returns if the provided player is currently using barrage
+     *
+     * @param player the provided player
+     * @return if the provided player is currently using barrage
+     */
+    public static boolean isUsing(@NotNull Player player) {
+        return PLAYERS.contains(player.getUniqueId());
+    }
 }

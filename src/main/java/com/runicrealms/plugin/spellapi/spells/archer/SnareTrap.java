@@ -1,16 +1,16 @@
 package com.runicrealms.plugin.spellapi.spells.archer;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.events.MagicDamageEvent;
-import com.runicrealms.plugin.events.PhysicalDamageEvent;
 import com.runicrealms.plugin.common.CharacterClass;
 import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
+import com.runicrealms.plugin.spellapi.spelltypes.PhysicalDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.RadiusSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.RunicStatusEffect;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.spellapi.spelltypes.WarmupSpell;
 import com.runicrealms.plugin.spellapi.spellutil.particles.Circle;
+import com.runicrealms.plugin.utilities.DamageUtil;
 import me.filoghost.holographicdisplays.api.HolographicDisplaysAPI;
 import me.filoghost.holographicdisplays.api.hologram.Hologram;
 import org.bukkit.Bukkit;
@@ -21,38 +21,29 @@ import org.bukkit.Sound;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
+import org.jetbrains.annotations.NotNull;
 
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
 
-/**
- * @deprecated unused replaced by Snare Trap
- */
-@Deprecated
-public class NetTrap extends Spell implements DurationSpell, RadiusSpell, WarmupSpell {
-    private static final double PERCENT = .25;
-    private final Set<UUID> weakenedMobs = new HashSet<>();
+public class SnareTrap extends Spell implements DurationSpell, RadiusSpell, WarmupSpell, PhysicalDamageSpell {
     private double trapDuration;
     private double warmup;
     private double radius;
     private double stunDuration;
+    private double baseDamage;
+    private double damagePerLevel;
 
-    public NetTrap() {
-        super("Net Trap", CharacterClass.ARCHER);
-        this.setDescription("You lay down a trap, which arms after " + warmup +
-                "s and lasts for " + trapDuration + "s. " +
+    public SnareTrap() {
+        super("Snare Trap", CharacterClass.ARCHER);
+        this.setDescription("You lay down a trap, which arms after " + this.warmup +
+                "s and lasts for " + this.trapDuration + "s. " +
                 "The first enemy to step over the trap triggers it, " +
-                "causing all enemies within " + radius + " " +
-                "blocks to be lifted into the air and stunned for " +
-                stunDuration + "s! Against mobs, you and your allies deal " +
-                (100 + (PERCENT * 100)) + "% damage to them for the duration!");
+                "causing all enemies within " + this.radius + " " +
+                "blocks to take " + this.baseDamage + " (&f" + this.damagePerLevel + " x&7 " + " lvl) physical⚔ damage " +
+                "while being rooted for " + this.stunDuration + "s!");
     }
 
     @Override
@@ -77,7 +68,7 @@ public class NetTrap extends Spell implements DurationSpell, RadiusSpell, Warmup
                     for (Entity entity : player.getWorld().getNearbyEntities(castLocation, radius, radius, radius)) {
                         if (isValidEnemy(player, entity)) {
                             trapSprung = true;
-                            springTrap((LivingEntity) entity);
+                            springTrap((LivingEntity) entity, player);
                         }
                     }
                     if (trapSprung) {
@@ -131,32 +122,35 @@ public class NetTrap extends Spell implements DurationSpell, RadiusSpell, Warmup
         this.warmup = warmup;
     }
 
-    @EventHandler(priority = EventPriority.NORMAL)
-    public void onMagicDamage(MagicDamageEvent event) {
-        if (event.isCancelled()) return;
-        if (!weakenedMobs.contains(event.getVictim().getUniqueId())) return;
-        event.setAmount(event.getAmount() + event.getAmount());
+    @Override
+    public double getPhysicalDamage() {
+        return this.baseDamage;
     }
 
-    @EventHandler(priority = EventPriority.NORMAL)
-    public void onPhysicalDamage(PhysicalDamageEvent event) {
-        if (event.isCancelled()) return;
-        if (!weakenedMobs.contains(event.getVictim().getUniqueId())) return;
-        event.setAmount(event.getAmount() + event.getAmount());
+    @Override
+    public void setPhysicalDamage(double physicalDamage) {
+        this.baseDamage = physicalDamage;
     }
 
-    private void springTrap(LivingEntity livingEntity) {
-        Location higher = livingEntity.getLocation().add(0, 2, 0);
-        livingEntity.getWorld().spawnParticle(Particle.CRIT, higher, 15, 0.25f, 0.25f, 0.25f, 0);
-        livingEntity.teleport(higher);
-        addStatusEffect(livingEntity, RunicStatusEffect.STUN, stunDuration, true);
-        if (!(livingEntity instanceof Player)) {
-            weakenedMobs.add(livingEntity.getUniqueId());
-            Bukkit.getScheduler().runTaskLaterAsynchronously(RunicCore.getInstance(),
-                    () -> weakenedMobs.remove(livingEntity.getUniqueId()), (int) stunDuration * 20L);
+    @Override
+    public double getPhysicalDamagePerLevel() {
+        return this.damagePerLevel;
+    }
+
+    @Override
+    public void setPhysicalDamagePerLevel(double physicalDamagePerLevel) {
+        this.damagePerLevel = physicalDamagePerLevel;
+    }
+
+    private void springTrap(@NotNull LivingEntity target, @NotNull Player caster) {
+        Location location = target.getLocation().clone();
+        target.getWorld().spawnParticle(Particle.CRIT, location, 15, 0.25f, 0.25f, 0.25f, 0);
+        addStatusEffect(target, RunicStatusEffect.ROOT, stunDuration, true);
+        DamageUtil.damageEntityPhysical(this.baseDamage, target, caster, false, true, false, this);
+        if (!(target instanceof Player)) {
             // Mobs don't have a PlayerMoveEvent, so we keep teleporting them
             BukkitTask mobTeleportTask = Bukkit.getScheduler().runTaskTimer(RunicCore.getInstance(),
-                    () -> livingEntity.teleport(higher), 0, 10L);
+                    () -> target.teleport(location), 0, 10L);
             Bukkit.getScheduler().runTaskLaterAsynchronously(RunicCore.getInstance(), mobTeleportTask::cancel, (int) stunDuration * 20L);
         }
     }
