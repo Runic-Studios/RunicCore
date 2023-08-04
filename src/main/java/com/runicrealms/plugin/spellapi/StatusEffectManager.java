@@ -22,6 +22,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -40,12 +41,12 @@ public class StatusEffectManager implements Listener, StatusEffectAPI {
     }
 
     @Override
-    public void addStatusEffect(LivingEntity livingEntity, RunicStatusEffect runicStatusEffect, double durationInSecs, boolean displayMessage) {
+    public void addStatusEffect(@NotNull LivingEntity livingEntity, @NotNull RunicStatusEffect runicStatusEffect, double durationInSecs, boolean displayMessage) {
         Bukkit.getPluginManager().callEvent(new StatusEffectEvent(livingEntity, runicStatusEffect, durationInSecs, displayMessage));
     }
 
     @Override
-    public void cleanse(UUID uuid) {
+    public void cleanse(@NotNull UUID uuid) {
         if (!statusEffectMap.containsKey(uuid)) return;
         ConcurrentHashMap<RunicStatusEffect, Pair<Long, Double>> statusEffects = statusEffectMap.get(uuid);
         statusEffects.forEach((runicStatusEffect, longDoublePair) -> {
@@ -56,7 +57,7 @@ public class StatusEffectManager implements Listener, StatusEffectAPI {
     }
 
     @Override
-    public void purge(UUID uuid) {
+    public void purge(@NotNull UUID uuid) {
         if (!statusEffectMap.containsKey(uuid)) return;
         ConcurrentHashMap<RunicStatusEffect, Pair<Long, Double>> statusEffects = statusEffectMap.get(uuid);
         statusEffects.forEach((runicStatusEffect, longDoublePair) -> {
@@ -67,13 +68,13 @@ public class StatusEffectManager implements Listener, StatusEffectAPI {
     }
 
     @Override
-    public boolean hasStatusEffect(UUID uuid, RunicStatusEffect statusEffect) {
+    public boolean hasStatusEffect(@NotNull UUID uuid, @NotNull RunicStatusEffect statusEffect) {
         if (!statusEffectMap.containsKey(uuid)) return false;
         return statusEffectMap.get(uuid).containsKey(statusEffect);
     }
 
     @Override
-    public boolean removeStatusEffect(UUID uuid, RunicStatusEffect statusEffect) {
+    public boolean removeStatusEffect(@NotNull UUID uuid, @NotNull RunicStatusEffect statusEffect) {
         if (!statusEffectMap.containsKey(uuid)) return false;
         if (statusEffectMap.get(uuid).containsKey(statusEffect)) {
             // Remove vanilla potion slowness
@@ -99,6 +100,21 @@ public class StatusEffectManager implements Listener, StatusEffectAPI {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public double getStatusEffectDuration(@NotNull UUID uuid, @NotNull RunicStatusEffect effect) {
+        if (!this.statusEffectMap.containsKey(uuid) || !this.statusEffectMap.get(uuid).containsKey(effect)) {
+            return 0;
+        }
+
+        long startTime = statusEffectMap.get(uuid).get(effect).first;
+        double duration = statusEffectMap.get(uuid).get(effect).second;
+        if (System.currentTimeMillis() - startTime > (duration * 1000)) {
+            return 0;
+        }
+
+        return ((double) startTime / 1000) - duration;
     }
 
     @EventHandler(priority = EventPriority.LOW)

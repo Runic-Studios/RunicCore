@@ -47,7 +47,6 @@ import com.runicrealms.plugin.spellapi.spells.cleric.Warsong;
 import com.runicrealms.plugin.spellapi.spells.mage.ArcaneSlash;
 import com.runicrealms.plugin.spellapi.spells.mage.Blink;
 import com.runicrealms.plugin.spellapi.spells.mage.Blizzard;
-import com.runicrealms.plugin.spellapi.spells.mage.ColdTouch;
 import com.runicrealms.plugin.spellapi.spells.mage.DragonsBreath;
 import com.runicrealms.plugin.spellapi.spells.mage.FireBlast;
 import com.runicrealms.plugin.spellapi.spells.mage.Fireball;
@@ -58,6 +57,7 @@ import com.runicrealms.plugin.spellapi.spells.mage.Manashield;
 import com.runicrealms.plugin.spellapi.spells.mage.MeteorShower;
 import com.runicrealms.plugin.spellapi.spells.mage.Riftwalk;
 import com.runicrealms.plugin.spellapi.spells.mage.Scald;
+import com.runicrealms.plugin.spellapi.spells.mage.Shatter;
 import com.runicrealms.plugin.spellapi.spells.mage.SnapFreeze;
 import com.runicrealms.plugin.spellapi.spells.mage.SpectralBlade;
 import com.runicrealms.plugin.spellapi.spells.mage.WintersGrasp;
@@ -411,7 +411,6 @@ public class SpellManager implements Listener, SpellAPI {
         this.spellList.add(new FireBlast());
         this.spellList.add(new Scald());
         this.spellList.add(new DragonsBreath());
-        this.spellList.add(new ColdTouch());
         this.spellList.add(new Riftwalk());
         this.spellList.add(new SpectralBlade());
         this.spellList.add(new Manashield());
@@ -470,6 +469,7 @@ public class SpellManager implements Listener, SpellAPI {
         this.spellList.add(new UmbralGrasp());
         this.spellList.add(new Damnation());
         this.spellList.add(new Ruination());
+        this.spellList.add(new Shatter());
         /*
         Items
          */

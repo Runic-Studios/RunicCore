@@ -1,8 +1,8 @@
 package com.runicrealms.plugin.spellapi.spells.mage;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.events.SpellCastEvent;
 import com.runicrealms.plugin.common.CharacterClass;
+import com.runicrealms.plugin.events.SpellCastEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import org.bukkit.Bukkit;
@@ -12,6 +12,7 @@ import org.bukkit.event.EventPriority;
 /**
  * Logic for hit found in Fireball.
  */
+@Deprecated
 public class ColdTouch extends Spell {
 
     public ColdTouch() {

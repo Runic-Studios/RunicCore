@@ -37,7 +37,8 @@ public class SnapFreeze extends Spell implements DistanceSpell, DurationSpell, M
         super("Snap Freeze", CharacterClass.MAGE);
         this.setDescription("You cast a wave of frost in a forward line, up to " + distance + " blocks away. " +
                 "Enemies hit by the spell take (" + damage + " + &f" + damagePerLevel
-                + "x&7 lvl) magicʔ damage and are stunned for " + duration + "s!");
+                + "x&7 lvl) magicʔ damage and are rooted for " + duration + "s! " +
+                "If an enemy is already slowed when hit by this ability, slow them for an additional " + this.duration * 3 + "s.");
     }
 
     @Override
@@ -69,8 +70,26 @@ public class SnapFreeze extends Spell implements DistanceSpell, DurationSpell, M
         for (Entity entity : player.getWorld().getNearbyEntities(location, BEAM_RADIUS, BEAM_RADIUS, BEAM_RADIUS, target -> isValidEnemy(player, target))) {
             if (damageMap.get(player.getUniqueId()).contains(entity.getUniqueId())) continue;
             DamageUtil.damageEntitySpell(damage, (LivingEntity) entity, player, this);
-            addStatusEffect((LivingEntity) entity, RunicStatusEffect.STUN, duration, true);
+            addStatusEffect((LivingEntity) entity, RunicStatusEffect.ROOT, duration, true);
             damageMap.get(player.getUniqueId()).add(entity.getUniqueId());
+
+            if (this.hasStatusEffect(entity.getUniqueId(), RunicStatusEffect.SLOW_I)) {
+                double current = RunicCore.getStatusEffectAPI().getStatusEffectDuration(entity.getUniqueId(), RunicStatusEffect.SLOW_I);
+                this.removeStatusEffect(entity, RunicStatusEffect.SLOW_I);
+                this.addStatusEffect((LivingEntity) entity, RunicStatusEffect.SLOW_I, current + (this.duration * 3), false);
+            }
+
+            if (this.hasStatusEffect(entity.getUniqueId(), RunicStatusEffect.SLOW_II)) {
+                double current = RunicCore.getStatusEffectAPI().getStatusEffectDuration(entity.getUniqueId(), RunicStatusEffect.SLOW_II);
+                this.removeStatusEffect(entity, RunicStatusEffect.SLOW_II);
+                this.addStatusEffect((LivingEntity) entity, RunicStatusEffect.SLOW_II, current + (this.duration * 3), false);
+            }
+
+            if (this.hasStatusEffect(entity.getUniqueId(), RunicStatusEffect.SLOW_III)) {
+                double current = RunicCore.getStatusEffectAPI().getStatusEffectDuration(entity.getUniqueId(), RunicStatusEffect.SLOW_III);
+                this.removeStatusEffect(entity, RunicStatusEffect.SLOW_III);
+                this.addStatusEffect((LivingEntity) entity, RunicStatusEffect.SLOW_III, current + (this.duration * 3), false);
+            }
         }
     }
 
