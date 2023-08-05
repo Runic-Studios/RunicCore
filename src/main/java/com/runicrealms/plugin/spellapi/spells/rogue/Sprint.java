@@ -25,6 +25,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+/**
+ * @deprecated Replaced with {@link Dash}
+ */
+@Deprecated
 public class Sprint extends Spell implements DurationSpell {
     private final Map<UUID, BukkitTask> sprintTasks = new HashMap<>();
     private double duration;

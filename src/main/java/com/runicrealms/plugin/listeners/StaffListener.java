@@ -8,11 +8,11 @@ import com.runicrealms.plugin.common.util.Pair;
 import com.runicrealms.plugin.events.EnemyVerifyEvent;
 import com.runicrealms.plugin.rdb.RunicDatabase;
 import com.runicrealms.plugin.rdb.event.CharacterQuitEvent;
-import com.runicrealms.plugin.spellapi.spellutil.VectorUtil;
-import com.runicrealms.plugin.utilities.DamageUtil;
 import com.runicrealms.plugin.runicitems.RunicItemsAPI;
 import com.runicrealms.plugin.runicitems.item.RunicItem;
 import com.runicrealms.plugin.runicitems.item.RunicItemWeapon;
+import com.runicrealms.plugin.spellapi.spellutil.VectorUtil;
+import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
@@ -46,7 +46,7 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class StaffListener implements Listener {
     public static final int STAFF_COOLDOWN = 15; // ticks (0.75s)
-    private static final int MAX_DIST = 9;
+    private static final int DEFAULT_MAX_DIST = 9;
     private static final double RAY_SIZE = 0.8; //0.5
 
     private final Map<UUID, Long> droppedItem;
@@ -83,7 +83,7 @@ public class StaffListener implements Listener {
                 .syncLast(result -> {
                     if (result.first) {
                         event.setCancelled(true);
-                        Bukkit.getPluginManager().callEvent(new StaffAttackEvent(event.getPlayer(), result.second));
+                        Bukkit.getPluginManager().callEvent(new StaffAttackEvent(event.getPlayer(), result.second, DEFAULT_MAX_DIST));
                     }
                 })
                 .execute();
@@ -92,7 +92,7 @@ public class StaffListener implements Listener {
     @EventHandler(priority = EventPriority.NORMAL)
     public void onStaffAttack(StaffAttackEvent event) {
         if (event.isCancelled()) return;
-        staffAttack(event.getPlayer(), event.getRunicItemWeapon());
+        staffAttack(event.getPlayer(), event.getRunicItemWeapon(), event.getRange());
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
@@ -111,21 +111,22 @@ public class StaffListener implements Listener {
      *
      * @param player          who initiated attack
      * @param runicItemWeapon to be passed down to damage function
+     * @param range           the range of the attack
      */
-    private void staffAttack(Player player, RunicItemWeapon runicItemWeapon) {
+    private void staffAttack(Player player, RunicItemWeapon runicItemWeapon, int range) {
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GHAST_SHOOT, 0.4f, 2.0F);
 
         RayTraceResult rayTraceResult = player.getWorld().rayTraceEntities
                 (
                         player.getLocation(),
                         player.getLocation().getDirection(),
-                        MAX_DIST,
+                        range,
                         RAY_SIZE,
                         entity -> isValidEnemy(player, entity)
                 );
 
         if (rayTraceResult == null) {
-            Location location = player.getTargetBlock(null, MAX_DIST).getLocation();
+            Location location = player.getTargetBlock(null, range).getLocation();
             VectorUtil.drawLine(player, Particle.SPELL_WITCH, Color.FUCHSIA, player.getEyeLocation(), location, 0.85D, 1, 0.15f);
         } else if (rayTraceResult.getHitEntity() != null) {
             LivingEntity livingEntity = (LivingEntity) rayTraceResult.getHitEntity();

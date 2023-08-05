@@ -10,10 +10,11 @@ import com.runicrealms.plugin.spellapi.spells.Combat;
 import com.runicrealms.plugin.spellapi.spells.Potion;
 import com.runicrealms.plugin.spellapi.spells.archer.Ambush;
 import com.runicrealms.plugin.spellapi.spells.archer.Barrage;
-import com.runicrealms.plugin.spellapi.spells.archer.Charged;
 import com.runicrealms.plugin.spellapi.spells.archer.Fade;
 import com.runicrealms.plugin.spellapi.spells.archer.GiftsOfTheGrove;
+import com.runicrealms.plugin.spellapi.spells.archer.Jolt;
 import com.runicrealms.plugin.spellapi.spells.archer.LeapingShot;
+import com.runicrealms.plugin.spellapi.spells.archer.Overcharge;
 import com.runicrealms.plugin.spellapi.spells.archer.PiercingArrow;
 import com.runicrealms.plugin.spellapi.spells.archer.RainFire;
 import com.runicrealms.plugin.spellapi.spells.archer.RefreshingVolley;
@@ -432,7 +433,6 @@ public class SpellManager implements Listener, SpellAPI {
         this.spellList.add(new RefreshingVolley());
         this.spellList.add(new Fade());
         this.spellList.add(new Stormborn());
-        this.spellList.add(new Charged());
         this.spellList.add(new Surge());
         this.spellList.add(new SnapFreeze());
         this.spellList.add(new WintersGrasp());
@@ -470,6 +470,8 @@ public class SpellManager implements Listener, SpellAPI {
         this.spellList.add(new Damnation());
         this.spellList.add(new Ruination());
         this.spellList.add(new Shatter());
+        this.spellList.add(new Jolt());
+        this.spellList.add(new Overcharge());
         /*
         Items
          */

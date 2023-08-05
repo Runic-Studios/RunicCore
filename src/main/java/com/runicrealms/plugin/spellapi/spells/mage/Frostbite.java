@@ -177,7 +177,7 @@ public class Frostbite extends Spell implements DistanceSpell, DurationSpell, Ra
      * @param player the player to use as the orgin
      */
     public void drawCone(@NotNull Player player) {
-        Location loc = player.getLocation().add(0, 1.5, 0);
+        Location loc = player.getLocation().add(0, 1, 0);
         Vector direction = loc.getDirection().normalize();
         double dirAngle = Math.atan2(direction.getZ(), direction.getX());
 

@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
+@Deprecated
 public class Charged extends Spell implements AttributeSpell, DurationSpell {
     private static final int MAX_STACKS = 5;
     private final Map<UUID, StackTask> chargedMap = new HashMap<>();

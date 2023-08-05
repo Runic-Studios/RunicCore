@@ -14,6 +14,7 @@ import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spellutil.VectorUtil;
 import com.runicrealms.plugin.spellapi.spellutil.particles.EntityTrail;
 import com.runicrealms.plugin.utilities.DamageUtil;
+import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
@@ -21,10 +22,13 @@ import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.HandlerList;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.util.Vector;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -109,14 +113,16 @@ public class Stormborn extends Spell implements MagicDamageSpell, RadiusSpell {
         Long lastHit = this.hasAlreadyHit.get(event.getPlayer().getUniqueId());
 
         if (lastHit != null && lastHit + 400 > System.currentTimeMillis()) { //less than 8 tick delay (ticks * 50 = milliseconds : 8 x 50 = 400)
-            event.setCancelled(true);
             return;
         }
+
+        event.setCancelled(true);
 
         DamageUtil.damageEntitySpell(damage, event.getVictim(), event.getPlayer(), this);
         this.hasAlreadyHit.put(event.getPlayer().getUniqueId(), System.currentTimeMillis()); // prevent concussive hits
 
         ricochetEffect(event.getPlayer(), event.getVictim());
+        Bukkit.getPluginManager().callEvent(new ArrowHitEvent(event.getPlayer(), event.getVictim()));
     }
 
     private void ricochetEffect(Player caster, LivingEntity victim) {
@@ -150,7 +156,7 @@ public class Stormborn extends Spell implements MagicDamageSpell, RadiusSpell {
         if (!hasPassive(event.getCaster().getUniqueId(), this.getName()) || event.getSpell() instanceof Potion || event.getSpell() instanceof Combat) {
             return;
         }
-        
+
         stormPlayers.put(event.getCaster().getUniqueId(), 3);
     }
 
@@ -170,4 +176,36 @@ public class Stormborn extends Spell implements MagicDamageSpell, RadiusSpell {
         this.radius = radius;
     }
 
+    public static class ArrowHitEvent extends Event {
+        private final Player caster;
+        private final LivingEntity victim;
+
+        private static final HandlerList HANDLER_LIST = new HandlerList();
+
+        public ArrowHitEvent(@NotNull Player caster, @NotNull LivingEntity victim) {
+            this.caster = caster;
+            this.victim = victim;
+        }
+
+        @NotNull
+        public Player getCaster() {
+            return this.caster;
+        }
+
+        @NotNull
+        public LivingEntity getVictim() {
+            return this.victim;
+        }
+
+        @NotNull
+        @Override
+        public HandlerList getHandlers() {
+            return HANDLER_LIST;
+        }
+
+        @NotNull
+        public static HandlerList getHandlerList() {
+            return HANDLER_LIST;
+        }
+    }
 }
