@@ -130,7 +130,7 @@ public class Surge extends Spell implements DurationSpell {
             event.setCancelled(true);
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     private void onStormbornArrowHit(Stormborn.ArrowHitEvent event) {
         Set<Spell> onCooldown = RunicCore.getSpellAPI().getSpellsOnCooldown(event.getCaster().getUniqueId());
 

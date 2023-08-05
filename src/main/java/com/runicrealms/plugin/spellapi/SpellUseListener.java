@@ -191,13 +191,17 @@ public class SpellUseListener implements Listener {
         if (heldItemType == WeaponType.NONE) return;
         if (heldItemType == WeaponType.GATHERING_TOOL) return;
         if (!DamageListener.matchClass(event.getPlayer(), false)) return;
+
+        if (event.useInteractedBlock() != Event.Result.DENY) {
+            return; ////When right clicking the ground this event sometimes fires twice (useInteractedBlock returns ALLOW in one and DENY in the other), the hand is already accounted for at the top so I implemented a band-aid fix -BoBoBalloon
+        }
+
         Player player = event.getPlayer();
         String className = RunicDatabase.getAPI().getCharacterAPI().getPlayerClass(player); // lowercase
         boolean isArcher = className.equalsIgnoreCase("archer");
         if (event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK)
             activateSpellMode(player, ClickType.LEFT, 2, isArcher);
-        else if (event.useInteractedBlock() == Event.Result.DENY && (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)) {
-            //When right clicking the ground this event sometimes fires twice (useInteractedBlock returns ALLOW in one and DENY in the other), the hand is already accounted for at the top so I implemented a band-aid fix -BoBoBalloon
+        else if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
             activateSpellMode(player, ClickType.RIGHT, 3, isArcher);
         }
     }

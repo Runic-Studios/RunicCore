@@ -3,6 +3,7 @@ package com.runicrealms.plugin.spellapi.spells.archer;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.api.event.BasicAttackEvent;
 import com.runicrealms.plugin.common.CharacterClass;
+import com.runicrealms.plugin.common.util.ColorUtil;
 import com.runicrealms.plugin.events.MagicDamageEvent;
 import com.runicrealms.plugin.events.RangedDamageEvent;
 import com.runicrealms.plugin.rdb.event.CharacterQuitEvent;
@@ -12,6 +13,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Particle;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -39,7 +41,7 @@ public class Overcharge extends Spell implements DurationSpell {
         this.setIsPassive(true);
         this.setDescription("When you deal damage to an enemy with &aThunder Arrow&7, &aStormborn&7, or &aJolt&7 it now marks them for " + this.markedDuration + "s. " +
                 "When a marked enemy is hit you gain " + (this.percent * 100) + "% additional attack speed for " + this.duration + "s and restore " + this.manaRestore + " mana. " +
-                "This refreshes on gaining another stack and stacks up to 10 times. ");
+                "This refreshes on gaining another stack and stacks up to 10 times.");
         this.marked = new HashMap<>();
         this.overcharged = new HashMap<>();
 
@@ -52,6 +54,8 @@ public class Overcharge extends Spell implements DurationSpell {
                     continue;
                 }
 
+                this.isOvercharged(entry.getKey()); //send message if it wore off
+
                 Particle.DustOptions options = new Particle.DustOptions(Color.BLUE, 1);
 
                 for (UUID uuid : entry.getValue().keySet()) {
@@ -61,7 +65,7 @@ public class Overcharge extends Spell implements DurationSpell {
                         continue;
                     }
 
-                    player.spawnParticle(Particle.REDSTONE, entity.getLocation(), 25, Math.random() * 2.5, Math.random() * 2, Math.random() * 2.5, options);
+                    player.spawnParticle(Particle.REDSTONE, entity.getLocation(), 25, Math.random() * 2.25, Math.random() * 2, Math.random() * 2.25, options);
                 }
             }
         }, 200, 10);
@@ -142,7 +146,15 @@ public class Overcharge extends Spell implements DurationSpell {
         Long timeSinceOvercharged = this.overcharged.get(caster);
 
         if (timeSinceOvercharged == null) {
+            //only occurs if they didn't have it to begin with our were already removed
             return false;
+        }
+
+        boolean overcharged = (this.duration * 1000) + timeSinceOvercharged > System.currentTimeMillis();
+
+        if (!overcharged) {
+            this.sendOverchargedUpdateMessage(caster, false, true); //send update message
+            this.setOvercharged(caster, false);
         }
 
         return (this.duration * 1000) + timeSinceOvercharged > System.currentTimeMillis();
@@ -163,6 +175,29 @@ public class Overcharge extends Spell implements DurationSpell {
     }
 
     /**
+     * A method used to send an update message to the user to inform them if they are overcharged
+     *
+     * @param caster      the caster
+     * @param overcharged if a caster is overcharged
+     * @param before      if the caster was overcharged before any changes to their status were made
+     */
+    private void sendOverchargedUpdateMessage(@NotNull UUID caster, boolean overcharged, boolean before) {
+        Player player = Bukkit.getPlayer(caster);
+
+        if (player == null) {
+            return;
+        }
+
+        if (overcharged && !before) {
+            player.sendMessage(ColorUtil.format("&r&bYou've been &3&lovercharged!"));
+        }
+
+        if (!overcharged && before) {
+            player.sendMessage(ColorUtil.format("&r&bYou are no longer &3&lovercharged."));
+        }
+    }
+
+    /**
      * When either Thunder Arrow, Stormborn, or Jolt hits a target with this passive enabled, make them marked
      */
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -175,17 +210,36 @@ public class Overcharge extends Spell implements DurationSpell {
     }
 
     /**
+     * Method that contains logic for if a player should be set to overcharged mode
+     *
+     * @param player the player
+     * @param victim the marked entity
+     */
+    private void setOverchargedLogic(@NotNull Player player, @NotNull LivingEntity victim) {
+        if (!this.isMarked(player.getUniqueId(), victim.getUniqueId())) {
+            return;
+        }
+
+        this.sendOverchargedUpdateMessage(player.getUniqueId(), true, false); //send message
+        this.setOvercharged(player.getUniqueId(), true);
+        RunicCore.getRegenManager().addMana(player, this.manaRestore); //restore mana on overcharge
+        this.setMarked(player.getUniqueId(), victim.getUniqueId(), false);
+    }
+
+    /**
      * If an enemy hit while marked, the player is now overcharged and the enemy should be unmarked
      */
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     private void onRangedDamage(RangedDamageEvent event) {
-        if (!this.isMarked(event.getPlayer().getUniqueId(), event.getVictim().getUniqueId())) {
-            return;
-        }
+        this.setOverchargedLogic(event.getPlayer(), event.getVictim());
+    }
 
-        this.setOvercharged(event.getPlayer().getUniqueId(), true);
-        RunicCore.getRegenManager().addMana(event.getPlayer(), this.manaRestore); //restore mana on overcharge
-        this.setMarked(event.getPlayer().getUniqueId(), event.getVictim().getUniqueId(), false);
+    /**
+     * If an enemy hit while marked, the player is now overcharged and the enemy should be unmarked
+     */
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    private void onStormbornArrowHit(Stormborn.ArrowHitEvent event) {
+        this.setOverchargedLogic(event.getCaster(), event.getVictim());
     }
 
     /**
@@ -198,11 +252,10 @@ public class Overcharge extends Spell implements DurationSpell {
             return;
         }
 
-        double reducedTicks = event.getOriginalCooldownTicks() * this.percent; //reduce the cooldown based on the total cooldown time
-        int roundedCooldownTicks = (int) (event.getOriginalCooldownTicks() - reducedTicks);
+        int reducedTicks = (int) (event.getOriginalCooldownTicks() * this.percent); //reduce the cooldown based on the total cooldown time
 
         // Cooldown cannot drop beneath a certain value
-        event.setCooldownTicks(Math.max(event.getCooldownTicks() - roundedCooldownTicks, BasicAttackEvent.MINIMUM_COOLDOWN_TICKS)); //apply reduction to current cooldown time
+        event.setCooldownTicks(Math.max(event.getCooldownTicks() - reducedTicks, BasicAttackEvent.MINIMUM_COOLDOWN_TICKS)); //apply reduction to current cooldown time
     }
 
     /**

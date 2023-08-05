@@ -22,6 +22,7 @@ import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -118,11 +119,16 @@ public class Stormborn extends Spell implements MagicDamageSpell, RadiusSpell {
 
         event.setCancelled(true);
 
+        ArrowHitEvent arrowHit = new ArrowHitEvent(event.getPlayer(), event.getVictim());
+        Bukkit.getPluginManager().callEvent(arrowHit);
+        if (arrowHit.isCancelled()) {
+            return;
+        }
+
         DamageUtil.damageEntitySpell(damage, event.getVictim(), event.getPlayer(), this);
         this.hasAlreadyHit.put(event.getPlayer().getUniqueId(), System.currentTimeMillis()); // prevent concussive hits
 
         ricochetEffect(event.getPlayer(), event.getVictim());
-        Bukkit.getPluginManager().callEvent(new ArrowHitEvent(event.getPlayer(), event.getVictim()));
     }
 
     private void ricochetEffect(Player caster, LivingEntity victim) {
@@ -176,15 +182,22 @@ public class Stormborn extends Spell implements MagicDamageSpell, RadiusSpell {
         this.radius = radius;
     }
 
-    public static class ArrowHitEvent extends Event {
+    /**
+     * An event that is called before any spell damage is done to an enemy when they are hit with a stormborn arrow
+     *
+     * @author BoBoBalloon
+     */
+    public static class ArrowHitEvent extends Event implements Cancellable {
         private final Player caster;
         private final LivingEntity victim;
+        private boolean cancelled;
 
         private static final HandlerList HANDLER_LIST = new HandlerList();
 
         public ArrowHitEvent(@NotNull Player caster, @NotNull LivingEntity victim) {
             this.caster = caster;
             this.victim = victim;
+            this.cancelled = false;
         }
 
         @NotNull
@@ -195,6 +208,16 @@ public class Stormborn extends Spell implements MagicDamageSpell, RadiusSpell {
         @NotNull
         public LivingEntity getVictim() {
             return this.victim;
+        }
+
+        @Override
+        public boolean isCancelled() {
+            return this.cancelled;
+        }
+
+        @Override
+        public void setCancelled(boolean cancelled) {
+            this.cancelled = cancelled;
         }
 
         @NotNull
