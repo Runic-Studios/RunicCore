@@ -40,8 +40,8 @@ public class Overcharge extends Spell implements DurationSpell {
         super("Overcharge", CharacterClass.ARCHER);
         this.setIsPassive(true);
         this.setDescription("When you deal damage to an enemy with &aThunder Arrow&7, &aStormborn&7, or &aJolt&7 it now marks them for " + this.markedDuration + "s. " +
-                "When a marked enemy is hit you gain " + (this.percent * 100) + "% additional attack speed for " + this.duration + "s and restore " + this.manaRestore + " mana. " +
-                "This refreshes on gaining another stack and stacks up to 10 times.");
+                "When a marked enemy is hit you gain " + (this.percent * 100) + "% additional attack speed for " + this.duration + "s and restore " + this.manaRestore + " mana. ");
+        //"This refreshes on gaining another stack and stacks up to 10 times."
         this.marked = new HashMap<>();
         this.overcharged = new HashMap<>();
 
@@ -76,7 +76,7 @@ public class Overcharge extends Spell implements DurationSpell {
         super.loadSpellSpecificData(spellData);
         Number manaRestore = (Number) spellData.getOrDefault("mana-restore", 10);
         this.manaRestore = manaRestore.intValue();
-        Number percent = (Number) spellData.getOrDefault("percent", 10);
+        Number percent = (Number) spellData.getOrDefault("percent", .3);
         this.percent = percent.doubleValue();
         Number markedDuration = (Number) spellData.getOrDefault("marked-duration", this.duration);
         this.markedDuration = markedDuration.doubleValue();

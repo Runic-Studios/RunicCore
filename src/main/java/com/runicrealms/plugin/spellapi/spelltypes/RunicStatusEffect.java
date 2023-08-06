@@ -14,7 +14,8 @@ public enum RunicStatusEffect {
     SPEED_I("Speed", "You gain speed!", true, "speed!", Sound.ENTITY_FIREWORK_ROCKET_BLAST),
     SPEED_II("Speed", "You gain speed!", true, "speed!", Sound.ENTITY_FIREWORK_ROCKET_BLAST),
     SPEED_III("Speed", "You gain speed!", true, "speed!", Sound.ENTITY_FIREWORK_ROCKET_BLAST),
-    STUN("Stun", "Enemy cannot cast spells, deal damage, or move!", false, "stunned!", Sound.BLOCK_GLASS_BREAK);
+    STUN("Stun", "Enemy cannot cast spells, deal damage, or move!", false, "stunned!", Sound.BLOCK_GLASS_BREAK),
+    BLEED("Bleed", "Enemy slowly takes damage!", false, "lacerated!", Sound.ENTITY_COD_HURT);
 
     private final String name;
     private final String description;

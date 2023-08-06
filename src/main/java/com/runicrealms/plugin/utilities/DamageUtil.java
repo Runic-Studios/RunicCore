@@ -271,19 +271,22 @@ public class DamageUtil {
     /**
      * This method damages a player using custom runic mechanics
      *
-     * @param dmgAmt damage amount to deal
-     * @param victim to receive damage
+     * @param dmgAmt    damage amount to deal
+     * @param victim    to receive damage
+     * @param knockback if the victim should be knocked back
      */
-    public static void damagePlayer(double dmgAmt, @NotNull Player victim) {
-        int newHP = (int) (victim.getHealth() - dmgAmt);
+    public static void damageEntity(double dmgAmt, @NotNull LivingEntity victim, boolean knockback) {
+        int newHP = (int) (victim.getHealth() - Math.max(dmgAmt, 0));
 
         // call a custom damage event to communicate with other listeners/plugins
-        EntityDamageEvent e = new EntityDamageEvent(victim, EntityDamageEvent.DamageCause.CUSTOM, dmgAmt);
+        EntityDamageEvent e = new EntityDamageEvent(victim, EntityDamageEvent.DamageCause.CUSTOM, Math.max(dmgAmt, 0));
         Bukkit.getPluginManager().callEvent(e);
         victim.setLastDamageCause(e);
 
         // apply knock back
-        victim.setVelocity(victim.getLocation().getDirection().multiply(DamageEventUtil.getEnvironmentKnockbackMultiplier()));
+        if (knockback) {
+            victim.setVelocity(victim.getLocation().getDirection().multiply(DamageEventUtil.getEnvironmentKnockbackMultiplier()));
+        }
 
         // apply custom mechanics if the player were to die
         if (newHP >= 1) {
@@ -292,13 +295,25 @@ public class DamageUtil {
                 victim.setNoDamageTicks(0);
                 victim.damage(0.0000000000001);
             }
-        } else {
-            RunicDeathEvent runicDeathEvent = new RunicDeathEvent(victim, victim.getLocation());
+        } else if (victim instanceof Player player) {
+            RunicDeathEvent runicDeathEvent = new RunicDeathEvent(player, victim.getLocation());
             Bukkit.getPluginManager().callEvent(runicDeathEvent);
+        } else {
+            victim.setHealth(0);
         }
+
         HologramUtil.createCombatHologram(null, victim.getEyeLocation(), ChatColor.RED + "-" + (int) dmgAmt + " ❤");
     }
 
+    /**
+     * This method damages a player using custom runic mechanics
+     *
+     * @param dmgAmt damage amount to deal
+     * @param victim to receive damage
+     */
+    public static void damageEntity(double dmgAmt, @NotNull LivingEntity victim) {
+        damageEntity(dmgAmt, victim, true);
+    }
 }
 
 

@@ -13,7 +13,7 @@ public class GenericDamageListener implements Listener {
     public void onGenericDamage(EnvironmentDamage event) {
         if (event.isCancelled()) return;
         if (!(event.getVictim() instanceof Player player)) return;
-        DamageUtil.damagePlayer(event.getAmount(), player);
+        DamageUtil.damageEntity(event.getAmount(), player);
         player.setNoDamageTicks(10);
     }
 }
