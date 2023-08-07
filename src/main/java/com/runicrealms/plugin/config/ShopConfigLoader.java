@@ -7,6 +7,7 @@ import com.runicrealms.plugin.exception.ShopLoadException;
 import com.runicrealms.plugin.item.shops.RunicShopGeneric;
 import com.runicrealms.plugin.item.shops.RunicShopItem;
 import com.runicrealms.plugin.runicitems.RunicItemsAPI;
+import com.runicrealms.plugin.runicitems.item.RunicItem;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -115,7 +116,16 @@ public class ShopConfigLoader {
                     requiredItems.add(Pair.pair(key, section.getInt(key)));
                 }
             }
-            ItemStack item = RunicItemsAPI.generateItemFromTemplate(runicItemId).generateGUIItem();
+
+            RunicItem runicItem;
+            try {
+                runicItem = RunicItemsAPI.generateItemFromTemplate(runicItemId);
+            } catch (NullPointerException e) {
+                throw new ShopLoadException(runicItemId + " is not a valid runic item!");
+            }
+
+            ItemStack item = runicItem.generateGUIItem();
+
             item.setAmount(stacksize);
             return new RunicShopItem(requiredItems, item);
         } catch (Exception exception) {

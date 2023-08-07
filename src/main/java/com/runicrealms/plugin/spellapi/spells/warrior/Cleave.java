@@ -18,6 +18,7 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -31,10 +32,11 @@ public class Cleave extends Spell implements PhysicalDamageSpell, DurationSpell,
     private double damagePerLevel;
     private double duration;
     private double distance;
+    private double tick;
 
     public Cleave() {
         super("Cleave", CharacterClass.WARRIOR);
-        this.setDescription("You brutally slash around yourself, dealing (" + this.damage + " +&f " + this.damagePerLevel + " x&7 lvl) physical⚔ damage every 1s for " + this.duration + "s! " +
+        this.setDescription("You brutally slash around yourself, dealing (" + this.damage + " +&f " + this.damagePerLevel + " x&7 lvl) physical⚔ damage every " + this.tick + "s for " + this.duration + "s! " +
                 "The last wound causes them to bleed!");
     }
 
@@ -66,7 +68,14 @@ public class Cleave extends Spell implements PhysicalDamageSpell, DurationSpell,
             }
 
             count.set(count.get() + 1);
-        }, 0, 20);
+        }, 0, (long) (this.tick * 20));
+    }
+
+    @Override
+    protected void loadSpellSpecificData(Map<String, Object> spellData) {
+        super.loadSpellSpecificData(spellData);
+        Number tick = (Number) spellData.getOrDefault("tick", 1);
+        this.tick = tick.doubleValue();
     }
 
     @Override
