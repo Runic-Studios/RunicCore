@@ -22,6 +22,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+/**
+ * @deprecated {@link ColdTouch} was replaced
+ */
+@Deprecated
 public class Frostbolt extends Spell implements MagicDamageSpell {
     private static final double SPEED_MULT = 2.5;
     private final Map<UUID, Snowball> snowballMap = new HashMap<>();

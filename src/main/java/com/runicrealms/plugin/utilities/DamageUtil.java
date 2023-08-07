@@ -275,7 +275,7 @@ public class DamageUtil {
      * @param victim    to receive damage
      * @param knockback if the victim should be knocked back
      */
-    public static void damageEntity(double dmgAmt, @NotNull LivingEntity victim, boolean knockback) {
+    public static void damageEntityGeneric(double dmgAmt, @NotNull LivingEntity victim, boolean knockback) {
         int newHP = (int) (victim.getHealth() - Math.max(dmgAmt, 0));
 
         // call a custom damage event to communicate with other listeners/plugins
@@ -311,8 +311,8 @@ public class DamageUtil {
      * @param dmgAmt damage amount to deal
      * @param victim to receive damage
      */
-    public static void damageEntity(double dmgAmt, @NotNull LivingEntity victim) {
-        damageEntity(dmgAmt, victim, true);
+    public static void damageEntityGeneric(double dmgAmt, @NotNull LivingEntity victim) {
+        damageEntityGeneric(dmgAmt, victim, true);
     }
 }
 

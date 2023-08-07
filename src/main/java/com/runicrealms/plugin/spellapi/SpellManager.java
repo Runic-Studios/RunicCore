@@ -85,6 +85,8 @@ import com.runicrealms.plugin.spellapi.spells.rogue.WardingGlyph;
 import com.runicrealms.plugin.spellapi.spells.warrior.Adrenaline;
 import com.runicrealms.plugin.spellapi.spells.warrior.AxeToss;
 import com.runicrealms.plugin.spellapi.spells.warrior.BlessedBlade;
+import com.runicrealms.plugin.spellapi.spells.warrior.Bloodbath;
+import com.runicrealms.plugin.spellapi.spells.warrior.Cleave;
 import com.runicrealms.plugin.spellapi.spells.warrior.Consecrate;
 import com.runicrealms.plugin.spellapi.spells.warrior.Damnation;
 import com.runicrealms.plugin.spellapi.spells.warrior.Devour;
@@ -97,8 +99,6 @@ import com.runicrealms.plugin.spellapi.spells.warrior.Smite;
 import com.runicrealms.plugin.spellapi.spells.warrior.SoulReaper;
 import com.runicrealms.plugin.spellapi.spells.warrior.Taunt;
 import com.runicrealms.plugin.spellapi.spells.warrior.UmbralGrasp;
-import com.runicrealms.plugin.spellapi.spells.warrior.Unstoppable;
-import com.runicrealms.plugin.spellapi.spells.warrior.Whirlwind;
 import com.runicrealms.plugin.spellapi.spelltypes.ShieldPayload;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.utilities.HologramUtil;
@@ -416,7 +416,6 @@ public class SpellManager implements Listener, SpellAPI {
         this.spellList.add(new SpectralBlade());
         this.spellList.add(new Manashield());
         this.spellList.add(new Rupture());
-        this.spellList.add(new Whirlwind());
         this.spellList.add(new DivineShield());
         this.spellList.add(new Encore());
         this.spellList.add(new Discord());
@@ -445,7 +444,6 @@ public class SpellManager implements Listener, SpellAPI {
         this.spellList.add(new CallOfTheDeep());
         this.spellList.add(new Dash());
         this.spellList.add(new Adrenaline());
-        this.spellList.add(new Unstoppable());
         this.spellList.add(new Smite());
         this.spellList.add(new Consecrate());
         this.spellList.add(new Salvation());
@@ -472,6 +470,8 @@ public class SpellManager implements Listener, SpellAPI {
         this.spellList.add(new Shatter());
         this.spellList.add(new Jolt());
         this.spellList.add(new Overcharge());
+        this.spellList.add(new Cleave());
+        this.spellList.add(new Bloodbath());
         /*
         Items
          */

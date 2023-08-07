@@ -20,6 +20,10 @@ import org.bukkit.scheduler.BukkitRunnable;
 import java.util.HashSet;
 import java.util.UUID;
 
+/**
+ * @deprecated replaced by {@link Cleave}
+ */
+@Deprecated
 public class Whirlwind extends Spell implements DurationSpell, PhysicalDamageSpell, RadiusSpell {
     private static final HashSet<UUID> playerUuidSet = new HashSet<>();
     private double damageAmt;

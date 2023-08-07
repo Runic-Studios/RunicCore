@@ -65,7 +65,8 @@ public class StatusEffectManager implements Listener, StatusEffectAPI {
                 for (UUID uuid : bleeding) {
                     LivingEntity recipient = (LivingEntity) Bukkit.getEntity(uuid); //safe to cast since only living entities can have bleeding applied in the first place
 
-                    if (recipient == null) {
+                    if (recipient == null || recipient.isDead()) {
+                        this.removeStatusEffect(uuid, RunicStatusEffect.BLEED);
                         continue;
                     }
 
@@ -85,8 +86,9 @@ public class StatusEffectManager implements Listener, StatusEffectAPI {
                         extraDamage = 0; //placeholder
                     }
 
-                    double damage = event.getDamage() + extraDamage;
-                    DamageUtil.damageEntity(damage, recipient, false);
+                    double damage = event.getAmount() + extraDamage;
+                    DamageUtil.damageEntityGeneric(damage, recipient, false);
+                    Bukkit.broadcastMessage("bleeding " + recipient.getName()); //remove
                 }
             });
         }, 0, 1);
@@ -352,10 +354,5 @@ public class StatusEffectManager implements Listener, StatusEffectAPI {
                 }
             }
         }, 0, 5L);
-    }
-
-    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
-    private void onBleedDamage(EntityBleedEvent event) {
-
     }
 }

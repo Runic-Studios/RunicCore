@@ -7,6 +7,10 @@ import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 
+/**
+ * @deprecated replaced with {@link Bloodbath}
+ */
+@Deprecated
 public class Unstoppable extends Spell {
 
     public Unstoppable() {

@@ -9,20 +9,18 @@ import com.runicrealms.plugin.spellapi.spelltypes.RadiusSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.RunicStatusEffect;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
+import com.runicrealms.plugin.spellapi.spellutil.EntityUtil;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Particle;
-import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 public class Frostbite extends Spell implements DistanceSpell, DurationSpell, RadiusSpell, MagicDamageSpell {
@@ -47,7 +45,7 @@ public class Frostbite extends Spell implements DistanceSpell, DurationSpell, Ra
     public void executeSpell(Player player, SpellItemType type) {
         this.drawCone(player);
 
-        for (Entity target : this.getEnemiesInCone(player)) {
+        for (Entity target : EntityUtil.getEnemiesInCone(player, (int) this.radius, Frostbite.ANGLE, entity -> this.isValidEnemy(player, entity))) {
             if (!(target instanceof LivingEntity entity)) {
                 continue;
             }
@@ -132,42 +130,6 @@ public class Frostbite extends Spell implements DistanceSpell, DurationSpell, Ra
         this.rootedExtraDamage = rootedExtraDamage.doubleValue();
         Number stunnedExtraDamage = (Number) spellData.getOrDefault("stunned-extra-damage", 0);
         this.stunnedExtraDamage = stunnedExtraDamage.doubleValue();
-    }
-
-    /**
-     * A method used to get the entities in a cone in front of the player
-     * Credit to ChatGPT for the vector math and shit
-     *
-     * @param player the player
-     * @return the entities in a cone in front of the player
-     */
-    @NotNull
-    public List<Entity> getEnemiesInCone(@NotNull Player player) {
-        List<Entity> entitiesInCone = new ArrayList<>();
-        Vector direction = player.getLocation().getDirection();
-
-        for (Entity entity : player.getNearbyEntities(this.radius, this.radius, this.radius)) {
-            if (entity.equals(player) || !this.isValidEnemy(player, entity)) {
-                continue;
-            }
-
-            Vector relative = entity.getLocation().subtract(player.getLocation()).toVector();
-
-            // Checking line of sight
-            boolean hasLineOfSight = true;
-            for (Block block : player.getLineOfSight(null, (int) this.radius)) {
-                if (block.getLocation().distance(entity.getLocation()) < 1.0) {
-                    hasLineOfSight = false;
-                    break;
-                }
-            }
-
-            if (Math.acos(direction.dot(relative) / (direction.length() * relative.length())) <= Frostbite.ANGLE && hasLineOfSight) {
-                entitiesInCone.add(entity);
-            }
-        }
-
-        return entitiesInCone;
     }
 
     /**
