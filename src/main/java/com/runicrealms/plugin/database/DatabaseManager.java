@@ -20,8 +20,8 @@ import com.runicrealms.plugin.rdb.event.CharacterLoadedEvent;
 import com.runicrealms.plugin.rdb.event.CharacterQuitEvent;
 import com.runicrealms.plugin.rdb.event.MongoSaveEvent;
 import com.runicrealms.plugin.rdb.model.CharacterField;
-import com.runicrealms.plugin.taskchain.TaskChainUtil;
 import com.runicrealms.plugin.runicrestart.RunicRestart;
+import com.runicrealms.plugin.taskchain.TaskChainUtil;
 import org.bson.types.ObjectId;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -301,14 +301,16 @@ public class DatabaseManager implements CharacterAPI, DataAPI, PlayerDataAPI, Li
                             (
                                     event.getPlayer(),
                                     loadedCharacterMap.get(event.getPlayer().getUniqueId()).first,
-                                    true
+                                    true,
+                                    this.corePlayerDataMap.containsKey(event.getPlayer().getUniqueId()) //remove later
                             )));
         } else {
             Bukkit.getPluginManager().callEvent(new CharacterQuitEvent
                     (
                             event.getPlayer(),
                             loadedCharacterMap.get(event.getPlayer().getUniqueId()).first,
-                            false
+                            false,
+                            this.corePlayerDataMap.containsKey(event.getPlayer().getUniqueId()) //remove later
                     ));
         }
     }
