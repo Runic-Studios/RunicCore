@@ -32,7 +32,7 @@ public class ColdTouch extends Spell {
         SpellCastEvent spellCastEvent = new SpellCastEvent(event.getCaster(), RunicCore.getSpellAPI().getSpell("Frostbolt"));
         Bukkit.getPluginManager().callEvent(spellCastEvent);
         if (!spellCastEvent.isCancelled() && spellCastEvent.willExecute())
-            spellCastEvent.getSpellCasted().execute(event.getCaster(), SpellItemType.ARTIFACT);
+            spellCastEvent.getSpell().execute(event.getCaster(), SpellItemType.ARTIFACT);
     }
 }
 

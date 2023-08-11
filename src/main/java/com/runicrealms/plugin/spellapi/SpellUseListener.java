@@ -144,7 +144,7 @@ public class SpellUseListener implements Listener {
     public void onSpellCast(SpellCastEvent event) {
         if (event.isCancelled()) return;
         if (event.willExecute()) {
-            boolean willCast = event.getSpellCasted().execute(event.getCaster(), SpellItemType.ARTIFACT);
+            boolean willCast = event.getSpell().execute(event.getCaster(), SpellItemType.ARTIFACT);
             if (!willCast)
                 event.setCancelled(true);
         } else {
