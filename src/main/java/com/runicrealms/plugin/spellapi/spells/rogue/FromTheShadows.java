@@ -27,8 +27,8 @@ public class FromTheShadows extends Spell {
     private final Set<UUID> cocoon;
     private double speedDuration;
     private double cocoonDamageIncreaseDuration;
-    private double damage;
-    private double damagePerDex;
+    private double percent;
+    private double percentPerDex;
 
     public FromTheShadows() {
         super("From The Shadows", CharacterClass.ROGUE);
@@ -40,14 +40,14 @@ public class FromTheShadows extends Spell {
                 "&aDash &7- Gain Speed III for " + this.speedDuration + "s!\n" +
                 "&aTwin Fangs &7- This spell will critically strike!\n" +
                 "&aCocoon &7- Your web now roots your target (duration halved)!\n" +
-                "Additionally, &aCocoon&7 increases all damage an enemy takes by " + this.damage + " + (&f" + this.damagePerDex + " x &eDEX&7)% for the next " + this.cocoonDamageIncreaseDuration + "s!"
+                "Additionally, &aCocoon&7 increases all damage an enemy takes by (" + this.percent + "&f" + this.percentPerDex + " x &eDEX&7)% for the next " + this.cocoonDamageIncreaseDuration + "s!"
         );
         this.cocoon = new HashSet<>();
     }
 
     private int cocoonDamageCalculation(double damage, @NotNull UUID caster) {
         int dex = RunicCore.getStatAPI().getPlayerDexterity(caster);
-        return (int) (damage + this.damage + (this.damagePerDex * damage * dex));
+        return (int) (damage + ((this.percent + (this.percentPerDex * dex)) * damage));
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
@@ -139,10 +139,10 @@ public class FromTheShadows extends Spell {
         this.speedDuration = speedDuration.doubleValue();
         Number cocoonDamageIncreaseDuration = (Number) spellData.getOrDefault("cocoon-damage-increase-duration", 3);
         this.cocoonDamageIncreaseDuration = cocoonDamageIncreaseDuration.doubleValue();
-        Number damage = (Number) spellData.getOrDefault("damage", 2);
-        this.damage = damage.doubleValue();
-        Number damagePerDex = (Number) spellData.getOrDefault("damage-per-dex", .1);
-        this.damagePerDex = damagePerDex.doubleValue();
+        Number percent = (Number) spellData.getOrDefault("percent", .02);
+        this.percent = percent.doubleValue();
+        Number percentPerDex = (Number) spellData.getOrDefault("percent-per-dex", .1);
+        this.percentPerDex = percentPerDex.doubleValue();
     }
 }
 
