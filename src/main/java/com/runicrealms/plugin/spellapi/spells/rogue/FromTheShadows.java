@@ -40,14 +40,14 @@ public class FromTheShadows extends Spell {
                 "&aDash &7- Gain Speed III for " + this.speedDuration + "s!\n" +
                 "&aTwin Fangs &7- This spell will critically strike!\n" +
                 "&aCocoon &7- Your web now roots your target (duration halved)!\n" +
-                "Additionally, &aCocoon&7 increases all damage an enemy takes by 2 + (0.1 x DEX)% for the next " + this.cocoonDamageIncreaseDuration + "s!"
+                "Additionally, &aCocoon&7 increases all damage an enemy takes by " + this.damage + " + (&f" + this.damagePerDex + " x &eDEX&7)% for the next " + this.cocoonDamageIncreaseDuration + "s!"
         );
         this.cocoon = new HashSet<>();
     }
 
     private int cocoonDamageCalculation(double damage, @NotNull UUID caster) {
         int dex = RunicCore.getStatAPI().getPlayerDexterity(caster);
-        return (int) (damage + 2 + (.1 * damage * dex));
+        return (int) (damage + this.damage + (this.damagePerDex * damage * dex));
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
