@@ -79,16 +79,7 @@ public class StatusEffectManager implements Listener, StatusEffectAPI {
                     recipient.getWorld().playSound(recipient.getLocation(), Sound.ENTITY_COD_HURT, 0.5f, 1.0f);
                     recipient.getWorld().spawnParticle(Particle.BLOCK_CRACK, recipient.getLocation(), 10, Math.random() * 1.5, Math.random() / 2, Math.random() * 1.5, Material.REDSTONE_BLOCK.createBlockData());
 
-                    double extraDamage;
-                    if (recipient instanceof Player player) {
-                        extraDamage = event.getLevelMultiplier() * player.getLevel();
-                    } else {
-                        extraDamage = 0; //placeholder
-                    }
-
-                    double damage = event.getAmount() + extraDamage;
-                    DamageUtil.damageEntityGeneric(damage, recipient, false);
-                    Bukkit.broadcastMessage("bleeding " + recipient.getName()); //remove
+                    DamageUtil.damageEntityGeneric(event.getAmount(), recipient, false);
                 }
             });
         }, 0, 1);

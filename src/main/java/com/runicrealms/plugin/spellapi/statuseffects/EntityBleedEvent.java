@@ -1,6 +1,7 @@
 package com.runicrealms.plugin.spellapi.statuseffects;
 
 import com.runicrealms.plugin.events.RunicDamageEvent;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
@@ -12,19 +13,10 @@ import org.jetbrains.annotations.NotNull;
  */
 public class EntityBleedEvent extends RunicDamageEvent {
     private static final HandlerList HANDLER_LIST = new HandlerList();
-    private double levelMultiplier;
+    private static final double PERCENT = 0.3;
 
     public EntityBleedEvent(@NotNull LivingEntity target) {
-        super(target, 1);
-        this.levelMultiplier = .25;
-    }
-
-    public double getLevelMultiplier() {
-        return this.levelMultiplier;
-    }
-
-    public void setLevelMultiplier(double levelMultiplier) {
-        this.levelMultiplier = levelMultiplier;
+        super(target, (int) (target.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue() * PERCENT));
     }
 
     @NotNull
