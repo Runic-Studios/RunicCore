@@ -1,5 +1,6 @@
 package com.runicrealms.plugin.spellapi.spells.mage;
 
+import com.google.common.util.concurrent.AtomicDouble;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.common.CharacterClass;
 import com.runicrealms.plugin.spellapi.spelltypes.DistanceSpell;
@@ -10,13 +11,13 @@ import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.spellapi.spellutil.particles.HorizontalCircleFrame;
 import com.runicrealms.plugin.utilities.DamageUtil;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -45,21 +46,18 @@ public class SnapFreeze extends Spell implements DistanceSpell, DurationSpell, M
     public void executeSpell(Player player, SpellItemType type) {
         Location castLocation = player.getEyeLocation();
         freeze(player, castLocation);
-        new BukkitRunnable() {
-            double count = 1;
 
-            @Override
-            public void run() {
-                if (count > distance) {
-                    this.cancel();
-                    damageMap.remove(player.getUniqueId());
-                } else {
-                    count += 1 * PERIOD;
-                    castLocation.add(castLocation.getDirection());
-                    freeze(player, castLocation);
-                }
+        AtomicDouble count = new AtomicDouble(1);
+        Bukkit.getScheduler().runTaskTimer(RunicCore.getInstance(), task -> {
+            if (count.get() > distance) {
+                task.cancel();
+                damageMap.remove(player.getUniqueId());
+            } else {
+                count.set(count.get() + PERIOD);
+                castLocation.add(castLocation.getDirection());
+                freeze(player, castLocation);
             }
-        }.runTaskTimer(RunicCore.getInstance(), 0, (long) PERIOD * 20L);
+        }, 0, (long) PERIOD * 20L);
     }
 
     private void freeze(Player player, Location location) {

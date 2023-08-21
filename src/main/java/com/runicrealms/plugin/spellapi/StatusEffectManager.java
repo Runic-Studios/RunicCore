@@ -61,6 +61,10 @@ public class StatusEffectManager implements Listener, StatusEffectAPI {
                 bleeding.add(pair.getKey());
             }
 
+            if (bleeding.isEmpty()) {
+                return;
+            }
+
             Bukkit.getScheduler().runTask(RunicCore.getInstance(), () -> {
                 for (UUID uuid : bleeding) {
                     LivingEntity recipient = (LivingEntity) Bukkit.getEntity(uuid); //safe to cast since only living entities can have bleeding applied in the first place

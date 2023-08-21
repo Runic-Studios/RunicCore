@@ -39,14 +39,14 @@ public class MageTreeUtil {
         List<Perk> perks = new ArrayList<>();
         perks.add(new PerkSpell(84, 1, 0, 1, "Dragon's Breath"));
         perks.add(new PerkBaseStat(85, 1, 0, 5, Stat.INTELLIGENCE));
-        perks.add(new PerkSpell(86, 1, 0, 1, "Scald"));
+        perks.add(new PerkSpell(86, 1, 0, 1, "Cindered Touch"));
         perks.add(new PerkBaseStat(87, 1, 0, 3, Stat.WISDOM));
         perks.add(new PerkBaseStat(88, 1, 0, 3, Stat.INTELLIGENCE));
-        perks.add(new PerkSpell(89, 1, 0, 1, "Fire Blast"));
+        perks.add(new PerkSpell(89, 1, 0, 1, "Erupt"));
         perks.add(new PerkBaseStat(90, 1, 0, 3, Stat.WISDOM));
         perks.add(new PerkBaseStat(91, 1, 0, 3, Stat.INTELLIGENCE));
         perks.add(new PerkBaseStat(92, 1, 0, 5, Stat.WISDOM));
-        perks.add(new PerkSpell(93, 1, 0, 1, "Meteor Shower"));
+        perks.add(new PerkSpell(93, 1, 0, 1, "Meteor"));
         perks.add(new PerkBaseStat(94, 1, 0, 3, Stat.INTELLIGENCE));
         perks.add(new PerkSpell(95, 1, 0, 1, "Inferno"));
         return perks;

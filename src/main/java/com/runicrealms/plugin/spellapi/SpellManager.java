@@ -48,16 +48,15 @@ import com.runicrealms.plugin.spellapi.spells.cleric.Warsong;
 import com.runicrealms.plugin.spellapi.spells.mage.ArcaneSlash;
 import com.runicrealms.plugin.spellapi.spells.mage.Blink;
 import com.runicrealms.plugin.spellapi.spells.mage.Blizzard;
+import com.runicrealms.plugin.spellapi.spells.mage.CinderedTouch;
 import com.runicrealms.plugin.spellapi.spells.mage.DragonsBreath;
-import com.runicrealms.plugin.spellapi.spells.mage.FireBlast;
+import com.runicrealms.plugin.spellapi.spells.mage.Erupt;
 import com.runicrealms.plugin.spellapi.spells.mage.Fireball;
 import com.runicrealms.plugin.spellapi.spells.mage.Frostbite;
-import com.runicrealms.plugin.spellapi.spells.mage.Frostbolt;
 import com.runicrealms.plugin.spellapi.spells.mage.Inferno;
 import com.runicrealms.plugin.spellapi.spells.mage.Manashield;
-import com.runicrealms.plugin.spellapi.spells.mage.MeteorShower;
+import com.runicrealms.plugin.spellapi.spells.mage.Meteor;
 import com.runicrealms.plugin.spellapi.spells.mage.Riftwalk;
-import com.runicrealms.plugin.spellapi.spells.mage.Scald;
 import com.runicrealms.plugin.spellapi.spells.mage.Shatter;
 import com.runicrealms.plugin.spellapi.spells.mage.SnapFreeze;
 import com.runicrealms.plugin.spellapi.spells.mage.SpectralBlade;
@@ -78,7 +77,6 @@ import com.runicrealms.plugin.spellapi.spells.rogue.Kneebreak;
 import com.runicrealms.plugin.spellapi.spells.rogue.Lunge;
 import com.runicrealms.plugin.spellapi.spells.rogue.Scurvy;
 import com.runicrealms.plugin.spellapi.spells.rogue.SilverBolt;
-import com.runicrealms.plugin.spellapi.spells.rogue.Sprint;
 import com.runicrealms.plugin.spellapi.spells.rogue.TwinFangs;
 import com.runicrealms.plugin.spellapi.spells.rogue.Unseen;
 import com.runicrealms.plugin.spellapi.spells.rogue.WardingGlyph;
@@ -381,10 +379,8 @@ public class SpellManager implements Listener, SpellAPI {
      */
     private void registerSpells() {
         this.spellList.add(new Fireball());
-        this.spellList.add(new Frostbolt());
-        this.spellList.add(new Sprint());
         this.spellList.add(new Blink());
-        this.spellList.add(new MeteorShower());
+        this.spellList.add(new Meteor());
         this.spellList.add(new Accelerando());
         this.spellList.add(new Rejuvenate());
         this.spellList.add(new Judgment());
@@ -394,7 +390,6 @@ public class SpellManager implements Listener, SpellAPI {
         this.spellList.add(new Unseen());
         this.spellList.add(new RadiantNova());
         this.spellList.add(new Blizzard());
-        this.spellList.add(new Frostbite());
         this.spellList.add(new AxeToss());
         this.spellList.add(new Lunge());
         this.spellList.add(new Harpoon());
@@ -409,8 +404,6 @@ public class SpellManager implements Listener, SpellAPI {
         this.spellList.add(new Cripple());
         this.spellList.add(new Challenger());
         this.spellList.add(new Kneebreak());
-        this.spellList.add(new FireBlast());
-        this.spellList.add(new Scald());
         this.spellList.add(new DragonsBreath());
         this.spellList.add(new Riftwalk());
         this.spellList.add(new SpectralBlade());
@@ -467,11 +460,15 @@ public class SpellManager implements Listener, SpellAPI {
         this.spellList.add(new UmbralGrasp());
         this.spellList.add(new Damnation());
         this.spellList.add(new Ruination());
+        this.spellList.add(new Frostbite());
         this.spellList.add(new Shatter());
         this.spellList.add(new Jolt());
         this.spellList.add(new Overcharge());
         this.spellList.add(new Cleave());
         this.spellList.add(new Bloodbath());
+        this.spellList.add(new CinderedTouch());
+        this.spellList.add(new Erupt());
+
         /*
         Items
          */

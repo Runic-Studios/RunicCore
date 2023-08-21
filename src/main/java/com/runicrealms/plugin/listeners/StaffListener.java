@@ -89,9 +89,8 @@ public class StaffListener implements Listener {
                 .execute();
     }
 
-    @EventHandler(priority = EventPriority.NORMAL)
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onStaffAttack(StaffAttackEvent event) {
-        if (event.isCancelled()) return;
         staffAttack(event.getPlayer(), event.getRunicItemWeapon(), event.getRange());
     }
 

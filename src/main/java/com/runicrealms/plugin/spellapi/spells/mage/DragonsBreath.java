@@ -9,6 +9,7 @@ import com.runicrealms.plugin.spellapi.spelltypes.RunicStatusEffect;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.utilities.DamageUtil;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
@@ -16,11 +17,11 @@ import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 import org.bukkit.util.noise.SimplexOctaveGenerator;
 
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class DragonsBreath extends Spell implements DurationSpell, MagicDamageSpell, RadiusSpell {
     private static final int PERIOD = 1;
@@ -34,7 +35,8 @@ public class DragonsBreath extends Spell implements DurationSpell, MagicDamageSp
         this.setDescription("Enemies in a " + radius + " block cone in front of you " +
                 "suffer (" + damageAmt + " + &f" + damagePerLevel +
                 "x&7 lvl) magicʔ damage per second for " + duration + "s! " +
-                "Silences and stuns end this spell early.");
+                "Silences and stuns end this spell early. " +
+                "You have Slowness I applied whilst this effect is ongoing.");
     }
 
     private void conjureBreath(Player player) {
@@ -66,21 +68,20 @@ public class DragonsBreath extends Spell implements DurationSpell, MagicDamageSp
 
     @Override
     public void executeSpell(Player player, SpellItemType type) {
-        new BukkitRunnable() {
-            int count = 1;
+        this.addStatusEffect(player, RunicStatusEffect.SLOW_I, this.duration, false);
+        AtomicInteger count = new AtomicInteger(1);
 
-            @Override
-            public void run() {
-                if (count > duration
-                        || RunicCore.getStatusEffectAPI().hasStatusEffect(player.getUniqueId(), RunicStatusEffect.SILENCE)
-                        || RunicCore.getStatusEffectAPI().hasStatusEffect(player.getUniqueId(), RunicStatusEffect.STUN)) {
-                    this.cancel();
-                } else {
-                    count += PERIOD;
-                    conjureBreath(player);
-                }
+        Bukkit.getScheduler().runTaskTimer(RunicCore.getInstance(), task -> {
+            if (count.get() > duration
+                    || RunicCore.getStatusEffectAPI().hasStatusEffect(player.getUniqueId(), RunicStatusEffect.SILENCE)
+                    || RunicCore.getStatusEffectAPI().hasStatusEffect(player.getUniqueId(), RunicStatusEffect.STUN)) {
+                task.cancel();
+                removeStatusEffect(player, RunicStatusEffect.SLOW_I);
+            } else {
+                count.set(count.get() + PERIOD);
+                conjureBreath(player);
             }
-        }.runTaskTimer(RunicCore.getInstance(), 0, PERIOD * 20L);
+        }, 0, PERIOD * 20);
     }
 
     @Override

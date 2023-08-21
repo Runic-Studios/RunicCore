@@ -1,41 +1,57 @@
 package com.runicrealms.plugin.spellapi.spells.mage;
 
 import com.runicrealms.plugin.common.CharacterClass;
+import com.runicrealms.plugin.common.util.Pair;
+import com.runicrealms.plugin.events.MagicDamageEvent;
+import com.runicrealms.plugin.rdb.event.CharacterQuitEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.RadiusSpell;
+import com.runicrealms.plugin.spellapi.spelltypes.RunicStatusEffect;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.utilities.DamageUtil;
+import io.lumine.mythic.bukkit.events.MythicMobDeathEvent;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
 
+import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 /**
- * replaced with {@link Erupt}
+ * pyromancer spell 2
+ *
+ * @author BoBoBalloon
  */
-@Deprecated
-public class FireBlast extends Spell implements MagicDamageSpell, RadiusSpell {
+public class Erupt extends Spell implements MagicDamageSpell, RadiusSpell {
     private static final int MAX_DIST = 10;
     private static final double RAY_SIZE = 1.5D;
+    private static final int IGNITE_DURATION = 2000; //milliseconds
+    private final Map<UUID, Pair<UUID, Long>> ignited;
     private double knockupMultiplier;
     private double damage;
     private double damagePerLevel;
     private double radius;
 
-    public FireBlast() {
-        super("Fire Blast", CharacterClass.MAGE);
+    public Erupt() {
+        super("Erupt", CharacterClass.MAGE);
         this.setDescription("You erupt a powerful blast of fire at " +
                 "your target enemy or location that deals " +
                 "(" + damage + " + &f" + damagePerLevel
                 + "x&7 lvl) magicʔ damage to enemies within " + radius + " blocks and " +
-                "knocks them up!");
+                "knocks them up!\n" +
+                "Enemies you hit are marked with fire for the next " + (IGNITE_DURATION / 1000) + "s.\n" +
+                "Igniting this mark with another Pyromancer spell deals 3% of their max HP every 2 seconds for the next 4 seconds.\n" +
+                "During this time the enemy takes 20% less healing.");
+        this.ignited = new HashMap<>();
     }
 
     @Override
@@ -86,9 +102,37 @@ public class FireBlast extends Spell implements MagicDamageSpell, RadiusSpell {
         for (Entity entity : player.getWorld().getNearbyEntities(blastLocation, radius, radius, radius, target -> isValidEnemy(player, target))) {
             LivingEntity livingEntity = (LivingEntity) entity;
             DamageUtil.damageEntitySpell(damage, livingEntity, player, this);
+            this.ignited.put(livingEntity.getUniqueId(), Pair.pair(player.getUniqueId(), System.currentTimeMillis()));
             entity.getWorld().spawnParticle(Particle.FLAME, livingEntity.getEyeLocation(), 15, 0.5f, 0.5f, 0.5f, 0);
             entity.setVelocity(new Vector(0, 1, 0).normalize().multiply(knockupMultiplier));
         }
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    private void onMagicDamage(MagicDamageEvent event) {
+        if (!(event.getSpell() instanceof DragonsBreath || event.getSpell() instanceof Erupt || event.getSpell() instanceof Meteor)) {
+            return;
+        }
+
+        Pair<UUID, Long> ignite = this.ignited.get(event.getVictim().getUniqueId());
+
+        if (ignite == null || !event.getPlayer().getUniqueId().equals(ignite.first) || ignite.second + IGNITE_DURATION > System.currentTimeMillis()) {
+            return;
+        }
+
+        this.ignited.remove(event.getVictim().getUniqueId());
+
+        this.addStatusEffect(event.getVictim(), RunicStatusEffect.BLEED, 4, false);
+    }
+
+    @EventHandler
+    private void onCharacterQuit(CharacterQuitEvent event) {
+        this.ignited.remove(event.getPlayer().getUniqueId());
+    }
+
+    @EventHandler
+    private void onMythicMobDeath(MythicMobDeathEvent event) {
+        this.ignited.remove(event.getEntity().getUniqueId());
     }
 
     @Override

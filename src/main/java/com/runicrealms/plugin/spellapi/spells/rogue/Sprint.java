@@ -90,6 +90,7 @@ public class Sprint extends Spell implements DurationSpell {
     /**
      * This custom event is called when the player hits a target w/ empowered spring attack
      */
+    @Deprecated
     public static class EmpoweredSprintEvent extends Event implements Cancellable {
         private static final HandlerList handlers = new HandlerList();
         private final Player caster;

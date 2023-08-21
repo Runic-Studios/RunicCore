@@ -12,10 +12,12 @@ import com.runicrealms.plugin.spellapi.skilltrees.util.ClericTreeUtil;
 import com.runicrealms.plugin.spellapi.skilltrees.util.MageTreeUtil;
 import com.runicrealms.plugin.spellapi.skilltrees.util.RogueTreeUtil;
 import com.runicrealms.plugin.spellapi.skilltrees.util.WarriorTreeUtil;
+import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.data.annotation.Transient;
 
 import java.util.ArrayList;
@@ -285,4 +287,25 @@ public class SkillTreeData {
         return SubClass.determineSubClass(characterClass, position);
     }
 
+    /**
+     * A method used to check if the skill tree has this spell unlocked!
+     *
+     * @param spell the spell to check
+     * @return if the skill tree has this spell unlocked
+     */
+    public boolean hasSpellUnlocked(@Nullable Spell spell) {
+        if (spell == null) {
+            return false;
+        }
+
+        for (Perk perk : this.perks) {
+            if (!(perk instanceof PerkSpell spellPerk) || !spellPerk.getSpellName().equals(spell.getName())) {
+                continue;
+            }
+
+            return spellPerk.getCurrentlyAllocatedPoints() > 0;
+        }
+
+        return false;
+    }
 }

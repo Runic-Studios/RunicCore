@@ -99,8 +99,9 @@ public class SkillTreeManager implements Listener, SkillTreeAPI {
 
     @Override
     public SpellData loadSpellData(UUID uuid, Integer slot, CorePlayerData corePlayerData) {
-        if (corePlayerData.getSpellData(slot) != null) {
-            return corePlayerData.getSpellData(slot);
+        SpellData cached = corePlayerData.getSpellData(slot);
+        if (cached != null) {
+            return cached;
         }
         /*
         There is an architectural disconnect here, because SpellData is an embedded field of CorePlayerData, which
@@ -175,8 +176,8 @@ public class SkillTreeManager implements Listener, SkillTreeAPI {
     public void onCharacterSelect(CharacterSelectEvent event) {
         // For benchmarking
         long startTime = System.nanoTime();
-        event.getPluginsToLoadData().add("core.spells");
         event.getPluginsToLoadData().add("core.skillTrees");
+        event.getPluginsToLoadData().add("core.spells");
         Player player = event.getPlayer();
         UUID uuid = player.getUniqueId();
         int slot = event.getSlot();
@@ -187,25 +188,11 @@ public class SkillTreeManager implements Listener, SkillTreeAPI {
         String className = corePlayerData.getCharacter(slot).getClassType().getName();
 
 
-        TaskChain<?> spellSetupChain = RunicCore.newChain();
-        spellSetupChain
-                .asyncFirst(() -> loadSpellData(uuid, slot, (CorePlayerData) event.getSessionDataMongo()))
-                .abortIfNull(TaskChainUtil.CONSOLE_LOG, null, "RunicCore failed to load spells on join!")
-                .syncLast(spellData -> {
-                    corePlayerData.getSpellDataMap().put(slot, spellData); // Memoize spell data
-                    event.getPluginsToLoadData().remove("core.spells");
-                    // Calculate elapsed time
-                    long endTime = System.nanoTime();
-                    long elapsedTime = endTime - startTime;
-                    // Log elapsed time in milliseconds
-                    Bukkit.getLogger().info("RunicCore|spells took: " + elapsedTime / 1_000_000 + "ms to load");
-                })
-                .execute();
         // SkillTree setup (load from redis and memoize)
         TaskChain<?> skillTreeSetupChain = RunicCore.newChain();
         skillTreeSetupChain
                 .asyncFirst(() -> loadAllSkillTrees(uuid, slot, className, (CorePlayerData) event.getSessionDataMongo()))
-                .abortIfNull(TaskChainUtil.CONSOLE_LOG, null, "RunicCore failed to load spells on join!")
+                .abortIfNull(TaskChainUtil.CONSOLE_LOG, null, "RunicCore failed to load skill trees on join!")
                 .syncLast(skillTreeDataList -> {
                     corePlayerData.getSkillTreeDataMap().computeIfAbsent(slot, k -> new HashMap<>());
                     skillTreeDataList.forEach(skillTreeData -> {
@@ -214,13 +201,19 @@ public class SkillTreeManager implements Listener, SkillTreeAPI {
                         skillTreeData.addPassivesToMap(uuid);
                     });
                     event.getPluginsToLoadData().remove("core.skillTrees");
+                })
+                .asyncFirst(() -> loadSpellData(uuid, slot, (CorePlayerData) event.getSessionDataMongo()))
+                .abortIfNull(TaskChainUtil.CONSOLE_LOG, null, "RunicCore failed to load spells on join!")
+                .syncLast(spellData -> {
+                    corePlayerData.getSpellDataMap().put(slot, spellData); // Memoize spell data
+                    event.getPluginsToLoadData().remove("core.spells");
+                })
+                .execute(() -> {
                     // Calculate elapsed time
                     long endTime = System.nanoTime();
                     long elapsedTime = endTime - startTime;
                     // Log elapsed time in milliseconds
-                    Bukkit.getLogger().info("RunicCore|skillTrees took: " + elapsedTime / 1_000_000 + "ms to load");
-                })
-                .execute();
+                    Bukkit.getLogger().info("RunicCore|skilltree and RunicCore|spells both took: " + elapsedTime / 1_000_000 + "ms to load");
+                });
     }
-
 }

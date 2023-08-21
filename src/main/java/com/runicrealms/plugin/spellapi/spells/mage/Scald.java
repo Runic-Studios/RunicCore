@@ -1,7 +1,7 @@
 package com.runicrealms.plugin.spellapi.spells.mage;
 
-import com.runicrealms.plugin.events.MagicDamageEvent;
 import com.runicrealms.plugin.common.CharacterClass;
+import com.runicrealms.plugin.events.MagicDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.RadiusSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.utilities.DamageUtil;
@@ -13,7 +13,10 @@ import org.bukkit.event.EventPriority;
 
 /**
  * Logic for hit found in Fireball.
+ *
+ * @deprecated replaced with {@link CinderedTouch}
  */
+@Deprecated
 public class Scald extends Spell implements RadiusSpell {
     private static final double DAMAGE_PERCENT = .5;
     private double radius;

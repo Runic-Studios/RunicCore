@@ -6,7 +6,6 @@ import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.RadiusSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
-import com.runicrealms.plugin.spellapi.spelltypes.WarmupSpell;
 import com.runicrealms.plugin.spellapi.spellutil.VectorUtil;
 import com.runicrealms.plugin.spellapi.spellutil.particles.EntityTrail;
 import com.runicrealms.plugin.spellapi.spellutil.particles.HorizontalCircleFrame;
@@ -25,15 +24,15 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.ExplosionPrimeEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
 
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
 
-public class MeteorShower extends Spell implements MagicDamageSpell, RadiusSpell, WarmupSpell {
+public class Meteor extends Spell implements MagicDamageSpell, RadiusSpell {
     private static final int AMOUNT = 4;
     private static final int HEIGHT = 8;
     private static final int MAX_DIST = 12;
@@ -43,14 +42,12 @@ public class MeteorShower extends Spell implements MagicDamageSpell, RadiusSpell
     private double damage;
     private double radius;
     private double damagePerLevel;
-    private double warmup;
 
-    public MeteorShower() {
-        super("Meteor Shower", CharacterClass.MAGE);
+    public Meteor() {
+        super("Meteor", CharacterClass.MAGE);
         this.setDescription("You mark an area at your target " +
                 "enemy or location within " + MAX_DIST + " blocks! " +
-                "After " + warmup + "s, " +
-                "four projectile meteors rain from the shower that deal " +
+                "Four projectile meteors rain from the shower that deal " +
                 "(" + damage + " + &f" + damagePerLevel
                 + "x&7 lvl) magicʔ damage to enemies within " + radius + " blocks on impact!");
     }
@@ -80,7 +77,7 @@ public class MeteorShower extends Spell implements MagicDamageSpell, RadiusSpell
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_TNT_PRIMED, 0.5f, 1.0f);
         final Location[] trailLoc = {location.clone().add(0, HEIGHT, 0)};
         VectorUtil.drawLine(player, Particle.FLAME, Color.WHITE, trailLoc[0], location.clone().subtract(0, 20, 0), 2.5D, 5);
-        Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), () -> summonMeteorShower(player, location), (long) warmup * 20L);
+        summonMeteorShower(player, location);
     }
 
     /**
@@ -153,48 +150,32 @@ public class MeteorShower extends Spell implements MagicDamageSpell, RadiusSpell
     private void summonMeteorShower(Player player, Location location) {
         meteorCasterSet.add(player.getUniqueId());
         final Location[] meteorLocation = {location.clone().add(0, HEIGHT, 0)};
-        new BukkitRunnable() {
-            int count = 0;
+        AtomicInteger count = new AtomicInteger(0);
 
-            @Override
-            public void run() {
-                if (count >= AMOUNT) {
-                    this.cancel();
-                    meteorCasterSet.remove(player.getUniqueId());
-                } else {
-                    count += 1;
-                    final Vector velocity = new Vector(0, -1, 0).multiply(FIREBALL_SPEED);
-                    LargeFireball meteor = (LargeFireball) player.getWorld().spawnEntity(meteorLocation[0].setDirection(velocity), EntityType.FIREBALL);
-                    EntityTrail.entityTrail(meteor, Particle.FLAME);
-                    meteor.setInvulnerable(true);
-                    meteor.setIsIncendiary(false);
-                    meteor.setYield(0F);
-                    meteor.setShooter(player);
-                    player.getWorld().playSound(player.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 0.5f, 0.2f);
-                    // Repeatedly set velocity to prevent players redirecting meteor
-                    new BukkitRunnable() {
-                        @Override
-                        public void run() {
-                            if (!meteor.isDead()) {
-                                meteor.setVelocity(velocity);
-                            } else {
-                                this.cancel();
-                            }
-                        }
-                    }.runTaskTimer(RunicCore.getInstance(), 0L, 2L); // Every 2 ticks (1/10th of a second)
-                }
+        Bukkit.getScheduler().runTaskTimer(RunicCore.getInstance(), task -> {
+            if (count.get() >= AMOUNT) {
+                task.cancel();
+                meteorCasterSet.remove(player.getUniqueId());
+            } else {
+                count.set(count.get() + 1);
+                Vector velocity = new Vector(0, -1, 0).multiply(FIREBALL_SPEED);
+                LargeFireball meteor = (LargeFireball) player.getWorld().spawnEntity(meteorLocation[0].setDirection(velocity), EntityType.FIREBALL);
+                EntityTrail.entityTrail(meteor, Particle.FLAME);
+                meteor.setInvulnerable(true);
+                meteor.setIsIncendiary(false);
+                meteor.setYield(0F);
+                meteor.setShooter(player);
+                player.getWorld().playSound(player.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 0.5f, 0.2f);
+                // Repeatedly set velocity to prevent players redirecting meteor
+                Bukkit.getScheduler().runTaskTimer(RunicCore.getInstance(), velocityTask -> {
+                    if (!meteor.isDead()) {
+                        meteor.setVelocity(velocity);
+                    } else {
+                        velocityTask.cancel();
+                    }
+                }, 0, 2); //Every 2 ticks (1/10th of a second)
             }
-        }.runTaskTimer(RunicCore.getInstance(), 0L, 20L);
-    }
-
-    @Override
-    public double getWarmup() {
-        return warmup;
-    }
-
-    @Override
-    public void setWarmup(double warmup) {
-        this.warmup = warmup;
+        }, 0, 20);
     }
 }
 

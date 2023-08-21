@@ -148,9 +148,13 @@ public class CorePlayerData implements SessionDataMongo {
      * @return their spell data wrapper
      */
     public SpellData getSpellData(int slot) {
-        if (spellDataMap.get(slot) != null) {
-            return spellDataMap.get(slot).clean();
+        Map<SkillTreePosition, SkillTreeData> subclasses = this.skillTreeDataMap.get(slot);
+        CoreCharacterData character = this.coreCharacterDataMap.get(slot);
+
+        if (subclasses != null && character != null && this.spellDataMap.get(slot) != null) {
+            return this.spellDataMap.get(slot).clean(subclasses, character.getClassType().getName());
         }
+
         return null;
     }
 

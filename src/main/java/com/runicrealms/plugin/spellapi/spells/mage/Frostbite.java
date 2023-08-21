@@ -23,6 +23,11 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
 
+/**
+ * New cyromancer spell 1
+ *
+ * @author BoBoBalloon
+ */
 public class Frostbite extends Spell implements DistanceSpell, DurationSpell, RadiusSpell, MagicDamageSpell {
     private static final double ANGLE = Math.PI / 3; //60 degrees
     private double distance;

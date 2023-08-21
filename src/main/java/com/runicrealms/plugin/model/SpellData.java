@@ -2,7 +2,10 @@ package com.runicrealms.plugin.model;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Map;
 
 public class SpellData {
     public static final String DEFAULT_ARCHER = "Barrage";
@@ -95,25 +98,26 @@ public class SpellData {
     }
 
     @NotNull
-    public SpellData clean() {
+    @Contract("_, _ -> this")
+    public SpellData clean(@NotNull Map<SkillTreePosition, SkillTreeData> data, @NotNull String playerClass) {
         Spell one = RunicCore.getSpellAPI().getSpell(this.spellHotbarOne);
         Spell two = RunicCore.getSpellAPI().getSpell(this.spellLeftClick);
         Spell three = RunicCore.getSpellAPI().getSpell(this.spellRightClick);
         Spell four = RunicCore.getSpellAPI().getSpell(this.spellSwapHands);
 
-        if (one == null) {
+        if (one == null || !this.unlockedSpell(one, data, playerClass)) {
             this.spellHotbarOne = "";
         }
 
-        if (two == null) {
+        if (two == null || !this.unlockedSpell(two, data, playerClass)) {
             this.spellLeftClick = "";
         }
 
-        if (three == null) {
+        if (three == null || !this.unlockedSpell(three, data, playerClass)) {
             this.spellRightClick = "";
         }
 
-        if (four == null) {
+        if (four == null || !this.unlockedSpell(four, data, playerClass)) {
             this.spellSwapHands = "";
         }
 
@@ -132,4 +136,17 @@ public class SpellData {
         this.spellSwapHands = "";
     }
 
+    private boolean unlockedSpell(@NotNull Spell spell, @NotNull Map<SkillTreePosition, SkillTreeData> data, @NotNull String playerClass) {
+        if (SpellData.determineDefaultSpell(playerClass).equals(spell.getName())) {
+            return true;
+        }
+
+        for (SkillTreeData skillTree : data.values()) {
+            if (skillTree.hasSpellUnlocked(spell)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 }
