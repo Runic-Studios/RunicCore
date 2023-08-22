@@ -36,7 +36,7 @@ public class Cleave extends Spell implements PhysicalDamageSpell, DurationSpell,
 
     public Cleave() {
         super("Cleave", CharacterClass.WARRIOR);
-        this.setDescription("You brutally slash around yourself, dealing (" + this.damage + " +&f " + this.damagePerLevel + " x&7 lvl) physical⚔ damage every " + this.tick + "s for " + this.duration + "s! " +
+        this.setDescription("You brutally slash around yourself, dealing (" + this.damage + " + &f" + this.damagePerLevel + "x&7 lvl) physical⚔ damage every " + this.tick + "s for " + this.duration + "s! " +
                 "The last wound causes them to bleed!");
     }
 

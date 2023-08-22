@@ -27,14 +27,15 @@ import com.runicrealms.plugin.spellapi.spells.archer.Surge;
 import com.runicrealms.plugin.spellapi.spells.archer.ThunderArrow;
 import com.runicrealms.plugin.spellapi.spells.cleric.Accelerando;
 import com.runicrealms.plugin.spellapi.spells.cleric.AstralBlessing;
+import com.runicrealms.plugin.spellapi.spells.cleric.Battlecry;
 import com.runicrealms.plugin.spellapi.spells.cleric.Consecration;
 import com.runicrealms.plugin.spellapi.spells.cleric.CosmicPrism;
 import com.runicrealms.plugin.spellapi.spells.cleric.Diminuendo;
-import com.runicrealms.plugin.spellapi.spells.cleric.Discord;
 import com.runicrealms.plugin.spellapi.spells.cleric.DivineShield;
-import com.runicrealms.plugin.spellapi.spells.cleric.Encore;
+import com.runicrealms.plugin.spellapi.spells.cleric.GrandSymphony;
 import com.runicrealms.plugin.spellapi.spells.cleric.Lightwell;
 import com.runicrealms.plugin.spellapi.spells.cleric.Nightfall;
+import com.runicrealms.plugin.spellapi.spells.cleric.Powerslide;
 import com.runicrealms.plugin.spellapi.spells.cleric.Purify;
 import com.runicrealms.plugin.spellapi.spells.cleric.RadiantFire;
 import com.runicrealms.plugin.spellapi.spells.cleric.RadiantNova;
@@ -43,8 +44,8 @@ import com.runicrealms.plugin.spellapi.spells.cleric.Rejuvenate;
 import com.runicrealms.plugin.spellapi.spells.cleric.SacredSpring;
 import com.runicrealms.plugin.spellapi.spells.cleric.Sear;
 import com.runicrealms.plugin.spellapi.spells.cleric.Starlight;
+import com.runicrealms.plugin.spellapi.spells.cleric.Tempo;
 import com.runicrealms.plugin.spellapi.spells.cleric.TwilightResurgence;
-import com.runicrealms.plugin.spellapi.spells.cleric.Warsong;
 import com.runicrealms.plugin.spellapi.spells.mage.ArcaneSlash;
 import com.runicrealms.plugin.spellapi.spells.mage.Blink;
 import com.runicrealms.plugin.spellapi.spells.mage.Blizzard;
@@ -381,7 +382,6 @@ public class SpellManager implements Listener, SpellAPI {
         this.spellList.add(new Fireball());
         this.spellList.add(new Blink());
         this.spellList.add(new Meteor());
-        this.spellList.add(new Accelerando());
         this.spellList.add(new Rejuvenate());
         this.spellList.add(new Judgment());
         this.spellList.add(new Backstab());
@@ -393,7 +393,6 @@ public class SpellManager implements Listener, SpellAPI {
         this.spellList.add(new AxeToss());
         this.spellList.add(new Lunge());
         this.spellList.add(new Harpoon());
-        this.spellList.add(new Warsong());
         this.spellList.add(new ThunderArrow());
         this.spellList.add(new Sear());
         this.spellList.add(new SacredSpring());
@@ -410,8 +409,6 @@ public class SpellManager implements Listener, SpellAPI {
         this.spellList.add(new Manashield());
         this.spellList.add(new Rupture());
         this.spellList.add(new DivineShield());
-        this.spellList.add(new Encore());
-        this.spellList.add(new Discord());
         this.spellList.add(new RayOfLight());
         this.spellList.add(new Lightwell());
         this.spellList.add(new Purify());
@@ -468,6 +465,11 @@ public class SpellManager implements Listener, SpellAPI {
         this.spellList.add(new Bloodbath());
         this.spellList.add(new CinderedTouch());
         this.spellList.add(new Erupt());
+        this.spellList.add(new Battlecry());
+        this.spellList.add(new Accelerando());
+        this.spellList.add(new Powerslide());
+        this.spellList.add(new GrandSymphony());
+        this.spellList.add(new Tempo());
 
         /*
         Items

@@ -24,7 +24,7 @@ public class Bloodbath extends Spell {
     public Bloodbath() {
         super("Bloodbath", CharacterClass.WARRIOR);
         this.setIsPassive(true);
-        this.setDescription("Hitting an enemy with &aCleave&7 heals you for (STR x " + this.healingPerStrength + ")% of your missing HP. " +
+        this.setDescription("Hitting an enemy with &aCleave&7 heals you for (&eSTR&7 x " + this.healingPerStrength + ")% of your missing HP. " +
                 "Additionally you do " + (this.percent * 100) + "% more damage to bleeding enemies that are below " + (this.healthCeiling * 100) + "% max HP.");
     }
 

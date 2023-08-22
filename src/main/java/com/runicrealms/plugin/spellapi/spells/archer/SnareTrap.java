@@ -42,7 +42,7 @@ public class SnareTrap extends Spell implements DurationSpell, RadiusSpell, Warm
                 "s and lasts for " + this.trapDuration + "s. " +
                 "The first enemy to step over the trap triggers it, " +
                 "causing all enemies within " + this.radius + " " +
-                "blocks to take " + this.baseDamage + " (&f" + this.damagePerLevel + " x&7 " + " lvl) physical⚔ damage " +
+                "blocks to take " + this.baseDamage + " (&f" + this.damagePerLevel + "x&7 " + " lvl) physical⚔ damage " +
                 "while being rooted for " + this.stunDuration + "s!");
     }
 

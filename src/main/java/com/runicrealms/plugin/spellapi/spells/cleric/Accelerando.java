@@ -46,7 +46,7 @@ public class Accelerando extends Spell implements DurationSpell, RadiusSpell, At
         super("Accelerando", CharacterClass.CLERIC);
         this.setIsPassive(true);
         this.setDescription("Whenever you cast a &6Bard&7 spell, you and all allies within " + this.radius + " block radius gain\n" +
-                "Speed II and (" + this.base + " +&f " + this.multiplier + " x&e " + STAT.getPrefix() + "&7)% damage reduction for " + this.duration + "s.");
+                "Speed II and (" + this.base + " + &f" + this.multiplier + "x&e " + STAT.getPrefix() + "&7)% damage reduction for " + this.duration + "s.");
         this.damageReduction = new HashMap<>();
     }
 
@@ -71,6 +71,9 @@ public class Accelerando extends Spell implements DurationSpell, RadiusSpell, At
             this.applySpeed(ally);
             this.damageReduction.put(ally.getUniqueId(), Pair.pair(stat, now));
         }
+
+        this.applySpeed(event.getCaster());
+        this.damageReduction.put(event.getCaster().getUniqueId(), Pair.pair(stat, now));
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)

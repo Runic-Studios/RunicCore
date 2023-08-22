@@ -21,6 +21,10 @@ import org.bukkit.entity.Player;
 
 import java.util.Map;
 
+/**
+ * @deprecated replaced with {@link GrandSymphony}
+ */
+@Deprecated
 public class Discord extends Spell implements DurationSpell, MagicDamageSpell, RadiusSpell, WarmupSpell {
     private double warmup;
     private double damageAmt;

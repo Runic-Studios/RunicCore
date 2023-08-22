@@ -47,7 +47,7 @@ public class Jolt extends Spell implements MagicDamageSpell, RadiusSpell, Durati
     public Jolt() {
         super("Jolt", CharacterClass.ARCHER);
         this.setDescription("You fire a bolt of lightning, on hit it leaves electricity in a " + this.radius + " block radius for " + this.dissipateDuration + "s. " +
-                "if it hits an enemy, it deals (" + this.damage + " +&f " + this.damagePerLevel + " x&7 lvl) magicʔ damage to enemies every " + this.damageInterval + "s. " +
+                "if it hits an enemy, it deals (" + this.damage + " + &f" + this.damagePerLevel + "x&7 lvl) magicʔ damage to enemies every " + this.damageInterval + "s. " +
                 "The storm lasts for " + this.duration + "s.");
     }
 

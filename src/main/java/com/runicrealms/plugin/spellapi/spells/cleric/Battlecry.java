@@ -46,7 +46,7 @@ public class Battlecry extends Spell implements AttributeSpell, DurationSpell, M
 
     public Battlecry() {
         super("Battlecry", CharacterClass.CLERIC);
-        this.setDescription("You shout in a large " + this.attackRadius + " block area in front of you, dealing (" + this.damage + " +&f " + this.damagePerLevel + " x&7 lvl) magicʔ damage and knocking back targets.\n" +
+        this.setDescription("You shout in a large " + this.attackRadius + " block area in front of you, dealing (" + this.damage + " + &f" + this.damagePerLevel + "x&7 lvl) magicʔ damage and knocking back targets.\n" +
                 "Allies within " + this.buffRadius + " blocks of you gain (" + this.baseValue + " +&f " + this.multiplier + " x&e " + STAT.getPrefix() + "&7)% increased physical⚔ and magicʔ damage for the next " + this.duration + "s.");
         this.buffed = new HashMap<>();
     }
@@ -63,7 +63,7 @@ public class Battlecry extends Spell implements AttributeSpell, DurationSpell, M
         long now = System.currentTimeMillis();
 
         for (Entity entity : player.getNearbyEntities(this.buffRadius, this.buffRadius, this.buffRadius)) {
-            if (!(entity instanceof LivingEntity target) || player.equals(target) || !this.isValidAlly(player, target)) {
+            if (!(entity instanceof LivingEntity target) || !this.isValidAlly(player, target)) {
                 continue;
             }
 

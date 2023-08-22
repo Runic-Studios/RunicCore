@@ -10,6 +10,8 @@ import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.spellapi.spellutil.EntityUtil;
 import com.runicrealms.plugin.utilities.DamageUtil;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -34,29 +36,52 @@ public class Powerslide extends Spell implements DistanceSpell, PhysicalDamageSp
     public Powerslide() {
         super("Powerslide", CharacterClass.CLERIC);
         this.setDescription("Slide forwards " + this.distance + " blocks, enemies hit are pushed out of the way,\n" +
-                "take (" + this.damage + " +&f " + this.damagePerLevel + " x&7 lvl) physical⚔ damage and are silenced for " + this.debuffDuration + "s.\n" +
+                "take (" + this.damage + " + &f" + this.damagePerLevel + "x&7 lvl) physical⚔ damage and are silenced for " + this.debuffDuration + "s.\n" +
                 "If you hit at least one enemy with this spell, lower its cooldown by " + this.cooldownReduction + "s.");
     }
 
     @Override
     public void executeSpell(Player player, SpellItemType type) {
-        Vector direction = player.getLocation().getDirection().setY(0).multiply(this.distance);
-        player.getVelocity().add(direction);
+        Location origin = player.getLocation().clone();
+        Vector baseDirection = player.getLocation().getDirection();
+
+        Vector direction = baseDirection.clone().setY(0).normalize().multiply(this.distance);
+        player.setVelocity(player.getVelocity().add(direction));
+
+        Bukkit.getScheduler().runTaskTimerAsynchronously(RunicCore.getInstance(), task -> {
+            if (origin.distance(player.getLocation()) >= this.distance) {
+                player.setVelocity(new Vector(0, 0, 0));
+                task.cancel();
+            }
+        }, 0, 1);
 
         List<Entity> targets = EntityUtil.getEnemiesInCone(player, (float) this.distance, DEGREES, entity -> this.isValidEnemy(player, entity));
+
+        if (targets.isEmpty()) {
+            return;
+        }
+
+        // Compute the rightward vector for later use in determining left/right
+        Vector rightward = new Vector(-baseDirection.getZ(), 0, baseDirection.getX());
 
         for (Entity entity : targets) {
             LivingEntity target = (LivingEntity) entity;
 
-            Vector sidePush = new Vector(-direction.getZ(), 1, direction.getX()).normalize();
-            target.setVelocity(sidePush.multiply(1.5));  // Adjust the multiplier for how strong the side push should be
+            Vector targetVector = target.getLocation().clone().subtract(player.getLocation()).toVector().normalize();
 
-            DamageUtil.damageEntitySpell(this.damage, target, player, this);
+            double dot = targetVector.dot(rightward);
+
+            // Check the Y component of the cross product to determine the side
+            if (dot > 0) {
+                // Entity is to the right of the player
+                entity.setVelocity(rightward.clone().multiply(4));
+            } else {
+                // Entity is to the left of the player
+                entity.setVelocity(rightward.clone().multiply(-4));
+            }
+
+            DamageUtil.damageEntityPhysical(this.damage, target, player, false, false, false, this);
             this.addStatusEffect(target, RunicStatusEffect.SILENCE, this.debuffDuration, false);
-        }
-
-        if (targets.isEmpty()) {
-            return;
         }
 
         RunicCore.getSpellAPI().reduceCooldown(player, this, this.cooldownReduction);
