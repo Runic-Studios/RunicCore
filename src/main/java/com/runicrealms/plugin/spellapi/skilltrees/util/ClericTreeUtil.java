@@ -15,18 +15,18 @@ public class ClericTreeUtil {
 
     public static List<Perk> bardPerkList() {
         List<Perk> perks = new ArrayList<>();
-        perks.add(new PerkSpell(36, 1, 0, 1, "Warsong"));
+        perks.add(new PerkSpell(36, 1, 0, 1, "Battlecry"));
         perks.add(new PerkBaseStat(37, 1, 0, 5, Stat.INTELLIGENCE));
         perks.add(new PerkSpell(38, 1, 0, 1, "Accelerando"));
         perks.add(new PerkBaseStat(39, 1, 0, 3, Stat.DEXTERITY));
         perks.add(new PerkBaseStat(40, 1, 0, 3, Stat.INTELLIGENCE));
-        perks.add(new PerkSpell(41, 1, 0, 1, "Diminuendo"));
+        perks.add(new PerkSpell(41, 1, 0, 1, "Powerslide"));
         perks.add(new PerkBaseStat(42, 1, 0, 3, Stat.DEXTERITY));
         perks.add(new PerkBaseStat(43, 1, 0, 3, Stat.INTELLIGENCE));
         perks.add(new PerkBaseStat(44, 1, 0, 5, Stat.DEXTERITY));
-        perks.add(new PerkSpell(45, 1, 0, 1, "Discord"));
+        perks.add(new PerkSpell(45, 1, 0, 1, "Grand Symphony"));
         perks.add(new PerkBaseStat(46, 1, 0, 3, Stat.INTELLIGENCE));
-        perks.add(new PerkSpell(47, 1, 0, 1, "Encore"));
+        perks.add(new PerkSpell(47, 1, 0, 1, "Tempo"));
         return perks;
     }
 

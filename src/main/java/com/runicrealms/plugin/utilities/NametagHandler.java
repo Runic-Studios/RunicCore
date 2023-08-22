@@ -3,7 +3,7 @@ package com.runicrealms.plugin.utilities;
 import com.nametagedit.plugin.NametagEdit;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.api.event.NameTagEvent;
-import com.runicrealms.plugin.events.EnvironmentDamage;
+import com.runicrealms.plugin.events.EnvironmentDamageEvent;
 import com.runicrealms.plugin.events.HealthRegenEvent;
 import com.runicrealms.plugin.events.MagicDamageEvent;
 import com.runicrealms.plugin.events.MobDamageEvent;
@@ -43,7 +43,7 @@ public class NametagHandler implements Listener {
     }
 
     @EventHandler
-    public void onGenericDamage(EnvironmentDamage event) {
+    public void onGenericDamage(EnvironmentDamageEvent event) {
         if (!(event.getVictim() instanceof Player player)) return;
         updateHealthBar(player);
     }

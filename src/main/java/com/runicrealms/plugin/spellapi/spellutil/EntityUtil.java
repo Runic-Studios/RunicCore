@@ -32,7 +32,7 @@ public final class EntityUtil {
      * @return the entities in a cone in front of the player
      */
     @NotNull
-    public static List<Entity> getEnemiesInCone(@NotNull Player player, int radius, double degrees, @Nullable Predicate<Entity> predicate) {
+    public static List<Entity> getEnemiesInCone(@NotNull Player player, float radius, double degrees, @Nullable Predicate<Entity> predicate) {
         List<Entity> entitiesInCone = new ArrayList<>();
         Vector direction = player.getLocation().getDirection();
 
@@ -45,7 +45,7 @@ public final class EntityUtil {
 
             // Checking line of sight
             boolean hasLineOfSight = true;
-            for (Block block : player.getLineOfSight(null, radius)) {
+            for (Block block : player.getLineOfSight(null, Math.round(radius))) {
                 if (block.getLocation().distance(entity.getLocation()) < 1.0) {
                     hasLineOfSight = false;
                     break;
@@ -70,7 +70,7 @@ public final class EntityUtil {
      * @return the entities in a cone in front of the player
      */
     @NotNull
-    public static List<Entity> getEnemiesInCone(@NotNull Player player, int radius, double degrees) {
+    public static List<Entity> getEnemiesInCone(@NotNull Player player, float radius, double degrees) {
         return EntityUtil.getEnemiesInCone(player, radius, degrees, null);
     }
 }

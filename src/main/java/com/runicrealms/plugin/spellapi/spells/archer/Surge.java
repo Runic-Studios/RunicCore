@@ -2,7 +2,7 @@ package com.runicrealms.plugin.spellapi.spells.archer;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.common.CharacterClass;
-import com.runicrealms.plugin.events.EnvironmentDamage;
+import com.runicrealms.plugin.events.EnvironmentDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
@@ -124,9 +124,9 @@ public class Surge extends Spell implements DurationSpell {
      * Disable fall damage for players who are surging
      */
     @EventHandler(priority = EventPriority.LOW)
-    public void onFallDamage(EnvironmentDamage event) {
+    public void onFallDamage(EnvironmentDamageEvent event) {
         if (!surgeTasks.containsKey(event.getVictim().getUniqueId())) return;
-        if (event.getCause() == EnvironmentDamage.DamageCauses.FALL_DAMAGE)
+        if (event.getCause() == EnvironmentDamageEvent.DamageCauses.FALL_DAMAGE)
             event.setCancelled(true);
     }
 

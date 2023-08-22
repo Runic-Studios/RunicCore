@@ -1,17 +1,31 @@
 package com.runicrealms.plugin.events;
 
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.event.HandlerList;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * This custom event is called for damage sources OTHER than entities (lava, fall, etc.)
  */
-public class EnvironmentDamage extends RunicDamageEvent {
+public class EnvironmentDamageEvent extends RunicDamageEvent {
+    private static final HandlerList HANDLER = new HandlerList();
     private final DamageCauses cause;
 
-    public EnvironmentDamage(LivingEntity victim, int amount, DamageCauses cause) {
+    public EnvironmentDamageEvent(LivingEntity victim, int amount, DamageCauses cause) {
         super(victim, amount);
         this.cause = cause;
+    }
+
+    @NotNull
+    @Override
+    public HandlerList getHandlers() {
+        return HANDLER;
+    }
+
+    @NotNull
+    public static HandlerList getHandlerList() {
+        return HANDLER;
     }
 
     /**

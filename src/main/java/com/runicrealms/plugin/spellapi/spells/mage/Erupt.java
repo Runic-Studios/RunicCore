@@ -6,7 +6,6 @@ import com.runicrealms.plugin.events.MagicDamageEvent;
 import com.runicrealms.plugin.rdb.event.CharacterQuitEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.RadiusSpell;
-import com.runicrealms.plugin.spellapi.spelltypes.RunicStatusEffect;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.utilities.DamageUtil;
@@ -14,6 +13,7 @@ import io.lumine.mythic.bukkit.events.MythicMobDeathEvent;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -49,8 +49,7 @@ public class Erupt extends Spell implements MagicDamageSpell, RadiusSpell {
                 + "x&7 lvl) magicʔ damage to enemies within " + radius + " blocks and " +
                 "knocks them up!\n" +
                 "Enemies you hit are marked with fire for the next " + (IGNITE_DURATION / 1000) + "s.\n" +
-                "Igniting this mark with another Pyromancer spell deals 3% of their max HP every 2 seconds for the next 4 seconds.\n" +
-                "During this time the enemy takes 20% less healing.");
+                "Igniting this mark with another &6Pyromancer&7 spell deals a bonus 5% max HP magicʔ damage instantly.");
         this.ignited = new HashMap<>();
     }
 
@@ -122,7 +121,9 @@ public class Erupt extends Spell implements MagicDamageSpell, RadiusSpell {
 
         this.ignited.remove(event.getVictim().getUniqueId());
 
-        this.addStatusEffect(event.getVictim(), RunicStatusEffect.BLEED, 4, false);
+        int damage = (int) (event.getVictim().getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue() * 0.05);
+
+        event.setAmount(event.getAmount() + damage);
     }
 
     @EventHandler
