@@ -163,11 +163,13 @@ public class StatusEffectManager implements Listener, StatusEffectAPI {
 
         long startTime = statusEffectMap.get(uuid).get(effect).first;
         double duration = statusEffectMap.get(uuid).get(effect).second;
-        if (System.currentTimeMillis() - startTime > (duration * 1000)) {
+        long now = System.currentTimeMillis();
+
+        if (now - startTime > (duration * 1000)) {
             return 0;
         }
 
-        return ((double) startTime / 1000) - duration;
+        return duration - ((double) (now - startTime) / 1000);
     }
 
     @EventHandler(priority = EventPriority.LOW)

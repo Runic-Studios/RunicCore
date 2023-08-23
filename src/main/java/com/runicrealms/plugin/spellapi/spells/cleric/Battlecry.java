@@ -32,7 +32,7 @@ import java.util.UUID;
  *
  * @author BoBoBalloon
  */
-public class Battlecry extends Spell implements AttributeSpell, DurationSpell, MagicDamageSpell {
+public class Battlecry extends Spell implements AttributeSpell, DurationSpell, MagicDamageSpell, Tempo.Influenced {
     private static final Stat STAT = Stat.INTELLIGENCE;
     private static final double DEGREES = Math.PI / 3;
     private final Map<UUID, Pair<Integer, Long>> buffed;
@@ -53,6 +53,8 @@ public class Battlecry extends Spell implements AttributeSpell, DurationSpell, M
 
     @Override
     public void executeSpell(Player player, SpellItemType type) {
+        this.removeExtraDuration(player);
+
         for (Entity entity : EntityUtil.getEnemiesInCone(player, this.attackRadius, DEGREES, entity -> !player.equals(entity) && this.isValidEnemy(player, entity))) {
             LivingEntity target = (LivingEntity) entity;
             player.getWorld().spawnParticle(Particle.VILLAGER_ANGRY, target.getLocation(), 5, Math.random() * 2, Math.random(), Math.random() * 2);
@@ -74,18 +76,19 @@ public class Battlecry extends Spell implements AttributeSpell, DurationSpell, M
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     private void onPhysicalDamage(PhysicalDamageEvent event) {
-        this.damage(event, event.getPlayer().getUniqueId());
+        this.damage(event, event.getPlayer());
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     private void onMagicDamage(MagicDamageEvent event) {
-        this.damage(event, event.getPlayer().getUniqueId());
+        this.damage(event, event.getPlayer());
     }
 
-    private void damage(@NotNull RunicDamageEvent event, @NotNull UUID caster) {
-        Pair<Integer, Long> data = this.buffed.get(caster);
+    private void damage(@NotNull RunicDamageEvent event, @NotNull Player caster) {
+        Pair<Integer, Long> data = this.buffed.get(caster.getUniqueId());
 
-        if (data == null || System.currentTimeMillis() > data.second + (this.duration * 1000)) {
+        if (data == null || System.currentTimeMillis() > data.second + (this.getDuration(caster) * 1000)) {
+            this.removeExtraDuration(caster);
             return;
         }
 

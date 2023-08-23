@@ -1,10 +1,15 @@
 package com.runicrealms.plugin.spellapi.spells.cleric;
 
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.api.event.BasicAttackEvent;
 import com.runicrealms.plugin.common.CharacterClass;
+import com.runicrealms.plugin.events.MagicDamageEvent;
+import com.runicrealms.plugin.events.MobDamageEvent;
+import com.runicrealms.plugin.rdb.event.CharacterQuitEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.RadiusSpell;
+import com.runicrealms.plugin.spellapi.spelltypes.RunicStatusEffect;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.utilities.DamageUtil;
@@ -14,8 +19,13 @@ import org.bukkit.Particle;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.IntStream;
 
@@ -24,33 +34,43 @@ import java.util.stream.IntStream;
  *
  * @author BoBoBalloon
  */
-public class GrandSymphony extends Spell implements RadiusSpell, MagicDamageSpell, DurationSpell {
+public class GrandSymphony extends Spell implements RadiusSpell, MagicDamageSpell, DurationSpell, Tempo.Influenced {
     private static final int PARTICLES_PER_RING = 15;
+    private final Map<UUID, Long> debuffed;
     private double[] ranges;
     private double radius;
     private double damage;
     private double damagePerLevel;
     private double duration;
+    private double debuffDuration;
+    private double debuffRatio;
 
     public GrandSymphony() {
         super("Grand Symphony", CharacterClass.CLERIC);
-        this.setDescription("You pulse waves of ADJECTIVE magic every 1s for " + this.duration + "s in a " + this.radius + " block radius,\n" +
-                "dealing (" + this.damage + " + &f" + this.damagePerLevel + "x&7 lvl) magicʔ damage and ADDITIONAL EFFECT HERE");
+        this.setDescription("You pulse waves of resonating magic every 1s for " + this.duration + "s in a " + this.radius + " block radius,\n" +
+                "dealing (" + this.damage + " + &f" + this.damagePerLevel + "x&7 lvl) magicʔ damage and reducing enemy attack speed by " + (this.debuffRatio * 100) + "% and spell damage by " + (this.debuffRatio * 50) + "% for " + this.debuffDuration + "s\n" +
+                "Against mobs, this reduces their damage by " + (this.debuffRatio * 100) + "% instead.\n" +
+                "If this spell pulses 6 times, the pulse also stuns enemies hit for " + this.debuffDuration + "s.");
+        this.debuffed = new HashMap<>();
     }
 
     @Override
     public void executeSpell(Player player, SpellItemType type) {
+        this.removeExtraDuration(player);
+
         Particle.DustOptions option = new Particle.DustOptions(Color.YELLOW, 2);
 
         AtomicInteger count = new AtomicInteger(1);
 
         Bukkit.getScheduler().runTaskTimer(RunicCore.getInstance(), task -> {
-            if (count.get() > this.duration) {
+            if (count.get() > this.getDuration(player) || count.get() > this.getMaxExtraDuration()) {
                 task.cancel();
                 return;
             }
 
             this.particleWave(player, option);
+
+            long now = System.currentTimeMillis();
 
             for (Entity entity : player.getNearbyEntities(this.radius, this.radius, this.radius)) {
                 if (!(entity instanceof LivingEntity target) || !this.isValidEnemy(player, target)) {
@@ -58,10 +78,62 @@ public class GrandSymphony extends Spell implements RadiusSpell, MagicDamageSpel
                 }
 
                 DamageUtil.damageEntitySpell(this.damage, target, player, false, this);
+                this.debuffed.put(target.getUniqueId(), now);
+
+                if (count.get() >= this.getMaxExtraDuration()) {
+                    this.addStatusEffect(target, RunicStatusEffect.STUN, this.debuffDuration, true);
+                }
             }
 
             count.set(count.get() + 1);
         }, 0, 20);
+    }
+
+    /**
+     * When a player attacks but their cooldown is debuffed
+     */
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    private void onBasicAttack(BasicAttackEvent event) {
+        Long lastUsed = this.debuffed.get(event.getPlayer().getUniqueId());
+
+        if (lastUsed == null || System.currentTimeMillis() > lastUsed + (this.debuffDuration * 1000)) {
+            return;
+        }
+
+        event.setCooldownTicks((int) (event.getCooldownTicks() * (1 + this.debuffRatio)));
+    }
+
+    /**
+     * When a player deals damage with a spell but is debuffed
+     */
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    private void onMagicDamage(MagicDamageEvent event) {
+        Long lastUsed = this.debuffed.get(event.getPlayer().getUniqueId());
+
+        if (lastUsed == null || System.currentTimeMillis() > lastUsed + (this.debuffDuration * 1000)) {
+            return;
+        }
+
+        event.setAmount((int) (event.getAmount() * (1 - (this.debuffRatio / 2))));
+    }
+
+    /**
+     * When a mob deals damage with but is debuffed
+     */
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    private void onMobDamage(MobDamageEvent event) {
+        Long lastUsed = this.debuffed.get(event.getEntity().getUniqueId());
+
+        if (lastUsed == null || System.currentTimeMillis() > lastUsed + (this.debuffDuration * 1000)) {
+            return;
+        }
+
+        event.setAmount((int) (event.getAmount() * (1 - this.debuffRatio)));
+    }
+
+    @EventHandler
+    private void onCharacterQuit(CharacterQuitEvent event) {
+        this.debuffed.remove(event.getPlayer().getUniqueId());
     }
 
     private void particleWave(@NotNull Player player, @NotNull Particle.DustOptions option) {
@@ -78,7 +150,7 @@ public class GrandSymphony extends Spell implements RadiusSpell, MagicDamageSpel
             this.drawParticleRing(player, radius, option);
 
             index.set(index.get() + 1);
-        }, 0, 5);
+        }, 0, 10);
     }
 
     private void drawParticleRing(@NotNull Player player, double radius, @NotNull Particle.DustOptions option) {
@@ -89,6 +161,15 @@ public class GrandSymphony extends Spell implements RadiusSpell, MagicDamageSpel
 
             player.spawnParticle(Particle.REDSTONE, x, player.getLocation().getY(), z, 1, option);
         }
+    }
+
+    @Override
+    protected void loadSpellSpecificData(Map<String, Object> spellData) {
+        super.loadSpellSpecificData(spellData);
+        Number debuffDuration = (Number) spellData.getOrDefault("debuff-duration", 2);
+        this.debuffDuration = debuffDuration.doubleValue();
+        Number debuffRatio = (Number) spellData.getOrDefault("debuff-ratio", 0.5);
+        this.debuffRatio = debuffRatio.doubleValue();
     }
 
     @Override
@@ -130,5 +211,10 @@ public class GrandSymphony extends Spell implements RadiusSpell, MagicDamageSpel
     @Override
     public void setDuration(double duration) {
         this.duration = duration;
+    }
+
+    @Override
+    public double getMaxExtraDuration() {
+        return 6;
     }
 }

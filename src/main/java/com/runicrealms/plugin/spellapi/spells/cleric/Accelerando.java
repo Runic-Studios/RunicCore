@@ -20,6 +20,7 @@ import org.bukkit.Color;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -34,7 +35,7 @@ import java.util.UUID;
  *
  * @author BoBoBalloon
  */
-public class Accelerando extends Spell implements DurationSpell, RadiusSpell, AttributeSpell {
+public class Accelerando extends Spell implements DurationSpell, RadiusSpell, AttributeSpell, Tempo.Influenced {
     private static final Stat STAT = Stat.INTELLIGENCE;
     private final Map<UUID, Pair<Integer, Long>> damageReduction;
     private double duration;
@@ -68,11 +69,13 @@ public class Accelerando extends Spell implements DurationSpell, RadiusSpell, At
                 continue;
             }
 
-            this.applySpeed(ally);
+            this.removeExtraDuration(ally);
+            this.applySpeed(event.getCaster(), ally);
             this.damageReduction.put(ally.getUniqueId(), Pair.pair(stat, now));
         }
 
-        this.applySpeed(event.getCaster());
+        this.removeExtraDuration(event.getCaster());
+        this.applySpeed(event.getCaster(), event.getCaster());
         this.damageReduction.put(event.getCaster().getUniqueId(), Pair.pair(stat, now));
     }
 
@@ -107,9 +110,14 @@ public class Accelerando extends Spell implements DurationSpell, RadiusSpell, At
      * @param event the event
      */
     private void reduceDamage(@NotNull RunicDamageEvent event) {
+        if (!(event.getVictim() instanceof Player player)) {
+            return;
+        }
+
         Pair<Integer, Long> data = this.damageReduction.get(event.getVictim().getUniqueId());
 
-        if (data == null || System.currentTimeMillis() > data.second + (this.duration * 1000)) {
+        if (data == null || System.currentTimeMillis() > data.second + (this.getDuration(player) * 1000)) {
+            this.removeExtraDuration(player);
             return; //if not in map or they are in map but the duration is already over
         }
 
@@ -119,16 +127,27 @@ public class Accelerando extends Spell implements DurationSpell, RadiusSpell, At
     }
 
     /**
-     * @param player to receive speed
+     * @param target to receive speed
      * @author Skyfallin
      */
-    private void applySpeed(@NotNull Player player) {
+    private void applySpeed(@NotNull Player caster, @NotNull LivingEntity target) {
         // Begin sound effects
-        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 0.5F, 0.7F);
+        target.getWorld().playSound(target.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 0.5F, 0.7F);
         // Add player effects
-        addStatusEffect(player, RunicStatusEffect.SPEED_II, this.duration, false);
-        player.getWorld().spawnParticle(Particle.REDSTONE, player.getLocation(),
+        addStatusEffect(target, RunicStatusEffect.SPEED_II, this.getDuration(caster), false);
+        target.getWorld().spawnParticle(Particle.REDSTONE, target.getLocation(),
                 25, 0.5f, 0.5f, 0.5f, 0, new Particle.DustOptions(Color.WHITE, 20));
+    }
+
+    @Override
+    public void increaseExtraDuration(@NotNull Player player, double seconds) {
+        Tempo.Influenced.super.increaseExtraDuration(player, seconds);
+
+        double duration = RunicCore.getStatusEffectAPI().getStatusEffectDuration(player.getUniqueId(), RunicStatusEffect.SPEED_II);
+
+        if (duration > 0) {
+            this.addStatusEffect(player, RunicStatusEffect.SPEED_II, duration + seconds, false);
+        }
     }
 
     @Override
