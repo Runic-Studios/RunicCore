@@ -7,7 +7,6 @@ import com.runicrealms.plugin.events.MagicDamageEvent;
 import com.runicrealms.plugin.events.MobDamageEvent;
 import com.runicrealms.plugin.events.PhysicalDamageEvent;
 import com.runicrealms.plugin.events.SpellCastEvent;
-import com.runicrealms.plugin.player.CombatType;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -27,16 +26,14 @@ public class Combat extends Spell {
         this.setDisplayCastMessage(false);
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST) // last
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true) // last
     public void onEnterCombat(EnterCombatEvent event) {
-        if (event.isCancelled()) return;
-        if (isOnCooldown(event.getPlayer())) return;
-        if (event.getCombatType() == CombatType.PLAYER) {
-            Bukkit.getPluginManager().callEvent(new SpellCastEvent(event.getPlayer(), RunicCore.getSpellAPI().getSpell("Combat")));
-        } else {
-            Bukkit.getPluginManager().callEvent(new SpellCastEvent(event.getPlayer(), RunicCore.getSpellAPI().getSpell("Combat")));
-            RunicCore.getSpellAPI().reduceCooldown(event.getPlayer(), this, CombatType.PLAYER.getCooldown() - CombatType.MOB.getCooldown());
+        if (this.isOnCooldown(event.getPlayer())) {
+            return;
         }
+
+        Bukkit.getPluginManager().callEvent(new SpellCastEvent(event.getPlayer(), this));
+        this.resetCombatTimerDisplay(event.getPlayer());
     }
 
     @EventHandler(priority = EventPriority.HIGHEST) // last
@@ -83,5 +80,9 @@ public class Combat extends Spell {
         resetCombatTimerDisplay(player);
     }
 
+    @Override
+    public double getCooldown() {
+        return 1;
+    }
 }
 
