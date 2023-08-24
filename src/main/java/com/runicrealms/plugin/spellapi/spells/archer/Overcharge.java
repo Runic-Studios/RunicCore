@@ -246,7 +246,7 @@ public class Overcharge extends Spell implements DurationSpell {
      * When a player is overcharged, they gain a cooldown reduction on their primary fire
      */
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
-    //priority is high so it runs after Barrage, it should stack with it
+    //priority is high so it runs after RapidFire, it should stack with it
     public void onBasicAttack(BasicAttackEvent event) {
         if (!this.hasPassive(event.getPlayer().getUniqueId(), this.getName()) || !this.isOvercharged(event.getPlayer().getUniqueId())) {
             return;

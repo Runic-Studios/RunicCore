@@ -1,5 +1,6 @@
 package com.runicrealms.plugin.spellapi.spells.archer;
 
+import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.common.CharacterClass;
 import com.runicrealms.plugin.common.util.Pair;
 import com.runicrealms.plugin.events.PhysicalDamageEvent;
@@ -57,7 +58,11 @@ public class RefreshingVolley extends Spell implements HealingSpell, DistanceSpe
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true) // late
     public void onRangedPhysicalDamage(PhysicalDamageEvent event) {
-        if (!event.isRanged() || !this.hasPassive(event.getPlayer().getUniqueId(), this.getName()) || !Barrage.isUsing(event.getPlayer())) {
+        if (!event.isRanged() || !this.hasPassive(event.getPlayer().getUniqueId(), this.getName())) {
+            return;
+        }
+
+        if (!(RunicCore.getSpellAPI().getSpell("Rapid Fire") instanceof RapidFire rapidFire) || !rapidFire.isUsing(event.getPlayer())) {
             return;
         }
 
