@@ -1,4 +1,4 @@
-package com.runicrealms.plugin.loot;
+package com.runicrealms.plugin.loot.chest;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -68,7 +68,6 @@ public class LootChestInventory implements Listener, InventoryHolder {
 
     public void close(Player player) {
         if (player.getOpenInventory().getTopInventory().getHolder() == this) {
-            player.closeInventory();
             onCloseActions.forEach(action -> action.accept(player));
         }
         onCloseActions.clear();

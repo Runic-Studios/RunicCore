@@ -4,6 +4,12 @@ import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.api.LootAPI;
 import com.runicrealms.plugin.common.RunicCommon;
 import com.runicrealms.plugin.common.util.ColorUtil;
+import com.runicrealms.plugin.loot.chest.LootChestConditions;
+import com.runicrealms.plugin.loot.chest.LootChestPosition;
+import com.runicrealms.plugin.loot.chest.LootChestTemplate;
+import com.runicrealms.plugin.loot.chest.RegenerativeLootChest;
+import com.runicrealms.plugin.loot.chest.TimedLoot;
+import com.runicrealms.plugin.loot.chest.TimedLootChest;
 import com.runicrealms.plugin.runicitems.RunicItemsAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -11,6 +17,7 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
@@ -376,7 +383,7 @@ public class LootManager implements LootAPI {
     }
 
     @Override
-    public void createRegenerativeLootChest(RegenerativeLootChest regenerativeLootChest) {
+    public void createRegenerativeLootChest(@NotNull RegenerativeLootChest regenerativeLootChest) {
         int id = nextRegenLootChestID;
         regenLootChestsConfig.set("chests." + id + ".location.world", Objects.requireNonNull(regenerativeLootChest.getPosition().getLocation().getWorld()).getName());
         regenLootChestsConfig.set("chests." + id + ".location.x", regenerativeLootChest.getPosition().getLocation().getBlockX());
@@ -400,7 +407,7 @@ public class LootManager implements LootAPI {
     }
 
     @Override
-    public void deleteRegenerativeLootChest(RegenerativeLootChest regenerativeLootChest) {
+    public void deleteRegenerativeLootChest(@NotNull RegenerativeLootChest regenerativeLootChest) {
         try {
             for (String key : Objects.requireNonNull(regenLootChestsConfig.getConfigurationSection("chests")).getKeys(false)) {
                 if (Objects.requireNonNull(regenLootChestsConfig.getString("chests." + key + ".location.world"))
@@ -421,34 +428,36 @@ public class LootManager implements LootAPI {
     }
 
     @Override
-    public boolean isLootChestTemplate(String identifier) {
+    public boolean isLootChestTemplate(@NotNull String identifier) {
         return lootChestTemplates.containsKey(identifier);
     }
 
+    @NotNull
     @Override
     public Collection<LootChestTemplate> getChestTemplates() {
         return lootChestTemplates.values();
     }
 
+    @NotNull
     @Override
     public Collection<RegenerativeLootChest> getRegenerativeLootChests() {
         return regenLootChests.values();
     }
 
     @Override
-    public void displayTimedLootChest(Player player, TimedLootChest chest) {
+    public void displayTimedLootChest(@NotNull Player player, @NotNull TimedLootChest chest) {
         clientLootManager.displayTimedLootChest(player, chest);
     }
 
     @Nullable
     @Override
-    public BossTimedLoot getBossTimedLoot(String mmID) {
+    public BossTimedLoot getBossTimedLoot(@NotNull String mmID) {
         return bossTimedLoot.get(mmID);
     }
 
     @Nullable
     @Override
-    public CustomTimedLoot getCustomTimedLoot(String identifier) {
+    public CustomTimedLoot getCustomTimedLoot(@NotNull String identifier) {
         return customTimedLoot.get(identifier);
     }
 
@@ -463,21 +472,21 @@ public class LootManager implements LootAPI {
     }
 
     @Override
-    public LootTable getLootTable(String identifier) {
+    public LootTable getLootTable(@NotNull String identifier) {
         if (!lootTables.containsKey(identifier))
             throw new IllegalArgumentException("Cannot get loot table " + identifier + " because it does not exist");
         return lootTables.get(identifier);
     }
 
     @Override
-    public LootChestTemplate getLootChestTemplate(String identifier) {
+    public LootChestTemplate getLootChestTemplate(@NotNull String identifier) {
         if (!lootChestTemplates.containsKey(identifier))
             throw new IllegalArgumentException("Cannot get loot chest template " + identifier + " because it does nto exist");
         return lootChestTemplates.get(identifier);
     }
 
     @Override
-    public @Nullable RegenerativeLootChest getRegenerativeLootChest(Location location) {
+    public @Nullable RegenerativeLootChest getRegenerativeLootChest(@NotNull Location location) {
         return regenLootChests.get(location);
     }
 

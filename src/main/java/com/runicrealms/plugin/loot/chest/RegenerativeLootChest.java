@@ -1,4 +1,4 @@
-package com.runicrealms.plugin.loot;
+package com.runicrealms.plugin.loot.chest;
 
 public class RegenerativeLootChest extends LootChest {
 

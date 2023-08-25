@@ -21,7 +21,7 @@ depend:
   - ProtocolLib
   - ViaVersion
   - LuckPerms
-#  - ModelEngine
+  - ModelEngine
 commands:
   3d:
     usage: /<commands>

@@ -1,4 +1,4 @@
-package com.runicrealms.plugin.loot;
+package com.runicrealms.plugin.loot.chest;
 
 import com.runicrealms.plugin.runicitems.RunicItemsAPI;
 import com.runicrealms.plugin.runicitems.item.template.RunicItemTemplate;

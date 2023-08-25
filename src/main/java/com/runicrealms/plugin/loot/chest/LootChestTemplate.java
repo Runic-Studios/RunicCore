@@ -1,5 +1,6 @@
-package com.runicrealms.plugin.loot;
+package com.runicrealms.plugin.loot.chest;
 
+import com.runicrealms.plugin.loot.LootTable;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 

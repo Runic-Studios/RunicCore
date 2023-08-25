@@ -1,5 +1,7 @@
 package com.runicrealms.plugin.loot;
 
+import com.runicrealms.plugin.loot.chest.TimedLoot;
+import com.runicrealms.plugin.loot.chest.TimedLootChest;
 import io.lumine.mythic.bukkit.MythicBukkit;
 
 public class BossTimedLoot extends TimedLoot {

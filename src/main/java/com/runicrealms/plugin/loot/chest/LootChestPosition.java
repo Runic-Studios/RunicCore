@@ -1,7 +1,9 @@
-package com.runicrealms.plugin.loot;
+package com.runicrealms.plugin.loot.chest;
 
 import org.bukkit.Location;
 import org.bukkit.block.BlockFace;
+
+import java.util.Objects;
 
 public class LootChestPosition {
 
@@ -24,5 +26,10 @@ public class LootChestPosition {
     @Override
     public boolean equals(Object obj) {
         return (obj instanceof LootChestPosition lootChestPosition) && lootChestPosition.getLocation().equals(this.location);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.location, this.direction);
     }
 }

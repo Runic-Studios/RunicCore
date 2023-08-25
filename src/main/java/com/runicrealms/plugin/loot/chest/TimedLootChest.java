@@ -1,11 +1,12 @@
-package com.runicrealms.plugin.loot;
+package com.runicrealms.plugin.loot.chest;
 
 import com.runicrealms.plugin.RunicCore;
 import me.filoghost.holographicdisplays.api.HolographicDisplaysAPI;
 import me.filoghost.holographicdisplays.api.hologram.Hologram;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
 import java.util.UUID;
@@ -39,24 +40,22 @@ public class TimedLootChest extends LootChest {
     /**
      * WARNING: this method should not be called outside the LootManager and ClientLootManager classes!
      */
-    public void beginDisplay(Player player, Runnable onFinish) {
+    public void beginDisplay(@NotNull Player player, @NotNull Runnable onFinish) {
         finishTasks.put(player.getUniqueId(), onFinish);
         AtomicInteger counter = new AtomicInteger(this.duration);
         Hologram hologram = HolographicDisplaysAPI.get(RunicCore.getInstance()).createHologram(hologramLocation);
         showToPlayer(player);
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                hologramEditor.accept(hologram, counter.get());
-                counter.decrementAndGet();
-                if (counter.get() <= 0) {
-                    this.cancel();
-                    hideFromPlayer(player);
-                    Runnable finish = finishTasks.remove(player.getUniqueId());
-                    if (finish != null) finish.run();
-                }
+
+        Bukkit.getScheduler().runTaskTimer(RunicCore.getInstance(), task -> {
+            hologramEditor.accept(hologram, counter.get());
+            counter.decrementAndGet();
+            if (counter.get() <= 0) {
+                task.cancel();
+                hideFromPlayer(player);
+                Runnable finish = finishTasks.remove(player.getUniqueId());
+                if (finish != null) finish.run();
             }
-        }.runTaskTimer(RunicCore.getInstance(), 0, 20);
+        }, 0, 20);
     }
 
     public int getDuration() {
@@ -64,7 +63,7 @@ public class TimedLootChest extends LootChest {
     }
 
     @Override
-    protected LootChestInventory generateInventory(Player player) {
+    protected LootChestInventory generateInventory(@NotNull Player player) {
         LootChestInventory inventory = super.generateInventory(player);
         inventory.onClose(target -> {
             hideFromPlayer(target);
