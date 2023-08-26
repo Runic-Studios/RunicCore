@@ -1,8 +1,8 @@
 package com.runicrealms.plugin.loot.chest;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.listeners.ResourcePackListener;
 import com.runicrealms.plugin.loot.LootHolder;
+import com.runicrealms.plugin.resourcepack.ResourcePackManager;
 import com.ticxo.modelengine.api.ModelEngineAPI;
 import com.ticxo.modelengine.api.entity.Dummy;
 import com.ticxo.modelengine.api.model.ActiveModel;
@@ -15,7 +15,6 @@ import org.bukkit.Particle;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.Directional;
 import org.bukkit.entity.Player;
-import org.bukkit.event.player.PlayerResourcePackStatusEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -143,12 +142,12 @@ public abstract class LootChest implements LootHolder {
     }
 
     public void showToPlayer(@NotNull Player player) {
-        player.sendBlockChange(this.position.getLocation(), ResourcePackListener.getStatus(player) != PlayerResourcePackStatusEvent.Status.DECLINED ? BARRIER_BLOCK_DATA : this.blockData);
+        player.sendBlockChange(this.position.getLocation(), ResourcePackManager.isPackActive(player) ? BARRIER_BLOCK_DATA : this.blockData);
         //Bukkit.broadcastMessage("show chest"); //remove
 
         this.setActiveModel();
 
-        if (this.model == null) {
+        if (this.model == null || !ResourcePackManager.isPackActive(player)) {
             return;
         }
 
@@ -161,7 +160,7 @@ public abstract class LootChest implements LootHolder {
                 25, 0.5f, 0.5f, 0.5f, 0, new Particle.DustOptions(Color.WHITE, 20));
         //Bukkit.broadcastMessage("hide chest"); //remove
 
-        if (this.model == null) {
+        if (this.model == null || !ResourcePackManager.isPackActive(player)) {
             return;
         }
 
