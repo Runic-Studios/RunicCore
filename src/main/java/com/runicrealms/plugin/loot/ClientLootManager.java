@@ -36,7 +36,6 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -48,7 +47,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ClientLootManager implements Listener {
 
     private final MultiWorldGrid<LootChest> chestGrid = new MultiWorldGrid<>(new GridBounds(-4096, -4096, 4096, 4096), (short) 32); // Load chests efficiently
-    private final Map<Player, Map<WorldLootChestIdentifier, ClientLootChest>> loadedChests = new HashMap<>(); // Chests that each player can see in the world
+    private final Map<Player, Map<Location, ClientLootChest>> loadedChests = new HashMap<>(); // Chests that each player can see in the world
     private final Map<UUID, ConcurrentHashMap<RegenerativeLootChest, Long>> lastOpened = new HashMap<>(); // For cooldowns
 
     public ClientLootManager(@NotNull Collection<? extends LootChest> lootChests) {
@@ -74,13 +73,14 @@ public class ClientLootManager implements Listener {
      * @param player the player to update chests for
      */
     public void updateClientChests(@NotNull Player player) {
-        Map<WorldLootChestIdentifier, ClientLootChest> chests = loadedChests.computeIfAbsent(player, key -> {
-            Map<WorldLootChestIdentifier, ClientLootChest> emptyChests = new HashMap<>();
+        Map<Location, ClientLootChest> chests = loadedChests.computeIfAbsent(player, key -> {
+            Map<Location, ClientLootChest> emptyChests = new HashMap<>();
             for (LootChest chest : RunicCore.getLootAPI().getRegenerativeLootChests()) {
-                emptyChests.put(new BlockWorldLootChestIdentifier(chest.getPosition().getLocation()), new ClientLootChest(chest, false));
+                emptyChests.put(chest.getPosition().getLocation(), new ClientLootChest(chest, false));
             }
             return emptyChests;
         });
+
         Set<LootChest> surrounding = chestGrid.getSurroundingElements(player.getLocation(), (short) 2);
         for (ClientLootChest clientChest : chests.values()) {
             LootChest chest = clientChest.lootChest;
@@ -96,7 +96,7 @@ public class ClientLootManager implements Listener {
                 continue;
             }
 
-            if (!surrounding.contains(chest) || (chest instanceof RegenerativeLootChest regenChest && isOnCooldown(player, regenChest))) {
+            if (displayed || !surrounding.contains(chest) || (chest instanceof RegenerativeLootChest regenChest && isOnCooldown(player, regenChest))) {
                 continue;
             }
 
@@ -120,10 +120,10 @@ public class ClientLootManager implements Listener {
     }
 
     public void displayTimedLootChest(@NotNull Player player, @NotNull TimedLootChest chest) {
-        WorldLootChestIdentifier identifier = new BlockWorldLootChestIdentifier(chest.getPosition().getLocation());
+        Location identifier = chest.getPosition().getLocation();
         loadedChests.get(player).put(identifier, new ClientLootChest(chest, true));
         chest.beginDisplay(player, () -> {
-            Map<WorldLootChestIdentifier, ClientLootChest> loaded = loadedChests.get(player);
+            Map<Location, ClientLootChest> loaded = loadedChests.get(player);
             if (loaded != null) {
                 loaded.remove(identifier);
             }
@@ -145,7 +145,7 @@ public class ClientLootManager implements Listener {
                 playerOpened.put(lootChest, 0L);
             }
             lastOpened.put(event.getPlayer().getUniqueId(), playerOpened);
-        }, 5); //add 5 tick delay so the chests will actually be displayed to the player
+        }, 10); //add 10 tick delay so the chests will actually be displayed to the player
     }
 
     @EventHandler
@@ -229,12 +229,12 @@ public class ClientLootManager implements Listener {
 
         Location location = position.getBlockPosition().toLocation(event.getPlayer().getWorld());
 
-        Map<WorldLootChestIdentifier, ClientLootChest> loaded = loadedChests.get(event.getPlayer());
+        Map<Location, ClientLootChest> loaded = loadedChests.get(event.getPlayer());
         if (loaded == null) {
             return;
         }
 
-        ClientLootChest chest = loaded.get(new BlockWorldLootChestIdentifier(location));
+        ClientLootChest chest = loaded.get(location);
         if (chest == null) {
             return;
         }
@@ -250,71 +250,38 @@ public class ClientLootManager implements Listener {
             return;
         }
 
-        regenerativeLootChest.hideFromPlayer(event.getPlayer());
-
         if (this.isOnCooldown(event.getPlayer(), regenerativeLootChest)) {
+            regenerativeLootChest.hideFromPlayer(event.getPlayer());
             return;
         }
 
         playerOpened.put(regenerativeLootChest, System.currentTimeMillis());
         event.setCancelled(true);
-        Bukkit.getScheduler().runTask(RunicCore.getInstance(), () -> chest.lootChest.openInventory(event.getPlayer()));
-    }
+        RunicCore.getTaskChainFactory().newChain()
+                .sync(regenerativeLootChest::playOpenAnimation)
+                .delay(20)
+                .sync(() -> {
+                    Map<Location, ClientLootChest> chests = loadedChests.get(event.getPlayer());
+                    ClientLootChest client = chests.get(regenerativeLootChest.getPosition().getLocation());
 
-    private abstract static class WorldLootChestIdentifier {
-        @Override
-        public abstract boolean equals(Object obj);
+                    if (client == null) {
+                        return;
+                    }
 
-        @Override
-        public abstract int hashCode();
+                    regenerativeLootChest.openInventory(event.getPlayer());
+                    client.displayed = false;
+                    regenerativeLootChest.hideFromPlayer(event.getPlayer());
+                })
+                .execute();
     }
 
     private static class ClientLootChest {
         private final LootChest lootChest;
         private boolean displayed;
 
-        private ClientLootChest(LootChest lootChest, boolean displayed) {
+        private ClientLootChest(@NotNull LootChest lootChest, boolean displayed) {
             this.lootChest = lootChest;
             this.displayed = displayed;
         }
     }
-
-    private static class BlockWorldLootChestIdentifier extends WorldLootChestIdentifier {
-
-        private final Location location;
-
-        private BlockWorldLootChestIdentifier(Location location) {
-            this.location = location;
-        }
-
-        @Override
-        public boolean equals(Object object) {
-            return object instanceof BlockWorldLootChestIdentifier identifier && identifier.location.equals(location);
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(this.location);
-        }
-    }
-
-    private static class EntityWorldLootChestIdentifier extends WorldLootChestIdentifier {
-
-        private final UUID entityID;
-
-        private EntityWorldLootChestIdentifier(UUID entityID) {
-            this.entityID = entityID;
-        }
-
-        @Override
-        public boolean equals(Object object) {
-            return object instanceof EntityWorldLootChestIdentifier identifier && identifier.entityID.equals(entityID);
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(this.entityID);
-        }
-    }
-
 }

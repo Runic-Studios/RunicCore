@@ -1,19 +1,28 @@
 package com.runicrealms.plugin.loot.chest;
 
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.listeners.ResourcePackListener;
 import com.runicrealms.plugin.loot.LootHolder;
+import com.ticxo.modelengine.api.ModelEngineAPI;
+import com.ticxo.modelengine.api.entity.Dummy;
+import com.ticxo.modelengine.api.model.ActiveModel;
+import com.ticxo.modelengine.api.model.ModeledEntity;
 import org.bukkit.Bukkit;
+import org.bukkit.Color;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.Directional;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerResourcePackStatusEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public abstract class LootChest implements LootHolder {
 
     protected static final BlockData AIR_BLOCK_DATA = Material.AIR.createBlockData();
+    protected static final BlockData BARRIER_BLOCK_DATA = Material.BARRIER.createBlockData();
 
     protected final LootChestPosition position;
     protected final LootChestTemplate lootChestTemplate;
@@ -22,11 +31,10 @@ public abstract class LootChest implements LootHolder {
     protected final int itemMinLevel;
     protected final int itemMaxLevel;
     protected final String inventoryTitle;
-    /*
+
     protected final ModeledEntity entity;
     private final String modelID;
     protected ActiveModel model;
-     */
 
     protected final BlockData blockData;
 
@@ -45,16 +53,23 @@ public abstract class LootChest implements LootHolder {
         this.itemMinLevel = itemMinLevel;
         this.itemMaxLevel = itemMaxLevel;
         this.inventoryTitle = inventoryTitle;
-        /*
+
         this.modelID = modelID;
 
         Dummy dummy = ModelEngineAPI.createDummy();
-        Location target = position.getLocation().clone().setDirection(position.getDirection().getDirection());
+
+        Location target = position.getLocation().clone();
+        target.setX(target.getX() + .5);
+        target.setZ(target.getZ() + .5);
+
+        target.setDirection(this.position.getDirection().getDirection());
+
         dummy.setLocation(target);
+        dummy.setYHeadRot(target.getYaw());
+        dummy.setYBodyRot(target.getYaw());
 
         this.entity = ModelEngineAPI.createModeledEntity(dummy);
         this.entity.getRangeManager().setRenderDistance(0);
-         */
 
         this.blockData = Material.CHEST.createBlockData();
         ((Directional) this.blockData).setFacing(this.position.getDirection());
@@ -119,38 +134,38 @@ public abstract class LootChest implements LootHolder {
         }
 
         this.generateInventory(player).open(player);
+        //Bukkit.broadcastMessage("open inventory"); //remove
+    }
 
-        /*
+    public void playOpenAnimation() {
         this.setActiveModel();
-
-        this.model.getAnimationHandler().playAnimation("hit", 1, 1, 1, true);
-         */
+        this.model.getAnimationHandler().playAnimation("hit", 0, 0, 2, true);
     }
 
     public void showToPlayer(@NotNull Player player) {
-        player.sendBlockChange(this.position.getLocation(), this.blockData);
-        /*
+        player.sendBlockChange(this.position.getLocation(), ResourcePackListener.getStatus(player) != PlayerResourcePackStatusEvent.Status.DECLINED ? BARRIER_BLOCK_DATA : this.blockData);
+        //Bukkit.broadcastMessage("show chest"); //remove
+
         this.setActiveModel();
 
         if (this.model == null) {
             return;
         }
 
-        this.model.showToPlayer(player);
-         */
+        this.entity.getRangeManager().forceSpawn(player);
     }
 
     public void hideFromPlayer(@NotNull Player player) {
         player.sendBlockChange(this.position.getLocation(), AIR_BLOCK_DATA);
-        player.spawnParticle(Particle.SMOKE_LARGE, this.position.getLocation(), 20, 0, 0, 0, 2);
+        player.spawnParticle(Particle.REDSTONE, this.position.getLocation(),
+                25, 0.5f, 0.5f, 0.5f, 0, new Particle.DustOptions(Color.WHITE, 20));
+        //Bukkit.broadcastMessage("hide chest"); //remove
 
-        /*
         if (this.model == null) {
             return;
         }
 
-        this.model.hideFromPlayer(player);
-         */
+        this.entity.getRangeManager().removePlayer(player);
     }
 
     @Override
@@ -163,7 +178,6 @@ public abstract class LootChest implements LootHolder {
      */
     public abstract boolean shouldUpdateDisplay();
 
-    /*
     private void setActiveModel() {
         if (this.model != null) {
             return;
@@ -177,5 +191,4 @@ public abstract class LootChest implements LootHolder {
             RunicCore.getInstance().getLogger().warning("There was an error loading the " + (modelID != null ? modelID : "chest_wooden") + " model!");
         }
     }
-     */
 }

@@ -2,6 +2,7 @@ package com.runicrealms.plugin.loot.chest;
 
 import org.bukkit.Location;
 import org.bukkit.block.BlockFace;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 
@@ -10,7 +11,7 @@ public class LootChestPosition {
     private final Location location;
     private final BlockFace direction;
 
-    public LootChestPosition(Location location, BlockFace direction) {
+    public LootChestPosition(@NotNull Location location, @NotNull BlockFace direction) {
         this.location = location;
         this.direction = direction;
     }

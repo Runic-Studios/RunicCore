@@ -5,35 +5,39 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerResourcePackStatusEvent;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 public class ResourcePackListener implements Listener {
+    private static final Map<UUID, PlayerResourcePackStatusEvent.Status> STATUS = new HashMap<>();
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    public void resourcePackEvent(PlayerResourcePackStatusEvent e) {
-
-        PlayerResourcePackStatusEvent.Status status = e.getStatus();
-        Player player = e.getPlayer();
+    private void onPlayerResourcePackStatus(PlayerResourcePackStatusEvent event) {
+        PlayerResourcePackStatusEvent.Status status = event.getStatus();
+        Player player = event.getPlayer();
 
         if (status == PlayerResourcePackStatusEvent.Status.DECLINED) {
-
             // warn player
             player.sendMessage(ColorUtil.format(
                     "&4&lWARNING &c- Server resource pack disabled! We recommend using the resource pack for " +
                             "the best experience possible!"));
-
-            // kick the player after 5 secs to give them a chance to read message.
-//            Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
-//                @Override
-//                public void run() {
-//                    player.kickPlayer(ChatColor.RED + "For the best server experience, please enable the resource pack." +
-//                            ChatColor.YELLOW + "\n\nMultiplayer --> For The Realm --> Edit --> Server Resource Packs: Enabled");
-//                }
-//            },100L);
         }
 
-//        if (status == PlayerResourcePackStatusEvent.Status.SUCCESSFULLY_LOADED) {
-//            player.sendMessage(ChatColor.GREEN + "Resource pack loaded!");
-//        }
+        STATUS.put(event.getPlayer().getUniqueId(), status);
+    }
+
+    @EventHandler
+    private void onPlayerQuit(PlayerQuitEvent event) {
+        STATUS.remove(event.getPlayer().getUniqueId());
+    }
+
+    @NotNull
+    public static PlayerResourcePackStatusEvent.Status getStatus(@NotNull Player player) {
+        return STATUS.get(player.getUniqueId()); //this should never be null
     }
 }
