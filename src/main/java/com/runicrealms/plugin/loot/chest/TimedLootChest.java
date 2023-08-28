@@ -7,6 +7,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 import java.util.UUID;
@@ -22,16 +23,17 @@ public class TimedLootChest extends LootChest {
     private final Map<UUID, Runnable> finishTasks = new ConcurrentHashMap<>();
 
     public TimedLootChest(
-            LootChestPosition position,
-            LootChestTemplate lootChestTemplate,
-            LootChestConditions conditions,
+            @NotNull LootChestPosition position,
+            @NotNull LootChestTemplate lootChestTemplate,
+            @NotNull LootChestConditions conditions,
             int minLevel,
             int itemMinLevel, int itemMaxLevel,
-            String inventoryTitle,
+            @NotNull String inventoryTitle,
             int duration,
-            Location hologramLocation,
-            BiConsumer<Hologram, Integer> hologramEditor) {
-        super(position, lootChestTemplate, conditions, minLevel, itemMinLevel, itemMaxLevel, inventoryTitle);
+            @NotNull Location hologramLocation,
+            @NotNull BiConsumer<Hologram, Integer> hologramEditor,
+            @Nullable String modelID) {
+        super(position, lootChestTemplate, conditions, minLevel, itemMinLevel, itemMaxLevel, inventoryTitle, modelID);
         this.duration = duration;
         this.hologramLocation = hologramLocation;
         this.hologramEditor = hologramEditor;

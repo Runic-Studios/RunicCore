@@ -4,6 +4,8 @@ import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.api.LootAPI;
 import com.runicrealms.plugin.common.RunicCommon;
 import com.runicrealms.plugin.common.util.ColorUtil;
+import com.runicrealms.plugin.loot.chest.BossTimedLoot;
+import com.runicrealms.plugin.loot.chest.CustomTimedLoot;
 import com.runicrealms.plugin.loot.chest.LootChestConditions;
 import com.runicrealms.plugin.loot.chest.LootChestPosition;
 import com.runicrealms.plugin.loot.chest.LootChestTemplate;
@@ -17,6 +19,7 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -40,8 +43,6 @@ public class LootManager implements LootAPI {
     - add particles
     - Add it to file pull
     - add loot quality
-    - integrate model engine
-    - add packet adapter for entity interact
      */
 
     private final Map<String, LootTable> lootTables = new HashMap<>();
@@ -50,132 +51,130 @@ public class LootManager implements LootAPI {
     private final Map<String, BossTimedLoot> bossTimedLoot = new HashMap<>();
     private final Map<String, CustomTimedLoot> customTimedLoot = new HashMap<>();
     private FileConfiguration regenLootChestsConfig;
-    private File regenLootChestsFile;
+    private final File regenLootChestsFile;
     private int nextRegenLootChestID = 0;
 
-    private ClientLootManager clientLootManager;
+    private final ClientLootManager clientLootManager;
 
     public LootManager() {
-        Bukkit.getScheduler().runTaskAsynchronously(RunicCore.getInstance(), () -> {
-            File lootFolder = new File(RunicCore.getInstance().getDataFolder(), "loot");
+        File lootFolder = new File(RunicCore.getInstance().getDataFolder(), "loot");
 
-            // LOOT TABLES
-            File lootTableFolder = RunicCommon.getConfigAPI().getSubFolder(lootFolder, "loot-tables");
-            // Map of loot table identifier -> config
-            Map<String, FileConfiguration> configs = new HashMap<>();
-            // map of loot table identifier -> list of other loot table identifiers that are subtables of it
-            Map<String, List<String>> configDependencies = new HashMap<>();
+        // LOOT TABLES
+        File lootTableFolder = RunicCommon.getConfigAPI().getSubFolder(lootFolder, "loot-tables");
+        // Map of loot table identifier -> config
+        Map<String, FileConfiguration> configs = new HashMap<>();
+        // map of loot table identifier -> list of other loot table identifiers that are subtables of it
+        Map<String, List<String>> configDependencies = new HashMap<>();
 
-            // Get config files and their dependencies
-            for (File lootTableFile : Objects.requireNonNull(lootTableFolder.listFiles())) {
-                if (!lootTableFile.isDirectory() && (lootTableFile.getName().endsWith(".yml") || lootTableFile.getName().endsWith(".yaml"))) {
-                    try {
-                        FileConfiguration config = RunicCommon.getConfigAPI().getYamlConfigFromFile(lootTableFile.getName(), lootTableFolder);
-                        String identifier = Objects.requireNonNull(config.getString("identifier"));
-                        List<String> deps = new ArrayList<>();
-                        if (config.isList("subtables")) {
-                            deps = config.getStringList("subtables");
-                        }
-                        configs.put(identifier, config);
-                        configDependencies.put(identifier, deps);
-                    } catch (Exception exception) {
-                        Bukkit.getLogger().log(Level.SEVERE, "ERROR loading loot table " + lootTableFile.getName() + ":");
-                        exception.printStackTrace();
-                    }
-                }
-            }
-
-            // Parse config files and dependencies in proper order
-            try {
-                List<String> sortedIdentifiers = topologicalSort(configDependencies);
-                for (String identifier : sortedIdentifiers) {
-                    FileConfiguration config = configs.get(identifier);
-                    try {
-                        LootTable lootTable = parseLootTable(config);
-                        lootTables.put(identifier, lootTable);
-                    } catch (Exception exception) {
-                        Bukkit.getLogger().log(Level.SEVERE, "ERROR loading loot table " + identifier + ":");
-                        exception.printStackTrace();
-                    }
-                }
-            } catch (Exception exception) {
-                Bukkit.getLogger().log(Level.SEVERE, "ERROR loading loot tables:");
-                exception.printStackTrace();
-            }
-
-
-            // LOOT CHEST TEMPLATES
-            File chestTypesFolder = RunicCommon.getConfigAPI().getSubFolder(lootFolder, "chest-types");
-
-            for (File chestTypeFile : Objects.requireNonNull(chestTypesFolder.listFiles())) {
-                if (!chestTypeFile.isDirectory() && (chestTypeFile.getName().endsWith(".yml") || chestTypeFile.getName().endsWith(".yaml"))) {
-                    FileConfiguration config = RunicCommon.getConfigAPI().getYamlConfigFromFile(chestTypeFile.getName(), chestTypesFolder);
-                    LootChestTemplate lootChestTemplate = parseLootChestTemplate(config);
-                    lootChestTemplates.put(lootChestTemplate.getIdentifier(), lootChestTemplate);
-                }
-            }
-
-            // LOOT CHESTS.yml
-            regenLootChestsFile = new File(lootFolder, "regenerative-chests.yml");
-            if (!regenLootChestsFile.exists()) {
+        // Get config files and their dependencies
+        for (File lootTableFile : Objects.requireNonNull(lootTableFolder.listFiles())) {
+            if (!lootTableFile.isDirectory() && (lootTableFile.getName().endsWith(".yml") || lootTableFile.getName().endsWith(".yaml"))) {
                 try {
-                    if (!regenLootChestsFile.createNewFile())
-                        throw new IOException("Could not create regenerative-chests.yml file!");
-                } catch (IOException exception) {
-                    throw new RuntimeException(exception);
-                }
-            }
-            try {
-                regenLootChestsConfig = RunicCommon.getConfigAPI().getYamlConfigFromFile(regenLootChestsFile);
-                nextRegenLootChestID = regenLootChestsConfig.getInt("next-id");
-                if (regenLootChestsConfig.contains("chests") && regenLootChestsConfig.isConfigurationSection("chests")) {
-                    for (String chestID : Objects.requireNonNull(regenLootChestsConfig.getConfigurationSection("chests")).getKeys(false)) {
-                        try {
-                            RegenerativeLootChest chest = parseRegenerativeLootChest(regenLootChestsConfig.getConfigurationSection("chests." + chestID), chestID);
-                            regenLootChests.put(chest.getPosition().getLocation(), chest);
-                        } catch (Exception exception) {
-                            Bukkit.getLogger().log(Level.SEVERE, "ERROR loading regenerative-chests.yml chest ID " + chestID + ":");
-                            exception.printStackTrace();
-                        }
+                    FileConfiguration config = RunicCommon.getConfigAPI().getYamlConfigFromFile(lootTableFile.getName(), lootTableFolder);
+                    String identifier = Objects.requireNonNull(config.getString("identifier"));
+                    List<String> deps = new ArrayList<>();
+                    if (config.isList("subtables")) {
+                        deps = config.getStringList("subtables");
                     }
+                    configs.put(identifier, config);
+                    configDependencies.put(identifier, deps);
+                } catch (Exception exception) {
+                    Bukkit.getLogger().log(Level.SEVERE, "ERROR loading loot table " + lootTableFile.getName() + ":");
+                    exception.printStackTrace();
                 }
-            } catch (Exception exception) {
-                Bukkit.getLogger().log(Level.SEVERE, "ERROR loading regenerative-chests.yml:");
-                exception.printStackTrace();
             }
+        }
 
-            // LOAD CLIENT CHESTS
-            this.clientLootManager = new ClientLootManager(getRegenerativeLootChests());
+        // Parse config files and dependencies in proper order
+        try {
+            List<String> sortedIdentifiers = topologicalSort(configDependencies);
+            for (String identifier : sortedIdentifiers) {
+                FileConfiguration config = configs.get(identifier);
+                try {
+                    LootTable lootTable = parseLootTable(config);
+                    lootTables.put(identifier, lootTable);
+                } catch (Exception exception) {
+                    Bukkit.getLogger().log(Level.SEVERE, "ERROR loading loot table " + identifier + ":");
+                    exception.printStackTrace();
+                }
+            }
+        } catch (Exception exception) {
+            Bukkit.getLogger().log(Level.SEVERE, "ERROR loading loot tables:");
+            exception.printStackTrace();
+        }
 
-            // LOAD TIMED LOOT
-            Set<TimedLoot> timedLoot = new HashSet<>();
-            File timedLootFolder = RunicCommon.getConfigAPI().getSubFolder(lootFolder, "timed-loot");
 
-            for (File timedLootFile : Objects.requireNonNull(timedLootFolder.listFiles())) {
-                if (!timedLootFile.isDirectory() && (timedLootFile.getName().endsWith(".yml") || timedLootFile.getName().endsWith(".yaml"))) {
+        // LOOT CHEST TEMPLATES
+        File chestTypesFolder = RunicCommon.getConfigAPI().getSubFolder(lootFolder, "chest-types");
+
+        for (File chestTypeFile : Objects.requireNonNull(chestTypesFolder.listFiles())) {
+            if (!chestTypeFile.isDirectory() && (chestTypeFile.getName().endsWith(".yml") || chestTypeFile.getName().endsWith(".yaml"))) {
+                FileConfiguration config = RunicCommon.getConfigAPI().getYamlConfigFromFile(chestTypeFile.getName(), chestTypesFolder);
+                LootChestTemplate lootChestTemplate = parseLootChestTemplate(config);
+                lootChestTemplates.put(lootChestTemplate.getIdentifier(), lootChestTemplate);
+            }
+        }
+
+        // LOOT CHESTS.yml
+        regenLootChestsFile = new File(lootFolder, "regenerative-chests.yml");
+        if (!regenLootChestsFile.exists()) {
+            try {
+                if (!regenLootChestsFile.createNewFile())
+                    throw new IOException("Could not create regenerative-chests.yml file!");
+            } catch (IOException exception) {
+                throw new RuntimeException(exception);
+            }
+        }
+        try {
+            regenLootChestsConfig = RunicCommon.getConfigAPI().getYamlConfigFromFile(regenLootChestsFile);
+            nextRegenLootChestID = regenLootChestsConfig.getInt("next-id");
+            if (regenLootChestsConfig.contains("chests") && regenLootChestsConfig.isConfigurationSection("chests")) {
+                for (String chestID : Objects.requireNonNull(regenLootChestsConfig.getConfigurationSection("chests")).getKeys(false)) {
                     try {
-                        FileConfiguration config = RunicCommon.getConfigAPI().getYamlConfigFromFile(timedLootFile.getName(), chestTypesFolder);
-                        TimedLoot loot = parseTimedLoot(config);
-                        timedLoot.add(loot);
+                        RegenerativeLootChest chest = parseRegenerativeLootChest(regenLootChestsConfig.getConfigurationSection("chests." + chestID), chestID);
+                        regenLootChests.put(chest.getPosition().getLocation(), chest);
                     } catch (Exception exception) {
-                        Bukkit.getLogger().log(Level.SEVERE, "ERROR loading timed loot " + timedLootFile.getName() + ":");
+                        Bukkit.getLogger().log(Level.SEVERE, "ERROR loading regenerative-chests.yml chest ID " + chestID + ":");
                         exception.printStackTrace();
                     }
                 }
             }
+        } catch (Exception exception) {
+            Bukkit.getLogger().log(Level.SEVERE, "ERROR loading regenerative-chests.yml:");
+            exception.printStackTrace();
+        }
 
-            timedLoot.stream()
-                    .filter(loot -> loot instanceof BossTimedLoot)
-                    .map(loot -> (BossTimedLoot) loot)
-                    .forEach(loot -> bossTimedLoot.put(loot.getMmBossID(), loot));
-            new BossTimedLootManager(bossTimedLoot.values());
+        // LOAD CLIENT CHESTS
+        this.clientLootManager = new ClientLootManager(getRegenerativeLootChests());
 
-            timedLoot.stream()
-                    .filter(loot -> loot instanceof CustomTimedLoot)
-                    .map(loot -> (CustomTimedLoot) loot)
-                    .forEach(loot -> customTimedLoot.put(loot.getIdentifier(), loot));
-            new CustomTimedLootManager(customTimedLoot.values());
-        });
+        // LOAD TIMED LOOT
+        Set<TimedLoot> timedLoot = new HashSet<>();
+        File timedLootFolder = RunicCommon.getConfigAPI().getSubFolder(lootFolder, "timed-loot");
+
+        for (File timedLootFile : Objects.requireNonNull(timedLootFolder.listFiles())) {
+            if (!timedLootFile.isDirectory() && (timedLootFile.getName().endsWith(".yml") || timedLootFile.getName().endsWith(".yaml"))) {
+                try {
+                    FileConfiguration config = RunicCommon.getConfigAPI().getYamlConfigFromFile(timedLootFile.getName(), timedLootFolder);
+                    TimedLoot loot = parseTimedLoot(config);
+                    timedLoot.add(loot);
+                } catch (Exception exception) {
+                    Bukkit.getLogger().log(Level.SEVERE, "ERROR loading timed loot " + timedLootFile.getName() + ":");
+                    exception.printStackTrace();
+                }
+            }
+        }
+
+        timedLoot.stream()
+                .filter(loot -> loot instanceof BossTimedLoot)
+                .map(loot -> (BossTimedLoot) loot)
+                .forEach(loot -> bossTimedLoot.put(loot.getMmBossID(), loot));
+        new BossTimedLootManager(bossTimedLoot.values());
+
+        timedLoot.stream()
+                .filter(loot -> loot instanceof CustomTimedLoot)
+                .map(loot -> (CustomTimedLoot) loot)
+                .forEach(loot -> customTimedLoot.put(loot.getIdentifier(), loot));
+        new CustomTimedLootManager(customTimedLoot.values());
     }
 
     // The next two methods are responsible for dealing with the order in which we load loot tables
@@ -292,6 +291,9 @@ public class LootManager implements LootAPI {
         } else {
             conditions = new LootChestConditions();
         }
+
+        LootChestModel model = LootChestModel.getModel(section.getString("model"));
+
         return new RegenerativeLootChest(
                 new LootChestPosition(location, direction),
                 lootChestTemplates.get(chestTemplate),
@@ -299,7 +301,8 @@ public class LootManager implements LootAPI {
                 minLevel,
                 itemMinLevel, itemMaxLevel,
                 regenerationTime,
-                title);
+                title,
+                model != null ? model.getModelID() : null);
     }
 
     private TimedLoot parseTimedLoot(FileConfiguration config) {
@@ -354,6 +357,8 @@ public class LootManager implements LootAPI {
             throw new IllegalArgumentException("Hologram.lines missing from timed loot " + config.getName());
         String type = config.getString("type");
 
+        LootChestModel model = LootChestModel.getModel(section.getString("model"));
+
         TimedLootChest chest = new TimedLootChest(
                 new LootChestPosition(location, direction),
                 lootChestTemplates.get(chestTemplate),
@@ -368,7 +373,8 @@ public class LootManager implements LootAPI {
                     for (String line : hologramLines) {
                         hologram.getLines().appendText(ColorUtil.format(line.replaceAll("%text%", line)));
                     }
-                });
+                },
+                model != null ? model.getModelID() : null);
 
         if ("boss".equalsIgnoreCase(type)) {
             String mmID = config.getString("boss.mm-id");
@@ -378,7 +384,18 @@ public class LootManager implements LootAPI {
                 throw new IllegalArgumentException("Boss timed loot chest missing boss.mm-id");
             }
 
-            return new BossTimedLoot(chest, mmID, lootDamageThreshold);
+            String completeWorld = config.getString("boss.location.world");
+            double completeX = config.getDouble("boss.location.x");
+            double completeY = config.getDouble("boss.location.y");
+            double completeZ = config.getDouble("boss.location.z");
+            float completeYaw = (float) config.getDouble("boss.location.yaw");
+            float completePitch = (float) config.getDouble("boss.location.pitch");
+
+            if (completeWorld == null || completeX == 0 || completeZ == 0 || Bukkit.getWorld(completeWorld) == null) {
+                throw new IllegalArgumentException("Boss timed loot chest missing boss.location data");
+            }
+
+            return new BossTimedLoot(chest, mmID, lootDamageThreshold, new Location(Bukkit.getWorld(completeWorld), completeX, completeY, completeZ, completeYaw, completePitch));
         } else if ("custom".equalsIgnoreCase(type)) {
             String identifier = config.getString("custom.identifier");
 
@@ -494,8 +511,51 @@ public class LootManager implements LootAPI {
     }
 
     @Override
-    public @Nullable RegenerativeLootChest getRegenerativeLootChest(@NotNull Location location) {
+    @Nullable
+    public RegenerativeLootChest getRegenerativeLootChest(@NotNull Location location) {
         return regenLootChests.get(location);
     }
 
+    /**
+     * Models the loot chest can have
+     */
+    private enum LootChestModel {
+        WATER("chest_aqua"),
+        BONE("chest_bone"),
+        FOREST("chest_forest"),
+        GOLDEN("chest_golden"),
+        ICE("chest_ice"),
+        LIGHT("chest_light"),
+        MAGMA("chest_magma"),
+        SHADOW("chest_shadow"),
+        WIND("chest_wind"),
+        NORMAL("chest_wooden");
+
+        private final String modelID;
+
+        LootChestModel(@NotNull String modelID) {
+            this.modelID = modelID;
+        }
+
+        @NotNull
+        public String getModelID() {
+            return this.modelID;
+        }
+
+        @Nullable
+        @Contract("null -> null")
+        public static LootChestModel getModel(@Nullable String model) {
+            if (model == null) {
+                return null;
+            }
+
+            for (LootChestModel lootChestModel : LootChestModel.values()) {
+                if (lootChestModel.name().equalsIgnoreCase(model)) {
+                    return lootChestModel;
+                }
+            }
+
+            return null;
+        }
+    }
 }

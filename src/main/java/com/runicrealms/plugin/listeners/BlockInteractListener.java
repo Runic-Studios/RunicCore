@@ -89,7 +89,8 @@ public class BlockInteractListener implements Listener {
                             || event.getClickedBlock().getType() == Material.DISPENSER
                             || event.getClickedBlock().getType() == Material.DROPPER
                             || event.getClickedBlock().getType().toString().toLowerCase().contains("shulker")
-                            || event.getClickedBlock().getType() == Material.TRAPPED_CHEST)
+                            || event.getClickedBlock().getType() == Material.TRAPPED_CHEST
+                            || event.getClickedBlock().getType() == Material.CHEST)
                         event.setCancelled(true);
                 }
             }

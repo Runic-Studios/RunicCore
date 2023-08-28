@@ -33,12 +33,12 @@ import java.util.stream.Collectors;
 
 @CommandAlias("lootchest")
 @CommandPermission("runic.op")
-public class LootChestCreator extends BaseCommand implements Listener {
+public class LootChestCommand extends BaseCommand implements Listener {
 
     private final Map<UUID, LootChestInfo> creatingChests = new ConcurrentHashMap<>();
     private final Set<UUID> deletingChests = new HashSet<>();
 
-    public LootChestCreator() {
+    public LootChestCommand() {
         RunicCore.getCommandManager().getCommandCompletions().registerAsyncCompletion("chest-templates", context ->
                 RunicCore.getLootAPI().getChestTemplates().stream().map(LootChestTemplate::getIdentifier).collect(Collectors.toList()));
         Bukkit.getPluginManager().registerEvents(this, RunicCore.getInstance());
@@ -213,15 +213,14 @@ public class LootChestCreator extends BaseCommand implements Listener {
             Location location = position.toLocation(event.getPlayer().getWorld()).add(0, 1, 0);
             LootChestInfo chestInfo = creatingChests.get(event.getPlayer().getUniqueId());
             RunicCore.getLootAPI().createRegenerativeLootChest(new RegenerativeLootChest(
-                            new LootChestPosition(location, getDirectionFacingPlayer(event.getPlayer().getLocation())),
-                            chestInfo.template,
-                            new LootChestConditions(),
-                            chestInfo.minLevel,
-                            chestInfo.itemMinLevel, chestInfo.itemMaxLevel,
-                            chestInfo.regenerationTime,
-                            chestInfo.title
-                    )
-            );
+                    new LootChestPosition(location, getDirectionFacingPlayer(event.getPlayer().getLocation())),
+                    chestInfo.template,
+                    new LootChestConditions(),
+                    chestInfo.minLevel,
+                    chestInfo.itemMinLevel, chestInfo.itemMaxLevel,
+                    chestInfo.regenerationTime,
+                    chestInfo.title,
+                    null));
             creatingChests.remove(event.getPlayer().getUniqueId());
             event.getPlayer().sendMessage(ChatColor.GREEN + "Added loot chest!");
         }

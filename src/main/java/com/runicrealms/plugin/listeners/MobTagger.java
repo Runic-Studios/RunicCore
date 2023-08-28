@@ -3,7 +3,8 @@ package com.runicrealms.plugin.listeners;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.events.MagicDamageEvent;
 import com.runicrealms.plugin.events.PhysicalDamageEvent;
-import com.runicrealms.plugin.item.lootchests.BossTagger;
+import io.lumine.mythic.bukkit.MythicBukkit;
+import io.lumine.mythic.core.mobs.ActiveMob;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
@@ -15,6 +16,7 @@ import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -141,7 +143,13 @@ public class MobTagger implements Listener {
         if (entity instanceof Player) return;
         UUID playerId = player.getUniqueId();
         UUID entityId = entity.getUniqueId();
-        if (BossTagger.isBoss(entity)) return; // handled separately
+
+        Optional<ActiveMob> optional = MythicBukkit.inst().getMobManager().getActiveMob(entityId);
+        if (optional.isPresent() && RunicCore.getLootAPI().getBossTimedLoot(optional.get().getMobType()) != null) {
+            Bukkit.broadcastMessage("handled by something else"); //remove
+            return; // handled separately
+        }
+
         if (taggedMobs.containsKey(playerId)) { // if player is on the list (has tagged ANY mob)
             if (taggedMobs.get(playerId).equals(entityId)) { // if mob is tied to player
                 taggedTimers.put(playerId, System.currentTimeMillis()); // update timer ONLY if mob linked to player

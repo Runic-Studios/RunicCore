@@ -1,8 +1,8 @@
 package com.runicrealms.plugin.api;
 
-import com.runicrealms.plugin.loot.BossTimedLoot;
-import com.runicrealms.plugin.loot.CustomTimedLoot;
 import com.runicrealms.plugin.loot.LootTable;
+import com.runicrealms.plugin.loot.chest.BossTimedLoot;
+import com.runicrealms.plugin.loot.chest.CustomTimedLoot;
 import com.runicrealms.plugin.loot.chest.LootChestTemplate;
 import com.runicrealms.plugin.loot.chest.RegenerativeLootChest;
 import com.runicrealms.plugin.loot.chest.TimedLootChest;

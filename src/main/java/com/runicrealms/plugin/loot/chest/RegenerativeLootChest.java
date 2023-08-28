@@ -1,18 +1,22 @@
 package com.runicrealms.plugin.loot.chest;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 public class RegenerativeLootChest extends LootChest {
 
     private final int regenerationTime;
 
     public RegenerativeLootChest(
-            LootChestPosition location,
-            LootChestTemplate lootChestTemplate,
-            LootChestConditions conditions,
+            @NotNull LootChestPosition location,
+            @NotNull LootChestTemplate lootChestTemplate,
+            @NotNull LootChestConditions conditions,
             int minLevel,
             int itemMinLevel, int itemMaxLevel,
             int regenerationTime,
-            String inventoryTitle) {
-        super(location, lootChestTemplate, conditions, minLevel, itemMinLevel, itemMaxLevel, inventoryTitle);
+            @NotNull String inventoryTitle,
+            @Nullable String modelID) {
+        super(location, lootChestTemplate, conditions, minLevel, itemMinLevel, itemMaxLevel, inventoryTitle, modelID);
         this.regenerationTime = regenerationTime;
     }
 

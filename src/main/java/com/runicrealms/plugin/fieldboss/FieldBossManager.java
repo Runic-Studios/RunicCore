@@ -3,7 +3,7 @@ package com.runicrealms.plugin.fieldboss;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.api.FieldBossAPI;
 import com.runicrealms.plugin.common.RunicCommon;
-import com.runicrealms.plugin.loot.BossTimedLoot;
+import com.runicrealms.plugin.loot.chest.BossTimedLoot;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.configuration.file.FileConfiguration;

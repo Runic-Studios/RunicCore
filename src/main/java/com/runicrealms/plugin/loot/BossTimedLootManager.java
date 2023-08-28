@@ -3,6 +3,7 @@ package com.runicrealms.plugin.loot;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.events.MagicDamageEvent;
 import com.runicrealms.plugin.events.PhysicalDamageEvent;
+import com.runicrealms.plugin.loot.chest.BossTimedLoot;
 import io.lumine.mythic.bukkit.events.MythicMobDeathEvent;
 import io.lumine.mythic.bukkit.events.MythicMobSpawnEvent;
 import org.bukkit.Bukkit;
@@ -12,6 +13,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerTeleportEvent;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -46,6 +48,8 @@ public class BossTimedLootManager implements Listener {
                 } else {
                     player.sendMessage(ChatColor.RED + "You did not deal enough damage to the boss to quality for boss loot!");
                 }
+
+                player.teleport(loot.getComplete(), PlayerTeleportEvent.TeleportCause.PLUGIN);
             });
         } finally {
             bossFighters.remove(event.getEntity().getUniqueId()).clear();
