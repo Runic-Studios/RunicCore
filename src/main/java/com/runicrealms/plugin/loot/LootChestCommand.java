@@ -15,7 +15,6 @@ import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.EnumWrappers;
 import com.comphenix.protocol.wrappers.MovingObjectPositionBlock;
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.common.util.ColorUtil;
 import com.runicrealms.plugin.loot.chest.LootChestConditions;
 import com.runicrealms.plugin.loot.chest.LootChestPosition;
 import com.runicrealms.plugin.loot.chest.LootChestTemplate;
@@ -29,7 +28,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.jetbrains.annotations.NotNull;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -47,6 +48,7 @@ public class LootChestCommand extends BaseCommand implements Listener {
     public LootChestCommand() {
         RunicCore.getCommandManager().getCommandCompletions().registerAsyncCompletion("chest-templates", context ->
                 RunicCore.getLootAPI().getChestTemplates().stream().map(LootChestTemplate::getIdentifier).collect(Collectors.toList()));
+        RunicCore.getCommandManager().getCommandCompletions().registerAsyncCompletion("chest-models", context -> Arrays.stream(LootManager.LootChestModel.values()).map(LootManager.LootChestModel::name).toList());
         Bukkit.getPluginManager().registerEvents(this, RunicCore.getInstance());
         ProtocolLibrary.getProtocolManager().getAsynchronousManager().registerAsyncHandler(new PacketAdapter(RunicCore.getInstance(), ListenerPriority.LOW, PacketType.Play.Client.USE_ITEM) {
             @Override
@@ -96,10 +98,10 @@ public class LootChestCommand extends BaseCommand implements Listener {
     }
 
     @Subcommand("create")
-    @CommandCompletion("@chest-templates @range:1-60 @range:1-60 @range:1-60 @nothing")
+    @CommandCompletion("@chest-templates @range:1-60 @range:1-60 @range:1-60 @nothing @nothing @chest-models @nothing")
     public void onCommandCreate(Player player, String[] args) {
         if (args.length < 4) {
-            player.sendMessage(ChatColor.RED + "Usage: /lootchest create <chest-template> <min-level> <item-min-level> <item-max-level> [regeneration-time] [title]");
+            player.sendMessage(ChatColor.RED + "Usage: /lootchest create <chest-template> <min-level> <item-min-level> <item-max-level> [regeneration-time] [model] [title]");
             return;
         }
         String template = args[0];
@@ -126,7 +128,10 @@ public class LootChestCommand extends BaseCommand implements Listener {
             }
             regenerationTime = Integer.parseInt(args[4]);
         }
-        if (args.length >= 6) title = ColorUtil.format(joinArgs(args, 5));
+
+        LootManager.LootChestModel model = args.length >= 6 ? LootManager.LootChestModel.getModel(args[5]) : LootManager.LootChestModel.NORMAL;
+
+        if (args.length >= 7) title = joinArgs(args, 6);
 
         if (regenerationTime == null) {
             if (template.equalsIgnoreCase("common-chest")) {
@@ -143,24 +148,26 @@ public class LootChestCommand extends BaseCommand implements Listener {
                 return;
             }
         }
+
         if (title == null) {
             if (template.equalsIgnoreCase("common-chest")) {
                 title = "Common Loot Chest";
             } else if (template.equalsIgnoreCase("uncommon-chest")) {
-                title = "Uncommon Loot Chest";
+                title = "&aUncommon Loot Chest";
             } else if (template.equalsIgnoreCase("rare-chest")) {
-                title = "Rare Loot Chest";
+                title = "&bRare Loot Chest";
             } else if (template.equalsIgnoreCase("epic-chest")) {
-                title = "Epic Loot Chest";
+                title = "&5Epic Loot Chest";
             } else {
                 player.sendMessage(ChatColor.RED + "Since you are creating a loot chest with a custom template, please specify the [title].");
                 player.sendMessage(ChatColor.RED + "Usage: /lootchest create <chest-template> <item-min-level> <item-max-level> [regeneration-time] [title]");
                 return;
             }
         }
+
         deletingChests.remove(player.getUniqueId());
 
-        creatingChests.put(player.getUniqueId(), new LootChestInfo(chestTemplate, minLevel, itemMinLevel, itemMaxLevel, regenerationTime, title));
+        creatingChests.put(player.getUniqueId(), new LootChestInfo(chestTemplate, minLevel, itemMinLevel, itemMaxLevel, regenerationTime, title, model != null ? model : LootManager.LootChestModel.NORMAL));
         player.sendMessage(ChatColor.GREEN + "Right click a chest to turn it into a loot chest, or type /lootchest cancel.");
     }
 
@@ -210,7 +217,7 @@ public class LootChestCommand extends BaseCommand implements Listener {
             if (lootChest != null) {
                 deletingChests.remove(event.getPlayer().getUniqueId());
                 RunicCore.getLootAPI().deleteRegenerativeLootChest(lootChest);
-                event.getPlayer().sendMessage(ChatColor.GREEN + "Removed loot chest! Please restart the server!");
+                event.getPlayer().sendMessage(ChatColor.GREEN + "Removed loot chest! Don't worry the leftover model will be removed on server restart.");
             } else {
                 event.getPlayer().sendMessage(ChatColor.RED + "That is not a loot chest! Type /lootchest cancel to cancel deleting a loot chest.");
             }
@@ -236,18 +243,19 @@ public class LootChestCommand extends BaseCommand implements Listener {
                     chestInfo.itemMinLevel, chestInfo.itemMaxLevel,
                     chestInfo.regenerationTime,
                     chestInfo.title,
-                    null));
+                    chestInfo.model.getModelID()));
             creatingChests.remove(event.getPlayer().getUniqueId());
-            event.getPlayer().sendMessage(ChatColor.GREEN + "Added loot chest! Please restart the server to enable it!");
+            event.getPlayer().sendMessage(ChatColor.GREEN + "Added loot chest! It will be a bit buggy until the server restarts...");
         }
     }
 
     private record LootChestInfo(
-            LootChestTemplate template,
+            @NotNull LootChestTemplate template,
             int minLevel,
             int itemMinLevel, int itemMaxLevel,
             int regenerationTime,
-            String title) {
+            @NotNull String title,
+            @NotNull LootManager.LootChestModel model) {
     }
 
 }

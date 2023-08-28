@@ -119,6 +119,18 @@ public class ClientLootManager implements Listener {
         }
     }
 
+    public void addRegenerativeLootChest(@NotNull RegenerativeLootChest chest) {
+        this.chestGrid.insertElement(chest.getPosition().getLocation(), chest);
+        this.loadedChests.forEach((player, map) -> map.put(chest.getPosition().getLocation(), new ClientLootChest(chest, false)));
+        this.lastOpened.forEach((uuid, map) -> map.put(chest, 0L));
+    }
+
+    public void deleteRegenerativeLootChest(@NotNull RegenerativeLootChest chest) {
+        this.chestGrid.removeElement(chest.getPosition().getLocation(), chest);
+        this.loadedChests.forEach((player, map) -> map.remove(chest.getPosition().getLocation()));
+        this.lastOpened.forEach((uuid, map) -> map.remove(chest));
+    }
+
     public void displayTimedLootChest(@NotNull Player player, @NotNull TimedLootChest chest) {
         Location identifier = chest.getPosition().getLocation();
         loadedChests.get(player).put(identifier, new ClientLootChest(chest, true));

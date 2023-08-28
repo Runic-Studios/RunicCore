@@ -292,7 +292,7 @@ public class LootManager implements LootAPI {
             conditions = new LootChestConditions();
         }
 
-        LootChestModel model = LootChestModel.getModel(section.getString("model"));
+        String modelID = section.getString("model-id");
 
         return new RegenerativeLootChest(
                 new LootChestPosition(location, direction),
@@ -302,7 +302,7 @@ public class LootManager implements LootAPI {
                 itemMinLevel, itemMaxLevel,
                 regenerationTime,
                 ColorUtil.format(title),
-                model != null ? model.getModelID() : null);
+                modelID);
     }
 
     private TimedLoot parseTimedLoot(FileConfiguration config) {
@@ -421,6 +421,7 @@ public class LootManager implements LootAPI {
         regenLootChestsConfig.set("chests." + id + ".item-level.min", regenerativeLootChest.getItemMinLevel());
         regenLootChestsConfig.set("chests." + id + ".item-level.max", regenerativeLootChest.getItemMaxLevel());
         regenLootChestsConfig.set("chests." + id + ".title", regenerativeLootChest.getInventoryTitle());
+        regenLootChestsConfig.set("chests." + id + ".model-id", regenerativeLootChest.getModelID());
         if (regenerativeLootChest.getConditions().getConditionsList().size() > 0) {
             ConfigurationSection conditionsSection = regenLootChestsConfig.createSection("chests." + id + ".conditions");
             regenerativeLootChest.getConditions().addToConfig(conditionsSection);
@@ -429,6 +430,7 @@ public class LootManager implements LootAPI {
         regenLootChestsConfig.set("next-id", nextRegenLootChestID);
         saveRegenLootChestConfigAsync();
         regenLootChests.put(regenerativeLootChest.getPosition().getLocation(), regenerativeLootChest);
+        this.clientLootManager.addRegenerativeLootChest(regenerativeLootChest);
     }
 
     @Override
@@ -442,6 +444,8 @@ public class LootManager implements LootAPI {
                         && regenLootChestsConfig.getInt("chests." + key + ".location.z") == regenerativeLootChest.getPosition().getLocation().getBlockZ()) {
                     regenLootChestsConfig.set("chests." + key, null);
                     saveRegenLootChestConfigAsync();
+                    this.regenLootChests.remove(regenerativeLootChest.getPosition().getLocation());
+                    this.clientLootManager.deleteRegenerativeLootChest(regenerativeLootChest);
                     return;
                 }
             }
@@ -519,7 +523,7 @@ public class LootManager implements LootAPI {
     /**
      * Models the loot chest can have
      */
-    private enum LootChestModel {
+    public enum LootChestModel {
         WATER("chest_aqua"),
         BONE("chest_bone"),
         FOREST("chest_forest"),

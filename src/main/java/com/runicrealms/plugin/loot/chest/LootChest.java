@@ -121,6 +121,11 @@ public abstract class LootChest implements LootHolder {
         return this.inventoryTitle;
     }
 
+    @NotNull
+    public String getModelID() {
+        return this.modelID;
+    }
+
     protected LootChestInventory generateInventory(@NotNull Player player) {
         return lootChestTemplate.generateInventory(this, player);
     }
@@ -142,8 +147,8 @@ public abstract class LootChest implements LootHolder {
     }
 
     public void showToPlayer(@NotNull Player player) {
-        //player.sendBlockChange(this.position.getLocation(), ResourcePackManager.isPackActive(player) ? BARRIER_BLOCK_DATA : this.blockData);
-        player.sendBlockChange(this.position.getLocation(), this.blockData);
+        player.sendBlockChange(this.position.getLocation(), ResourcePackManager.isPackActive(player) ? BARRIER_BLOCK_DATA : this.blockData);
+        //player.sendBlockChange(this.position.getLocation(), this.blockData);
         //Bukkit.broadcastMessage("show chest"); //remove
 
         this.setActiveModel();
