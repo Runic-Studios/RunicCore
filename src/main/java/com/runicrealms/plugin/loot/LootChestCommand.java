@@ -1,4 +1,4 @@
-package com.runicrealms.plugin.loot.chest;
+package com.runicrealms.plugin.loot;
 
 import co.aikar.commands.BaseCommand;
 import co.aikar.commands.annotation.CatchUnknown;
@@ -12,12 +12,18 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
-import com.comphenix.protocol.wrappers.BlockPosition;
+import com.comphenix.protocol.wrappers.EnumWrappers;
+import com.comphenix.protocol.wrappers.MovingObjectPositionBlock;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.common.util.ColorUtil;
+import com.runicrealms.plugin.loot.chest.LootChestConditions;
+import com.runicrealms.plugin.loot.chest.LootChestPosition;
+import com.runicrealms.plugin.loot.chest.LootChestTemplate;
+import com.runicrealms.plugin.loot.chest.RegenerativeLootChest;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -45,7 +51,7 @@ public class LootChestCommand extends BaseCommand implements Listener {
         ProtocolLibrary.getProtocolManager().getAsynchronousManager().registerAsyncHandler(new PacketAdapter(RunicCore.getInstance(), ListenerPriority.LOW, PacketType.Play.Client.USE_ITEM) {
             @Override
             public void onPacketReceiving(PacketEvent event) {
-                if (event.getPacketType() == PacketType.Play.Client.USE_ITEM) {
+                if (event.getPacketType() == PacketType.Play.Client.USE_ITEM && event.getPacket().getHands().read(0) == EnumWrappers.Hand.MAIN_HAND) {
                     onUsePacketEvent(event);
                 }
             }
@@ -90,7 +96,7 @@ public class LootChestCommand extends BaseCommand implements Listener {
     }
 
     @Subcommand("create")
-    @CommandCompletion("@chest-templates")
+    @CommandCompletion("@chest-templates @range:1-60 @range:1-60 @range:1-60 @nothing")
     public void onCommandCreate(Player player, String[] args) {
         if (args.length < 4) {
             player.sendMessage(ChatColor.RED + "Usage: /lootchest create <chest-template> <min-level> <item-min-level> <item-max-level> [regeneration-time] [title]");
@@ -195,22 +201,32 @@ public class LootChestCommand extends BaseCommand implements Listener {
     private void onUsePacketEvent(PacketEvent event) {
         if (deletingChests.contains(event.getPlayer().getUniqueId())) {
             event.setCancelled(true);
-            BlockPosition position = event.getPacket().getBlockPositionModifier().readSafely(0);
-            if (position == null) return;
-            Location location = position.toLocation(event.getPlayer().getWorld());
+            MovingObjectPositionBlock position = event.getPacket().getMovingBlockPositions().readSafely(0);
+            if (position == null) {
+                return;
+            }
+            Location location = position.getBlockPosition().toLocation(event.getPlayer().getWorld());
             RegenerativeLootChest lootChest = RunicCore.getLootAPI().getRegenerativeLootChest(location);
             if (lootChest != null) {
                 deletingChests.remove(event.getPlayer().getUniqueId());
                 RunicCore.getLootAPI().deleteRegenerativeLootChest(lootChest);
-                event.getPlayer().sendMessage(ChatColor.GREEN + "Removed loot chest!");
+                event.getPlayer().sendMessage(ChatColor.GREEN + "Removed loot chest! Please restart the server!");
             } else {
                 event.getPlayer().sendMessage(ChatColor.RED + "That is not a loot chest! Type /lootchest cancel to cancel deleting a loot chest.");
             }
         } else if (creatingChests.containsKey(event.getPlayer().getUniqueId())) {
             event.setCancelled(true);
-            BlockPosition position = event.getPacket().getBlockPositionModifier().readSafely(0);
-            if (position == null) return;
-            Location location = position.toLocation(event.getPlayer().getWorld()).add(0, 1, 0);
+            MovingObjectPositionBlock position = event.getPacket().getMovingBlockPositions().readSafely(0);
+            if (position == null) {
+                return;
+            }
+            Location location = position.getBlockPosition().toLocation(event.getPlayer().getWorld());
+
+            if (location.getBlock().getType() != Material.CHEST) {
+                event.getPlayer().sendMessage(ChatColor.RED + "That is not a chest!");
+                return;
+            }
+
             LootChestInfo chestInfo = creatingChests.get(event.getPlayer().getUniqueId());
             RunicCore.getLootAPI().createRegenerativeLootChest(new RegenerativeLootChest(
                     new LootChestPosition(location, getDirectionFacingPlayer(event.getPlayer().getLocation())),
@@ -222,7 +238,7 @@ public class LootChestCommand extends BaseCommand implements Listener {
                     chestInfo.title,
                     null));
             creatingChests.remove(event.getPlayer().getUniqueId());
-            event.getPlayer().sendMessage(ChatColor.GREEN + "Added loot chest!");
+            event.getPlayer().sendMessage(ChatColor.GREEN + "Added loot chest! Please restart the server to enable it!");
         }
     }
 

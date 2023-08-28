@@ -82,5 +82,4 @@ public class BossTimedLootManager implements Listener {
         int currentDamageToBossFromPlayer = bossFighters.get(bossId).get(player);
         bossFighters.get(bossId).put(player, currentDamageToBossFromPlayer + amount);
     }
-
 }

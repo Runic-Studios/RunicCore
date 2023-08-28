@@ -146,7 +146,6 @@ public class MobTagger implements Listener {
 
         Optional<ActiveMob> optional = MythicBukkit.inst().getMobManager().getActiveMob(entityId);
         if (optional.isPresent() && RunicCore.getLootAPI().getBossTimedLoot(optional.get().getMobType()) != null) {
-            Bukkit.broadcastMessage("handled by something else"); //remove
             return; // handled separately
         }
 

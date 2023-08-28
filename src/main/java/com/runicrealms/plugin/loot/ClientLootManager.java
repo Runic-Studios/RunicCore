@@ -29,8 +29,8 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
@@ -91,12 +91,12 @@ public class ClientLootManager implements Listener {
             }
 
             if (displayed && !surrounding.contains(chest)) {
-                chest.hideFromPlayer(player);
+                chest.hideFromPlayer(player, false);
                 clientChest.displayed = false;
                 continue;
             }
 
-            if (displayed || !surrounding.contains(chest) || (chest instanceof RegenerativeLootChest regenChest && isOnCooldown(player, regenChest))) {
+            if (displayed || !surrounding.contains(chest) || player.getLevel() < chest.getMinLevel() || (chest instanceof RegenerativeLootChest regenChest && isOnCooldown(player, regenChest))) {
                 continue;
             }
 
@@ -131,12 +131,12 @@ public class ClientLootManager implements Listener {
     }
 
     @EventHandler
-    public void onPlayerQuit(PlayerQuitEvent event) {
+    private void onPlayerQuit(PlayerQuitEvent event) {
         loadedChests.remove(event.getPlayer());
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
-    public void onCharacterLoaded(CharacterLoadedEvent event) {
+    private void onCharacterLoaded(CharacterLoadedEvent event) {
         Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), () -> {
             updateClientChests(event.getPlayer());
             ConcurrentHashMap<RegenerativeLootChest, Long> playerOpened = new ConcurrentHashMap<>();
@@ -145,63 +145,25 @@ public class ClientLootManager implements Listener {
                 playerOpened.put(lootChest, 0L);
             }
             lastOpened.put(event.getPlayer().getUniqueId(), playerOpened);
-        }, 10); //add 10 tick delay so the chests will actually be displayed to the player
+        }, 20); //give it more time to load
     }
 
-    @EventHandler
-    public void onPlayerChangeWorld(PlayerChangedWorldEvent event) {
-        if (loadedChests.containsKey(event.getPlayer())) {
-            updateClientChests(event.getPlayer());
-        }
-    }
-
-    /* //not sure what this listener is even used for, we handle it with protocollib -BoBo
-    @EventHandler(priority = EventPriority.NORMAL) // first
-    public void onChestInteract(PlayerInteractEvent event) {
-        if (!event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) return;
-        if (!(event.getHand() == EquipmentSlot.HAND)) return;
-        if (!event.hasBlock()) return;
-        if (event.getClickedBlock() == null) return;
-        if (event.getClickedBlock().getType() != Material.CHEST) return;
-        event.setCancelled(true);
-
-        Map<RegenerativeLootChest, Long> playerOpened = lastOpened.get(event.getPlayer().getUniqueId());
-        if (playerOpened == null) return;
-
-        Player player = event.getPlayer();
-        Location location = event.getClickedBlock().getLocation();
-
-        RegenerativeLootChest lootChest = RunicCore.getLootAPI().getRegenerativeLootChest(location);
-        if (lootChest == null) return;
-
-        if (player.getLevel() < lootChest.getMinLevel()) {
-            player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
-            player.sendMessage(ChatColor.RED + "You must be at least level " + lootChest.getMinLevel() + " to open this.");
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    private void onPlayerTeleport(PlayerTeleportEvent event) {
+        if (!this.loadedChests.containsKey(event.getPlayer())) {
             return;
         }
 
-        long lastOpenedTime = playerOpened.get(lootChest);
-        int timeLeft = (int) ((lastOpenedTime + lootChest.getRegenerationTime() * 1000L - System.currentTimeMillis()) / 1000);
-        if (timeLeft > 0) {
-            player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
-            player.sendMessage(ChatColor.RED + "You must wait " + timeLeft + " seconds to loot this chest again!");
-            return;
-        }
-
-        playerOpened.put(lootChest, System.currentTimeMillis());
-        player.getWorld().playSound(location, Sound.ENTITY_ZOMBIE_BREAK_WOODEN_DOOR, 0.1f, 1);
-        player.getWorld().playSound(player.getLocation(), Sound.BLOCK_CHEST_OPEN, 0.5f, 1);
-        lootChest.openInventory(player);
+        Bukkit.getScheduler().runTaskLaterAsynchronously(RunicCore.getInstance(), () -> this.updateClientChests(event.getPlayer()), 10); //give it more time to load
     }
-     */
 
     @EventHandler
-    public void onCharacterQuit(CharacterQuitEvent event) {
+    private void onCharacterQuit(CharacterQuitEvent event) {
         this.lastOpened.remove(event.getPlayer().getUniqueId());
     }
 
     @EventHandler
-    public void onLootChestInventoryClick(InventoryClickEvent event) {
+    private void onLootChestInventoryClick(InventoryClickEvent event) {
         if (event.getClickedInventory() == null) return;
         if (!(event.getView().getTopInventory().getHolder() instanceof LootChestInventory)) return;
         if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR) return;
@@ -212,7 +174,7 @@ public class ClientLootManager implements Listener {
     }
 
     @EventHandler
-    public void onLootChestClose(InventoryCloseEvent event) {
+    private void onLootChestClose(InventoryCloseEvent event) {
         if (event.getPlayer() instanceof Player player
                 && event.getView().getTopInventory().getHolder() instanceof LootChestInventory holder) {
             holder.close(player);
@@ -240,37 +202,36 @@ public class ClientLootManager implements Listener {
         }
 
         Map<RegenerativeLootChest, Long> playerOpened = lastOpened.get(event.getPlayer().getUniqueId());
-        if (playerOpened == null) {
+        if (playerOpened == null && chest.lootChest instanceof RegenerativeLootChest) {
             RunicCore.getInstance().getLogger().severe("loot chest last opened data is not in memory for " + event.getPlayer().getName());
             event.getPlayer().sendMessage(ColorUtil.format("&cThere was an error getting your loot chest data from memory. Please report this to an admin!"));
             return;
         }
 
-        if (!(chest.lootChest instanceof RegenerativeLootChest regenerativeLootChest)) {
-            return;
-        }
-
-        if (this.isOnCooldown(event.getPlayer(), regenerativeLootChest)) {
+        if (chest.lootChest instanceof RegenerativeLootChest regenerativeLootChest && this.isOnCooldown(event.getPlayer(), regenerativeLootChest)) {
             regenerativeLootChest.hideFromPlayer(event.getPlayer());
             return;
         }
 
-        playerOpened.put(regenerativeLootChest, System.currentTimeMillis());
+        if (chest.lootChest instanceof RegenerativeLootChest regenerativeLootChest) {
+            playerOpened.put(regenerativeLootChest, System.currentTimeMillis());
+        }
+
         event.setCancelled(true);
         RunicCore.getTaskChainFactory().newChain()
-                .sync(regenerativeLootChest::playOpenAnimation)
+                .sync(chest.lootChest::playOpenAnimation)
                 .delay(20)
                 .sync(() -> {
                     Map<Location, ClientLootChest> chests = loadedChests.get(event.getPlayer());
-                    ClientLootChest client = chests.get(regenerativeLootChest.getPosition().getLocation());
+                    ClientLootChest client = chests.get(chest.lootChest.getPosition().getLocation());
 
                     if (client == null) {
                         return;
                     }
 
-                    regenerativeLootChest.openInventory(event.getPlayer());
+                    chest.lootChest.openInventory(event.getPlayer());
                     client.displayed = false;
-                    regenerativeLootChest.hideFromPlayer(event.getPlayer());
+                    chest.lootChest.hideFromPlayer(event.getPlayer(), false);
                 })
                 .execute();
     }

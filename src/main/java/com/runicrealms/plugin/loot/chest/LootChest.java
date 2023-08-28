@@ -138,11 +138,12 @@ public abstract class LootChest implements LootHolder {
 
     public void playOpenAnimation() {
         this.setActiveModel();
-        this.model.getAnimationHandler().playAnimation("hit", 0, 0, 2, true);
+        this.model.getAnimationHandler().playAnimation("hit", 0, 0, 2, false);
     }
 
     public void showToPlayer(@NotNull Player player) {
-        player.sendBlockChange(this.position.getLocation(), ResourcePackManager.isPackActive(player) ? BARRIER_BLOCK_DATA : this.blockData);
+        //player.sendBlockChange(this.position.getLocation(), ResourcePackManager.isPackActive(player) ? BARRIER_BLOCK_DATA : this.blockData);
+        player.sendBlockChange(this.position.getLocation(), this.blockData);
         //Bukkit.broadcastMessage("show chest"); //remove
 
         this.setActiveModel();
@@ -154,10 +155,12 @@ public abstract class LootChest implements LootHolder {
         this.entity.getRangeManager().forceSpawn(player);
     }
 
-    public void hideFromPlayer(@NotNull Player player) {
+    public void hideFromPlayer(@NotNull Player player, boolean showParticles) {
         player.sendBlockChange(this.position.getLocation(), AIR_BLOCK_DATA);
-        player.spawnParticle(Particle.REDSTONE, this.position.getLocation(),
-                25, 0.5f, 0.5f, 0.5f, 0, new Particle.DustOptions(Color.WHITE, 20));
+        if (showParticles) {
+            player.spawnParticle(Particle.REDSTONE, this.position.getLocation(),
+                    25, 0.5f, 0.5f, 0.5f, 0, new Particle.DustOptions(Color.WHITE, 20));
+        }
         //Bukkit.broadcastMessage("hide chest"); //remove
 
         if (this.model == null || !ResourcePackManager.isPackActive(player)) {
@@ -165,6 +168,10 @@ public abstract class LootChest implements LootHolder {
         }
 
         this.entity.getRangeManager().removePlayer(player);
+    }
+
+    public void hideFromPlayer(@NotNull Player player) {
+        this.hideFromPlayer(player, true);
     }
 
     @Override

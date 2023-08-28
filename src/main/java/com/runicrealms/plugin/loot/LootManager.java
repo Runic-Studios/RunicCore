@@ -301,7 +301,7 @@ public class LootManager implements LootAPI {
                 minLevel,
                 itemMinLevel, itemMaxLevel,
                 regenerationTime,
-                title,
+                ColorUtil.format(title),
                 model != null ? model.getModelID() : null);
     }
 
@@ -365,13 +365,13 @@ public class LootManager implements LootAPI {
                 conditions,
                 minLevel,
                 itemMinLevel, itemMaxLevel,
-                title,
+                ColorUtil.format(title),
                 duration,
                 hologramLocation,
                 (hologram, time) -> {
                     hologram.getLines().clear();
                     for (String line : hologramLines) {
-                        hologram.getLines().appendText(ColorUtil.format(line.replaceAll("%text%", line)));
+                        hologram.getLines().appendText(ColorUtil.format(line.replaceAll("%time%", String.valueOf(time))));
                     }
                 },
                 model != null ? model.getModelID() : null);

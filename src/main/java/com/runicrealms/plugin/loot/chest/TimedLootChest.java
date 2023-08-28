@@ -3,6 +3,7 @@ package com.runicrealms.plugin.loot.chest;
 import com.runicrealms.plugin.RunicCore;
 import me.filoghost.holographicdisplays.api.HolographicDisplaysAPI;
 import me.filoghost.holographicdisplays.api.hologram.Hologram;
+import me.filoghost.holographicdisplays.api.hologram.VisibilitySettings;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -46,18 +47,24 @@ public class TimedLootChest extends LootChest {
         finishTasks.put(player.getUniqueId(), onFinish);
         AtomicInteger counter = new AtomicInteger(this.duration);
         Hologram hologram = HolographicDisplaysAPI.get(RunicCore.getInstance()).createHologram(hologramLocation);
-        showToPlayer(player);
+        hologram.getVisibilitySettings().setGlobalVisibility(VisibilitySettings.Visibility.HIDDEN);
+        hologram.getVisibilitySettings().setIndividualVisibility(player, VisibilitySettings.Visibility.VISIBLE);
+        Bukkit.getScheduler().runTaskLaterAsynchronously(RunicCore.getInstance(), () -> this.showToPlayer(player), 10);
 
         Bukkit.getScheduler().runTaskTimer(RunicCore.getInstance(), task -> {
             hologramEditor.accept(hologram, counter.get());
-            counter.decrementAndGet();
-            if (counter.get() <= 0) {
+
+            int timeRemaining = counter.get();
+            if (timeRemaining <= 0) {
                 task.cancel();
-                hideFromPlayer(player);
+                this.hideFromPlayer(player);
+                hologram.delete();
                 Runnable finish = finishTasks.remove(player.getUniqueId());
                 if (finish != null) finish.run();
             }
-        }, 0, 20);
+
+            counter.set(timeRemaining - 1);
+        }, 10, 20);
     }
 
     public int getDuration() {
