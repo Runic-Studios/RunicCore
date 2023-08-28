@@ -353,6 +353,7 @@ public class LootManager implements LootAPI {
         if (hologramLines.isEmpty())
             throw new IllegalArgumentException("Hologram.lines missing from timed loot " + config.getName());
         String type = config.getString("type");
+
         TimedLootChest chest = new TimedLootChest(
                 new LootChestPosition(location, direction),
                 lootChestTemplates.get(chestTemplate),
@@ -368,16 +369,23 @@ public class LootManager implements LootAPI {
                         hologram.getLines().appendText(ColorUtil.format(line.replaceAll("%text%", line)));
                     }
                 });
+
         if ("boss".equalsIgnoreCase(type)) {
             String mmID = config.getString("boss.mm-id");
             double lootDamageThreshold = config.getDouble("boss.loot-damage-threshold");
-            if (mmID == null)
+
+            if (mmID == null) {
                 throw new IllegalArgumentException("Boss timed loot chest missing boss.mm-id");
+            }
+
             return new BossTimedLoot(chest, mmID, lootDamageThreshold);
         } else if ("custom".equalsIgnoreCase(type)) {
             String identifier = config.getString("custom.identifier");
-            if (identifier == null)
+
+            if (identifier == null) {
                 throw new IllegalArgumentException("Timed loot missing identifier " + config.getName());
+            }
+
             return new CustomTimedLoot(chest, identifier);
         } else throw new IllegalArgumentException("Bad type for timed loot chest: " + type);
     }
