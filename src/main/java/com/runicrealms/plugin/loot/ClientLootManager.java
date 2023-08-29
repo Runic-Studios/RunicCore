@@ -60,7 +60,7 @@ public class ClientLootManager implements Listener {
         ProtocolLibrary.getProtocolManager().getAsynchronousManager().registerAsyncHandler(new PacketAdapter(RunicCore.getInstance(), ListenerPriority.HIGH, PacketType.Play.Client.USE_ITEM) {
             @Override
             public void onPacketReceiving(PacketEvent event) {
-                if (event.getPacketType() == PacketType.Play.Client.USE_ITEM && event.getPacket().getHands().read(0) == EnumWrappers.Hand.MAIN_HAND) {
+                if (event.getPacketType() == PacketType.Play.Client.USE_ITEM && !event.isCancelled() && event.getPacket().getHands().read(0) == EnumWrappers.Hand.MAIN_HAND) {
                     onUseItemPacket(event);
                 }
             }
@@ -244,6 +244,7 @@ public class ClientLootManager implements Listener {
                     chest.lootChest.openInventory(event.getPlayer());
                     client.displayed = false;
                     chest.lootChest.hideFromPlayer(event.getPlayer(), false);
+                    chest.lootChest.onOpen(event.getPlayer());
                 })
                 .execute();
     }

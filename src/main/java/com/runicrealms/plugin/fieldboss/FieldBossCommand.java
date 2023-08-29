@@ -3,6 +3,7 @@ package com.runicrealms.plugin.fieldboss;
 import co.aikar.commands.BaseCommand;
 import co.aikar.commands.annotation.CatchUnknown;
 import co.aikar.commands.annotation.CommandAlias;
+import co.aikar.commands.annotation.CommandCompletion;
 import co.aikar.commands.annotation.CommandPermission;
 import co.aikar.commands.annotation.Default;
 import co.aikar.commands.annotation.Subcommand;
@@ -13,17 +14,22 @@ import org.bukkit.command.CommandSender;
 @CommandAlias("fieldboss")
 @CommandPermission("runic.op")
 public class FieldBossCommand extends BaseCommand {
-    
+    public FieldBossCommand() {
+        RunicCore.getCommandManager().getCommandCompletions().registerAsyncCompletion("fieldboss-ids", context -> RunicCore.getFieldBossAPI().getFieldBosses().stream().map(FieldBoss::getIdentifier).toList());
+    }
+
     @Default
     @CatchUnknown
     public void onCommand(CommandSender sender) {
-        sender.sendMessage(ChatColor.RED + "Usage: /fieldboss activate|deactivate <identifier> [success]");
+        sender.sendMessage(ChatColor.RED + "Usage: /fieldboss activate <identifier>");
+        sender.sendMessage(ChatColor.RED + "Usage: /fieldboss deactivate <identifier> <success>");
     }
 
     @Subcommand("activate")
+    @CommandCompletion("@fieldboss-ids @nothing")
     public void onActivateCommand(CommandSender sender, String[] args) {
         if (args.length != 1) {
-            sender.sendMessage(ChatColor.RED + "Usage: /fieldboss activate <identifier> [success]");
+            sender.sendMessage(ChatColor.RED + "Usage: /fieldboss activate <identifier>");
             return;
         }
         FieldBoss boss = RunicCore.getFieldBossAPI().getFieldBoss(args[0]);
@@ -36,6 +42,7 @@ public class FieldBossCommand extends BaseCommand {
     }
 
     @Subcommand("deactivate")
+    @CommandCompletion("@fieldboss-ids true|false @nothing")
     public void onDeactivateCommand(CommandSender sender, String[] args) {
         if (args.length < 1) {
             sender.sendMessage(ChatColor.RED + "Usage: /fieldboss deactivate <identifier> [success]");

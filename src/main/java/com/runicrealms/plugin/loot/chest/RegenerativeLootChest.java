@@ -1,5 +1,6 @@
 package com.runicrealms.plugin.loot.chest;
 
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -27,5 +28,10 @@ public class RegenerativeLootChest extends LootChest {
     @Override
     public boolean shouldUpdateDisplay() {
         return true;
+    }
+
+    @Override
+    public void onOpen(@NotNull Player player) {
+        //no need to do anything extra
     }
 }

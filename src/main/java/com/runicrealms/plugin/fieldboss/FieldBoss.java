@@ -3,6 +3,8 @@ package com.runicrealms.plugin.fieldboss;
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.PacketContainer;
+import com.comphenix.protocol.wrappers.EnumWrappers;
+import com.comphenix.protocol.wrappers.WrappedParticle;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.common.RunicCommon;
 import com.runicrealms.plugin.events.MagicDamageEvent;
@@ -20,6 +22,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
@@ -29,9 +32,9 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
@@ -49,7 +52,6 @@ public class FieldBoss implements Listener {
 
     /*
     TODO:
-    - Add tribute chest, organic way to activate
     - Only allow boss to aggro on players fighting it
      */
 
@@ -72,15 +74,15 @@ public class FieldBoss implements Listener {
     private @Nullable ActiveState active; // null means inactive
     private boolean spoilsActive = false;
 
-    public FieldBoss(String identifier,
-                     String bossName,
-                     String mmID,
-                     Location domeCentre,
+    public FieldBoss(@NotNull String identifier,
+                     @NotNull String bossName,
+                     @NotNull String mmID,
+                     @NotNull Location domeCentre,
                      double domeRadius,
-                     Location circleCentre,
+                     @NotNull Location circleCentre,
                      double circleRadius,
                      @Nullable GuildScore guildScore,
-                     BossTimedLoot loot) {
+                     @NotNull BossTimedLoot loot) {
         this.identifier = identifier;
         this.bossName = bossName;
         this.mmID = mmID;
@@ -90,22 +92,28 @@ public class FieldBoss implements Listener {
         this.circleRadius = circleRadius;
         this.guildScore = guildScore;
         this.loot = loot;
-        try (MythicBukkit mythicBukkit = MythicBukkit.inst()) {
-            if (mythicBukkit.getAPIHelper().getMythicMob(mmID) == null)
-                throw new IllegalArgumentException("Field Boss " + identifier + " has invalid MM ID " + mmID);
+
+        if (MythicBukkit.inst().getAPIHelper().getMythicMob(mmID) == null) {
+            throw new IllegalArgumentException("Field Boss " + identifier + " has invalid MM ID " + mmID);
         }
-        if (!Objects.equals(domeCentre.getWorld(), circleCentre.getWorld()))
+
+        if (!Objects.equals(domeCentre.getWorld(), circleCentre.getWorld())) {
             throw new IllegalArgumentException("Dome and circle must be in the same world!");
-        if (Bukkit.isPrimaryThread())
+        }
+
+        if (Bukkit.isPrimaryThread()) {
             Bukkit.getScheduler().runTaskAsynchronously(RunicCore.getInstance(), this::loadParticles);
-        else loadParticles();
+        } else {
+            this.loadParticles();
+        }
+
         Bukkit.getPluginManager().registerEvents(this, RunicCore.getInstance());
     }
 
     private static PacketContainer createDustParticlePacket(double x, double y, double z, Color color) {
         PacketContainer packet = new PacketContainer(PacketType.Play.Server.WORLD_PARTICLES);
-        packet.getIntegers().write(0, 14); // Particle ID, 14 is dust
-        packet.getBooleans().write(0, true); // Long distance
+        packet.getNewParticles().write(0, WrappedParticle.create(Particle.REDSTONE, new Particle.DustOptions(color, 1)));
+        packet.getBooleans().write(0, false); // Long distance
         packet.getDoubles().write(0, x); // X
         packet.getDoubles().write(1, y); // Y
         packet.getDoubles().write(2, z); // Z
@@ -113,18 +121,15 @@ public class FieldBoss implements Listener {
         packet.getFloat().write(1, 0f); // offset y
         packet.getFloat().write(2, 0f); // offset z
         packet.getFloat().write(3, 0f); // max speed
-        packet.getIntegers().write(1, 1); // particle count
-        packet.getFloat().write(4, ((float) color.getRed()) / 255f); // dust data red
-        packet.getFloat().write(5, ((float) color.getGreen()) / 255f);
-        packet.getFloat().write(6, ((float) color.getBlue()) / 255f);
-        packet.getFloat().write(4, 1f); // dust data scale
+        packet.getIntegers().write(0, 1); // particle count
+
         return packet;
     }
 
     private static PacketContainer createFireworkParticlePacket(double x, double y, double z) {
         PacketContainer packet = new PacketContainer(PacketType.Play.Server.WORLD_PARTICLES);
-        packet.getIntegers().write(0, 26); // Particle ID, 26 is firework
-        packet.getBooleans().write(0, true); // Long distance
+        packet.getParticles().write(0, EnumWrappers.Particle.FIREWORKS_SPARK);
+        packet.getBooleans().write(0, false); // Long distance
         packet.getDoubles().write(0, x); // X
         packet.getDoubles().write(1, y); // Y
         packet.getDoubles().write(2, z); // Z
@@ -132,7 +137,7 @@ public class FieldBoss implements Listener {
         packet.getFloat().write(1, 0f); // offset y
         packet.getFloat().write(2, 0f); // offset z
         packet.getFloat().write(3, 0f); // max speed
-        packet.getIntegers().write(1, 1); // particle count
+        packet.getIntegers().write(0, 1); // particle count
         return packet;
     }
 
@@ -166,8 +171,9 @@ public class FieldBoss implements Listener {
     }
 
     public ActiveState getActiveState() {
-        if (this.active == null)
+        if (this.active == null) {
             throw new IllegalStateException("Cannot get field boss active state when it is inactive!");
+        }
         return this.active;
     }
 
@@ -289,38 +295,26 @@ public class FieldBoss implements Listener {
         private ActiveState() {
             Bukkit.getPluginManager().registerEvents(this, RunicCore.getInstance());
             updatePlayerStates();
-            playerStateTask = new BukkitRunnable() {
-                @Override
-                public void run() {
-                    updatePlayerStates();
-                }
-            }.runTaskTimerAsynchronously(RunicCore.getInstance(), 20, 20);
-            particleTask = new BukkitRunnable() {
-                @Override
-                public void run() {
-                    for (Player player : Bukkit.getOnlinePlayers()) {
-                        PlayerState playerState = playerStates.get(player);
-                        if (playerState == null) continue;
-                        if (playerState.canSpectate) {
-                            domeParticles.get(playerState).forEach(packet -> ProtocolLibrary.getProtocolManager().sendServerPacket(player, packet));
-                        }
+            this.playerStateTask = Bukkit.getScheduler().runTaskTimerAsynchronously(RunicCore.getInstance(), this::updatePlayerStates, 20, 20);
+
+            this.particleTask = Bukkit.getScheduler().runTaskTimerAsynchronously(RunicCore.getInstance(), () -> {
+                for (Player player : Bukkit.getOnlinePlayers()) {
+                    PlayerState playerState = playerStates.get(player);
+                    if (playerState == null) continue;
+                    if (playerState.canSpectate) {
+                        domeParticles.get(playerState).forEach(packet -> ProtocolLibrary.getProtocolManager().sendServerPacket(player, packet));
                     }
                 }
-            }.runTaskTimerAsynchronously(RunicCore.getInstance(), 0, 4);
+            }, 0, 4);
+
             try {
-                try (MythicBukkit mythicBukkit = MythicBukkit.inst()) {
-                    Entity mob = mythicBukkit.getAPIHelper().spawnMythicMob(mmID, domeCentre);
-                    this.entityID = mob.getUniqueId();
-                }
+                Entity mob = MythicBukkit.inst().getAPIHelper().spawnMythicMob(mmID, domeCentre);
+                this.entityID = mob.getUniqueId();
             } catch (InvalidMobTypeException exception) {
                 throw new IllegalArgumentException("Invalid mythic mobs ID: " + mmID);
             }
-            new WarmupCircle(() -> movementTask = new BukkitRunnable() {
-                @Override
-                public void run() {
-                    teleportDomePlayers();
-                }
-            }.runTaskTimerAsynchronously(RunicCore.getInstance(), 0, 8));
+
+            new WarmupCircle(() -> this.movementTask = Bukkit.getScheduler().runTaskTimerAsynchronously(RunicCore.getInstance(), this::teleportDomePlayers, 0, 8));
         }
 
         private boolean canEnterFight(Player player) {
@@ -478,9 +472,7 @@ public class FieldBoss implements Listener {
                     online.sendMessage(ChatColor.GREEN + "You defeated the " + ChatColor.YELLOW + bossName + ChatColor.GREEN + "! Collect the spoils from the chest near you.");
                     RunicCore.getLootAPI().displayTimedLootChest(online, loot.getLootChest());
                 }
-                Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), () -> {
-                    spoilsActive = false;
-                }, loot.getLootChest().getDuration() * 20L);
+                Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), () -> spoilsActive = false, loot.getLootChest().getDuration() * 20L);
                 spoilsActive = true;
             }
             damageDealt.clear();
@@ -529,17 +521,12 @@ public class FieldBoss implements Listener {
 
             private final Runnable onFinish;
 
-            private WarmupCircle(Runnable onFinish) {
+            private WarmupCircle(@NotNull Runnable onFinish) {
                 this.onFinish = onFinish;
                 state = State.WARMUP;
                 AtomicInteger counter = new AtomicInteger(CIRCLE_DURATION);
 
-                BukkitTask circleTask = new BukkitRunnable() {
-                    @Override
-                    public void run() {
-                        spawnCircleParticles();
-                    }
-                }.runTaskTimerAsynchronously(RunicCore.getInstance(), 0, 10);
+                BukkitTask circleTask = Bukkit.getScheduler().runTaskTimerAsynchronously(RunicCore.getInstance(), this::spawnCircleParticles, 0, 10);
 
                 Hologram hologram = HolographicDisplaysAPI.get(RunicCore.getInstance()).createHologram(circleCentre.clone().add(0, 3, 0));
                 hologram.getVisibilitySettings().setGlobalVisibility(VisibilitySettings.Visibility.VISIBLE);
@@ -555,28 +542,27 @@ public class FieldBoss implements Listener {
                         player.playSound(player.getLocation(), Sound.ENTITY_ENDER_DRAGON_HURT, 1.0f, 0.8f);
                     }
                 }
-                new BukkitRunnable() {
-                    @Override
-                    public void run() {
-                        int counterCurrent = counter.get();
-                        if (counterCurrent == 15 || counterCurrent == 10 || counterCurrent <= 5) {
-                            for (Player player : Bukkit.getOnlinePlayers()) {
-                                PlayerState playerState = playerStates.get(player);
-                                if (playerState == null) continue;
-                                if (playerState.canSpectate) {
-                                    player.sendMessage(ChatColor.DARK_GREEN.toString() + counter + " seconds" + ChatColor.GREEN + " until field boss activates...");
-                                }
+
+                Bukkit.getScheduler().runTaskTimerAsynchronously(RunicCore.getInstance(), task -> {
+                    int counterCurrent = counter.get();
+                    if (counterCurrent == 15 || counterCurrent == 10 || counterCurrent <= 5) {
+                        for (Player player : Bukkit.getOnlinePlayers()) {
+                            PlayerState playerState = playerStates.get(player);
+                            if (playerState == null) continue;
+                            if (playerState.canSpectate) {
+                                player.sendMessage(ChatColor.DARK_GREEN.toString() + counter + " seconds" + ChatColor.GREEN + " until field boss activates...");
                             }
                         }
-                        counterCurrent = counter.decrementAndGet();
-                        if (counterCurrent <= 0) {
-                            this.cancel();
-                            circleTask.cancel();
-                            Bukkit.getScheduler().runTask(RunicCore.getInstance(), hologram::delete);
-                            deactivate();
-                        }
                     }
-                }.runTaskTimerAsynchronously(RunicCore.getInstance(), 0, 20);
+
+                    counterCurrent = counter.decrementAndGet();
+                    if (counterCurrent <= 0) {
+                        task.cancel();
+                        circleTask.cancel();
+                        Bukkit.getScheduler().runTask(RunicCore.getInstance(), hologram::delete);
+                        deactivate();
+                    }
+                }, 0, 20);
             }
 
             private void spawnCircleParticles() {

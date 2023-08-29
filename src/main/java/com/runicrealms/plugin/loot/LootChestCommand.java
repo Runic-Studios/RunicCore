@@ -157,7 +157,7 @@ public class LootChestCommand extends BaseCommand implements Listener {
             } else if (template.equalsIgnoreCase("rare-chest")) {
                 title = "&bRare Loot Chest";
             } else if (template.equalsIgnoreCase("epic-chest")) {
-                title = "&5Epic Loot Chest";
+                title = "&dEpic Loot Chest";
             } else {
                 player.sendMessage(ChatColor.RED + "Since you are creating a loot chest with a custom template, please specify the [title].");
                 player.sendMessage(ChatColor.RED + "Usage: /lootchest create <chest-template> <item-min-level> <item-max-level> [regeneration-time] [title]");

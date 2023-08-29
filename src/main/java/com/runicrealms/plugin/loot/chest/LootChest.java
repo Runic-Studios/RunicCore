@@ -189,6 +189,13 @@ public abstract class LootChest implements LootHolder {
      */
     public abstract boolean shouldUpdateDisplay();
 
+    /**
+     * Code that should be executed when the chest is opened
+     *
+     * @param player the player who opened the chest
+     */
+    public abstract void onOpen(@NotNull Player player);
+
     private void setActiveModel() {
         if (this.model != null) {
             return;

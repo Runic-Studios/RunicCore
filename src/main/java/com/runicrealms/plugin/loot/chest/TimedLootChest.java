@@ -10,7 +10,9 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -22,6 +24,8 @@ public class TimedLootChest extends LootChest {
     private final Location hologramLocation;
     private final BiConsumer<Hologram, Integer> hologramEditor; // Integer is remaining duration in seconds
     private final Map<UUID, Runnable> finishTasks = new ConcurrentHashMap<>();
+
+    private final Set<UUID> displayedTo;
 
     public TimedLootChest(
             @NotNull LootChestPosition position,
@@ -38,6 +42,7 @@ public class TimedLootChest extends LootChest {
         this.duration = duration;
         this.hologramLocation = hologramLocation;
         this.hologramEditor = hologramEditor;
+        this.displayedTo = new HashSet<>();
     }
 
     /**
@@ -49,13 +54,14 @@ public class TimedLootChest extends LootChest {
         Hologram hologram = HolographicDisplaysAPI.get(RunicCore.getInstance()).createHologram(hologramLocation);
         hologram.getVisibilitySettings().setGlobalVisibility(VisibilitySettings.Visibility.HIDDEN);
         hologram.getVisibilitySettings().setIndividualVisibility(player, VisibilitySettings.Visibility.VISIBLE);
+        this.displayedTo.add(player.getUniqueId());
         Bukkit.getScheduler().runTaskLaterAsynchronously(RunicCore.getInstance(), () -> this.showToPlayer(player), 10);
 
         Bukkit.getScheduler().runTaskTimer(RunicCore.getInstance(), task -> {
             hologramEditor.accept(hologram, counter.get());
 
             int timeRemaining = counter.get();
-            if (timeRemaining <= 0) {
+            if (timeRemaining <= 0 || !this.displayedTo.contains(player.getUniqueId())) {
                 task.cancel();
                 this.hideFromPlayer(player);
                 hologram.delete();
@@ -87,4 +93,8 @@ public class TimedLootChest extends LootChest {
         return false;
     }
 
+    @Override
+    public void onOpen(@NotNull Player player) {
+        this.displayedTo.remove(player.getUniqueId());
+    }
 }
