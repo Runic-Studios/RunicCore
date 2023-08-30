@@ -346,9 +346,9 @@ public class LootManager implements LootAPI {
         if (hologramLocationSection == null)
             throw new IllegalArgumentException("Hologram location section missing for timed loot " + config.getName());
         String holoWorld = hologramLocationSection.getString("world");
-        int holoX = hologramLocationSection.getInt("x");
-        int holoY = hologramLocationSection.getInt("y");
-        int holoZ = hologramLocationSection.getInt("z");
+        double holoX = hologramLocationSection.getDouble("x");
+        double holoY = hologramLocationSection.getDouble("y");
+        double holoZ = hologramLocationSection.getDouble("z");
         if (holoWorld == null || holoX == 0 || holoY == 0 || holoZ == 0)
             throw new IllegalArgumentException("One or more hologram-location values missing for timed loot " + config.getName());
         Location hologramLocation = new Location(Objects.requireNonNull(Bukkit.getWorld(holoWorld), "Timed loot hologram location world " + holoWorld + " does not exist!"), holoX, holoY, holoZ);
