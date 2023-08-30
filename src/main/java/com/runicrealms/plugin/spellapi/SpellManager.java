@@ -15,14 +15,14 @@ import com.runicrealms.plugin.spellapi.spells.archer.Jolt;
 import com.runicrealms.plugin.spellapi.spells.archer.LeapingShot;
 import com.runicrealms.plugin.spellapi.spells.archer.Overcharge;
 import com.runicrealms.plugin.spellapi.spells.archer.PiercingArrow;
-import com.runicrealms.plugin.spellapi.spells.archer.RainFire;
+import com.runicrealms.plugin.spellapi.spells.archer.RainOfArrows;
 import com.runicrealms.plugin.spellapi.spells.archer.RapidFire;
 import com.runicrealms.plugin.spellapi.spells.archer.RefreshingVolley;
 import com.runicrealms.plugin.spellapi.spells.archer.Remedy;
 import com.runicrealms.plugin.spellapi.spells.archer.SacredGrove;
 import com.runicrealms.plugin.spellapi.spells.archer.SnareTrap;
+import com.runicrealms.plugin.spellapi.spells.archer.SteadyAim;
 import com.runicrealms.plugin.spellapi.spells.archer.Stormborn;
-import com.runicrealms.plugin.spellapi.spells.archer.Sunder;
 import com.runicrealms.plugin.spellapi.spells.archer.Surge;
 import com.runicrealms.plugin.spellapi.spells.archer.ThunderArrow;
 import com.runicrealms.plugin.spellapi.spells.cleric.Accelerando;
@@ -438,9 +438,7 @@ public class SpellManager implements Listener, SpellAPI {
         this.spellList.add(new Consecrate());
         this.spellList.add(new Salvation());
         this.spellList.add(new BlessedBlade());
-        this.spellList.add(new RainFire());
         this.spellList.add(new PiercingArrow());
-        this.spellList.add(new Sunder());
         this.spellList.add(new LeapingShot());
         this.spellList.add(new SilverBolt());
         this.spellList.add(new Castigate());
@@ -470,6 +468,8 @@ public class SpellManager implements Listener, SpellAPI {
         this.spellList.add(new Powerslide());
         this.spellList.add(new GrandSymphony());
         this.spellList.add(new Tempo());
+        this.spellList.add(new RainOfArrows());
+        this.spellList.add(new SteadyAim());
 
         /*
         Items

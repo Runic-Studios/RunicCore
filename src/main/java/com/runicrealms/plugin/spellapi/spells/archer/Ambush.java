@@ -2,11 +2,10 @@ package com.runicrealms.plugin.spellapi.spells.archer;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.api.event.RunicBowEvent;
+import com.runicrealms.plugin.common.CharacterClass;
 import com.runicrealms.plugin.events.PhysicalDamageEvent;
 import com.runicrealms.plugin.events.SpellCastEvent;
-import com.runicrealms.plugin.common.CharacterClass;
 import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
-import com.runicrealms.plugin.spellapi.spelltypes.RunicStatusEffect;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.WarmupSpell;
 import com.runicrealms.plugin.spellapi.spellutil.particles.EntityTrail;
@@ -37,9 +36,6 @@ public class Ambush extends Spell implements DurationSpell, WarmupSpell {
     private final Map<UUID, BukkitTask> sneakMap = new HashMap<>();
     private double blindDuration;
     private double cooldown;
-    private double damage;
-    private double damagePerLevel;
-    private double speedDuration;
     private double warmup;
 
     public Ambush() {
@@ -47,11 +43,8 @@ public class Ambush extends Spell implements DurationSpell, WarmupSpell {
         this.setIsPassive(true);
         this.setDescription("Sneaking without casting spells for at least " + warmup +
                 "s causes your next ranged basic attack (if it lands) to ambush its target, " +
-                "dealing an additional (" +
-                damage + " + &f" + damagePerLevel +
-                "x &7lvl) physical⚔ damage, blinding your opponent for " + blindDuration + "s, " +
-                "and granting you a boost of speed for " +
-                speedDuration + "s! Cannot occur more than once every " + cooldown + "s.");
+                "Ambush attacks critically strike and blind your opponent for " + blindDuration + "s, " +
+                "Cannot occur more than once every " + cooldown + "s.");
     }
 
     @Override
@@ -68,14 +61,8 @@ public class Ambush extends Spell implements DurationSpell, WarmupSpell {
     public void loadDurationData(Map<String, Object> spellData) {
         Number blindDuration = (Number) spellData.getOrDefault("blind-duration", 0);
         setDuration(blindDuration.doubleValue());
-        Number speedDuration = (Number) spellData.getOrDefault("speed-duration", 0);
-        setSpeedDuration(speedDuration.doubleValue());
         Number cooldown = (Number) spellData.getOrDefault("cooldown", 0);
         setCooldown(cooldown.doubleValue());
-        Number damage = (Number) spellData.getOrDefault("physical-damage", 0);
-        setDamage(damage.doubleValue());
-        Number damagePerLevel = (Number) spellData.getOrDefault("physical-damage-per-level", 0);
-        setDamagePerLevel(damagePerLevel.doubleValue());
     }
 
     @Override
@@ -95,17 +82,15 @@ public class Ambush extends Spell implements DurationSpell, WarmupSpell {
         successfulPlayers.add(uuid);
     }
 
-    @EventHandler(priority = EventPriority.NORMAL)
+    @EventHandler(ignoreCancelled = true)
     public void onRangedPhysicalDamage(PhysicalDamageEvent event) {
-        if (event.isCancelled()) return;
-        if (!event.isRanged()) return;
-        if (!event.isBasicAttack()) return;
-        if (!hasPassive(event.getPlayer().getUniqueId(), this.getName())) return;
-        if (!successfulPlayers.contains(event.getPlayer().getUniqueId())) return;
+        if (!event.isRanged() || !event.isBasicAttack() || !hasPassive(event.getPlayer().getUniqueId(), this.getName()) || !successfulPlayers.contains(event.getPlayer().getUniqueId())) {
+            return;
+        }
         successfulPlayers.remove(event.getPlayer().getUniqueId());
-        event.setAmount((int) (event.getAmount() + damage + (damagePerLevel * event.getPlayer().getLevel())));
+
         event.getVictim().addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, (int) (blindDuration * 20), 1));
-        addStatusEffect(event.getPlayer(), RunicStatusEffect.SPEED_II, speedDuration, false);
+        event.setCritical(true);
     }
 
     @EventHandler(priority = EventPriority.LOW) // early
@@ -150,24 +135,8 @@ public class Ambush extends Spell implements DurationSpell, WarmupSpell {
         }
     }
 
-    public void setBlindDuration(double blindDuration) {
-        this.blindDuration = blindDuration;
-    }
-
     public void setCooldown(double cooldown) {
         this.cooldown = cooldown;
-    }
-
-    public void setDamage(double damage) {
-        this.damage = damage;
-    }
-
-    public void setDamagePerLevel(double damagePerLevel) {
-        this.damagePerLevel = damagePerLevel;
-    }
-
-    public void setSpeedDuration(double speedDuration) {
-        this.speedDuration = speedDuration;
     }
 }
 

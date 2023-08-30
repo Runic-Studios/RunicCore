@@ -21,9 +21,16 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Random;
 
+/**
+ * Leaping shot was made into spell 2, rain was deprecated and replace with Rain of Arrows ult
+ *
+ * @deprecated replaced by {@link RainOfArrows}
+ */
+@Deprecated
 public class RainFire extends Spell implements DistanceSpell, PhysicalDamageSpell, RadiusSpell, WarmupSpell {
     private static final int ARROW_COUNT = 6;
     private static final int HEIGHT = 8;
@@ -140,23 +147,23 @@ public class RainFire extends Spell implements DistanceSpell, PhysicalDamageSpel
         this.warmup = warmup;
     }
 
-    public void playArrowFlurry(Player player, Location location) {
+    public void playArrowFlurry(@NotNull Player player, @NotNull Location location) {
         if (location.getWorld() == null) {
             Bukkit.getLogger().warning("There was a problem getting Rain Fire world!");
             return;
         }
+
         Bukkit.getScheduler().runTaskAsynchronously(RunicCore.getInstance(), () -> {
             for (int i = 0; i < ARROW_COUNT; i++) {
-                Bukkit.getScheduler().runTask(RunicCore.getInstance(), () -> {
-                    double offsetX = (RANDOM.nextDouble() * 2 * radius) - radius;
-                    double offsetZ = (RANDOM.nextDouble() * 2 * radius) - radius;
+                double offsetX = (RANDOM.nextDouble() * 2 * radius) - radius;
+                double offsetZ = (RANDOM.nextDouble() * 2 * radius) - radius;
 
-                    Location randomLocation = location.clone().add(offsetX, 0, offsetZ);
+                Location randomLocation = location.clone().add(offsetX, 0, offsetZ);
 
-                    location.getWorld().playSound(randomLocation, Sound.ENTITY_ARROW_HIT, 3.0F, 1.0F);
-                    final Location[] trailLoc = {randomLocation.clone().add(0, HEIGHT, 0)};
-                    VectorUtil.drawLine(player, Particle.CRIT, Color.WHITE, trailLoc[0], randomLocation.clone().subtract(0, 20, 0), 2.0D, 5);
-                });
+                location.getWorld().playSound(randomLocation, Sound.ENTITY_ARROW_HIT, 3.0F, 1.0F);
+                final Location[] trailLoc = {randomLocation.clone().add(0, HEIGHT, 0)};
+                VectorUtil.drawLine(player, Particle.CRIT, Color.WHITE, trailLoc[0], randomLocation.clone().subtract(0, 20, 0), 2.0D, 5);
+
                 try {
                     Thread.sleep(100);  // 100 milliseconds pause between each sound
                 } catch (InterruptedException e) {

@@ -106,14 +106,12 @@ public class FieldBoss implements Listener {
         } else {
             this.loadParticles();
         }
-
-        Bukkit.getPluginManager().registerEvents(this, RunicCore.getInstance());
     }
 
     private static PacketContainer createDustParticlePacket(double x, double y, double z, Color color) {
         PacketContainer packet = new PacketContainer(PacketType.Play.Server.WORLD_PARTICLES);
         packet.getNewParticles().write(0, WrappedParticle.create(Particle.REDSTONE, new Particle.DustOptions(color, 1)));
-        packet.getBooleans().write(0, false); // Long distance
+        packet.getBooleans().write(0, true); // Long distance
         packet.getDoubles().write(0, x); // X
         packet.getDoubles().write(1, y); // Y
         packet.getDoubles().write(2, z); // Z
@@ -129,7 +127,7 @@ public class FieldBoss implements Listener {
     private static PacketContainer createFireworkParticlePacket(double x, double y, double z) {
         PacketContainer packet = new PacketContainer(PacketType.Play.Server.WORLD_PARTICLES);
         packet.getParticles().write(0, EnumWrappers.Particle.FIREWORKS_SPARK);
-        packet.getBooleans().write(0, false); // Long distance
+        packet.getBooleans().write(0, true); // Long distance
         packet.getDoubles().write(0, x); // X
         packet.getDoubles().write(1, y); // Y
         packet.getDoubles().write(2, z); // Z
@@ -406,7 +404,7 @@ public class FieldBoss implements Listener {
             }
         }
 
-        @EventHandler(priority = EventPriority.HIGHEST)
+        @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
         public void onMagicDamage(MagicDamageEvent event) {
             if (!event.getVictim().getUniqueId().equals(entityID)) return;
             PlayerState state = playerStates.get(event.getPlayer());
@@ -415,7 +413,7 @@ public class FieldBoss implements Listener {
             else trackBossDamage(event.getPlayer(), event.getAmount());
         }
 
-        @EventHandler(priority = EventPriority.HIGHEST)
+        @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
         public void onPhysicalDamage(PhysicalDamageEvent event) {
             if (!event.getVictim().getUniqueId().equals(entityID)) return;
             PlayerState state = playerStates.get(event.getPlayer());
@@ -430,7 +428,7 @@ public class FieldBoss implements Listener {
             damageDealt.put(player.getUniqueId(), damageDealt.get(player.getUniqueId()) + amount);
         }
 
-        @EventHandler
+        @EventHandler(ignoreCancelled = true)
         public void onRunicDeath(RunicDeathEvent event) {
             if (participants.containsKey(event.getVictim()))
                 participants.put(event.getVictim(), System.currentTimeMillis());
@@ -452,12 +450,16 @@ public class FieldBoss implements Listener {
         }
 
         public void deactivate(boolean success) {
-            if (state != State.ACTIVE)
-                throw new IllegalStateException("Cannot deactivate active state when still in warmup!");
             HandlerList.unregisterAll(this);
             particleTask.cancel();
             playerStateTask.cancel();
             if (movementTask != null) movementTask.cancel();
+
+            if (state != State.ACTIVE) {
+                RunicCore.getInstance().getLogger().warning("Cannot deactivate active state when still in warmup!");
+                return;
+            }
+
             for (Player player : Bukkit.getOnlinePlayers()) {
                 PlayerState playerState = playerStates.get(player);
                 if (playerState == null) continue;
@@ -528,7 +530,7 @@ public class FieldBoss implements Listener {
 
                 BukkitTask circleTask = Bukkit.getScheduler().runTaskTimerAsynchronously(RunicCore.getInstance(), this::spawnCircleParticles, 0, 10);
 
-                Hologram hologram = HolographicDisplaysAPI.get(RunicCore.getInstance()).createHologram(circleCentre.clone().add(0, 3, 0));
+                Hologram hologram = HolographicDisplaysAPI.get(RunicCore.getInstance()).createHologram(circleCentre.clone().add(0, 5, 0));
                 hologram.getVisibilitySettings().setGlobalVisibility(VisibilitySettings.Visibility.VISIBLE);
                 hologram.getLines().appendText(ChatColor.DARK_RED.toString() + ChatColor.BOLD + "FIELD BOSS");
                 hologram.getLines().appendText(ChatColor.RED + "Stand in the summoning circle");

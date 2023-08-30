@@ -2,6 +2,7 @@ package com.runicrealms.plugin.spellapi.spells.archer;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.common.CharacterClass;
+import com.runicrealms.plugin.common.util.Pair;
 import com.runicrealms.plugin.events.EnvironmentDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.PhysicalDamageSpell;
@@ -17,12 +18,15 @@ import org.bukkit.Sound;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.HandlerList;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -41,7 +45,7 @@ public class LeapingShot extends Spell implements DurationSpell, PhysicalDamageS
 
     public LeapingShot() {
         super("Leaping Shot", CharacterClass.ARCHER);
-        this.setDescription("You fire a spread of 3 arrows that each " +
+        this.setDescription("You fire 4 arrows in quick succession that each " +
                 "(" + damage + " + &f" + damagePerLevel +
                 "x &7lvl) physical⚔ damage while simultaneously leaping backwards! " +
                 "During your leap, you are granted fall damage immunity for " + duration + "s.");
@@ -50,21 +54,24 @@ public class LeapingShot extends Spell implements DurationSpell, PhysicalDamageS
     @Override
     public void executeSpell(Player player, SpellItemType type) {
         leap(player);
-        Vector middle = player.getEyeLocation().getDirection().normalize().multiply(2);
-        Vector leftMid = rotateVectorAroundY(middle, -10);
-        Vector rightMid = rotateVectorAroundY(middle, 10);
-        Vector[] vectors = new Vector[]{middle, leftMid, rightMid};
-        for (Vector vector : vectors) {
-            fireArrow(player, vector);
-        }
+
+        RunicCore.getTaskChainFactory().newChain()
+                .sync(() -> this.fireArrow(player, false))
+                .delay(5)
+                .sync(() -> this.fireArrow(player, false))
+                .delay(5)
+                .sync(() -> this.fireArrow(player, false))
+                .delay(5)
+                .sync(() -> this.fireArrow(player, true))
+                .execute();
     }
 
-    private void fireArrow(Player player, Vector vector) {
+    private void fireArrow(Player player, boolean last) {
         Arrow arrow = player.launchProjectile(Arrow.class);
-        arrow.setVelocity(vector);
+        arrow.setVelocity(player.getEyeLocation().getDirection().normalize().multiply(2));
         arrow.setShooter(player);
         arrow.setCustomNameVisible(false);
-        arrow.setMetadata(ARROW_META_KEY, new FixedMetadataValue(RunicCore.getInstance(), ARROW_META_VALUE));
+        arrow.setMetadata(ARROW_META_KEY, new FixedMetadataValue(RunicCore.getInstance(), Pair.pair(ARROW_META_VALUE, last)));
         arrow.setBounce(false);
         EntityTrail.entityTrail(arrow, Particle.CRIT);
     }
@@ -147,15 +154,22 @@ public class LeapingShot extends Spell implements DurationSpell, PhysicalDamageS
         if (event.isCancelled()) return;
         if (!(event.getDamager() instanceof Arrow arrow)) return;
         if (!arrow.hasMetadata(ARROW_META_KEY)) return;
-        if (!arrow.getMetadata(ARROW_META_KEY).get(0).asString().equalsIgnoreCase(ARROW_META_VALUE))
+
+        Pair<String, Boolean> data = ((Pair<String, Boolean>) arrow.getMetadata(ARROW_META_KEY).get(0).value());
+
+        if (data == null || !data.first.equalsIgnoreCase(ARROW_META_VALUE)) {
             return;
+        }
+
         if (!(arrow.getShooter() instanceof Player player)) return;
         if (hasBeenHit.containsKey(player.getUniqueId())) {
             event.setCancelled(true);
             return;
         }
         if (!(event.getEntity() instanceof LivingEntity livingEntity)) return;
+
         event.setCancelled(true);
+        Bukkit.getPluginManager().callEvent(new ArrowHitEvent(player, livingEntity, data.second));
         DamageUtil.damageEntityPhysical(damage, livingEntity, player, false, true, this);
         hasBeenHit.put(player.getUniqueId(), livingEntity.getUniqueId()); // prevent concussive hits
         Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), () -> hasBeenHit.remove(player.getUniqueId()), 8L);
@@ -169,4 +183,47 @@ public class LeapingShot extends Spell implements DurationSpell, PhysicalDamageS
         this.verticalPower = verticalPower;
     }
 
+    /**
+     * An event that is called before any spell damage is done to an enemy when they are hit with a leaping shot arrow
+     *
+     * @author BoBoBalloon
+     */
+    public static class ArrowHitEvent extends Event {
+        private final Player caster;
+        private final LivingEntity victim;
+        private final boolean last;
+
+        private static final HandlerList HANDLER_LIST = new HandlerList();
+
+        public ArrowHitEvent(@NotNull Player caster, @NotNull LivingEntity victim, boolean last) {
+            this.caster = caster;
+            this.victim = victim;
+            this.last = last;
+        }
+
+        @NotNull
+        public Player getCaster() {
+            return this.caster;
+        }
+
+        @NotNull
+        public LivingEntity getVictim() {
+            return this.victim;
+        }
+
+        public boolean isLast() {
+            return this.last;
+        }
+
+        @NotNull
+        @Override
+        public HandlerList getHandlers() {
+            return HANDLER_LIST;
+        }
+
+        @NotNull
+        public static HandlerList getHandlerList() {
+            return HANDLER_LIST;
+        }
+    }
 }
