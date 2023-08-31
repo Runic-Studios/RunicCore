@@ -110,7 +110,16 @@ public class LootManager implements LootAPI {
         for (File chestTypeFile : Objects.requireNonNull(chestTypesFolder.listFiles())) {
             if (!chestTypeFile.isDirectory() && (chestTypeFile.getName().endsWith(".yml") || chestTypeFile.getName().endsWith(".yaml"))) {
                 FileConfiguration config = RunicCommon.getConfigAPI().getYamlConfigFromFile(chestTypeFile.getName(), chestTypesFolder);
-                LootChestTemplate lootChestTemplate = parseLootChestTemplate(config);
+                LootChestTemplate lootChestTemplate;
+
+                try {
+                    lootChestTemplate = parseLootChestTemplate(config);
+                } catch (IllegalArgumentException e) {
+                    Bukkit.broadcastMessage(ColorUtil.format("&c" + e.getMessage()));
+                    e.printStackTrace();
+                    continue;
+                }
+
                 lootChestTemplates.put(lootChestTemplate.getIdentifier(), lootChestTemplate);
             }
         }
@@ -244,16 +253,33 @@ public class LootManager implements LootAPI {
         return new LootTable(identifier, items);
     }
 
-    private LootChestTemplate parseLootChestTemplate(FileConfiguration config) {
+    private LootChestTemplate parseLootChestTemplate(FileConfiguration config) throws IllegalArgumentException {
         String identifier = Objects.requireNonNull(config.getString("identifier"));
-        String lootTable = Objects.requireNonNull(config.getString("loot-table"));
-        if (!lootTables.containsKey(lootTable))
-            throw new IllegalArgumentException("Loot chest template " + identifier + " has invalid loot table " + lootTable);
-        int minCount = config.getInt("count.min");
-        int maxCount = config.getInt("count.max");
-        if (minCount == 0 || maxCount == 0)
-            throw new IllegalArgumentException("Loot chest template " + identifier + " must have count.min and count.max!");
-        return new LootChestTemplate(identifier, lootTables.get(lootTable), minCount, maxCount, 27);
+
+        ConfigurationSection lootTableSection = config.getConfigurationSection("loot-tables");
+
+        if (lootTableSection == null) {
+            throw new IllegalArgumentException("");
+        }
+
+        List<LootChestTemplate.Table> tables = new ArrayList<>();
+
+        for (String key : lootTableSection.getKeys(false)) {
+            if (!lootTables.containsKey(key)) {
+                throw new IllegalArgumentException("Loot chest template " + identifier + " has invalid loot table " + key);
+            }
+
+            int minCount = lootTableSection.getInt(key + ".count.min");
+            int maxCount = lootTableSection.getInt(key + ".count.max");
+
+            if (minCount == 0 || maxCount == 0) {
+                throw new IllegalArgumentException("Loot chest template " + identifier + " must have count.min and count.max on " + key + "!");
+            }
+
+            tables.add(new LootChestTemplate.Table(this.lootTables.get(key), minCount, maxCount));
+        }
+
+        return new LootChestTemplate(identifier, 27, tables.toArray(LootChestTemplate.Table[]::new));
     }
 
     private RegenerativeLootChest parseRegenerativeLootChest(ConfigurationSection section, String chestID) {

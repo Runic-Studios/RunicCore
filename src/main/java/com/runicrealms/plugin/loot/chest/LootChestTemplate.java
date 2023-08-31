@@ -3,41 +3,75 @@ package com.runicrealms.plugin.loot.chest;
 import com.runicrealms.plugin.loot.LootTable;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
+import java.util.Arrays;
 import java.util.HashSet;
-import java.util.Random;
 import java.util.Set;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class LootChestTemplate {
 
     private final String identifier;
-    private final LootTable lootTable;
-    private final int minCount;
-    private final int maxCount;
+    private final Table[] tables;
     private final int inventorySize;
 
-    public LootChestTemplate(String identifier, LootTable lootTable, int minCount, int maxCount, int inventorySize) {
+    public LootChestTemplate(@NotNull String identifier, int inventorySize, @NotNull Table... tables) {
         this.identifier = identifier;
-        this.lootTable = lootTable;
-        if (minCount > maxCount)
-            throw new IllegalArgumentException("LootChestTemplate min count cannot exceed max count!");
-        this.minCount = minCount;
-        this.maxCount = maxCount;
-        if (inventorySize % 9 != 0 || inventorySize < maxCount)
+        this.tables = tables;
+
+        if (inventorySize % 9 != 0 || inventorySize < Arrays.stream(tables).mapToInt(Table::getMaxCount).sum()) {
             throw new IllegalArgumentException("Cannot create LootChestTemplate " + identifier + " with inventory size " + inventorySize);
+        }
+
         this.inventorySize = inventorySize;
     }
 
-    public LootChestInventory generateInventory(LootChest lootChest, Player player) {
-        Random rand = new Random();
-        int itemCount = rand.nextInt(maxCount - minCount + 1) + minCount;
+    public LootChestInventory generateInventory(@NotNull LootChest lootChest, @NotNull Player player) {
         Set<ItemStack> items = new HashSet<>();
-        for (int i = 0; i < itemCount; i++) items.add(lootTable.generateLoot(lootChest, player));
+
+        for (Table lootTable : this.tables) {
+            int itemCount = ThreadLocalRandom.current().nextInt(lootTable.getMaxCount() - lootTable.getMinCount() + 1) + lootTable.getMinCount();
+
+            for (int i = 0; i < itemCount; i++) {
+                items.add(lootTable.getLootTable().generateLoot(lootChest, player));
+            }
+        }
+
         return new LootChestInventory(lootChest, items, inventorySize, lootChest.getInventoryTitle(), null);
     }
 
+    @NotNull
     public String getIdentifier() {
         return this.identifier;
     }
 
+    public static class Table {
+        private final LootTable lootTable;
+        private final int minCount;
+        private final int maxCount;
+
+        public Table(@NotNull LootTable lootTable, int minCount, int maxCount) {
+            this.lootTable = lootTable;
+            this.minCount = minCount;
+            this.maxCount = maxCount;
+
+            if (minCount > maxCount) {
+                throw new IllegalArgumentException("LootChestTemplate " + lootTable.getIdentifier() + " min count cannot exceed max count!");
+            }
+        }
+
+        @NotNull
+        public LootTable getLootTable() {
+            return this.lootTable;
+        }
+
+        public int getMinCount() {
+            return this.minCount;
+        }
+
+        public int getMaxCount() {
+            return this.maxCount;
+        }
+    }
 }
