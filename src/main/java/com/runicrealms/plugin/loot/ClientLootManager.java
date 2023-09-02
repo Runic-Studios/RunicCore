@@ -19,6 +19,7 @@ import com.runicrealms.plugin.rdb.event.CharacterLoadedEvent;
 import com.runicrealms.plugin.rdb.event.CharacterQuitEvent;
 import com.runicrealms.plugin.runicitems.RunicItemsAPI;
 import com.runicrealms.plugin.runicitems.item.RunicItem;
+import com.runicrealms.plugin.runicrestart.RunicRestart;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -29,7 +30,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.jetbrains.annotations.NotNull;
 
@@ -90,13 +90,13 @@ public class ClientLootManager implements Listener {
                 continue;
             }
 
-            if (displayed && !surrounding.contains(chest)) {
+            if ((displayed && !surrounding.contains(chest)) || player.getLevel() < chest.getMinLevel() || (chest instanceof RegenerativeLootChest regenChest && (this.isTooCloseToServerRestart(regenChest) || this.isOnCooldown(player, regenChest)))) {
                 chest.hideFromPlayer(player, false);
                 clientChest.displayed = false;
                 continue;
             }
 
-            if (displayed || !surrounding.contains(chest) || player.getLevel() < chest.getMinLevel() || (chest instanceof RegenerativeLootChest regenChest && isOnCooldown(player, regenChest))) {
+            if (displayed || !surrounding.contains(chest)) {
                 continue;
             }
 
@@ -107,10 +107,21 @@ public class ClientLootManager implements Listener {
 
     public boolean isOnCooldown(@NotNull Player player, @NotNull RegenerativeLootChest lootChest) {
         Map<RegenerativeLootChest, Long> playerOpened = lastOpened.get(player.getUniqueId());
-        if (playerOpened == null) return false;
+        if (playerOpened == null) {
+            return false;
+        }
+
         long lastOpenedTime = playerOpened.get(lootChest);
         int timeLeft = (int) ((lastOpenedTime + lootChest.getRegenerationTime() * 1000L - System.currentTimeMillis()) / 1000);
+
         return timeLeft > 0;
+    }
+
+    public boolean isTooCloseToServerRestart(@NotNull RegenerativeLootChest lootChest) {
+        int timeBeforeRestart = RunicRestart.getRestartManager().getMinutesBeforeRestart() * 60; //convert to seconds
+
+        //if the time it takes to regen is longer than the time left, when the server restarts they get to skip time, so make sure that they cant open until after server restart
+        return timeBeforeRestart <= lootChest.getRegenerationTime();
     }
 
     public void updateClientChests() {
@@ -143,20 +154,26 @@ public class ClientLootManager implements Listener {
     }
 
     @EventHandler
-    private void onPlayerQuit(PlayerQuitEvent event) {
-        loadedChests.remove(event.getPlayer());
+    private void onCharacterQuit(CharacterQuitEvent event) {
+        this.loadedChests.remove(event.getPlayer());
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
     private void onCharacterLoaded(CharacterLoadedEvent event) {
         Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), () -> {
-            updateClientChests(event.getPlayer());
+            this.updateClientChests(event.getPlayer());
+
+            if (this.lastOpened.containsKey(event.getPlayer().getUniqueId())) {
+                return;
+            }
+
             ConcurrentHashMap<RegenerativeLootChest, Long> playerOpened = new ConcurrentHashMap<>();
 
             for (RegenerativeLootChest lootChest : RunicCore.getLootAPI().getRegenerativeLootChests()) {
                 playerOpened.put(lootChest, 0L);
             }
-            lastOpened.put(event.getPlayer().getUniqueId(), playerOpened);
+
+            this.lastOpened.put(event.getPlayer().getUniqueId(), playerOpened);
         }, 20); //give it more time to load
     }
 
@@ -166,12 +183,7 @@ public class ClientLootManager implements Listener {
             return;
         }
 
-        Bukkit.getScheduler().runTaskLaterAsynchronously(RunicCore.getInstance(), () -> this.updateClientChests(event.getPlayer()), 10); //give it more time to load
-    }
-
-    @EventHandler
-    private void onCharacterQuit(CharacterQuitEvent event) {
-        this.lastOpened.remove(event.getPlayer().getUniqueId());
+        Bukkit.getScheduler().runTaskLaterAsynchronously(RunicCore.getInstance(), () -> this.updateClientChests(event.getPlayer()), 20); //give it more time to load
     }
 
     @EventHandler
@@ -220,13 +232,13 @@ public class ClientLootManager implements Listener {
             return;
         }
 
-        if (chest.lootChest instanceof RegenerativeLootChest regenerativeLootChest && this.isOnCooldown(event.getPlayer(), regenerativeLootChest)) {
-            regenerativeLootChest.hideFromPlayer(event.getPlayer());
+        if (chest.lootChest instanceof RegenerativeLootChest regenChest && (this.isTooCloseToServerRestart(regenChest) || this.isOnCooldown(event.getPlayer(), regenChest))) {
+            regenChest.hideFromPlayer(event.getPlayer(), false);
             return;
         }
 
-        if (chest.lootChest instanceof RegenerativeLootChest regenerativeLootChest) {
-            playerOpened.put(regenerativeLootChest, System.currentTimeMillis());
+        if (chest.lootChest instanceof RegenerativeLootChest regenChest) {
+            playerOpened.put(regenChest, System.currentTimeMillis());
         }
 
         event.setCancelled(true);
