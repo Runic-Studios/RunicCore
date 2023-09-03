@@ -23,7 +23,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.block.BlockFace;
+import org.bukkit.block.data.Directional;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -79,22 +79,6 @@ public class LootChestCommand extends BaseCommand implements Listener {
             }
         }
         return builder.toString();
-    }
-
-    private static BlockFace getDirectionFacingPlayer(Location playerLocation) {
-        float yaw = playerLocation.getYaw();
-        if (yaw < 0) yaw += 360;
-        BlockFace direction;
-        if (yaw >= 315 || yaw < 45) {
-            direction = BlockFace.NORTH;
-        } else if (yaw < 135) {
-            direction = BlockFace.EAST;
-        } else if (yaw < 225) {
-            direction = BlockFace.SOUTH;
-        } else {
-            direction = BlockFace.WEST;
-        }
-        return direction;
     }
 
     @Subcommand("create")
@@ -234,9 +218,11 @@ public class LootChestCommand extends BaseCommand implements Listener {
                 return;
             }
 
+            Directional directional = (Directional) location.getBlock().getBlockData();
+
             LootChestInfo chestInfo = creatingChests.get(event.getPlayer().getUniqueId());
             RunicCore.getLootAPI().createRegenerativeLootChest(new RegenerativeLootChest(
-                    new LootChestPosition(location, getDirectionFacingPlayer(event.getPlayer().getLocation())),
+                    new LootChestPosition(location, directional.getFacing()),
                     chestInfo.template,
                     new LootChestConditions(),
                     chestInfo.minLevel,

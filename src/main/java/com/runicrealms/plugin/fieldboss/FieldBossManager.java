@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.logging.Level;
 
+@Deprecated
 public class FieldBossManager implements FieldBossAPI, Listener {
 
     private final Map<String, FieldBoss> bosses = new HashMap<>();

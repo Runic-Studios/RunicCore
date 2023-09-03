@@ -9,7 +9,6 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import com.runicrealms.plugin.api.CombatAPI;
 import com.runicrealms.plugin.api.CoreWriteOperation;
-import com.runicrealms.plugin.api.FieldBossAPI;
 import com.runicrealms.plugin.api.LootAPI;
 import com.runicrealms.plugin.api.LootTableAPI;
 import com.runicrealms.plugin.api.PartyAPI;
@@ -63,8 +62,6 @@ import com.runicrealms.plugin.donor.boost.ui.BoostConfirmUIListener;
 import com.runicrealms.plugin.donor.boost.ui.BoostsUIListener;
 import com.runicrealms.plugin.donor.ui.DonorPerksUIListener;
 import com.runicrealms.plugin.donor.ui.DonorUIListener;
-import com.runicrealms.plugin.fieldboss.FieldBossCommand;
-import com.runicrealms.plugin.fieldboss.FieldBossManager;
 import com.runicrealms.plugin.item.artifact.ArtifactOnCastListener;
 import com.runicrealms.plugin.item.artifact.ArtifactOnHitListener;
 import com.runicrealms.plugin.item.artifact.ArtifactOnKillListener;
@@ -231,7 +228,6 @@ public class RunicCore extends JavaPlugin implements Listener {
     private static VanishAPI vanishAPI;
     private static CoreWriteOperation coreWriteOperation;
     private static LootAPI lootAPI;
-    private static FieldBossAPI fieldBossAPI;
 
     // getters for handlers
     public static RunicCore getInstance() {
@@ -346,10 +342,6 @@ public class RunicCore extends JavaPlugin implements Listener {
         return vanishAPI;
     }
 
-    public static FieldBossAPI getFieldBossAPI() {
-        return fieldBossAPI;
-    }
-
     public static LootAPI getLootAPI() {
         return lootAPI;
     }
@@ -402,7 +394,6 @@ public class RunicCore extends JavaPlugin implements Listener {
         vanishAPI = null;
         coreWriteOperation = null;
         lootAPI = null;
-        fieldBossAPI = null;
     }
 
     @Override
@@ -474,7 +465,6 @@ public class RunicCore extends JavaPlugin implements Listener {
         boostAPI = new BoostManager();
         vanishAPI = new VanishManager();
         lootAPI = new LootManager();
-        fieldBossAPI = new FieldBossManager();
         new DaylightCycleListener();
         new NpcListener();
         new ArtifactOnCastListener();
@@ -562,6 +552,90 @@ public class RunicCore extends JavaPlugin implements Listener {
                 }
                 this.getLogger().log(Level.INFO, "-------------------------------------------------------------------------");
             });
+
+            /*
+            //converter for loot chests KEEP COMMENTED
+            File chests = new File(this.getDataFolder(), "chests.yml");
+
+            if (!chests.exists()) {
+                this.getLogger().log(Level.INFO, "old chest config does not exist");
+                return;
+            }
+
+            FileConfiguration chestConfig = YamlConfiguration.loadConfiguration(chests);
+            ConfigurationSection data = chestConfig.getConfigurationSection("Chests.Locations");
+
+            if (data == null) {
+                this.getLogger().log(Level.INFO, "old chest config does not exist");
+                return;
+            }
+
+            for (int i = 0; i < 500; i++) {
+                ConfigurationSection section = data.getConfigurationSection(String.valueOf(i));
+
+                if (section == null) {
+                    continue;
+                }
+
+                String world = section.getString("world");
+                int x = section.getInt("x", Integer.MAX_VALUE);
+                int y = section.getInt("y", Integer.MAX_VALUE);
+                int z = section.getInt("z", Integer.MAX_VALUE);
+
+                if (world == null || x == Integer.MAX_VALUE || y == Integer.MAX_VALUE || z == Integer.MAX_VALUE) {
+                    continue;
+                }
+
+                Location location = new Location(Bukkit.getWorld(world), x, y, z);
+
+                String tier = section.getString("tier");
+
+                if (tier == null) {
+                    continue;
+                }
+
+                int regenerationTime;
+                String title;
+                int minAccessLevel;
+                int minLevel;
+                int maxLevel;
+                if (tier.equalsIgnoreCase("common")) {
+                    regenerationTime = 600;
+                    title = "Common Loot Chest";
+                    minAccessLevel = 0;
+                    minLevel = 1;
+                    maxLevel = 9;
+                } else if (tier.equalsIgnoreCase("uncommon")) {
+                    regenerationTime = 900;
+                    title = "&aUncommon Loot Chest";
+                    minAccessLevel = 10;
+                    minLevel = 10;
+                    maxLevel = 24;
+                } else if (tier.equalsIgnoreCase("rare")) {
+                    regenerationTime = 1200;
+                    title = "&bRare Loot Chest";
+                    minAccessLevel = 25;
+                    minLevel = 25;
+                    maxLevel = 39;
+                } else if (tier.equalsIgnoreCase("epic")) {
+                    regenerationTime = 2700;
+                    title = "&dEpic Loot Chest";
+                    minAccessLevel = 40;
+                    minLevel = 40;
+                    maxLevel = 60;
+                } else {
+                    continue;
+                }
+
+                LootChestTemplate chestTemplate = lootAPI.getLootChestTemplate(tier + "-chest");
+
+                if (chestTemplate == null) {
+                    continue;
+                }
+
+                lootAPI.createRegenerativeLootChest(new RegenerativeLootChest(new LootChestPosition(location, BlockFace.NORTH), chestTemplate, new LootChestConditions(), minAccessLevel, minLevel, maxLevel, regenerationTime, title, null));
+            }
+             */
         }, 200);
     }
 
@@ -600,7 +674,6 @@ public class RunicCore extends JavaPlugin implements Listener {
         commandManager.registerCommand(new TPHereCMD());
         commandManager.registerCommand(new DiscordCMD());
         commandManager.registerCommand(new LootChestCommand());
-        commandManager.registerCommand(new FieldBossCommand());
 
         partyChannel = new PartyChannel();
         RunicChat.getRunicChatAPI().registerChatChannel(partyChannel);
