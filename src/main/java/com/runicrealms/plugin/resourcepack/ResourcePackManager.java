@@ -1,10 +1,6 @@
 package com.runicrealms.plugin.resourcepack;
 
 import com.runicrealms.plugin.common.util.ColorUtil;
-import com.viaversion.viaversion.api.Via;
-import com.viaversion.viaversion.api.ViaAPI;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -18,18 +14,11 @@ import java.util.Map;
 import java.util.UUID;
 
 public class ResourcePackManager implements Listener {
+    private static final String URL = "https://www.dropbox.com/scl/fi/ucl70mzhskgqkorioftnn/RR-9.3.23.zip?rlkey=n051slf7s90yzhswaaq4uojgk&dl=1";
     private static final Map<UUID, PlayerResourcePackStatusEvent.Status> STATUS = new HashMap<>();
 
     public static void openPackForPlayer(@NotNull Player player) {
-        ViaAPI api = Via.getAPI(); // Get the API
-        int version = api.getPlayerVersion(player); // Get the protocol version
-        ResourcePackVersion pack = ResourcePackVersion.getFromVersionNumber(version);
-        if (pack != null) {
-            //Bukkit.broadcastMessage(pack.name());
-            player.setResourcePack(pack.getLink());
-        } else {
-            Bukkit.getLogger().info(ChatColor.RED + "ERROR: We couldn't find a resource pack for a player's minecraft version!");
-        }
+        player.setResourcePack(URL);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
