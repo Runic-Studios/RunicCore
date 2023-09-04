@@ -1,5 +1,6 @@
 package com.runicrealms.plugin.spellapi.spells.rogue;
 
+import com.google.common.util.concurrent.AtomicDouble;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.common.CharacterClass;
 import com.runicrealms.plugin.spellapi.spelltypes.DistanceSpell;
@@ -10,7 +11,6 @@ import com.runicrealms.plugin.spellapi.spelltypes.RadiusSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.RunicStatusEffect;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
-import com.runicrealms.plugin.spellapi.spelltypes.WarmupSpell;
 import com.runicrealms.plugin.spellapi.spellutil.VectorUtil;
 import com.runicrealms.plugin.spellapi.spellutil.particles.HorizontalCircleFrame;
 import com.runicrealms.plugin.utilities.DamageUtil;
@@ -22,15 +22,17 @@ import org.bukkit.Sound;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
+import org.jetbrains.annotations.NotNull;
 
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
-public class Whirlpool extends Spell implements DistanceSpell, DurationSpell,
-        MagicDamageSpell, PhysicalDamageSpell, RadiusSpell, WarmupSpell {
+public class Whirlpool extends Spell implements DistanceSpell, DurationSpell, MagicDamageSpell, PhysicalDamageSpell, RadiusSpell {
     private static final double BEAM_WIDTH = 1.0D;
+    private final Set<Location> whirlpools = new HashSet<>();
     private double distance;
     private double duration;
     private double magicDamage;
@@ -39,7 +41,6 @@ public class Whirlpool extends Spell implements DistanceSpell, DurationSpell,
     private double physicalDamage;
     private double physicalDamagePerLevel;
     private double radius;
-    private double warmup;
 
     public Whirlpool() {
         super("Whirlpool", CharacterClass.ROGUE);
@@ -48,19 +49,14 @@ public class Whirlpool extends Spell implements DistanceSpell, DurationSpell,
                 "physical⚔ damage to the first enemy hit. " +
                 "If it lands, you summon a whirlpool at your enemy’s location, " +
                 "pulling them in and dealing (" + magicDamage + " + &f" + magicDamagePerLevel + "x&7 lvl) " +
-                "magicʔ damage per second, lasting 4s!");
+                "magicʔ damage per second, lasting " + this.duration + "s!");
     }
 
     @Override
-    public void loadWarmupData(Map<String, Object> spellData) {
+    protected void loadSpellSpecificData(Map<String, Object> spellData) {
+        super.loadSpellSpecificData(spellData);
         Number multiplier = (Number) spellData.getOrDefault("multiplier", 0);
-        setMultiplier(multiplier.doubleValue());
-        Number warmup = (Number) spellData.getOrDefault("warmup", 0);
-        setWarmup(warmup.doubleValue());
-    }
-
-    public void setMultiplier(double multiplier) {
-        this.multiplier = multiplier;
+        this.multiplier = multiplier.doubleValue();
     }
 
     @Override
@@ -84,8 +80,7 @@ public class Whirlpool extends Spell implements DistanceSpell, DurationSpell,
             VectorUtil.drawLine(player, Particle.REDSTONE, Color.fromRGB(0, 102, 204), player.getEyeLocation(),
                     livingEntity.getLocation(), 0.5D, 5, 0.05f);
             DamageUtil.damageEntityPhysical(physicalDamage, livingEntity, player, false, false, this);
-            Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(),
-                    () -> summonWhirlPool(player, livingEntity), (long) warmup * 20L);
+            summonWhirlPool(player, livingEntity);
         }
     }
 
@@ -96,42 +91,41 @@ public class Whirlpool extends Spell implements DistanceSpell, DurationSpell,
      * @param recipient of the harpoon
      */
     private void summonWhirlPool(Player caster, LivingEntity recipient) {
-        Spell spell = this;
         Location castLocation = recipient.getLocation();
         whirlpoolEffect(caster, recipient, castLocation);
-        new BukkitRunnable() {
-            double count = 1;
+        AtomicDouble count = new AtomicDouble(1);
+        whirlpools.add(castLocation);
 
-            @Override
-            public void run() {
-
-//                count += 0.25;
-                if (count > duration)
-                    this.cancel();
-
-                if (count % 1 == 0) {
-                    whirlpoolEffect(caster, recipient, castLocation);
-                }
-
-                for (Entity entity : recipient.getWorld().getNearbyEntities(castLocation, radius,
-                        radius, radius, target -> isValidEnemy(caster, target))) {
-                    if (count % 1 == 0) {
-                        DamageUtil.damageEntitySpell(magicDamage, (LivingEntity) entity, caster, spell);
-                    }
-
-                    // Pull to middle
-                    Vector directionToMiddle = castLocation.clone().subtract(entity.getLocation()).toVector();
-                    if (directionToMiddle.lengthSquared() > 0) { // Check if the vector is not zero
-                        directionToMiddle.setY(0);
-                        directionToMiddle.normalize().multiply(multiplier); // Adjust this value to change the strength of the pull
-                        entity.setVelocity(directionToMiddle);
-                    }
-
-                    addStatusEffect((LivingEntity) entity, RunicStatusEffect.SLOW_II, 1, false);
-                }
-                count += 0.25;
+        Bukkit.getScheduler().runTaskTimer(RunicCore.getInstance(), task -> {
+            if (count.get() > duration) {
+                whirlpools.remove(castLocation);
+                task.cancel();
+                return;
             }
-        }.runTaskTimer(RunicCore.getInstance(), 0, 5L);
+
+            if (count.get() % 1 == 0) {
+                whirlpoolEffect(caster, recipient, castLocation);
+            }
+
+            for (Entity entity : recipient.getWorld().getNearbyEntities(castLocation, radius,
+                    radius, radius, target -> isValidEnemy(caster, target))) {
+                if (count.get() % 1 == 0) {
+                    DamageUtil.damageEntitySpell(magicDamage, (LivingEntity) entity, caster, this);
+                }
+
+                // Pull to middle
+                Vector directionToMiddle = castLocation.clone().subtract(entity.getLocation()).toVector();
+                if (directionToMiddle.lengthSquared() > 0) { // Check if the vector is not zero
+                    directionToMiddle.setY(0);
+                    directionToMiddle.normalize().multiply(multiplier); // Adjust this value to change the strength of the pull
+                    entity.setVelocity(directionToMiddle);
+                }
+
+                addStatusEffect((LivingEntity) entity, RunicStatusEffect.SLOW_II, 1, false);
+            }
+
+            count.set(count.get() + 0.25);
+        }, 0, 5);
     }
 
     private void whirlpoolEffect(Player caster, LivingEntity recipient, Location castLocation) {
@@ -215,13 +209,17 @@ public class Whirlpool extends Spell implements DistanceSpell, DurationSpell,
         this.radius = radius;
     }
 
-    @Override
-    public double getWarmup() {
-        return warmup;
-    }
+    public boolean isInWhirlPool(@NotNull LivingEntity entity) {
+        for (Location whirlpool : this.whirlpools) {
+            if (!whirlpool.isWorldLoaded() || !entity.getWorld().equals(whirlpool.getWorld())) {
+                continue;
+            }
 
-    @Override
-    public void setWarmup(double warmup) {
-        this.warmup = warmup;
+            if (entity.getLocation().distance(whirlpool) <= this.radius) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

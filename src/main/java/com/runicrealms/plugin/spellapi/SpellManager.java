@@ -65,6 +65,7 @@ import com.runicrealms.plugin.spellapi.spells.mage.WintersGrasp;
 import com.runicrealms.plugin.spellapi.spells.rogue.Agility;
 import com.runicrealms.plugin.spellapi.spells.rogue.Backstab;
 import com.runicrealms.plugin.spellapi.spells.rogue.CallOfTheDeep;
+import com.runicrealms.plugin.spellapi.spells.rogue.Cannonfire;
 import com.runicrealms.plugin.spellapi.spells.rogue.Castigate;
 import com.runicrealms.plugin.spellapi.spells.rogue.Challenger;
 import com.runicrealms.plugin.spellapi.spells.rogue.Cocoon;
@@ -75,12 +76,12 @@ import com.runicrealms.plugin.spellapi.spells.rogue.FromTheShadows;
 import com.runicrealms.plugin.spellapi.spells.rogue.Harpoon;
 import com.runicrealms.plugin.spellapi.spells.rogue.Hereticize;
 import com.runicrealms.plugin.spellapi.spells.rogue.Kneebreak;
-import com.runicrealms.plugin.spellapi.spells.rogue.Lunge;
 import com.runicrealms.plugin.spellapi.spells.rogue.Scurvy;
 import com.runicrealms.plugin.spellapi.spells.rogue.SilverBolt;
 import com.runicrealms.plugin.spellapi.spells.rogue.TwinFangs;
 import com.runicrealms.plugin.spellapi.spells.rogue.Unseen;
 import com.runicrealms.plugin.spellapi.spells.rogue.WardingGlyph;
+import com.runicrealms.plugin.spellapi.spells.rogue.Whirlpool;
 import com.runicrealms.plugin.spellapi.spells.warrior.Adrenaline;
 import com.runicrealms.plugin.spellapi.spells.warrior.AxeToss;
 import com.runicrealms.plugin.spellapi.spells.warrior.BlessedBlade;
@@ -391,7 +392,6 @@ public class SpellManager implements Listener, SpellAPI {
         this.spellList.add(new RadiantNova());
         this.spellList.add(new Blizzard());
         this.spellList.add(new AxeToss());
-        this.spellList.add(new Lunge());
         this.spellList.add(new Harpoon());
         this.spellList.add(new ThunderArrow());
         this.spellList.add(new Sear());
@@ -470,6 +470,8 @@ public class SpellManager implements Listener, SpellAPI {
         this.spellList.add(new Tempo());
         this.spellList.add(new RainOfArrows());
         this.spellList.add(new SteadyAim());
+        this.spellList.add(new Cannonfire());
+        this.spellList.add(new Whirlpool());
 
         /*
         Items

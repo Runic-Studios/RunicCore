@@ -76,7 +76,7 @@ public class DeathListener implements Listener {
 
         // Broadcast the death message
         String message;
-        if (event.getKiller().length > 0 && event.getKiller()[0] instanceof Player killerPlayer) {
+        if (event.getKiller() != null && event.getKiller() instanceof Player killerPlayer) {
             message = ChatColor.RED + event.getVictim().getName() + " was killed by " + killerPlayer.getName() + "!";
         } else {
             message = ChatColor.RED + event.getVictim().getName() + " died!";
@@ -94,7 +94,7 @@ public class DeathListener implements Listener {
             Inventory droppedItemsInventory = droppedItemsInventory(victim, world);
             // If the player should drop items, create their Gravestone
             if (droppedItemsInventory != null && !droppedItemsInventory.isEmpty()) {
-                boolean victimHasPriority = event.getKiller().length == 0 || !(event.getKiller()[0] instanceof Player);
+                boolean victimHasPriority = event.getKiller() == null || !(event.getKiller() instanceof Player);
                 DonorRank rank = DonorRank.getDonorRank(event.getVictim());
                 new Gravestone(victim, event.getLocation(), droppedItemsInventory, victimHasPriority, rank.getGravestonePriorityDuration() * 60, rank.getGravestoneDuration() * 60);
             }

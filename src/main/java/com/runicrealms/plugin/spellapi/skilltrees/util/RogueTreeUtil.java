@@ -27,7 +27,7 @@ public class RogueTreeUtil {
         perks.add(new PerkSpell(134, 1, 0, 1, "Scurvy"));
         perks.add(new PerkBaseStat(135, 1, 0, 3, Stat.VITALITY));
         perks.add(new PerkBaseStat(136, 1, 0, 3, Stat.STRENGTH));
-        perks.add(new PerkSpell(137, 1, 0, 1, "Lunge"));
+        perks.add(new PerkSpell(137, 1, 0, 1, "Whirlpool"));
         perks.add(new PerkBaseStat(138, 1, 0, 3, Stat.VITALITY));
         perks.add(new PerkBaseStat(139, 1, 0, 3, Stat.STRENGTH));
         perks.add(new PerkBaseStat(141, 1, 0, 5, Stat.VITALITY));

@@ -45,8 +45,7 @@ public class ArtifactOnKillListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST) // last
     public void onMobKill(MythicMobDeathEvent event) {
         if (event.getKiller() == null) return;
-        if (!(event.getKiller() instanceof Player)) return;
-        Player killer = (Player) event.getKiller();
+        if (!(event.getKiller() instanceof Player killer)) return;
         ItemStack itemStack = killer.getInventory().getItemInMainHand();
         checkForKillTrigger(killer, itemStack, event.getEntity());
     }
@@ -55,9 +54,7 @@ public class ArtifactOnKillListener implements Listener {
     public void onPlayerKill(RunicDeathEvent event) {
         if (event.isCancelled()) return;
         if (event.getKiller() == null) return;
-        if (event.getKiller().length <= 0) return;
-        if (!(event.getKiller()[0] instanceof Player)) return;
-        Player killer = (Player) event.getKiller()[0];
+        if (!(event.getKiller() instanceof Player killer)) return;
         ItemStack itemStack = killer.getInventory().getItemInMainHand();
         checkForKillTrigger(killer, itemStack, event.getVictim());
     }

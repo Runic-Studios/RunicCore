@@ -14,8 +14,6 @@ import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.util.Vector;
 
-import java.lang.reflect.Field;
-
 public class FloatingItemUtil {
 
     /**
@@ -23,7 +21,7 @@ public class FloatingItemUtil {
      * @param material
      * @param duration
      */
-    public static void spawnFloatingItem(Location loc, Material material, int duration) {
+    public static Item spawnFloatingItem(Location loc, Material material, int duration) {
         Item item = loc.getWorld().dropItem(loc, new ItemStack(material, 1));
         Vector vec = loc.toVector().multiply(0);
         item.setVelocity(vec);
@@ -32,6 +30,7 @@ public class FloatingItemUtil {
 
         // tell the item when to despawn, based on duration (in seconds)
         setAge(duration, item);
+        return item;
     }
 
     /**
@@ -79,7 +78,7 @@ public class FloatingItemUtil {
      * @param material
      * @param duration
      */
-    public static void spawnFloatingItem(Player pl, Location loc, Material material, int duration) {
+    public static Item spawnFloatingItem(Player pl, Location loc, Material material, int duration) {
         Item item = loc.getWorld().dropItem(loc, new ItemStack(material, 1));
         Vector vec = loc.toVector().multiply(0);
         item.setVelocity(vec);
@@ -96,6 +95,7 @@ public class FloatingItemUtil {
 
         // tell the item when to despawn, based on duration (in seconds)
         setAge(duration, item);
+        return item;
     }
 
     /**

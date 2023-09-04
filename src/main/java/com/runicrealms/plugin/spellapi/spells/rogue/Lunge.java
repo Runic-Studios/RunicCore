@@ -21,6 +21,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+/**
+ * @deprecated replaced by {@link Whirlpool}
+ */
+@Deprecated
 public class Lunge extends Spell implements DurationSpell {
     private static final Set<UUID> LUNGE_SET = new HashSet<>();
     private double duration;

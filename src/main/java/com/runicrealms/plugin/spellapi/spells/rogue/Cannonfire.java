@@ -2,34 +2,37 @@ package com.runicrealms.plugin.spellapi.spells.rogue;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.common.CharacterClass;
+import com.runicrealms.plugin.rdb.event.CharacterQuitEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.PhysicalDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.RunicStatusEffect;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.utilities.DamageUtil;
-import com.runicrealms.plugin.utilities.FloatingItemUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.event.EventHandler;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
-@SuppressWarnings("FieldCanBeLocal")
 public class Cannonfire extends Spell implements DurationSpell, PhysicalDamageSpell {
-    private static final int PELLET_SPEED = 1;
+    private static final int PELLET_SPEED = 2;
     private static final int TOTAL_PELLETS = 5;
     private static final Material MATERIAL = Material.FIREWORK_STAR;
-    private final HashMap<UUID, UUID> hasBeenHit;
+    private final HashMap<UUID, Set<UUID>> hasBeenHit;
     private double knockbackMultiplier; // -2.75
     private double damage;
     private double duration;
@@ -48,15 +51,19 @@ public class Cannonfire extends Spell implements DurationSpell, PhysicalDamageSp
     public void executeSpell(Player player, SpellItemType type) {
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_EGG_THROW, 0.5f, 0.5f);
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ZOMBIE_BREAK_WOODEN_DOOR, 0.5f, 2.0f);
-        final Vector vector = player.getEyeLocation().add(0, 1, 0).getDirection().normalize().multiply(PELLET_SPEED);
-        Location left = player.getEyeLocation().clone().add(1, 0, 0);
-        Location middle = player.getEyeLocation();
-        Location right = player.getEyeLocation().clone().add(-1, 0, 0);
-        firePellets(player, new Location[]{left, middle, right}, vector);
+
+        Vector middle = player.getEyeLocation().add(0, 1, 0).getDirection().normalize().multiply(PELLET_SPEED);
+        Vector left = rotateVectorAroundY(middle, -10);
+        Vector right = rotateVectorAroundY(middle, 10);
+
+        this.hasBeenHit.putIfAbsent(player.getUniqueId(), new HashSet<>());
+
+        firePellets(player, middle, left, right);
     }
 
     private void explode(Entity victim, Player shooter, Spell spell, Entity pellet) {
-        hasBeenHit.put(shooter.getUniqueId(), victim.getUniqueId()); // prevent concussive hits
+        hasBeenHit.get(shooter.getUniqueId()).add(victim.getUniqueId()); // prevent concussive hits
+
         pellet.remove();
         victim.getWorld().playSound(victim.getLocation(), Sound.ENTITY_DRAGON_FIREBALL_EXPLODE, 0.5f, 1.0f);
         victim.getWorld().spawnParticle(Particle.EXPLOSION_LARGE, victim.getLocation(), 1, 0, 0, 0, 0);
@@ -66,37 +73,41 @@ public class Cannonfire extends Spell implements DurationSpell, PhysicalDamageSp
         victim.setVelocity(force);
     }
 
-    private void firePellets(Player player, Location[] pelletLocations, Vector vector) {
-        for (Location location : pelletLocations) {
-            Entity pellet = FloatingItemUtil.spawnFloatingItem(location, MATERIAL, 50, vector, 0);
-            Spell spell = this;
-            new BukkitRunnable() {
-                @Override
-                public void run() {
+    private void firePellets(Player player, Vector... vectors) {
+        ItemStack item = new ItemStack(MATERIAL);
 
-                    if (pellet.isOnGround() || pellet.isDead()) {
-                        if (pellet.isOnGround()) {
-                            pellet.remove();
-                        }
-                        this.cancel();
-                        return;
-                    }
+        for (Vector vector : vectors) {
+            Item pellet = player.getWorld().dropItem(player.getEyeLocation(), item);
+            pellet.setPickupDelay(Integer.MAX_VALUE);
+            pellet.setVelocity(vector);
 
-                    Location loc = pellet.getLocation();
-                    pellet.getWorld().spawnParticle(Particle.CRIT, pellet.getLocation(), 1, 0, 0, 0, 0);
-
-                    for (Entity entity : pellet.getWorld().getNearbyEntities(loc, 1.5, 1.5, 1.5)) {
-                        if (isValidEnemy(player, entity)) {
-                            if (hasBeenHit.get(player.getUniqueId()) == entity.getUniqueId())
-                                continue; // todo: broken, needs to be Map<UUID, List<UUID>> and add it
-                            explode(entity, player, spell, pellet);
-                        }
-                    }
+            Bukkit.getScheduler().runTaskTimer(RunicCore.getInstance(), task -> {
+                if (pellet.isOnGround() || pellet.isDead()) {
+                    pellet.remove();
+                    task.cancel();
+                    return;
                 }
-            }.runTaskTimer(RunicCore.getInstance(), 0, 1L);
 
-            Bukkit.getScheduler().runTaskLaterAsynchronously(RunicCore.getInstance(), hasBeenHit::clear, (int) duration * 20L);
+                Location loc = pellet.getLocation();
+                pellet.getWorld().spawnParticle(Particle.CRIT, pellet.getLocation(), 1, 0, 0, 0, 0);
+
+                for (Entity entity : pellet.getWorld().getNearbyEntities(loc, 1.5, 1.5, 1.5)) {
+                    if (!isValidEnemy(player, entity) || hasBeenHit.get(player.getUniqueId()).contains(entity.getUniqueId())) {
+                        continue;
+                    }
+
+                    explode(entity, player, this, pellet);
+                    hasBeenHit.get(player.getUniqueId()).add(entity.getUniqueId());
+                }
+            }, 0, 1);
+
+            Bukkit.getScheduler().runTaskLaterAsynchronously(RunicCore.getInstance(), hasBeenHit.get(player.getUniqueId())::clear, (int) duration * 20L);
         }
+    }
+
+    @EventHandler
+    private void onCharacterQuit(CharacterQuitEvent event) {
+        this.hasBeenHit.remove(event.getPlayer().getUniqueId());
     }
 
     @Override
