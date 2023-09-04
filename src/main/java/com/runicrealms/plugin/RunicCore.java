@@ -197,7 +197,8 @@ import java.util.logging.Level;
 public class RunicCore extends JavaPlugin implements Listener {
 
     private static final int BASE_OUTLAW_RATING = 1500;
-    public static final String VERSION_TITLE = ColorUtil.format("&b&l2.0.6 - PLACEHOLDER");
+    public static final String VERSION_NUMBER = ColorUtil.format("&av2.0.6");
+    public static final String VERSION_TITLE = ColorUtil.format("&e&lRiders of the Outlands");
 
     private static RunicCore instance;
     private static TaskChainFactory taskChainFactory;

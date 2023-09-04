@@ -10,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class ServerListPingListener implements Listener {
 
-    private static final String PREFIX = ColorUtil.format("                    &d&lRUNIC REALMS&r" + "\n              ");
+    private static final String PREFIX = ColorUtil.format("                &d&lRUNIC REALMS&r " + RunicCore.VERSION_NUMBER + "\n              ");
     private static String SERVER_MOTD;
 
     @EventHandler
