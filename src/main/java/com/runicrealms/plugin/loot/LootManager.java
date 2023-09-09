@@ -318,7 +318,7 @@ public class LootManager implements LootAPI {
             conditions = new LootChestConditions();
         }
 
-        String modelID = section.getString("model-id");
+        LootChestModel model = LootChestModel.getModel(section.getString("model"));
 
         return new RegenerativeLootChest(
                 new LootChestPosition(location, direction),
@@ -328,7 +328,7 @@ public class LootManager implements LootAPI {
                 itemMinLevel, itemMaxLevel,
                 regenerationTime,
                 ColorUtil.format(title),
-                modelID);
+                model != null ? model.getModelID() : null);
     }
 
     private TimedLoot parseTimedLoot(FileConfiguration config) {
