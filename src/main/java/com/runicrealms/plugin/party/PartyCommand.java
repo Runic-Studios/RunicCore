@@ -6,6 +6,7 @@ import co.aikar.commands.annotation.CommandAlias;
 import co.aikar.commands.annotation.CommandCompletion;
 import co.aikar.commands.annotation.Conditions;
 import co.aikar.commands.annotation.Default;
+import co.aikar.commands.annotation.Private;
 import co.aikar.commands.annotation.Subcommand;
 import co.aikar.commands.annotation.Syntax;
 import com.runicrealms.plugin.RunicCore;
@@ -127,7 +128,7 @@ public class PartyCommand extends BaseCommand {
     @CatchUnknown
     @Subcommand("help|h")
     public void onCommandHelp(Player player) {
-        player.sendMessage(ChatColor.translateAlternateColorCodes('&', PREFIX + " &aAvailable commands: &ecreate, disband, help, invite, join, kick, leave, list"));
+        player.sendMessage(ChatColor.translateAlternateColorCodes('&', PREFIX + " &aAvailable commands: &ecreate, disband, help, invite, join, kick, leave, list, summon"));
     }
 
     @Subcommand("invite|add|i|a")
@@ -313,6 +314,7 @@ public class PartyCommand extends BaseCommand {
     @Subcommand("tp|teleport")
     @Syntax("<player>")
     @Conditions("is-op")
+    @Private
     public void onCommandTeleport(CommandSender sender, String[] args) {
         if (args.length < 1) {
             sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&cPlease provide the player to teleport party members to!"));

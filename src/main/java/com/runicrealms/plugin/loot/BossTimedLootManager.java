@@ -8,6 +8,7 @@ import io.lumine.mythic.bukkit.events.MythicMobDeathEvent;
 import io.lumine.mythic.bukkit.events.MythicMobSpawnEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -21,6 +22,7 @@ import java.util.Map;
 import java.util.UUID;
 
 public class BossTimedLootManager implements Listener {
+    private static final int TELEPORT_RADIUS = 1024;
 
     private final Map<String, BossTimedLoot> bossLoot = new HashMap<>(); // maps mm IDs to boss loot
     private final Map<UUID, HashMap<Player, Integer>> bossFighters = new HashMap<>(); // a single boss is mapped to many players (damage threshold tracked here)
@@ -37,10 +39,15 @@ public class BossTimedLootManager implements Listener {
         if (!bossLoot.containsKey(event.getMob().getMobType())) return;
         if (!bossFighters.containsKey(event.getMob().getUniqueId())) return;
         BossTimedLoot loot = bossLoot.get(event.getMob().getMobType());
+        Location location = event.getEntity().getLocation();
         try {
             if (loot == null)
                 throw new IllegalStateException("Boss loot cannot be distributed when boss loot is not defined!");
             bossFighters.get(event.getEntity().getUniqueId()).forEach((player, damage) -> {
+                if (!player.getWorld().equals(location.getWorld()) || location.distance(player.getLocation()) > TELEPORT_RADIUS) {
+                    return;
+                }
+
                 player.sendMessage(ChatColor.YELLOW + "You dealt " + ChatColor.RED + ChatColor.BOLD + damage + ChatColor.YELLOW + " damage to the boss!");
                 double percent = damage / event.getMob().getEntity().getMaxHealth();
                 if (percent >= loot.getLootDamageThreshold()) {
