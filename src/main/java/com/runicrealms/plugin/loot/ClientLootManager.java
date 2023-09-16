@@ -187,8 +187,8 @@ public class ClientLootManager implements Listener {
     }
 
     @EventHandler
-    private void onLootChestInventoryClick(InventoryClickEvent event) {
-        if (event.getClickedInventory() == null) return;
+    private void onInventoryClick(InventoryClickEvent event) {
+        if (!event.getView().getBottomInventory().equals(event.getClickedInventory())) return;
         if (!(event.getView().getTopInventory().getHolder() instanceof LootChestInventory)) return;
         if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR) return;
         RunicItem runicItem = RunicItemsAPI.getRunicItemFromItemStack(event.getCurrentItem());
