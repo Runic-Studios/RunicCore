@@ -14,11 +14,20 @@ import java.util.Map;
 import java.util.UUID;
 
 public class ResourcePackManager implements Listener {
-    private static final String URL = "https://www.dropbox.com/scl/fi/ucl70mzhskgqkorioftnn/RR-9.3.23.zip?rlkey=n051slf7s90yzhswaaq4uojgk&dl=1";
+    private static final String URL = "https://www.dropbox.com/scl/fi/9ju964ky8mqlvh5a0da1f/RR-Resourcepack-9.16.23.zip?rlkey=20jo7typc8jizly7k835t7f00&dl=1";
     private static final Map<UUID, PlayerResourcePackStatusEvent.Status> STATUS = new HashMap<>();
 
     public static void openPackForPlayer(@NotNull Player player) {
         player.setResourcePack(URL);
+    }
+
+    @NotNull
+    public static PlayerResourcePackStatusEvent.Status getStatus(@NotNull Player player) {
+        return STATUS.get(player.getUniqueId()); //this should never be null
+    }
+
+    public static boolean isPackActive(@NotNull Player player) {
+        return getStatus(player) == PlayerResourcePackStatusEvent.Status.SUCCESSFULLY_LOADED;
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -27,7 +36,7 @@ public class ResourcePackManager implements Listener {
         Player player = event.getPlayer();
 
         if (status == PlayerResourcePackStatusEvent.Status.DECLINED) {
-            // warn player
+            // Warn player
             player.sendMessage(ColorUtil.format(
                     "&4&lWARNING &c- Server resource pack disabled! We recommend using the resource pack for " +
                             "the best experience possible!"));
@@ -39,14 +48,5 @@ public class ResourcePackManager implements Listener {
     @EventHandler
     private void onPlayerQuit(PlayerQuitEvent event) {
         STATUS.remove(event.getPlayer().getUniqueId());
-    }
-
-    @NotNull
-    public static PlayerResourcePackStatusEvent.Status getStatus(@NotNull Player player) {
-        return STATUS.get(player.getUniqueId()); //this should never be null
-    }
-
-    public static boolean isPackActive(@NotNull Player player) {
-        return getStatus(player) == PlayerResourcePackStatusEvent.Status.SUCCESSFULLY_LOADED;
     }
 }
