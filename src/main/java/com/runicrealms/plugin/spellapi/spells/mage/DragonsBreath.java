@@ -36,7 +36,7 @@ public class DragonsBreath extends Spell implements DurationSpell, MagicDamageSp
                 "suffer (" + damageAmt + " + &f" + damagePerLevel +
                 "x&7 lvl) magicʔ damage per second for " + duration + "s! " +
                 "Silences and stuns end this spell early. " +
-                "You have Slowness I applied whilst this effect is ongoing.");
+                "You have Slowness I applied while this effect is ongoing.");
     }
 
     private void conjureBreath(Player player) {

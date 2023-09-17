@@ -46,7 +46,7 @@ public class Accelerando extends Spell implements DurationSpell, RadiusSpell, At
     public Accelerando() {
         super("Accelerando", CharacterClass.CLERIC);
         this.setIsPassive(true);
-        this.setDescription("Whenever you cast a &6Bard&7 spell, you and all allies within " + this.radius + " block radius gain\n" +
+        this.setDescription("Whenever you cast a &6Bard&7 spell, you and all allies within a " + this.radius + " block radius gain\n" +
                 "Speed II and (" + this.base + " + &f" + this.multiplier + "x&e " + STAT.getPrefix() + "&7)% damage reduction for " + this.duration + "s.");
         this.damageReduction = new HashMap<>();
     }

@@ -35,8 +35,8 @@ public class Adrenaline extends Spell implements DurationSpell {
 
     public Adrenaline() {
         super("Adrenaline", CharacterClass.WARRIOR);
-        this.setDescription("For the next " + this.buffDuration + "s gain Speed II, " +
-                "each of your basic attacks on bleeding enemies grant you a stack of rage. " +
+        this.setDescription("For the next " + this.buffDuration + "s gain Speed II. " +
+                "Each of your basic attacks on bleeding enemies grant you a stack of rage. " +
                 "Each stack causes you to deal " + (this.percent * 100) + "% more physical⚔ damage. " +
                 "This effect can stack up to " + this.maxStacks + " times and lasts " + this.stackDuration + "s. " +
                 "If you reach maximum stacks within the " + this.buffDuration + "s, cleanse yourself of all negative effects and reset the duration of the speed bonus.");

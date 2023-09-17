@@ -16,6 +16,8 @@ import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Particle;
+import org.bukkit.Sound;
+import org.bukkit.SoundCategory;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -48,7 +50,7 @@ public class GrandSymphony extends Spell implements RadiusSpell, MagicDamageSpel
     public GrandSymphony() {
         super("Grand Symphony", CharacterClass.CLERIC);
         this.setDescription("You pulse waves of resonating magic every 1s for " + this.duration + "s in a " + this.radius + " block radius,\n" +
-                "dealing (" + this.damage + " + &f" + this.damagePerLevel + "x&7 lvl) magicʔ damage and reducing enemy attack speed by " + (this.debuffRatio * 100) + "% and spell damage by " + (this.debuffRatio * 50) + "% for " + this.debuffDuration + "s\n" +
+                "dealing (" + this.damage + " + &f" + this.damagePerLevel + "x&7 lvl) magicʔ damage and reducing enemy attack speed by " + (this.debuffRatio * 100) + "% and spell damage by " + (this.debuffRatio * 50) + "% for " + this.debuffDuration + "s.\n" +
                 "Against mobs, this reduces their damage by " + (this.debuffRatio * 100) + "% instead.\n" +
                 "If this spell pulses 6 times, the pulse also stuns enemies hit for " + this.debuffDuration + "s.");
         this.debuffed = new HashMap<>();
@@ -85,6 +87,7 @@ public class GrandSymphony extends Spell implements RadiusSpell, MagicDamageSpel
                 }
             }
 
+            player.getWorld().playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_HARP, SoundCategory.AMBIENT, 0.5F, 1F);
             count.set(count.get() + 1);
         }, 0, 20);
     }

@@ -16,6 +16,8 @@ import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.spellapi.spellutil.EntityUtil;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.Particle;
+import org.bukkit.Sound;
+import org.bukkit.SoundCategory;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -47,7 +49,7 @@ public class Battlecry extends Spell implements AttributeSpell, DurationSpell, M
     public Battlecry() {
         super("Battlecry", CharacterClass.CLERIC);
         this.setDescription("You shout in a large " + this.attackRadius + " block area in front of you, dealing (" + this.damage + " + &f" + this.damagePerLevel + "x&7 lvl) magicʔ damage and knocking back targets.\n" +
-                "Allies within " + this.buffRadius + " blocks of you gain (" + this.baseValue + " +&f " + this.multiplier + " x&e " + STAT.getPrefix() + "&7)% increased physical⚔ and magicʔ damage for the next " + this.duration + "s.");
+                "Allies within " + this.buffRadius + " blocks of you gain (" + this.baseValue + " +&f " + this.multiplier + "x&e " + STAT.getPrefix() + "&7)% increased physical⚔ and magicʔ damage for the next " + this.duration + "s.");
         this.buffed = new HashMap<>();
     }
 
@@ -72,6 +74,8 @@ public class Battlecry extends Spell implements AttributeSpell, DurationSpell, M
             player.getWorld().spawnParticle(Particle.VILLAGER_HAPPY, target.getLocation(), 5, Math.random() * 2, Math.random(), Math.random() * 2);
             this.buffed.put(target.getUniqueId(), Pair.pair(stat, now));
         }
+
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDER_DRAGON_GROWL, SoundCategory.AMBIENT, 0.25F, 1F);
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)

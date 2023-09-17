@@ -8,6 +8,7 @@ import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.PhysicalDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import org.bukkit.Bukkit;
+import org.bukkit.Sound;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
@@ -31,8 +32,8 @@ public class Scurvy extends Spell implements DurationSpell, PhysicalDamageSpell 
     public Scurvy() {
         super("Scurvy", CharacterClass.ROGUE);
         this.setIsPassive(true);
-        this.setDescription("Your first primary attack after casting &aDash &7is laden with disease! " +
-                "The target hit receives nausea for the next " + duration + "s " +
+        this.setDescription("Your first basic attack after casting &aDash &7is laden with disease! " +
+                "The target hit receives nausea for the next " + duration + "s. " +
                 "Against mobs this deals (" + this.damage + " +&f " + this.damagePerLevel + "x&7 lvl) extra physical⚔ damage!");
         this.buffed = new HashSet<>();
     }
@@ -54,6 +55,8 @@ public class Scurvy extends Spell implements DurationSpell, PhysicalDamageSpell 
 
         event.setAmount(event.getAmount() + (int) damage);
         this.buffed.remove(event.getPlayer().getUniqueId());
+
+        event.getPlayer().getWorld().playSound(event.getVictim().getLocation(), Sound.ENTITY_DROWNED_HURT, 0.5F, 1);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

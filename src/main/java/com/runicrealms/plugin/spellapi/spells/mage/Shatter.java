@@ -8,6 +8,7 @@ import com.runicrealms.plugin.spellapi.spelltypes.RunicStatusEffect;
 import com.runicrealms.plugin.spellapi.spelltypes.ShieldingSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.utilities.DamageUtil;
+import org.bukkit.Sound;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 
@@ -32,7 +33,7 @@ public class Shatter extends Spell implements MagicDamageSpell, ShieldingSpell {
         this.cooldown = new HashMap<>();
         this.setIsPassive(true);
         this.setDescription("When you land a basic attack on an enemy that has been rooted or stunned, shatter their ice " +
-                "dealing (" + this.damage + " + &f" + this.damagePerLevel + "x&7 lvl) magicʔ damage granting you a (" + this.shield + " + &f" + this.shieldPerLevel + "x&7 lvl) health✦ shield");
+                "dealing (" + this.damage + " + &f" + this.damagePerLevel + "x&7 lvl) magicʔ damage granting you a (" + this.shield + " + &f" + this.shieldPerLevel + "x&7 lvl) health✦ shield.");
     }
 
     @Override
@@ -93,6 +94,8 @@ public class Shatter extends Spell implements MagicDamageSpell, ShieldingSpell {
 
         this.removeStatusEffect(event.getVictim(), RunicStatusEffect.ROOT);
         this.removeStatusEffect(event.getVictim(), RunicStatusEffect.STUN);
+
+        event.getPlayer().getWorld().playSound(event.getVictim().getLocation(), Sound.BLOCK_GLASS_BREAK, 0.5F, 1);
 
         DamageUtil.damageEntitySpell(this.damage, event.getVictim(), event.getPlayer(), false, this);
         this.shieldPlayer(event.getPlayer(), event.getPlayer(), this.shield, this);

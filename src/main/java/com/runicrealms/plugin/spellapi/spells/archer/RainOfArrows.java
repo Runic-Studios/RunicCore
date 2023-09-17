@@ -16,6 +16,7 @@ import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
+import org.bukkit.SoundCategory;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -63,6 +64,7 @@ public class RainOfArrows extends Spell implements RadiusSpell, DurationSpell, P
 
             if (duration.get() <= 0 || location == null || player.getLocation().getX() != location.getX() || player.getLocation().getY() != location.getY() || player.getLocation().getZ() != location.getZ()) {
                 this.casting.remove(player.getUniqueId());
+                player.playSound(player.getLocation(), Sound.BLOCK_BEACON_DEACTIVATE, SoundCategory.AMBIENT, 1, 1);
                 task.cancel();
                 return;
             }

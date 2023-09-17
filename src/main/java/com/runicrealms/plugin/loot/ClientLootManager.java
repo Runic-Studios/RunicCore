@@ -23,6 +23,7 @@ import com.runicrealms.plugin.runicrestart.RunicRestart;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -85,6 +86,11 @@ public class ClientLootManager implements Listener {
         for (ClientLootChest clientChest : chests.values()) {
             LootChest chest = clientChest.lootChest;
             boolean displayed = clientChest.displayed;
+
+            if (displayed) {
+                Location location = chest.getPosition().getLocation();
+                player.spawnParticle(Particle.END_ROD, location.getX() + 0.5, location.getY(), location.getZ() + 0.5, 7, Math.random(), Math.random(), Math.random(), 0);
+            }
 
             if (!chest.shouldUpdateDisplay()) {
                 continue;
@@ -243,7 +249,10 @@ public class ClientLootManager implements Listener {
 
         event.setCancelled(true);
         RunicCore.getTaskChainFactory().newChain()
-                .sync(chest.lootChest::playOpenAnimation)
+                .sync(() -> {
+                    chest.lootChest.playOpenAnimation();
+                    event.getPlayer().playSound(chest.lootChest.getPosition().getLocation(), Sound.BLOCK_CHEST_OPEN, .5F, 1);
+                })
                 .delay(20)
                 .sync(() -> {
                     Map<Location, ClientLootChest> chests = loadedChests.get(event.getPlayer());

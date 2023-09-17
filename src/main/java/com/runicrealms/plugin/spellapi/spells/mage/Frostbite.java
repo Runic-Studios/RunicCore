@@ -15,6 +15,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -40,10 +41,10 @@ public class Frostbite extends Spell implements DistanceSpell, DurationSpell, Ra
 
     public Frostbite() {
         super("Frostbite", CharacterClass.MAGE);
-        this.setDescription("Deal " + this.damage + " magicʔ damage in a cone in front of you and slow enemies for " + this.duration + "s. \n" +
+        this.setDescription("You deal " + this.damage + " magicʔ damage in a cone in front of you and slow enemies for " + this.duration + "s. \n" +
                 "If enemies are slowed, deal " + this.slownessExtraDamage + " extra magicʔ damage and root them for " + (this.duration / 2) + "s. \n" +
                 "If enemies are rooted, deal " + this.rootedExtraDamage + " extra magicʔ damage and stun them for " + (this.duration / 4) + "s. \n" +
-                "If enemies are stunned, deal " + this.stunnedExtraDamage + " extra magicʔ damage.");
+                "If enemies are stunned, deal " + this.stunnedExtraDamage + " extra magicʔ damage. Enemies hit by the last effect are no longer stunned.");
     }
 
     @Override
@@ -79,6 +80,8 @@ public class Frostbite extends Spell implements DistanceSpell, DurationSpell, Ra
                 this.addStatusEffect(entity, RunicStatusEffect.ROOT, this.duration / 2, true);
             }
         }
+
+        player.getWorld().playSound(player.getLocation(), Sound.BLOCK_GLASS_BREAK, 0.5F, 1);
     }
 
     @Override

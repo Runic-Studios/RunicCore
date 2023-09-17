@@ -35,8 +35,8 @@ public class Powerslide extends Spell implements DistanceSpell, PhysicalDamageSp
 
     public Powerslide() {
         super("Powerslide", CharacterClass.CLERIC);
-        this.setDescription("Slide forwards " + this.distance + " blocks, enemies hit are pushed out of the way,\n" +
-                "take (" + this.damage + " + &f" + this.damagePerLevel + "x&7 lvl) physical⚔ damage and are silenced for " + this.debuffDuration + "s.\n" +
+        this.setDescription("You slide forward " + this.distance + " blocks. Enemies hit are pushed out of the way,\n" +
+                "taking (" + this.damage + " + &f" + this.damagePerLevel + "x&7 lvl) physical⚔ damage and are silenced for " + this.debuffDuration + "s.\n" +
                 "If you hit at least one enemy with this spell, lower its cooldown by " + this.cooldownReduction + "s.");
     }
 

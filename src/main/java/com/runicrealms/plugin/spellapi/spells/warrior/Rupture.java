@@ -24,14 +24,14 @@ public class Rupture extends Spell {
     public Rupture() {
         super("Rupture", CharacterClass.WARRIOR);
         this.setIsPassive(true);
-        this.setDescription("After successfully applying a bleed, your next melee attack is a critical hit! " +
-                "If this is on a bleeding target, reset the duration of their bleed");
+        this.setDescription("After successfully applying a bleed, your next basic attack is a critical hit! " +
+                "If your enemy is bleeding, reset the duration of their bleed.");
         this.nextCrit = new HashSet<>();
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     private void onPhysicalDamage(PhysicalDamageEvent event) {
-        if (!this.hasPassive(event.getPlayer().getUniqueId(), this.getName()) || !this.nextCrit.remove(event.getPlayer().getUniqueId())) {
+        if (!this.hasPassive(event.getPlayer().getUniqueId(), this.getName()) || !this.nextCrit.remove(event.getPlayer().getUniqueId()) || !event.isBasicAttack()) {
             return;
         }
 

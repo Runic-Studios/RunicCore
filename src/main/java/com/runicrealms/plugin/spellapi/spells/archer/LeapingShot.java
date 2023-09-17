@@ -70,6 +70,7 @@ public class LeapingShot extends Spell implements DurationSpell, PhysicalDamageS
         arrow.setCustomNameVisible(false);
         LEAP_ARROWS.put(arrow.getUniqueId(), last);
         arrow.setBounce(false);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ARROW_HIT, 3.0F, !last ? 1.0F : 3.0F);
         EntityTrail.entityTrail(arrow, Particle.CRIT);
     }
 

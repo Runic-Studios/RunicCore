@@ -36,8 +36,8 @@ public class AxeToss extends Spell implements DurationSpell, PhysicalDamageSpell
         super("Axe Toss", CharacterClass.WARRIOR);
         hasBeenHit = new HashMap<>();
         this.setDescription("You throw your weapon, dealing (" + damage + " + &f" + damagePerLevel +
-                "x&7 lvl) physical⚔ damage and applying bleed to the enemy hit, " +
-                "If the enemy hit is already bleeding, they are also slowed for " + this.slowDuration + "s");
+                "x&7 lvl) physical⚔ damage and applying bleed to the enemy hit. " +
+                "If the enemy hit is already bleeding, they are also slowed for " + this.slowDuration + "s.");
     }
 
     @Override
