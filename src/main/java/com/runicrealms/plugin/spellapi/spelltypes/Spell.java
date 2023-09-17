@@ -189,8 +189,7 @@ public abstract class Spell implements ISpell, Listener {
      * Loads the spell balance values from flat file
      */
     private void loadSpellData() {
-        String nameNoFormatting = name.replace(" ", "").replace("'", "");
-        File filePath = new File(RunicCore.getInstance().getDataFolder().getParent(), SPELLS_DIRECTORY + "/" + nameNoFormatting + ".yml");
+        File filePath = new File(RunicCore.getInstance().getDataFolder().getParent(), SPELLS_DIRECTORY + "/" + this.getClass().getSimpleName() + ".yml");
 
         if (filePath.exists()) {
             Yaml yaml = new Yaml();

@@ -32,7 +32,7 @@ public class Shatter extends Spell implements MagicDamageSpell, ShieldingSpell {
         this.cooldown = new HashMap<>();
         this.setIsPassive(true);
         this.setDescription("When you land a basic attack on an enemy that has been rooted or stunned, shatter their ice " +
-                "dealing (" + this.damage + " + &f" + this.damagePerLevel + "x&7 lvl) magicʔ damage granting you a (" + this.shieldPerLevel + " + &f" + this.shieldPerLevel + "x&7 lvl) health✦ shield");
+                "dealing (" + this.damage + " + &f" + this.damagePerLevel + "x&7 lvl) magicʔ damage granting you a (" + this.shield + " + &f" + this.shieldPerLevel + "x&7 lvl) health✦ shield");
     }
 
     @Override
@@ -75,7 +75,7 @@ public class Shatter extends Spell implements MagicDamageSpell, ShieldingSpell {
         this.shieldPerLevel = shieldingPerLevel;
     }
 
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     private void onPhysicalDamage(PhysicalDamageEvent event) {
         if (!this.hasPassive(event.getPlayer().getUniqueId(), this.getName()) ||
                 (!this.hasStatusEffect(event.getVictim().getUniqueId(), RunicStatusEffect.ROOT) && !this.hasStatusEffect(event.getVictim().getUniqueId(), RunicStatusEffect.STUN))) {

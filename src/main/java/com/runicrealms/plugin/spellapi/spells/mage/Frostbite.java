@@ -40,9 +40,9 @@ public class Frostbite extends Spell implements DistanceSpell, DurationSpell, Ra
 
     public Frostbite() {
         super("Frostbite", CharacterClass.MAGE);
-        this.setDescription("Deal " + this.damage + " magicʔ damage in a cone in front of you and slow enemies for " + this.duration + "s. " +
-                "If enemies are slowed, deal " + this.slownessExtraDamage + " extra magicʔ damage and root them for " + (this.duration / 2) + "s. " +
-                "If enemies are rooted, deal " + this.rootedExtraDamage + " extra magicʔ damage and stun them for " + (this.duration / 4) + "s. " +
+        this.setDescription("Deal " + this.damage + " magicʔ damage in a cone in front of you and slow enemies for " + this.duration + "s. \n" +
+                "If enemies are slowed, deal " + this.slownessExtraDamage + " extra magicʔ damage and root them for " + (this.duration / 2) + "s. \n" +
+                "If enemies are rooted, deal " + this.rootedExtraDamage + " extra magicʔ damage and stun them for " + (this.duration / 4) + "s. \n" +
                 "If enemies are stunned, deal " + this.stunnedExtraDamage + " extra magicʔ damage.");
     }
 
@@ -61,19 +61,23 @@ public class Frostbite extends Spell implements DistanceSpell, DurationSpell, Ra
                 extraDamage = this.stunnedExtraDamage;
             } else if (this.hasStatusEffect(entity.getUniqueId(), RunicStatusEffect.ROOT)) {
                 this.removeStatusEffect(entity, RunicStatusEffect.ROOT);
-                this.addStatusEffect(entity, RunicStatusEffect.STUN, this.duration / 4, true);
-                extraDamage = this.stunnedExtraDamage;
+                extraDamage = this.rootedExtraDamage;
             } else if (this.hasStatusEffect(entity.getUniqueId(), RunicStatusEffect.SLOW_I) || this.hasStatusEffect(entity.getUniqueId(), RunicStatusEffect.SLOW_II) || this.hasStatusEffect(entity.getUniqueId(), RunicStatusEffect.SLOW_III)) {
                 this.removeStatusEffect(entity, RunicStatusEffect.SLOW_I);
                 this.removeStatusEffect(entity, RunicStatusEffect.SLOW_II);
                 this.removeStatusEffect(entity, RunicStatusEffect.SLOW_III);
-                this.addStatusEffect(entity, RunicStatusEffect.ROOT, this.duration / 2, true);
                 extraDamage = this.slownessExtraDamage;
             } else {
                 this.addStatusEffect(entity, RunicStatusEffect.SLOW_I, this.duration, true);
             }
 
             DamageUtil.damageEntitySpell(this.damage + extraDamage, entity, player, false);
+
+            if (extraDamage == this.rootedExtraDamage) {
+                this.addStatusEffect(entity, RunicStatusEffect.STUN, this.duration / 4, true);
+            } else if (extraDamage == this.slownessExtraDamage) {
+                this.addStatusEffect(entity, RunicStatusEffect.ROOT, this.duration / 2, true);
+            }
         }
     }
 

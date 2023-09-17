@@ -111,7 +111,6 @@ import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -511,30 +510,26 @@ public class SpellManager implements Listener, SpellAPI {
      * Uses the action bar to display cooldowns
      */
     private void startCooldownTask() {
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                for (Player player : Bukkit.getOnlinePlayers()) {
-                    if (cooldownMap.containsKey(player.getUniqueId())) {
-                        ConcurrentHashMap<Spell, Long> spells = cooldownMap.get(player.getUniqueId());
-                        if (spells.size() == 0) continue; // no active cooldowns
-                        List<String> cdString = new ArrayList<>();
+        Bukkit.getScheduler().runTaskTimerAsynchronously(this.plugin, () -> {
+            for (Player player : Bukkit.getOnlinePlayers()) {
+                if (cooldownMap.containsKey(player.getUniqueId())) {
+                    ConcurrentHashMap<Spell, Long> spells = cooldownMap.get(player.getUniqueId());
+                    if (spells.size() == 0) continue; // no active cooldowns
+                    List<String> cdString = new ArrayList<>();
 
-                        for (Spell spell : spells.keySet()) {
-                            if (getUserCooldown(player, spell) <= 0) {
-                                removeCooldown(player, spell);
-                            } else {
-                                double cooldown = getUserCooldown(player, spell);
-                                String formattedCooldown = String.format("%.1f", cooldown);
-                                cdString.add(ChatColor.RED + String.valueOf(ChatColor.BOLD) + spell.getName() + ChatColor.RED + ChatColor.BOLD + ": " + ChatColor.YELLOW + formattedCooldown + "s");
-                            }
+                    for (Spell spell : spells.keySet()) {
+                        if (getUserCooldown(player, spell) <= 0) {
+                            removeCooldown(player, spell);
+                        } else {
+                            double cooldown = getUserCooldown(player, spell);
+                            String formattedCooldown = String.format("%.1f", cooldown);
+                            cdString.add(ChatColor.RED + String.valueOf(ChatColor.BOLD) + spell.getName() + ChatColor.RED + ChatColor.BOLD + ": " + ChatColor.YELLOW + formattedCooldown + "s");
                         }
-
-                        player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(ChatColor.RED + String.join(ChatColor.YELLOW + " ", cdString)));
                     }
+
+                    player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(ChatColor.RED + String.join(ChatColor.YELLOW + " ", cdString)));
                 }
             }
-        }.runTaskTimerAsynchronously(this.plugin, 0, 5L); // every 0.25s
+        }, 0, 5);
     }
-
 }

@@ -288,15 +288,12 @@ public class StatusEffectManager implements Listener, StatusEffectAPI {
             if (!(hasStatusEffect(uuid, RunicStatusEffect.SPEED_II) || hasStatusEffect(uuid, RunicStatusEffect.SPEED_III))) {
                 livingEntity.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, (int) (durationInSecs * 20), 0));
             }
-//            return;
         } else if (runicStatusEffect == RunicStatusEffect.SPEED_II) {
             if (!hasStatusEffect(uuid, RunicStatusEffect.SPEED_III)) {
                 livingEntity.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, (int) (durationInSecs * 20), 1));
             }
-//            return;
         } else if (runicStatusEffect == RunicStatusEffect.SPEED_III) {
             livingEntity.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, (int) (durationInSecs * 20), 2));
-//            return;
         }
 
         if (runicStatusEffect == RunicStatusEffect.ROOT || runicStatusEffect == RunicStatusEffect.STUN) {
@@ -304,9 +301,8 @@ public class StatusEffectManager implements Listener, StatusEffectAPI {
                     Sound.ENTITY_ZOMBIE_BREAK_WOODEN_DOOR, 0.75f, 1.0f);
             // Since there's no entity move event, we handle root & stun the old-fashioned way for mobs
             if (!(livingEntity instanceof Player)) {
-                livingEntity.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, (int) (durationInSecs * 20), 3));
+                livingEntity.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, (int) (durationInSecs * 20), 127));
                 livingEntity.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, (int) (durationInSecs * 20), 127));
-                return;
             }
         }
 
