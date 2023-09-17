@@ -71,7 +71,7 @@ public class AxeToss extends Spell implements DurationSpell, PhysicalDamageSpell
                             slowDuration, true);
                 }
 
-                addStatusEffect((LivingEntity) entity, RunicStatusEffect.BLEED, 6, true);
+                addStatusEffect((LivingEntity) entity, RunicStatusEffect.BLEED, 6, true, player);
                 entity.getWorld().playSound(entity.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 0.5f, 0.2f);
                 entity.getWorld().spawnParticle
                         (Particle.VILLAGER_ANGRY, entity.getLocation(), 5, 0.5F, 0.5F, 0.5F, 0);

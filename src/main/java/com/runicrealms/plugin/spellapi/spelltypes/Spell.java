@@ -53,6 +53,11 @@ public abstract class Spell implements ISpell, Listener {
     }
 
     @Override
+    public void addStatusEffect(@NotNull LivingEntity livingEntity, @NotNull RunicStatusEffect runicStatusEffect, double durationInSecs, boolean displayMessage, @Nullable LivingEntity applier) {
+        RunicCore.getStatusEffectAPI().addStatusEffect(livingEntity, runicStatusEffect, durationInSecs, displayMessage, applier);
+    }
+
+    @Override
     public void addStatusEffect(@NotNull LivingEntity livingEntity, @NotNull RunicStatusEffect runicStatusEffect, double durationInSecs, boolean displayMessage) {
         RunicCore.getStatusEffectAPI().addStatusEffect(livingEntity, runicStatusEffect, durationInSecs, displayMessage);
     }

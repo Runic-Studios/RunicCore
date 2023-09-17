@@ -38,17 +38,17 @@ public class Rupture extends Spell {
         event.setCritical(true);
 
         if (this.hasStatusEffect(event.getVictim().getUniqueId(), RunicStatusEffect.BLEED)) {
-            this.addStatusEffect(event.getVictim(), RunicStatusEffect.BLEED, 6, false);
+            this.addStatusEffect(event.getVictim(), RunicStatusEffect.BLEED, 6, false, event.getPlayer());
         }
     }
 
     @EventHandler(ignoreCancelled = true) //the effect apply is on high priority, this is right before it
     private void onStatusEffect(StatusEffectEvent event) {
-        if (event.getRunicStatusEffect() != RunicStatusEffect.BLEED || !this.hasPassive(event.getLivingEntity().getUniqueId(), this.getName()) || this.nextCrit.contains(event.getLivingEntity().getUniqueId())) {
+        if (event.getRunicStatusEffect() != RunicStatusEffect.BLEED || event.getApplier() == null || !this.hasPassive(event.getApplier().getUniqueId(), this.getName()) || this.nextCrit.contains(event.getApplier().getUniqueId())) {
             return;
         }
-
-        this.nextCrit.add(event.getLivingEntity().getUniqueId());
+        
+        this.nextCrit.add(event.getApplier().getUniqueId());
     }
 
     @EventHandler

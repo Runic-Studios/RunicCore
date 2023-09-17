@@ -3,10 +3,22 @@ package com.runicrealms.plugin.api;
 import com.runicrealms.plugin.spellapi.spelltypes.RunicStatusEffect;
 import org.bukkit.entity.LivingEntity;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 
 public interface StatusEffectAPI {
+
+    /**
+     * Add a custom status effect to an entity.
+     *
+     * @param livingEntity      to receive status effect
+     * @param runicStatusEffect which status effect to add
+     * @param durationInSecs    (in seconds) of effect
+     * @param displayMessage    if a message should be sent to the user that a status effect was applied
+     * @param applier           the entity that applied the status effect
+     */
+    void addStatusEffect(@NotNull LivingEntity livingEntity, @NotNull RunicStatusEffect runicStatusEffect, double durationInSecs, boolean displayMessage, @Nullable LivingEntity applier);
 
     /**
      * Add a custom status effect to an entity.

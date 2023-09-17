@@ -19,6 +19,16 @@ public interface ISpell {
      * @param duration          of the effect (in seconds)
      * @param displayMessage    whether to inform player of status effect
      */
+    void addStatusEffect(@NotNull LivingEntity livingEntity, @NotNull RunicStatusEffect runicStatusEffect, double duration, boolean displayMessage, @Nullable LivingEntity applier);
+
+    /**
+     * Adds a custom status effect to an entity that interacts with runic systems, like silence preventing spells
+     *
+     * @param livingEntity      to add effect to
+     * @param runicStatusEffect the type of custom runic effect
+     * @param duration          of the effect (in seconds)
+     * @param displayMessage    whether to inform player of status effect
+     */
     void addStatusEffect(@NotNull LivingEntity livingEntity, @NotNull RunicStatusEffect runicStatusEffect, double duration, boolean displayMessage);
 
     /**

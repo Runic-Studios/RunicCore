@@ -312,7 +312,7 @@ public class CharacterGuiManager implements Listener {
 
             //debug for nullability problems that occur at the same time as item wipe bugs
             if (RunicCore.getPlayerDataAPI().getCorePlayerData(uuid) == null) {
-                Bukkit.getScheduler().runTask(RunicCore.getInstance(), () -> player.kickPlayer(ColorUtil.format("&cPlease take a screenshot of this message! There was an error loading your data at " + new Timestamp(System.currentTimeMillis()) + "! Please create a support ticket and ping an admin!")));
+                Bukkit.getScheduler().runTask(RunicCore.getInstance(), () -> player.kickPlayer(ColorUtil.format("&cThere was an error loading your data at " + new Timestamp(System.currentTimeMillis()) + "! Please rejoin the server.")));
                 Thread.dumpStack();
                 return;
             }

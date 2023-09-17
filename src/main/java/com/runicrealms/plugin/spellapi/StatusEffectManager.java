@@ -27,6 +27,7 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.HashSet;
 import java.util.Map;
@@ -77,7 +78,7 @@ public class StatusEffectManager implements Listener, StatusEffectAPI {
                     EntityBleedEvent event = new EntityBleedEvent(recipient);
                     Bukkit.getPluginManager().callEvent(event);
                     if (event.isCancelled()) {
-                        return;
+                        continue;
                     }
 
                     recipient.getWorld().playSound(recipient.getLocation(), Sound.ENTITY_COD_HURT, 0.5f, 1.0f);
@@ -90,8 +91,13 @@ public class StatusEffectManager implements Listener, StatusEffectAPI {
     }
 
     @Override
+    public void addStatusEffect(@NotNull LivingEntity livingEntity, @NotNull RunicStatusEffect runicStatusEffect, double durationInSecs, boolean displayMessage, @Nullable LivingEntity applier) {
+        Bukkit.getPluginManager().callEvent(new StatusEffectEvent(livingEntity, runicStatusEffect, durationInSecs, displayMessage, applier));
+    }
+
+    @Override
     public void addStatusEffect(@NotNull LivingEntity livingEntity, @NotNull RunicStatusEffect runicStatusEffect, double durationInSecs, boolean displayMessage) {
-        Bukkit.getPluginManager().callEvent(new StatusEffectEvent(livingEntity, runicStatusEffect, durationInSecs, displayMessage));
+        this.addStatusEffect(livingEntity, runicStatusEffect, durationInSecs, displayMessage, null);
     }
 
     @Override

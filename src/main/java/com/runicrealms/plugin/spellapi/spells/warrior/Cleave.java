@@ -63,7 +63,7 @@ public class Cleave extends Spell implements PhysicalDamageSpell, DurationSpell,
                 DamageUtil.damageEntityPhysical(this.damage, target, player, false, false, this);
 
                 if (count.get() >= this.duration - 1) {
-                    this.addStatusEffect(target, RunicStatusEffect.BLEED, 6, true);
+                    this.addStatusEffect(target, RunicStatusEffect.BLEED, 6, true, player);
                 }
             }
 
