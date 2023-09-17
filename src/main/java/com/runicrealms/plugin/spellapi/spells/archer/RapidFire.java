@@ -7,6 +7,7 @@ import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.spellapi.spellutil.particles.EntityTrail;
+import com.runicrealms.plugin.spellapi.spellutil.particles.HelixParticleFrame;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
@@ -32,6 +33,7 @@ public class RapidFire extends Spell implements DurationSpell {
     @Override
     public void executeSpell(Player player, SpellItemType type) {
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_CREEPER_PRIMED, 0.5f, 1.0f);
+        new HelixParticleFrame(1.0F, 30, 10.0F).playParticle(player, Particle.CRIT, player.getLocation());
         players.put(player.getUniqueId(), System.currentTimeMillis());
     }
 
