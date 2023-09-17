@@ -4,7 +4,7 @@ import com.google.common.util.concurrent.AtomicDouble;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.api.event.StaffAttackEvent;
 import com.runicrealms.plugin.common.CharacterClass;
-import com.runicrealms.plugin.events.SpellCastEvent;
+import com.runicrealms.plugin.events.MagicDamageEvent;
 import com.runicrealms.plugin.rdb.event.CharacterQuitEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.DistanceSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
@@ -84,8 +84,8 @@ public class CinderedTouch extends Spell implements MagicDamageSpell, DistanceSp
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    private void onSpellCast(SpellCastEvent event) {
-        if (!this.hasPassive(event.getCaster().getUniqueId(), this.getName())) {
+    private void onSpellCast(MagicDamageEvent event) {
+        if (!this.hasPassive(event.getPlayer().getUniqueId(), this.getName())) {
             return;
         }
 
@@ -93,9 +93,9 @@ public class CinderedTouch extends Spell implements MagicDamageSpell, DistanceSp
             return;
         }
 
-        Integer cached = this.counts.get(event.getCaster().getUniqueId());
+        Integer cached = this.counts.get(event.getPlayer().getUniqueId());
 
-        this.counts.put(event.getCaster().getUniqueId(), cached != null ? cached + 1 : 1);
+        this.counts.put(event.getPlayer().getUniqueId(), cached != null ? cached + 1 : 1);
     }
 
     @EventHandler
