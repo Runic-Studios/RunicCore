@@ -31,7 +31,7 @@ public class Scurvy extends Spell implements DurationSpell, PhysicalDamageSpell 
     public Scurvy() {
         super("Scurvy", CharacterClass.ROGUE);
         this.setIsPassive(true);
-        this.setDescription("Your first attack after casting &aDash &7is laden with disease! " +
+        this.setDescription("Your first primary attack after casting &aDash &7is laden with disease! " +
                 "The target hit receives nausea for the next " + duration + "s " +
                 "Against mobs this deals (" + this.damage + " +&f " + this.damagePerLevel + "x&7 lvl) extra physical⚔ damage!");
         this.buffed = new HashSet<>();
@@ -39,7 +39,7 @@ public class Scurvy extends Spell implements DurationSpell, PhysicalDamageSpell 
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     private void onPhysicalDamage(PhysicalDamageEvent event) {
-        if (!this.buffed.contains(event.getPlayer().getUniqueId())) {
+        if (!this.buffed.contains(event.getPlayer().getUniqueId()) || !event.isBasicAttack()) {
             return;
         }
 

@@ -28,8 +28,7 @@ public class Agility extends Spell implements AttributeSpell {
         this.setIsPassive(true);
         Stat stat = Stat.getFromName(statName);
         String prefix = stat == null ? "" : stat.getPrefix();
-        this.setDescription("You've learned to use your speed to your advantage! " +
-                "While &aDash &7is active, you gain bonus basic attack damage " +
+        this.setDescription("While &aDash &7is active, you gain bonus basic attack damage " +
                 "equal to (" + baseValue + " + &f" + multiplier + "x &e" + prefix + "&7)!");
     }
 
@@ -37,7 +36,7 @@ public class Agility extends Spell implements AttributeSpell {
      * Empower on dash cast
      */
     @EventHandler(priority = EventPriority.NORMAL)
-    public void onSprintCast(SpellCastEvent event) {
+    public void onDashCast(SpellCastEvent event) {
         if (event.isCancelled()) return;
         if (!hasPassive(event.getCaster().getUniqueId(), this.getName())) return;
         if (event.getSpell() == null) return;

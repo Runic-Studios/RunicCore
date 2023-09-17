@@ -10,7 +10,6 @@ import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.ISpell;
 import com.runicrealms.plugin.spellapi.spelltypes.RadiusSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
-import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -39,7 +38,7 @@ public class Tempo extends Spell implements RadiusSpell, DurationSpell {
     public Tempo() {
         super("Tempo", CharacterClass.CLERIC);
         this.setIsPassive(true);
-        this.setDescription("Whenever you cast an ability, your next basic attack restores " + this.restore + " mana and health to yourself and allies within " + this.radius + " blocks.\n" +
+        this.setDescription("Whenever you cast an ability, your next basic attack restores " + this.restore + " mana to yourself and allies within " + this.radius + " blocks.\n" +
                 "Additionally, this enhanced basic attack increases the duration of your active &aAccelerando&7, &aBattlecry&7 and &aGrand Symphony&7 by " + this.duration + "s each.");
         this.specialAttacks = new HashSet<>();
     }
@@ -52,22 +51,15 @@ public class Tempo extends Spell implements RadiusSpell, DurationSpell {
 
         this.specialAttacks.add(event.getCaster().getUniqueId());
 
-        this.restore(event.getCaster());
+        RunicCore.getRegenManager().addMana(event.getCaster(), this.restore);
 
         for (Entity entity : event.getCaster().getNearbyEntities(this.radius, this.radius, this.radius)) {
             if (!(entity instanceof Player ally) || !this.isValidAlly(event.getCaster(), ally)) {
                 continue;
             }
 
-            this.restore(ally);
+            RunicCore.getRegenManager().addMana(ally, this.restore);
         }
-    }
-
-    private void restore(@NotNull Player player) {
-        RunicCore.getRegenManager().addMana(player, this.restore);
-
-        double health = Math.min(player.getHealth() + this.restore, player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
-        player.setHealth(health);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

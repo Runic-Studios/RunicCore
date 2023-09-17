@@ -2,7 +2,6 @@ package com.runicrealms.plugin.spellapi.spells.archer;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.common.CharacterClass;
-import com.runicrealms.plugin.common.util.Pair;
 import com.runicrealms.plugin.events.EnvironmentDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.PhysicalDamageSpell;
@@ -23,7 +22,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
@@ -33,8 +31,7 @@ import java.util.Map;
 import java.util.UUID;
 
 public class LeapingShot extends Spell implements DurationSpell, PhysicalDamageSpell {
-    private static final String ARROW_META_KEY = "data";
-    private static final String ARROW_META_VALUE = "leaping shot";
+    private static final Map<UUID, Boolean> LEAP_ARROWS = new HashMap<>();
     private static final Map<UUID, BukkitTask> LEAP_TASKS = new HashMap<>();
     private final HashMap<UUID, UUID> hasBeenHit = new HashMap<>();
     private double damage;
@@ -71,7 +68,7 @@ public class LeapingShot extends Spell implements DurationSpell, PhysicalDamageS
         arrow.setVelocity(player.getEyeLocation().getDirection().normalize().multiply(2));
         arrow.setShooter(player);
         arrow.setCustomNameVisible(false);
-        arrow.setMetadata(ARROW_META_KEY, new FixedMetadataValue(RunicCore.getInstance(), Pair.pair(ARROW_META_VALUE, last)));
+        LEAP_ARROWS.put(arrow.getUniqueId(), last);
         arrow.setBounce(false);
         EntityTrail.entityTrail(arrow, Particle.CRIT);
     }
@@ -153,23 +150,23 @@ public class LeapingShot extends Spell implements DurationSpell, PhysicalDamageS
     public void onPhysicalDamage(EntityDamageByEntityEvent event) {
         if (event.isCancelled()) return;
         if (!(event.getDamager() instanceof Arrow arrow)) return;
-        if (!arrow.hasMetadata(ARROW_META_KEY)) return;
+        if (!(arrow.getShooter() instanceof Player player)) return;
 
-        Pair<String, Boolean> data = ((Pair<String, Boolean>) arrow.getMetadata(ARROW_META_KEY).get(0).value());
+        Boolean last = LEAP_ARROWS.remove(arrow.getUniqueId());
 
-        if (data == null || !data.first.equalsIgnoreCase(ARROW_META_VALUE)) {
+        if (last == null) {
             return;
         }
 
-        if (!(arrow.getShooter() instanceof Player player)) return;
         if (hasBeenHit.containsKey(player.getUniqueId())) {
             event.setCancelled(true);
             return;
         }
+
         if (!(event.getEntity() instanceof LivingEntity livingEntity)) return;
 
         event.setCancelled(true);
-        Bukkit.getPluginManager().callEvent(new ArrowHitEvent(player, livingEntity, data.second));
+        Bukkit.getPluginManager().callEvent(new ArrowHitEvent(player, livingEntity, last));
         DamageUtil.damageEntityPhysical(damage, livingEntity, player, false, true, this);
         hasBeenHit.put(player.getUniqueId(), livingEntity.getUniqueId()); // prevent concussive hits
         Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), () -> hasBeenHit.remove(player.getUniqueId()), 8L);

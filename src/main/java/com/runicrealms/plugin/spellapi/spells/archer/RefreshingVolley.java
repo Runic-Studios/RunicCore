@@ -20,7 +20,7 @@ public class RefreshingVolley extends Spell implements HealingSpell, DistanceSpe
     public RefreshingVolley() {
         super("Refreshing Volley", CharacterClass.ARCHER);
         this.setIsPassive(true);
-        this.setDescription("Whilst &aBarrage&7 is active, " +
+        this.setDescription("Whilst &aRapid Fire&7 is active, " +
                 "Each time you land a ranged attack on an enemy " +
                 "heal✦ yourself and your closest 2 allies within " + this.distance + " blocks" +
                 "for " + this.heal + " + (&f" + this.healingPerLevel + " x&7 lvl) health.");

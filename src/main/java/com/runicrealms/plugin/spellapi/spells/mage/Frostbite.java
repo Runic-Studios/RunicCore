@@ -63,8 +63,10 @@ public class Frostbite extends Spell implements DistanceSpell, DurationSpell, Ra
                 this.removeStatusEffect(entity, RunicStatusEffect.ROOT);
                 this.addStatusEffect(entity, RunicStatusEffect.STUN, this.duration / 4, true);
                 extraDamage = this.stunnedExtraDamage;
-            } else if (this.hasStatusEffect(entity.getUniqueId(), RunicStatusEffect.SLOW_I)) {
+            } else if (this.hasStatusEffect(entity.getUniqueId(), RunicStatusEffect.SLOW_I) || this.hasStatusEffect(entity.getUniqueId(), RunicStatusEffect.SLOW_II) || this.hasStatusEffect(entity.getUniqueId(), RunicStatusEffect.SLOW_III)) {
                 this.removeStatusEffect(entity, RunicStatusEffect.SLOW_I);
+                this.removeStatusEffect(entity, RunicStatusEffect.SLOW_II);
+                this.removeStatusEffect(entity, RunicStatusEffect.SLOW_III);
                 this.addStatusEffect(entity, RunicStatusEffect.ROOT, this.duration / 2, true);
                 extraDamage = this.slownessExtraDamage;
             } else {

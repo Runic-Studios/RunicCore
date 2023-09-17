@@ -33,7 +33,7 @@ public class GiftsOfTheGrove extends Spell implements AttributeSpell, DurationSp
         String prefix = stat == null ? "" : stat.getPrefix();
         this.setDescription("While inside your &aSacred Grove&7, " +
                 "your healing✦ is increased by (" + baseValue + " + &f" + multiplier + "x &e" + prefix + "&7)% " +
-                "and when you hit an enemy the cooldown for &aRemedy&7 is reduced by " + this.duration + "s" +
+                "and when you hit an enemy the cooldown for &aRemedy&7 is reduced by " + this.duration + "s " +
                 "If you are inside the grove when it expires, " +
                 "it releases one more pulse, " +
                 "healing allies for " + (percent * 100) + "% of its base value!");

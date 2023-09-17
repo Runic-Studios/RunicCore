@@ -18,9 +18,7 @@ import org.bukkit.event.EventPriority;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -29,7 +27,7 @@ import java.util.UUID;
  * @author BoBoBalloon
  */
 public class Adrenaline extends Spell implements DurationSpell {
-    private final Map<UUID, Pair<Long, Set<Long>>> stacks;
+    private final Map<UUID, Pair<Long, Integer>> stacks;
     private double buffDuration;
     private double stackDuration;
     private int maxStacks;
@@ -50,7 +48,7 @@ public class Adrenaline extends Spell implements DurationSpell {
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_WITHER_SPAWN, 0.5f, 1.0f);
         player.getWorld().playSound(player.getLocation(), Sound.BLOCK_PORTAL_TRAVEL, 0.5f, 1.0f);
         new HelixParticleFrame(1.0F, 30, 10.0F).playParticle(player, Particle.REDSTONE, player.getLocation(), Color.RED);
-        this.stacks.put(player.getUniqueId(), Pair.pair(System.currentTimeMillis(), new HashSet<>()));
+        this.stacks.put(player.getUniqueId(), Pair.pair(System.currentTimeMillis(), 0));
         this.addStatusEffect(player, RunicStatusEffect.SPEED_II, this.buffDuration, true);
     }
 
@@ -82,7 +80,7 @@ public class Adrenaline extends Spell implements DurationSpell {
      * @return the amount of stacks the player currently has
      */
     public int getStacks(@NotNull UUID caster) {
-        Pair<Long, Set<Long>> data = this.stacks.get(caster);
+        Pair<Long, Integer> data = this.stacks.get(caster);
 
         if (data == null) {
             return 0;
@@ -90,19 +88,17 @@ public class Adrenaline extends Spell implements DurationSpell {
 
         long now = System.currentTimeMillis();
 
-        if (now >= data.first + (this.buffDuration * 1000)) {
+        if (now < data.first + (this.buffDuration * 1000)) {
+            return data.second;
+        }
+
+        if (data.second - 1 <= 0) {
             this.stacks.remove(caster);
             return 0;
+        } else {
+            this.stacks.put(caster, Pair.pair(data.first, data.second - 1));
+            return data.second - 1;
         }
-
-        Set<Long> copy = new HashSet<>(data.second); //make a copy to prevent ConcurrentModificationException
-        for (Long stack : copy) {
-            if (now >= stack + (this.stackDuration * 1000)) {
-                data.second.remove(stack);
-            }
-        }
-
-        return data.second.size();
     }
 
     /**
@@ -111,11 +107,19 @@ public class Adrenaline extends Spell implements DurationSpell {
      * @param caster the caster
      */
     public void addStack(@NotNull UUID caster) {
-        if (!this.stacks.containsKey(caster)) {
+        Pair<Long, Integer> data = this.stacks.get(caster);
+
+        if (data == null) {
             return;
         }
 
-        this.stacks.get(caster).second.add(System.currentTimeMillis());
+        long now = System.currentTimeMillis();
+
+        if (now < data.first + (this.buffDuration * 1000)) {
+            this.stacks.put(caster, Pair.pair(now, Math.min(data.second + 1, this.maxStacks)));
+        } else {
+            this.stacks.remove(caster);
+        }
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)

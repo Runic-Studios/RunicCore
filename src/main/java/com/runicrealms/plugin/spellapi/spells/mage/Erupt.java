@@ -123,7 +123,7 @@ public class Erupt extends Spell implements MagicDamageSpell, RadiusSpell {
 
         int damage = (int) (event.getVictim().getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue() * 0.05);
 
-        event.setAmount(event.getAmount() + damage);
+        event.setAmount(event.getAmount() + Math.min(damage, 500)); //cap of 500
     }
 
     @EventHandler

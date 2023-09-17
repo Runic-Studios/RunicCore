@@ -86,10 +86,10 @@ public class RapidFire extends Spell implements DurationSpell {
     }
 
     /**
-     * A method that returns if the provided player is currently using barrage
+     * A method that returns if the provided player is currently using rapid fire
      *
      * @param player the provided player
-     * @return if the provided player is currently using barrage
+     * @return if the provided player is currently using rapid fire
      */
     public boolean isUsing(@NotNull Player player) {
         Long start = this.players.get(player.getUniqueId());

@@ -7,24 +7,21 @@ import com.runicrealms.plugin.events.PhysicalDamageEvent;
 import com.runicrealms.plugin.events.SpellCastEvent;
 import com.runicrealms.plugin.spellapi.spells.Combat;
 import com.runicrealms.plugin.spellapi.spells.Potion;
-import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.RunicStatusEffect;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
 public class FromTheShadows extends Spell {
-    private final Set<UUID> potentialBuffedPlayers = new HashSet<>();
-    private final Map<UUID, Spell> actuallyBuffedPlayers = new HashMap<>();
-    private final Set<UUID> cocoon;
+    private final Set<UUID> buffedPlayers = new HashSet<>();
+    private final Set<UUID> cocooned;
     private double speedDuration;
     private double cocoonDamageIncreaseDuration;
     private double percent;
@@ -40,12 +37,16 @@ public class FromTheShadows extends Spell {
                 "&aDash &7- Gain Speed III for " + this.speedDuration + "s!\n" +
                 "&aTwin Fangs &7- This spell will critically strike!\n" +
                 "&aCocoon &7- Your web now roots your target (duration halved)!\n" +
-                "Additionally, &aCocoon&7 increases all damage an enemy takes by (" + this.percent + "&f" + this.percentPerDex + " x &eDEX&7)% for the next " + this.cocoonDamageIncreaseDuration + "s!"
+                "Additionally, &aCocoon&7 increases all damage an enemy takes by (" + this.percent + " + &f" + this.percentPerDex + "x &eDEX&7)% for the next " + this.cocoonDamageIncreaseDuration + "s!"
         );
-        this.cocoon = new HashSet<>();
+        this.cocooned = new HashSet<>();
     }
 
-    private int cocoonDamageCalculation(double damage, @NotNull UUID caster) {
+    private int cocoonDamageCalculation(double damage, @Nullable UUID caster) {
+        if (caster == null) {
+            return (int) damage;
+        }
+
         int dex = RunicCore.getStatAPI().getPlayerDexterity(caster);
         return (int) (damage + ((this.percent + (this.percentPerDex * dex)) * damage));
     }
@@ -58,24 +59,20 @@ public class FromTheShadows extends Spell {
         }
 
         boolean cocooned = cocoon.isCocooned(event.getVictim().getUniqueId(), this.cocoonDamageIncreaseDuration);
+        UUID caster = cocoon.getCaster(event.getVictim().getUniqueId());
 
-        if (cocooned && this.cocoon.contains(event.getVictim().getUniqueId())) {
-            event.setAmount(this.cocoonDamageCalculation(event.getAmount(), cocoon.getCaster(event.getVictim().getUniqueId())));
-        } else if (!cocooned) {
-            this.cocoon.remove(event.getVictim().getUniqueId());
+        if (cocooned && caster != null && this.hasPassive(caster, this.getName())) {
+            event.setAmount(this.cocoonDamageCalculation(event.getAmount(), caster));
         }
 
-        if (!hasPassive(event.getPlayer().getUniqueId(), this.getName()) || event.getSpell() == null || !this.actuallyBuffedPlayers.containsKey(event.getPlayer().getUniqueId())) {
+        if (!hasPassive(event.getPlayer().getUniqueId(), this.getName()) || event.getSpell() == null || !this.buffedPlayers.contains(event.getPlayer().getUniqueId())) {
             return;
         }
 
-        actuallyBuffedPlayers.remove(event.getPlayer().getUniqueId());
+        buffedPlayers.remove(event.getPlayer().getUniqueId());
 
         if (event.getSpell() instanceof Cocoon) {
-            Bukkit.getScheduler().runTask(plugin, () -> {
-                addStatusEffect(event.getVictim(), RunicStatusEffect.ROOT, cocoon.getDuration() / 2, true);
-                potentialBuffedPlayers.remove(event.getPlayer().getUniqueId());
-            });
+            Bukkit.getScheduler().runTask(plugin, () -> addStatusEffect(event.getVictim(), RunicStatusEffect.ROOT, cocoon.getDuration() / 2, true));
         } else if (event.getSpell() instanceof TwinFangs) {
             event.setCritical(true);
         }
@@ -90,10 +87,10 @@ public class FromTheShadows extends Spell {
 
         boolean cocooned = cocoon.isCocooned(event.getVictim().getUniqueId(), this.cocoonDamageIncreaseDuration);
 
-        if (cocooned && this.cocoon.contains(event.getVictim().getUniqueId())) {
+        if (cocooned && this.cocooned.contains(event.getVictim().getUniqueId())) {
             event.setAmount(this.cocoonDamageCalculation(event.getAmount(), cocoon.getCaster(event.getVictim().getUniqueId())));
         } else if (!cocooned) {
-            this.cocoon.remove(event.getVictim().getUniqueId());
+            this.cocooned.remove(event.getVictim().getUniqueId());
         }
     }
 
@@ -104,30 +101,25 @@ public class FromTheShadows extends Spell {
             return;
         }
         // Apply buff
-        if (event.getSpell() instanceof Unseen) {
-            potentialBuffedPlayers.add(event.getCaster().getUniqueId());
-            double duration = ((DurationSpell) RunicCore.getSpellAPI().getSpell("Unseen")).getDuration();
+        if (event.getSpell() instanceof Unseen unseen) {
+            buffedPlayers.add(event.getCaster().getUniqueId());
             Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(),
-                    () -> potentialBuffedPlayers.remove(event.getCaster().getUniqueId()), (long) ((duration + 1) * 20L));
+                    () -> buffedPlayers.remove(event.getCaster().getUniqueId()), (long) (unseen.getDuration() * 20L));
             return;
         }
-        // Remove actual buff
-        if (actuallyBuffedPlayers.containsKey(event.getCaster().getUniqueId())) {
-            actuallyBuffedPlayers.remove(event.getCaster().getUniqueId());
-            return;
-        }
+
         // Remove potential buff
-        if (!potentialBuffedPlayers.contains(event.getCaster().getUniqueId())) return;
-        potentialBuffedPlayers.remove(event.getCaster().getUniqueId());
+        if (!buffedPlayers.contains(event.getCaster().getUniqueId())) return;
+
         if (event.getSpell() instanceof Dash) {
             this.addStatusEffect(event.getCaster(), RunicStatusEffect.SPEED_III, 4, true);
-        } else if (event.getSpell() instanceof TwinFangs twinFangs) {
-            actuallyBuffedPlayers.put(event.getCaster().getUniqueId(), twinFangs);
+        } else if (event.getSpell() instanceof TwinFangs) {
+            buffedPlayers.add(event.getCaster().getUniqueId());
         } else if (event.getSpell() instanceof Cocoon cocoon) {
-            actuallyBuffedPlayers.put(event.getCaster().getUniqueId(), cocoon);
+            buffedPlayers.add(event.getCaster().getUniqueId());
             UUID target = cocoon.getTarget(event.getCaster().getUniqueId());
             if (target != null) {
-                this.cocoon.add(target);
+                this.cocooned.add(target);
             }
         }
     }

@@ -74,10 +74,10 @@ public class Powerslide extends Spell implements DistanceSpell, PhysicalDamageSp
             // Check the Y component of the cross product to determine the side
             if (dot > 0) {
                 // Entity is to the right of the player
-                entity.setVelocity(rightward.clone().multiply(4));
+                entity.setVelocity(rightward.clone().multiply(3));
             } else {
                 // Entity is to the left of the player
-                entity.setVelocity(rightward.clone().multiply(-4));
+                entity.setVelocity(rightward.clone().multiply(-3));
             }
 
             DamageUtil.damageEntityPhysical(this.damage, target, player, false, false, false, this);
