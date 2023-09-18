@@ -41,7 +41,7 @@ public class CinderedTouch extends Spell implements MagicDamageSpell, DistanceSp
         super("Cindered Touch", CharacterClass.MAGE);
         this.setIsPassive(true);
         this.setDescription("For every " + this.count + " enemies that you hit with &6Pyromancer&7 spells, your next basic attack is cindered! \n" +
-                "Cindered attacks launch a wave of fire dealing (" + this.damage + " + &f" + this.damagePerLevel + "x&7 lvl) magicʔ damage " + this.distance + " blocks in front of you!");
+                "Cindered attacks launch a wave of fire, each tick dealing (" + this.damage + " + &f" + this.damagePerLevel + "x&7 lvl) magicʔ damage " + this.distance + " blocks in front of you!");
         this.counts = new HashMap<>();
     }
 
