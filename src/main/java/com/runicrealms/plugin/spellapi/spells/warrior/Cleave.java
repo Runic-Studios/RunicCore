@@ -27,7 +27,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @author BoBoBalloon
  */
 public class Cleave extends Spell implements PhysicalDamageSpell, DurationSpell, DistanceSpell {
-    private static final double ANGLE = Math.PI / 3; //60 degrees
+    private static final double ANGLE = Math.PI / 2; //90 degrees
     private double damage;
     private double damagePerLevel;
     private double duration;
