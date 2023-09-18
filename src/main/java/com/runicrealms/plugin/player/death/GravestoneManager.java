@@ -1,11 +1,11 @@
 package com.runicrealms.plugin.player.death;
 
-import com.gmail.filoghost.holographicdisplays.api.Hologram;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.events.RunicDeathEvent;
-import com.runicrealms.runicitems.RunicItemsAPI;
-import com.runicrealms.runicitems.item.RunicItem;
-import com.runicrealms.runicrestart.event.PreShutdownEvent;
+import com.runicrealms.plugin.runicitems.RunicItemsAPI;
+import com.runicrealms.plugin.runicitems.item.RunicItem;
+import com.runicrealms.plugin.runicrestart.event.PreShutdownEvent;
+import me.filoghost.holographicdisplays.api.hologram.Hologram;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -154,12 +154,12 @@ public class GravestoneManager implements Listener {
                 String durationFormatted = String.format("%dm%ds", minutesDuration, secondsDuration);
 
                 // Update the priority timer line of the hologram
-                hologram.removeLine(1); // Remove the old line
-                hologram.insertTextLine(1, ChatColor.YELLOW + "Priority: " + priorityFormatted); // Add the updated line
+                hologram.getLines().remove(1); // Remove the old line
+                hologram.getLines().insertText(1, ChatColor.YELLOW + "Priority: " + priorityFormatted); // Add the updated line
 
                 // Update the duration timer line of the hologram
-                hologram.removeLine(2); // Remove the old line
-                hologram.insertTextLine(2, ChatColor.GRAY + "Time left: " + durationFormatted);
+                hologram.getLines().remove(2); // Remove the old line
+                hologram.getLines().insertText(2, ChatColor.GRAY + "Time left: " + durationFormatted);
             }
         }, 0, 20L);
     }

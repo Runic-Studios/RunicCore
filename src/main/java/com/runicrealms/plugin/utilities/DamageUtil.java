@@ -20,14 +20,20 @@ import org.bukkit.entity.Monster;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
 
 public class DamageUtil {
     private static final double CRITICAL_MULTIPLIER = 1.5;
 
-    public static void damageEntitySpell(double dmgAmt, LivingEntity recipient, Player caster, Spell... spell) {
+    public static void damageEntitySpell(double dmgAmt, @NotNull LivingEntity recipient, @NotNull Player caster, @Nullable Spell spell) {
         damageEntitySpell(dmgAmt, recipient, caster, true, spell);
+    }
+
+    public static void damageEntitySpell(double dmgAmt, @NotNull LivingEntity recipient, @NotNull Player caster) {
+        damageEntitySpell(dmgAmt, recipient, caster, null);
     }
 
     /**
@@ -38,7 +44,7 @@ public class DamageUtil {
      * @param caster    player who cast the healing spell
      * @param spell     include a reference to spell for spell scaling
      */
-    public static void damageEntitySpell(double dmgAmt, LivingEntity recipient, Player caster, boolean knockback, Spell... spell) {
+    public static void damageEntitySpell(double dmgAmt, @NotNull LivingEntity recipient, @NotNull Player caster, boolean knockback, @Nullable Spell spell) {
         // Prevent healing
         if (dmgAmt < 0) {
             dmgAmt = 0;
@@ -66,9 +72,18 @@ public class DamageUtil {
         HologramUtil.createCombatHologram(Collections.singletonList(caster), recipient.getEyeLocation(), chatColor + "-" + (int) finalDamage + " ❤ʔ");
     }
 
-    public static void damageEntityPhysical(double dmgAmt, LivingEntity recipient, Player caster,
-                                            boolean isBasicAttack, boolean isRanged, Spell... spell) {
+    public static void damageEntitySpell(double dmgAmt, @NotNull LivingEntity recipient, @NotNull Player caster, boolean knockback) {
+        damageEntitySpell(dmgAmt, recipient, caster, knockback, null);
+    }
+
+    public static void damageEntityPhysical(double dmgAmt, @NotNull LivingEntity recipient, @NotNull Player caster,
+                                            boolean isBasicAttack, boolean isRanged, @Nullable Spell spell) {
         damageEntityPhysical(dmgAmt, recipient, caster, isBasicAttack, isRanged, true, spell);
+    }
+
+    public static void damageEntityPhysical(double dmgAmt, @NotNull LivingEntity recipient, @NotNull Player caster,
+                                            boolean isBasicAttack, boolean isRanged) {
+        damageEntityPhysical(dmgAmt, recipient, caster, isBasicAttack, isRanged, null);
     }
 
     /**
@@ -82,8 +97,8 @@ public class DamageUtil {
      * @param knockback     whether to apply knockback
      * @param spell         include a reference to spell for spell scaling
      */
-    public static void damageEntityPhysical(double dmgAmt, LivingEntity recipient, Player caster,
-                                            boolean isBasicAttack, boolean isRanged, boolean knockback, Spell... spell) {
+    public static void damageEntityPhysical(double dmgAmt, @NotNull LivingEntity recipient, @NotNull Player caster,
+                                            boolean isBasicAttack, boolean isRanged, boolean knockback, @Nullable Spell spell) {
         // prevent healing
         if (dmgAmt < 0) {
             dmgAmt = 0;
@@ -113,8 +128,8 @@ public class DamageUtil {
         HologramUtil.createCombatHologram(Collections.singletonList(caster), recipient.getEyeLocation(), chatColor + "-" + (int) finalDamage + " ❤⚔");
     }
 
-    public static void damageEntityRanged(double dmgAmt, LivingEntity recipient, Player caster,
-                                          boolean isBasicAttack, Arrow arrow, Spell... spell) {
+    public static void damageEntityRanged(double dmgAmt, @NotNull LivingEntity recipient, @NotNull Player caster,
+                                          boolean isBasicAttack, @NotNull Arrow arrow, @Nullable Spell spell) {
         // prevent healing
         if (dmgAmt < 0)
             dmgAmt = 0;
@@ -143,7 +158,12 @@ public class DamageUtil {
         HologramUtil.createCombatHologram(Collections.singletonList(caster), recipient.getEyeLocation(), chatColor + "-" + (int) dmgAmt + " ❤⚔");
     }
 
-    public static void damageEntityMob(double dmgAmt, LivingEntity recipient, Entity damager, boolean knockBack) {
+    public static void damageEntityRanged(double dmgAmt, @NotNull LivingEntity recipient, @NotNull Player caster,
+                                          boolean isBasicAttack, @NotNull Arrow arrow) {
+        damageEntityRanged(dmgAmt, recipient, caster, isBasicAttack, arrow, null);
+    }
+
+    public static void damageEntityMob(double dmgAmt, @NotNull LivingEntity recipient, @NotNull Entity damager, boolean knockBack) {
 
         // ignore NPCs
         if (recipient.hasMetadata("NPC")) return;
@@ -152,7 +172,7 @@ public class DamageUtil {
         mobDamage(dmgAmt, recipient, damager, knockBack);
     }
 
-    private static void mobDamage(double dmgAmt, LivingEntity recipient, Entity damager, boolean knockBack) {
+    private static void mobDamage(double dmgAmt, @NotNull LivingEntity recipient, @NotNull Entity damager, boolean knockBack) {
 
         /*
         Calculated in Damage Listener now so this doesn't override debuffs from spells.
@@ -194,11 +214,11 @@ public class DamageUtil {
         }
     }
 
-    private static void damageEntityByEntity(double dmgAmt, LivingEntity recipient, Player caster, boolean isRanged) {
+    private static void damageEntityByEntity(double dmgAmt, @NotNull LivingEntity recipient, @NotNull Player caster, boolean isRanged) {
         damageEntityByEntity(dmgAmt, recipient, caster, isRanged, true);
     }
 
-    private static void damageEntityByEntity(double dmgAmt, LivingEntity recipient, Player caster, boolean isRanged, boolean knockback) {
+    private static void damageEntityByEntity(double dmgAmt, @NotNull LivingEntity recipient, @NotNull Player caster, boolean isRanged, boolean knockback) {
 
         // ignore NPCs
         if (recipient.hasMetadata("NPC")) return;
@@ -251,19 +271,22 @@ public class DamageUtil {
     /**
      * This method damages a player using custom runic mechanics
      *
-     * @param dmgAmt damage amount to deal
-     * @param victim to receive damage
+     * @param dmgAmt    damage amount to deal
+     * @param victim    to receive damage
+     * @param knockback if the victim should be knocked back
      */
-    public static void damagePlayer(double dmgAmt, Player victim) {
-        int newHP = (int) (victim.getHealth() - dmgAmt);
+    public static void damageEntityGeneric(double dmgAmt, @NotNull LivingEntity victim, boolean knockback) {
+        int newHP = (int) (victim.getHealth() - Math.max(dmgAmt, 0));
 
         // call a custom damage event to communicate with other listeners/plugins
-        EntityDamageEvent e = new EntityDamageEvent(victim, EntityDamageEvent.DamageCause.CUSTOM, dmgAmt);
+        EntityDamageEvent e = new EntityDamageEvent(victim, EntityDamageEvent.DamageCause.CUSTOM, Math.max(dmgAmt, 0));
         Bukkit.getPluginManager().callEvent(e);
         victim.setLastDamageCause(e);
 
         // apply knock back
-        victim.setVelocity(victim.getLocation().getDirection().multiply(DamageEventUtil.getEnvironmentKnockbackMultiplier()));
+        if (knockback) {
+            victim.setVelocity(victim.getLocation().getDirection().multiply(DamageEventUtil.getEnvironmentKnockbackMultiplier()));
+        }
 
         // apply custom mechanics if the player were to die
         if (newHP >= 1) {
@@ -272,13 +295,25 @@ public class DamageUtil {
                 victim.setNoDamageTicks(0);
                 victim.damage(0.0000000000001);
             }
-        } else {
-            RunicDeathEvent runicDeathEvent = new RunicDeathEvent(victim, victim.getLocation());
+        } else if (victim instanceof Player player) {
+            RunicDeathEvent runicDeathEvent = new RunicDeathEvent(player, victim.getLocation());
             Bukkit.getPluginManager().callEvent(runicDeathEvent);
+        } else {
+            victim.setHealth(0);
         }
+
         HologramUtil.createCombatHologram(null, victim.getEyeLocation(), ChatColor.RED + "-" + (int) dmgAmt + " ❤");
     }
 
+    /**
+     * This method damages a player using custom runic mechanics
+     *
+     * @param dmgAmt damage amount to deal
+     * @param victim to receive damage
+     */
+    public static void damageEntityGeneric(double dmgAmt, @NotNull LivingEntity victim) {
+        damageEntityGeneric(dmgAmt, victim, true);
+    }
 }
 
 

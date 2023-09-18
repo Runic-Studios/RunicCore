@@ -1,6 +1,7 @@
 package com.runicrealms.plugin.item.shops;
 
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.common.util.ColorUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -13,6 +14,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 
 public class RunicShopGeneric implements RunicItemShop {
     private static final int LOAD_DELAY = 10; // Seconds
@@ -21,6 +23,20 @@ public class RunicShopGeneric implements RunicItemShop {
     private final Collection<Integer> runicNpcIds;
     private List<RunicShopItem> itemsForSale;
     private Map<Integer, RunicShopItem> inventoryItems;
+
+    /**
+     * REMOVE THIS AFTER THE ORE_VENDER DYNAMIC BUG IS FOUND AND FIXED
+     */
+    private static void debug(String shopName, boolean init) {
+        if (!shopName.equalsIgnoreCase(ColorUtil.format("&eOre Vendor"))) {
+            return;
+        }
+
+        Thread.dumpStack();
+        if (!init) {
+            RunicCore.getInstance().getLogger().log(Level.SEVERE, "DYNAMIC ORE_VENDER CHANGE!");
+        }
+    }
 
     /**
      * Creates an item shop
@@ -33,6 +49,7 @@ public class RunicShopGeneric implements RunicItemShop {
         this.size = size;
         this.shopName = shopName;
         this.runicNpcIds = runicNpcIds;
+        debug(shopName, true); //remove
     }
 
     /**
@@ -48,6 +65,7 @@ public class RunicShopGeneric implements RunicItemShop {
         this.shopName = shopName;
         this.runicNpcIds = runicNpcIds;
         setItemsForSale(itemsForSale);
+        debug(shopName, true); //remove
     }
 
     /**
@@ -78,6 +96,7 @@ public class RunicShopGeneric implements RunicItemShop {
             }
             RunicCore.getShopAPI().registerRunicItemShop(this);
         }, LOAD_DELAY * 20L);
+        debug(shopName, true); //remove
     }
 
     @Override
@@ -131,6 +150,7 @@ public class RunicShopGeneric implements RunicItemShop {
     public void setItemsForSale(List<RunicShopItem> itemsForSale) {
         this.itemsForSale = itemsForSale;
         registerRunicItemShop();
+        debug(shopName, false); //remove
     }
 
     @Override

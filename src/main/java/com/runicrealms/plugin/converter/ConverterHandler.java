@@ -12,8 +12,6 @@ public class ConverterHandler implements ConverterAPI {
     public ConverterHandler() {
         converters = new ArrayList<>();
         // Add RunicCore converters
-        addDataConverter(new PerkReadConverter());
-        addDataConverter(new PerkWriteConverter());
         addDataConverter(new LocationReadConverter());
         addDataConverter(new LocationWriteConverter());
     }

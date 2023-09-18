@@ -6,6 +6,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * This custom event is called when a player successfully weapon attacks an enemy with their artifact,
@@ -32,24 +33,30 @@ public class PhysicalDamageEvent extends RunicDamageEvent implements Cancellable
      * @param isRanged      whether the attack is a ranged physical spell (archers)
      * @param spell         optional parameter to specify a spell source (for damage scaling)
      */
-    public PhysicalDamageEvent(int amount, Player damager, LivingEntity victim, boolean isBasicAttack, boolean isRanged, Spell... spell) {
+    public PhysicalDamageEvent(int amount, @NotNull Player damager, @NotNull LivingEntity victim, boolean isBasicAttack, boolean isRanged, @Nullable Spell spell) {
         super(victim, amount);
         this.player = damager;
         this.isBasicAttack = isBasicAttack;
         this.isRanged = isRanged;
-        this.spell = spell.length > 0 ? spell[0] : null;
+        this.spell = spell;
         this.isCritical = false;
         this.isCancelled = false;
+    }
+
+    public PhysicalDamageEvent(int amount, @NotNull Player damager, @NotNull LivingEntity victim, boolean isBasicAttack, boolean isRanged) {
+        this(amount, damager, victim, isBasicAttack, isRanged, null);
     }
 
     public static HandlerList getHandlerList() {
         return handlers;
     }
 
+    @NotNull
     public Player getPlayer() {
         return this.player;
     }
 
+    @Nullable
     public Spell getSpell() {
         return this.spell;
     }
@@ -81,7 +88,6 @@ public class PhysicalDamageEvent extends RunicDamageEvent implements Cancellable
     }
 
     @NotNull
-    @SuppressWarnings("NullableProblems")
     @Override
     public HandlerList getHandlers() {
         return handlers;

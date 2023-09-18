@@ -56,10 +56,6 @@ public class SpellCastEvent extends Event implements Cancellable {
         this.isCancelled = arg0;
     }
 
-    public Spell getSpellCasted() {
-        return spellCasted;
-    }
-
     public void setSpellCasted(Spell spellCasted) {
         this.spellCasted = spellCasted;
     }

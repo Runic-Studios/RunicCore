@@ -1,6 +1,6 @@
 package com.runicrealms.plugin.listeners;
 
-import com.runicrealms.plugin.events.EnvironmentDamage;
+import com.runicrealms.plugin.events.EnvironmentDamageEvent;
 import com.runicrealms.plugin.utilities.DamageEventUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
@@ -32,8 +32,8 @@ public class EnvironmentDamageListener implements Listener {
     }
 
     private void createGenericDamageEvent(Player player, EntityDamageEvent.DamageCause cause, double eventDamage) {
-        EnvironmentDamage.DamageCauses damageCauses = EnvironmentDamage.DamageCauses.getFromDamageCause(cause);
-        EnvironmentDamage environmentDamage = new EnvironmentDamage
+        EnvironmentDamageEvent.DamageCauses damageCauses = EnvironmentDamageEvent.DamageCauses.getFromDamageCause(cause);
+        EnvironmentDamageEvent environmentDamage = new EnvironmentDamageEvent
                 (
                         player,
                         DamageEventUtil.calculateRunicDamageFromVanillaDamage(player, eventDamage, damageCauses),

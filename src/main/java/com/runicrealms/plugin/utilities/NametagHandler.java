@@ -3,19 +3,20 @@ package com.runicrealms.plugin.utilities;
 import com.nametagedit.plugin.NametagEdit;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.api.event.NameTagEvent;
-import com.runicrealms.plugin.events.EnvironmentDamage;
+import com.runicrealms.plugin.events.EnvironmentDamageEvent;
 import com.runicrealms.plugin.events.HealthRegenEvent;
 import com.runicrealms.plugin.events.MagicDamageEvent;
 import com.runicrealms.plugin.events.MobDamageEvent;
 import com.runicrealms.plugin.events.PhysicalDamageEvent;
 import com.runicrealms.plugin.player.utilities.PlayerLevelUtil;
-import com.runicrealms.plugin.tablist.TabListManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.jetbrains.annotations.NotNull;
 
 public class NametagHandler implements Listener {
 
@@ -42,7 +43,7 @@ public class NametagHandler implements Listener {
     }
 
     @EventHandler
-    public void onGenericDamage(EnvironmentDamage event) {
+    public void onGenericDamage(EnvironmentDamageEvent event) {
         if (!(event.getVictim() instanceof Player player)) return;
         updateHealthBar(player);
     }
@@ -80,10 +81,32 @@ public class NametagHandler implements Listener {
 
     private void updateHealthBar(Player player) {
         Bukkit.getScheduler().runTask(RunicCore.getInstance(), () -> {
-            ChatColor healthColor = TabListManager.getHealthChatColor(player);
+            ChatColor healthColor = NametagHandler.getHealthChatColor(player);
             NametagEdit.getApi().setSuffix(player, healthColor + " " + (int) player.getHealth() + "❤");
         });
     }
 
-
+    /**
+     * A method that returns the color of the user's health in the tab display while in a party
+     *
+     * @param player the user to get health from
+     * @return the color of the user's health in the tab display while in a party
+     */
+    @NotNull
+    private static ChatColor getHealthChatColor(@NotNull Player player) {
+        int healthToDisplay = (int) (player.getHealth());
+        int maxHealth = (int) player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
+        double healthPercent = (double) healthToDisplay / maxHealth;
+        ChatColor chatColor;
+        if (healthPercent >= .75) {
+            chatColor = ChatColor.GREEN;
+        } else if (healthPercent >= .5) {
+            chatColor = ChatColor.YELLOW;
+        } else if (healthPercent >= .25) {
+            chatColor = ChatColor.RED;
+        } else {
+            chatColor = ChatColor.DARK_RED;
+        }
+        return chatColor;
+    }
 }

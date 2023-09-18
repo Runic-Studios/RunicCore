@@ -9,41 +9,33 @@ import com.runicrealms.plugin.rdb.RunicDatabase;
 import com.runicrealms.plugin.spellapi.spells.Combat;
 import com.runicrealms.plugin.spellapi.spells.Potion;
 import com.runicrealms.plugin.spellapi.spells.archer.Ambush;
-import com.runicrealms.plugin.spellapi.spells.archer.Barrage;
-import com.runicrealms.plugin.spellapi.spells.archer.Charged;
 import com.runicrealms.plugin.spellapi.spells.archer.Fade;
 import com.runicrealms.plugin.spellapi.spells.archer.GiftsOfTheGrove;
+import com.runicrealms.plugin.spellapi.spells.archer.Jolt;
 import com.runicrealms.plugin.spellapi.spells.archer.LeapingShot;
-import com.runicrealms.plugin.spellapi.spells.archer.NetTrap;
+import com.runicrealms.plugin.spellapi.spells.archer.Overcharge;
 import com.runicrealms.plugin.spellapi.spells.archer.PiercingArrow;
-import com.runicrealms.plugin.spellapi.spells.archer.RainFire;
+import com.runicrealms.plugin.spellapi.spells.archer.RainOfArrows;
+import com.runicrealms.plugin.spellapi.spells.archer.RapidFire;
 import com.runicrealms.plugin.spellapi.spells.archer.RefreshingVolley;
 import com.runicrealms.plugin.spellapi.spells.archer.Remedy;
 import com.runicrealms.plugin.spellapi.spells.archer.SacredGrove;
+import com.runicrealms.plugin.spellapi.spells.archer.SnareTrap;
+import com.runicrealms.plugin.spellapi.spells.archer.SteadyAim;
 import com.runicrealms.plugin.spellapi.spells.archer.Stormborn;
-import com.runicrealms.plugin.spellapi.spells.archer.Sunder;
 import com.runicrealms.plugin.spellapi.spells.archer.Surge;
 import com.runicrealms.plugin.spellapi.spells.archer.ThunderArrow;
-import com.runicrealms.plugin.spellapi.spells.artifact.AdrenalineRush;
-import com.runicrealms.plugin.spellapi.spells.artifact.Bloodlust;
-import com.runicrealms.plugin.spellapi.spells.artifact.BloodyShot;
-import com.runicrealms.plugin.spellapi.spells.artifact.DrainLife;
-import com.runicrealms.plugin.spellapi.spells.artifact.Electrocute;
-import com.runicrealms.plugin.spellapi.spells.artifact.LifeInfusion;
-import com.runicrealms.plugin.spellapi.spells.artifact.LightningArrow;
-import com.runicrealms.plugin.spellapi.spells.artifact.Maelstrom;
-import com.runicrealms.plugin.spellapi.spells.artifact.ThunderousRift;
-import com.runicrealms.plugin.spellapi.spells.artifact.Thundershock;
 import com.runicrealms.plugin.spellapi.spells.cleric.Accelerando;
 import com.runicrealms.plugin.spellapi.spells.cleric.AstralBlessing;
+import com.runicrealms.plugin.spellapi.spells.cleric.Battlecry;
 import com.runicrealms.plugin.spellapi.spells.cleric.Consecration;
 import com.runicrealms.plugin.spellapi.spells.cleric.CosmicPrism;
 import com.runicrealms.plugin.spellapi.spells.cleric.Diminuendo;
-import com.runicrealms.plugin.spellapi.spells.cleric.Discord;
 import com.runicrealms.plugin.spellapi.spells.cleric.DivineShield;
-import com.runicrealms.plugin.spellapi.spells.cleric.Encore;
+import com.runicrealms.plugin.spellapi.spells.cleric.GrandSymphony;
 import com.runicrealms.plugin.spellapi.spells.cleric.Lightwell;
 import com.runicrealms.plugin.spellapi.spells.cleric.Nightfall;
+import com.runicrealms.plugin.spellapi.spells.cleric.Powerslide;
 import com.runicrealms.plugin.spellapi.spells.cleric.Purify;
 import com.runicrealms.plugin.spellapi.spells.cleric.RadiantFire;
 import com.runicrealms.plugin.spellapi.spells.cleric.RadiantNova;
@@ -52,22 +44,21 @@ import com.runicrealms.plugin.spellapi.spells.cleric.Rejuvenate;
 import com.runicrealms.plugin.spellapi.spells.cleric.SacredSpring;
 import com.runicrealms.plugin.spellapi.spells.cleric.Sear;
 import com.runicrealms.plugin.spellapi.spells.cleric.Starlight;
+import com.runicrealms.plugin.spellapi.spells.cleric.Tempo;
 import com.runicrealms.plugin.spellapi.spells.cleric.TwilightResurgence;
-import com.runicrealms.plugin.spellapi.spells.cleric.Warsong;
 import com.runicrealms.plugin.spellapi.spells.mage.ArcaneSlash;
 import com.runicrealms.plugin.spellapi.spells.mage.Blink;
 import com.runicrealms.plugin.spellapi.spells.mage.Blizzard;
-import com.runicrealms.plugin.spellapi.spells.mage.ColdTouch;
+import com.runicrealms.plugin.spellapi.spells.mage.CinderedTouch;
 import com.runicrealms.plugin.spellapi.spells.mage.DragonsBreath;
-import com.runicrealms.plugin.spellapi.spells.mage.FireBlast;
+import com.runicrealms.plugin.spellapi.spells.mage.Erupt;
 import com.runicrealms.plugin.spellapi.spells.mage.Fireball;
 import com.runicrealms.plugin.spellapi.spells.mage.Frostbite;
-import com.runicrealms.plugin.spellapi.spells.mage.Frostbolt;
 import com.runicrealms.plugin.spellapi.spells.mage.Inferno;
 import com.runicrealms.plugin.spellapi.spells.mage.Manashield;
-import com.runicrealms.plugin.spellapi.spells.mage.MeteorShower;
+import com.runicrealms.plugin.spellapi.spells.mage.Meteor;
 import com.runicrealms.plugin.spellapi.spells.mage.Riftwalk;
-import com.runicrealms.plugin.spellapi.spells.mage.Scald;
+import com.runicrealms.plugin.spellapi.spells.mage.Shatter;
 import com.runicrealms.plugin.spellapi.spells.mage.SnapFreeze;
 import com.runicrealms.plugin.spellapi.spells.mage.SpectralBlade;
 import com.runicrealms.plugin.spellapi.spells.mage.WintersGrasp;
@@ -79,21 +70,23 @@ import com.runicrealms.plugin.spellapi.spells.rogue.Castigate;
 import com.runicrealms.plugin.spellapi.spells.rogue.Challenger;
 import com.runicrealms.plugin.spellapi.spells.rogue.Cocoon;
 import com.runicrealms.plugin.spellapi.spells.rogue.Cripple;
+import com.runicrealms.plugin.spellapi.spells.rogue.Dash;
 import com.runicrealms.plugin.spellapi.spells.rogue.Flay;
 import com.runicrealms.plugin.spellapi.spells.rogue.FromTheShadows;
 import com.runicrealms.plugin.spellapi.spells.rogue.Harpoon;
 import com.runicrealms.plugin.spellapi.spells.rogue.Hereticize;
 import com.runicrealms.plugin.spellapi.spells.rogue.Kneebreak;
-import com.runicrealms.plugin.spellapi.spells.rogue.Lunge;
 import com.runicrealms.plugin.spellapi.spells.rogue.Scurvy;
 import com.runicrealms.plugin.spellapi.spells.rogue.SilverBolt;
-import com.runicrealms.plugin.spellapi.spells.rogue.Sprint;
 import com.runicrealms.plugin.spellapi.spells.rogue.TwinFangs;
 import com.runicrealms.plugin.spellapi.spells.rogue.Unseen;
 import com.runicrealms.plugin.spellapi.spells.rogue.WardingGlyph;
+import com.runicrealms.plugin.spellapi.spells.rogue.Whirlpool;
 import com.runicrealms.plugin.spellapi.spells.warrior.Adrenaline;
 import com.runicrealms.plugin.spellapi.spells.warrior.AxeToss;
 import com.runicrealms.plugin.spellapi.spells.warrior.BlessedBlade;
+import com.runicrealms.plugin.spellapi.spells.warrior.Bloodbath;
+import com.runicrealms.plugin.spellapi.spells.warrior.Cleave;
 import com.runicrealms.plugin.spellapi.spells.warrior.Consecrate;
 import com.runicrealms.plugin.spellapi.spells.warrior.Damnation;
 import com.runicrealms.plugin.spellapi.spells.warrior.Devour;
@@ -106,8 +99,6 @@ import com.runicrealms.plugin.spellapi.spells.warrior.Smite;
 import com.runicrealms.plugin.spellapi.spells.warrior.SoulReaper;
 import com.runicrealms.plugin.spellapi.spells.warrior.Taunt;
 import com.runicrealms.plugin.spellapi.spells.warrior.UmbralGrasp;
-import com.runicrealms.plugin.spellapi.spells.warrior.Unstoppable;
-import com.runicrealms.plugin.spellapi.spells.warrior.Whirlwind;
 import com.runicrealms.plugin.spellapi.spelltypes.ShieldPayload;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.utilities.HologramUtil;
@@ -120,7 +111,8 @@ import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
-import org.bukkit.scheduler.BukkitRunnable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -146,7 +138,7 @@ public class SpellManager implements Listener, SpellAPI {
     }
 
     @Override
-    public void addCooldown(final Player player, final Spell spell, double cooldownTime) {
+    public void addCooldown(@NotNull Player player, @NotNull Spell spell, double cooldownTime) {
         if (this.cooldownMap.containsKey(player.getUniqueId())) {
             ConcurrentHashMap<Spell, Long> playerSpellsOnCooldown = this.cooldownMap.get(player.getUniqueId());
             playerSpellsOnCooldown.put(spell, System.currentTimeMillis());
@@ -159,7 +151,7 @@ public class SpellManager implements Listener, SpellAPI {
     }
 
     @Override
-    public Spell getPlayerSpell(Player player, int number) {
+    public Spell getPlayerSpell(@NotNull Player player, int number) {
         Spell spellToCast = null;
         UUID uuid = player.getUniqueId();
         try {
@@ -207,12 +199,12 @@ public class SpellManager implements Listener, SpellAPI {
     }
 
     @Override
-    public Spell getSpell(String name) {
+    public Spell getSpell(@NotNull String name) {
         return this.getSpellByName(name);
     }
 
     @Override
-    public ConcurrentHashMap.KeySetView<Spell, Long> getSpellsOnCooldown(UUID uuid) {
+    public ConcurrentHashMap.KeySetView<Spell, Long> getSpellsOnCooldown(@NotNull UUID uuid) {
         if (cooldownMap.containsKey(uuid)) {
             return cooldownMap.get(uuid).keySet();
         } else {
@@ -222,11 +214,9 @@ public class SpellManager implements Listener, SpellAPI {
 
     @SuppressWarnings("deprecation")
     @Override
-    public void healPlayer(Player caster, Player recipient, double amount, Spell... spell) {
+    public void healPlayer(@NotNull Player caster, @NotNull Player recipient, double amount, @Nullable Spell spell) {
         // Call our custom heal event for interaction with buffs/de buffs
-        SpellHealEvent event = spell.length > 0
-                ? new SpellHealEvent((int) amount, recipient, caster, spell)
-                : new SpellHealEvent((int) amount, recipient, caster);
+        SpellHealEvent event = new SpellHealEvent((int) amount, recipient, caster, spell);
         Bukkit.getPluginManager().callEvent(event);
         if (event.isCancelled()) return;
         amount = event.getAmount();
@@ -262,12 +252,12 @@ public class SpellManager implements Listener, SpellAPI {
     }
 
     @Override
-    public boolean isCasting(Player player) {
+    public boolean isCasting(@NotNull Player player) {
         return SpellUseListener.getCasters().containsKey(player.getUniqueId());
     }
 
     @Override
-    public boolean isOnCooldown(Player player, String spellName) {
+    public boolean isOnCooldown(@NotNull Player player, @NotNull String spellName) {
         if (!this.cooldownMap.containsKey(player.getUniqueId()))
             return false;
         ConcurrentHashMap<Spell, Long> playerSpellsOnCooldown = this.cooldownMap.get(player.getUniqueId());
@@ -275,12 +265,12 @@ public class SpellManager implements Listener, SpellAPI {
     }
 
     @Override
-    public boolean isShielded(UUID uuid) {
+    public boolean isShielded(@NotNull UUID uuid) {
         return this.shieldedPlayers.containsKey(uuid);
     }
 
     @Override
-    public void reduceCooldown(Player player, Spell spell, double duration) {
+    public void reduceCooldown(@NotNull Player player, @NotNull Spell spell, double duration) {
         if (!this.cooldownMap.containsKey(player.getUniqueId())) return;
         ConcurrentHashMap<Spell, Long> playerSpellsOnCooldown = this.cooldownMap.get(player.getUniqueId());
         if (!playerSpellsOnCooldown.containsKey(spell)) return;
@@ -290,7 +280,7 @@ public class SpellManager implements Listener, SpellAPI {
     }
 
     @Override
-    public void increaseCooldown(Player player, Spell spell, double duration) {
+    public void increaseCooldown(@NotNull Player player, @NotNull Spell spell, double duration) {
         // Ensure duration isn't negative
         if (duration < 0) {
             throw new IllegalArgumentException("Duration must be positive");
@@ -304,7 +294,7 @@ public class SpellManager implements Listener, SpellAPI {
     }
 
     @Override
-    public void increaseCooldown(Player player, String spell, double duration) {
+    public void increaseCooldown(@NotNull Player player, @NotNull String spell, double duration) {
         // Ensure duration isn't negative
         if (duration < 0) {
             throw new IllegalArgumentException("Duration must be positive");
@@ -319,7 +309,7 @@ public class SpellManager implements Listener, SpellAPI {
     }
 
     @Override
-    public void reduceCooldown(Player player, String spell, double duration) {
+    public void reduceCooldown(@NotNull Player player, @NotNull String spell, double duration) {
         if (!this.cooldownMap.containsKey(player.getUniqueId())) return;
         ConcurrentHashMap<Spell, Long> playerSpellsOnCooldown = this.cooldownMap.get(player.getUniqueId());
         Optional<Spell> spellOptional = playerSpellsOnCooldown.keySet().stream().filter(key -> key.getName().equalsIgnoreCase(spell)).findAny();
@@ -330,7 +320,7 @@ public class SpellManager implements Listener, SpellAPI {
     }
 
     @Override
-    public void setCooldown(Player player, Spell spell, double duration) {
+    public void setCooldown(@NotNull Player player, @NotNull Spell spell, double duration) {
         if (!this.cooldownMap.containsKey(player.getUniqueId())) return;
         ConcurrentHashMap<Spell, Long> playerSpellsOnCooldown = this.cooldownMap.get(player.getUniqueId());
         if (!playerSpellsOnCooldown.containsKey(spell)) return;
@@ -340,7 +330,7 @@ public class SpellManager implements Listener, SpellAPI {
     }
 
     @Override
-    public void setCooldown(Player player, String spell, double duration) {
+    public void setCooldown(@NotNull Player player, @NotNull String spell, double duration) {
         if (!this.cooldownMap.containsKey(player.getUniqueId())) return;
         ConcurrentHashMap<Spell, Long> playerSpellsOnCooldown = this.cooldownMap.get(player.getUniqueId());
         Optional<Spell> spellOptional = playerSpellsOnCooldown.keySet().stream().filter(key -> key.getName().equalsIgnoreCase(spell)).findAny();
@@ -351,12 +341,9 @@ public class SpellManager implements Listener, SpellAPI {
     }
 
     @Override
-    public void shieldPlayer(Player caster, Player recipient, double amount, Spell... spell) {
+    public void shieldPlayer(@NotNull Player caster, @NotNull Player recipient, double amount, @Nullable Spell spell) {
         // Call our custom shield event for interaction with buffs/de buffs
-        SpellShieldEvent event = spell.length > 0
-                ? new SpellShieldEvent((int) amount, recipient, caster, spell)
-                : new SpellShieldEvent((int) amount, recipient, caster);
-        Bukkit.getPluginManager().callEvent(event);
+        Bukkit.getPluginManager().callEvent(new SpellShieldEvent((int) amount, recipient, caster, spell));
     }
 
     public Spell getSpellByName(String name) {
@@ -375,15 +362,16 @@ public class SpellManager implements Listener, SpellAPI {
     }
 
     @Override
-    public double getUserCooldown(Player player, Spell spell) {
+    public double getUserCooldown(@NotNull Player player, @NotNull Spell spell) {
         double cooldownRemaining = 0;
 
         if (isOnCooldown(player, spell.getName())) {
             ConcurrentHashMap<Spell, Long> cd = this.cooldownMap.get(player.getUniqueId());
             if (cd.keySet().stream().anyMatch(n -> n.getName().equalsIgnoreCase(spell.getName()))) {
-                cooldownRemaining = (cd.get(spell) + ((spell.getCooldown() + 1) * 1000)) - System.currentTimeMillis();
+                cooldownRemaining = (cd.get(spell) + (spell.getCooldown() * 1000)) - System.currentTimeMillis();
             }
         }
+
         return cooldownRemaining / 1000;
     }
 
@@ -392,24 +380,18 @@ public class SpellManager implements Listener, SpellAPI {
      */
     private void registerSpells() {
         this.spellList.add(new Fireball());
-        this.spellList.add(new Frostbolt());
-        this.spellList.add(new Sprint());
         this.spellList.add(new Blink());
-        this.spellList.add(new MeteorShower());
-        this.spellList.add(new Accelerando());
+        this.spellList.add(new Meteor());
         this.spellList.add(new Rejuvenate());
         this.spellList.add(new Judgment());
         this.spellList.add(new Backstab());
-        this.spellList.add(new Barrage());
+        this.spellList.add(new RapidFire());
         this.spellList.add(new Slam());
         this.spellList.add(new Unseen());
         this.spellList.add(new RadiantNova());
         this.spellList.add(new Blizzard());
-        this.spellList.add(new Frostbite());
         this.spellList.add(new AxeToss());
-        this.spellList.add(new Lunge());
         this.spellList.add(new Harpoon());
-        this.spellList.add(new Warsong());
         this.spellList.add(new ThunderArrow());
         this.spellList.add(new Sear());
         this.spellList.add(new SacredSpring());
@@ -420,18 +402,12 @@ public class SpellManager implements Listener, SpellAPI {
         this.spellList.add(new Cripple());
         this.spellList.add(new Challenger());
         this.spellList.add(new Kneebreak());
-        this.spellList.add(new FireBlast());
-        this.spellList.add(new Scald());
         this.spellList.add(new DragonsBreath());
-        this.spellList.add(new ColdTouch());
         this.spellList.add(new Riftwalk());
         this.spellList.add(new SpectralBlade());
         this.spellList.add(new Manashield());
         this.spellList.add(new Rupture());
-        this.spellList.add(new Whirlwind());
         this.spellList.add(new DivineShield());
-        this.spellList.add(new Encore());
-        this.spellList.add(new Discord());
         this.spellList.add(new RayOfLight());
         this.spellList.add(new Lightwell());
         this.spellList.add(new Purify());
@@ -439,13 +415,12 @@ public class SpellManager implements Listener, SpellAPI {
         this.spellList.add(new Inferno());
         this.spellList.add(new Remedy());
         this.spellList.add(new Ambush());
-        this.spellList.add(new NetTrap());
+        this.spellList.add(new SnareTrap());
         this.spellList.add(new SacredGrove());
         this.spellList.add(new GiftsOfTheGrove());
         this.spellList.add(new RefreshingVolley());
         this.spellList.add(new Fade());
         this.spellList.add(new Stormborn());
-        this.spellList.add(new Charged());
         this.spellList.add(new Surge());
         this.spellList.add(new SnapFreeze());
         this.spellList.add(new WintersGrasp());
@@ -456,15 +431,13 @@ public class SpellManager implements Listener, SpellAPI {
         this.spellList.add(new FromTheShadows());
         this.spellList.add(new Scurvy());
         this.spellList.add(new CallOfTheDeep());
+        this.spellList.add(new Dash());
         this.spellList.add(new Adrenaline());
-        this.spellList.add(new Unstoppable());
         this.spellList.add(new Smite());
         this.spellList.add(new Consecrate());
         this.spellList.add(new Salvation());
         this.spellList.add(new BlessedBlade());
-        this.spellList.add(new RainFire());
         this.spellList.add(new PiercingArrow());
-        this.spellList.add(new Sunder());
         this.spellList.add(new LeapingShot());
         this.spellList.add(new SilverBolt());
         this.spellList.add(new Castigate());
@@ -481,6 +454,24 @@ public class SpellManager implements Listener, SpellAPI {
         this.spellList.add(new UmbralGrasp());
         this.spellList.add(new Damnation());
         this.spellList.add(new Ruination());
+        this.spellList.add(new Frostbite());
+        this.spellList.add(new Shatter());
+        this.spellList.add(new Jolt());
+        this.spellList.add(new Overcharge());
+        this.spellList.add(new Cleave());
+        this.spellList.add(new Bloodbath());
+        this.spellList.add(new CinderedTouch());
+        this.spellList.add(new Erupt());
+        this.spellList.add(new Battlecry());
+        this.spellList.add(new Accelerando());
+        this.spellList.add(new Powerslide());
+        this.spellList.add(new GrandSymphony());
+        this.spellList.add(new Tempo());
+        this.spellList.add(new RainOfArrows());
+        this.spellList.add(new SteadyAim());
+        this.spellList.add(new Cannonfire());
+        this.spellList.add(new Whirlpool());
+
         /*
         Items
          */
@@ -489,17 +480,17 @@ public class SpellManager implements Listener, SpellAPI {
         /*
         Artifacts
          */
-        this.spellList.add(new DrainLife());
-        this.spellList.add(new AdrenalineRush());
-        this.spellList.add(new LifeInfusion());
-        this.spellList.add(new BloodyShot());
-        this.spellList.add(new Bloodlust());
-        this.spellList.add(new Electrocute());
-        this.spellList.add(new LightningArrow());
-        this.spellList.add(new Maelstrom());
-        this.spellList.add(new Thundershock());
-        this.spellList.add(new ThunderousRift());
-        this.spellList.add(new Cannonfire());
+        //this.spellList.add(new DrainLife());
+        //this.spellList.add(new AdrenalineRush());
+        //this.spellList.add(new LifeInfusion());
+        //this.spellList.add(new BloodyShot());
+        //this.spellList.add(new Bloodlust());
+        //this.spellList.add(new Electrocute());
+        //this.spellList.add(new LightningArrow());
+        //this.spellList.add(new Maelstrom());
+        //this.spellList.add(new Thundershock());
+        //this.spellList.add(new ThunderousRift());
+        //this.spellList.add(new Cannonfire());
 //        this.spellList.add(new ScorchedBlade()); sunken artifact passives
 //        this.spellList.add(new BlessingOfFire());
 //        this.spellList.add(new FlamingShield());
@@ -519,30 +510,26 @@ public class SpellManager implements Listener, SpellAPI {
      * Uses the action bar to display cooldowns
      */
     private void startCooldownTask() {
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                for (Player player : Bukkit.getOnlinePlayers()) {
-                    if (cooldownMap.containsKey(player.getUniqueId())) {
-                        ConcurrentHashMap<Spell, Long> spells = cooldownMap.get(player.getUniqueId());
-                        if (spells.size() == 0) continue; // no active cooldowns
-                        List<String> cdString = new ArrayList<>();
+        Bukkit.getScheduler().runTaskTimerAsynchronously(this.plugin, () -> {
+            for (Player player : Bukkit.getOnlinePlayers()) {
+                if (cooldownMap.containsKey(player.getUniqueId())) {
+                    ConcurrentHashMap<Spell, Long> spells = cooldownMap.get(player.getUniqueId());
+                    if (spells.size() == 0) continue; // no active cooldowns
+                    List<String> cdString = new ArrayList<>();
 
-                        for (Spell spell : spells.keySet()) {
-                            if (getUserCooldown(player, spell) <= 0)
-                                removeCooldown(player, spell);
-                            else {
-                                double cooldown = getUserCooldown(player, spell);
-                                String formattedCooldown = String.format("%.1f", cooldown);
-                                cdString.add(ChatColor.RED + String.valueOf(ChatColor.BOLD) + spell.getName() + ChatColor.RED + ChatColor.BOLD + ": " + ChatColor.YELLOW + formattedCooldown + "s");
-                            }
+                    for (Spell spell : spells.keySet()) {
+                        if (getUserCooldown(player, spell) <= 0) {
+                            removeCooldown(player, spell);
+                        } else {
+                            double cooldown = getUserCooldown(player, spell);
+                            String formattedCooldown = String.format("%.1f", cooldown);
+                            cdString.add(ChatColor.RED + String.valueOf(ChatColor.BOLD) + spell.getName() + ChatColor.RED + ChatColor.BOLD + ": " + ChatColor.YELLOW + formattedCooldown + "s");
                         }
-
-                        player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(ChatColor.RED + String.join(ChatColor.YELLOW + " ", cdString)));
                     }
+
+                    player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(ChatColor.RED + String.join(ChatColor.YELLOW + " ", cdString)));
                 }
             }
-        }.runTaskTimerAsynchronously(this.plugin, 0, 5L); // every 0.25s
+        }, 0, 5);
     }
-
 }

@@ -1,7 +1,7 @@
 package com.runicrealms.plugin.listeners;
 
-import com.runicrealms.runicrestart.event.ServerShutdownEvent;
-import io.lumine.xikage.mythicmobs.MythicMobs;
+import com.runicrealms.plugin.runicrestart.event.ServerShutdownEvent;
+import io.lumine.mythic.bukkit.MythicBukkit;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -26,7 +26,7 @@ public class MobCleanupListener implements Listener {
         for (Entity en : Bukkit.getWorld(world).getEntities()) {
             if (!(en instanceof LivingEntity)) continue;
             if (en instanceof Player) continue;
-            if (!MythicMobs.inst().getMobManager().isActiveMob(en.getUniqueId())) {
+            if (!MythicBukkit.inst().getMobManager().isActiveMob(en.getUniqueId())) {
                 en.remove();
             }
         }

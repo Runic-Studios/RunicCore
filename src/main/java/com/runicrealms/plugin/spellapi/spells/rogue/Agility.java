@@ -4,9 +4,9 @@ import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.common.CharacterClass;
 import com.runicrealms.plugin.events.PhysicalDamageEvent;
 import com.runicrealms.plugin.events.SpellCastEvent;
+import com.runicrealms.plugin.runicitems.Stat;
 import com.runicrealms.plugin.spellapi.spelltypes.AttributeSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
-import com.runicrealms.runicitems.Stat;
 import org.bukkit.Bukkit;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
@@ -28,23 +28,22 @@ public class Agility extends Spell implements AttributeSpell {
         this.setIsPassive(true);
         Stat stat = Stat.getFromName(statName);
         String prefix = stat == null ? "" : stat.getPrefix();
-        this.setDescription("You've learned to use your speed to your advantage! " +
-                "While &aSprint &7is active, you gain bonus basic attack damage " +
+        this.setDescription("While &aDash &7is active, you gain bonus basic attack damage " +
                 "equal to (" + baseValue + " + &f" + multiplier + "x &e" + prefix + "&7)!");
     }
 
     /**
-     * Empower on sprint cast
+     * Empower on dash cast
      */
     @EventHandler(priority = EventPriority.NORMAL)
-    public void onSprintCast(SpellCastEvent event) {
+    public void onDashCast(SpellCastEvent event) {
         if (event.isCancelled()) return;
         if (!hasPassive(event.getCaster().getUniqueId(), this.getName())) return;
         if (event.getSpell() == null) return;
-        if (!(event.getSpell() instanceof Sprint sprint)) return;
+        if (!(event.getSpell() instanceof Dash dash)) return;
         agilityPlayers.add(event.getCaster().getUniqueId());
         Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(),
-                () -> agilityPlayers.remove(event.getCaster().getUniqueId()), (long) sprint.getDuration() * 20L);
+                () -> agilityPlayers.remove(event.getCaster().getUniqueId()), (long) dash.getDuration() * 20L);
     }
 
     @EventHandler(priority = EventPriority.HIGH) // runs last

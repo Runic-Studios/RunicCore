@@ -17,6 +17,10 @@ import org.bukkit.util.Vector;
 
 import java.util.Map;
 
+/**
+ * replaced with {@link Erupt}
+ */
+@Deprecated
 public class FireBlast extends Spell implements MagicDamageSpell, RadiusSpell {
     private static final int MAX_DIST = 10;
     private static final double RAY_SIZE = 1.5D;

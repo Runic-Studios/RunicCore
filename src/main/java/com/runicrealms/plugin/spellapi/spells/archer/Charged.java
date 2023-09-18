@@ -4,12 +4,13 @@ import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.common.CharacterClass;
 import com.runicrealms.plugin.events.MagicDamageEvent;
 import com.runicrealms.plugin.events.SpellCastEvent;
+import com.runicrealms.plugin.runicitems.Stat;
+import com.runicrealms.plugin.spellapi.spells.Combat;
 import com.runicrealms.plugin.spellapi.spells.Potion;
 import com.runicrealms.plugin.spellapi.spelltypes.AttributeSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.StackTask;
-import com.runicrealms.runicitems.Stat;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
@@ -23,6 +24,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
+@Deprecated
 public class Charged extends Spell implements AttributeSpell, DurationSpell {
     private static final int MAX_STACKS = 5;
     private final Map<UUID, StackTask> chargedMap = new HashMap<>();
@@ -142,7 +144,7 @@ public class Charged extends Spell implements AttributeSpell, DurationSpell {
         if (event.isCancelled()) return;
         if (!event.willExecute()) return;
         if (!hasPassive(event.getCaster().getUniqueId(), this.getName())) return;
-        if (event.getSpell() instanceof Potion) return;
+        if (event.getSpell() instanceof Potion || event.getSpell() instanceof Combat) return;
         attemptToStackCharged(event);
     }
 

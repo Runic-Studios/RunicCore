@@ -9,6 +9,7 @@ import com.runicrealms.plugin.spellapi.spelltypes.RunicStatusEffect;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.utilities.DamageUtil;
+import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Particle;
@@ -16,9 +17,12 @@ import org.bukkit.Sound;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Trident;
+import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.HandlerList;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -147,11 +151,46 @@ public class Harpoon extends Spell implements DurationSpell, PhysicalDamageSpell
                     victim.getWorld().spawnParticle(Particle.CRIT, victim.getEyeLocation(), 5, 0.5F, 0.5F, 0.5F, 0);
                 }
             }.runTaskLater(RunicCore.getInstance(), 4L);
+
+            Bukkit.getPluginManager().callEvent(new HarpoonHitEvent(player, victim));
         }
     }
 
     public void setTridentSpeed(double tridentSpeed) {
         this.tridentSpeed = tridentSpeed;
+    }
+
+    public static class HarpoonHitEvent extends Event {
+        private final Player caster;
+        private final LivingEntity victim;
+
+        private static final HandlerList HANDLER_LIST = new HandlerList();
+
+        public HarpoonHitEvent(@NotNull Player caster, @NotNull LivingEntity victim) {
+            this.caster = caster;
+            this.victim = victim;
+        }
+
+        @NotNull
+        public Player getCaster() {
+            return this.caster;
+        }
+
+        @NotNull
+        public LivingEntity getVictim() {
+            return this.victim;
+        }
+
+        @NotNull
+        @Override
+        public HandlerList getHandlers() {
+            return HANDLER_LIST;
+        }
+
+        @NotNull
+        public static HandlerList getHandlerList() {
+            return HANDLER_LIST;
+        }
     }
 }
 

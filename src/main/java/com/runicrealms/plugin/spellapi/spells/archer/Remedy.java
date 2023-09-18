@@ -5,25 +5,21 @@ import com.runicrealms.plugin.common.CharacterClass;
 import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.HealingSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.RadiusSpell;
-import com.runicrealms.plugin.spellapi.spelltypes.RunicStatusEffect;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Remedy extends Spell implements DurationSpell, HealingSpell, RadiusSpell {
-    public static final Random random = new Random(System.nanoTime());
-    /*
-     * Particles to display
-     */
-    public int particles = 50;
+    private static final int PARTICLES = 50; //Particles to display
     private double radius;
     private double healAmt;
     private double healingPerLevel;
@@ -31,13 +27,13 @@ public class Remedy extends Spell implements DurationSpell, HealingSpell, Radius
 
     public Remedy() {
         super("Remedy", CharacterClass.ARCHER);
-        this.setDescription("You and allies within " + radius +
-                " blocks are cleansed of slow effects and healed✦ for (" +
-                (int) healAmt + " + &f" + (int) healingPerLevel + "x&7 lvl) health over " + duration + "s!");
+        this.setDescription("You and allies within " + this.radius +
+                " blocks are healed✦ for (" +
+                this.healAmt + " + &f" + this.healingPerLevel + "x&7 lvl) health over " + this.duration + "s!");
     }
 
     private void createSphere(Player player, Location loc) {
-        for (int i = 0; i < particles; i++) {
+        for (int i = 0; i < PARTICLES; i++) {
             Vector vector = getRandomVector().multiply(radius);
             loc.add(vector);
             player.getWorld().spawnParticle(Particle.VILLAGER_HAPPY, loc, 1, 0, 0, 0, 0);
@@ -48,37 +44,28 @@ public class Remedy extends Spell implements DurationSpell, HealingSpell, Radius
     @Override
     public void executeSpell(Player player, SpellItemType type) {
         Spell spell = this;
-        new BukkitRunnable() {
-            int count = 1;
 
-            @Override
-            public void run() {
-                if (count > duration) {
-                    this.cancel();
-                } else {
-                    count += 1;
+        AtomicInteger count = new AtomicInteger(1);
 
-                    player.getWorld().playSound(player.getLocation(), Sound.BLOCK_GRASS_STEP, 0.5f, 0.2f);
-                    player.getWorld().playSound(player.getLocation(), Sound.ENTITY_PARROT_AMBIENT, 0.5f, 0.2f);
-                    player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.25f, 0.2f);
-                    createSphere(player, player.getEyeLocation());
-                    healPlayer(player, player, healAmt, spell);
-                    removeStatusEffect(player, RunicStatusEffect.SLOW_I);
-                    removeStatusEffect(player, RunicStatusEffect.SLOW_II);
-                    removeStatusEffect(player, RunicStatusEffect.SLOW_III);
-                    for (Entity entity : player.getNearbyEntities(radius, radius, radius)) {
-                        if (entity.equals(player)) continue;
-                        if (!isValidAlly(player, entity)) continue;
-                        Player playerEntity = (Player) entity;
-                        removeStatusEffect(player, RunicStatusEffect.SLOW_II);
-                        removeStatusEffect(player, RunicStatusEffect.SLOW_II);
-                        removeStatusEffect(player, RunicStatusEffect.SLOW_III);
-                        healPlayer(player, playerEntity, healAmt / duration, spell);
-                    }
+        Bukkit.getScheduler().runTaskTimer(RunicCore.getInstance(), task -> {
+            if (count.get() > duration) {
+                task.cancel();
+            } else {
+                count.set(count.get() + 1);
+
+                player.getWorld().playSound(player.getLocation(), Sound.BLOCK_GRASS_STEP, 0.5f, 0.2f);
+                player.getWorld().playSound(player.getLocation(), Sound.ENTITY_PARROT_AMBIENT, 0.5f, 0.2f);
+                player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.25f, 0.2f);
+                createSphere(player, player.getEyeLocation());
+                healPlayer(player, player, healAmt, spell);
+                for (Entity entity : player.getNearbyEntities(radius, radius, radius)) {
+                    if (entity.equals(player)) continue;
+                    if (!isValidAlly(player, entity)) continue;
+                    Player playerEntity = (Player) entity;
+                    healPlayer(player, playerEntity, healAmt / duration, spell);
                 }
             }
-        }.runTaskTimer(RunicCore.getInstance(), 0, 20L);
-
+        }, 0, 20L);
     }
 
     @Override
@@ -123,10 +110,9 @@ public class Remedy extends Spell implements DurationSpell, HealingSpell, Radius
 
     private Vector getRandomVector() {
         double x, y, z;
-        x = random.nextDouble() * 2 - 1;
-        y = random.nextDouble() * 2 - 1;
-        z = random.nextDouble() * 2 - 1;
+        x = ThreadLocalRandom.current().nextDouble() * 2 - 1;
+        y = ThreadLocalRandom.current().nextDouble() * 2 - 1;
+        z = ThreadLocalRandom.current().nextDouble() * 2 - 1;
         return new Vector(x, y, z).normalize();
     }
-
 }

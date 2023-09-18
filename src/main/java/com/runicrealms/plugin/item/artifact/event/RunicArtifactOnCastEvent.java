@@ -1,8 +1,8 @@
 package com.runicrealms.plugin.item.artifact.event;
 
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
-import com.runicrealms.runicitems.item.RunicItemArtifact;
-import com.runicrealms.runicitems.item.util.RunicArtifactAbilityTrigger;
+import com.runicrealms.plugin.runicitems.item.RunicItemArtifact;
+import com.runicrealms.plugin.runicitems.item.util.RunicArtifactAbilityTrigger;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Nullable;

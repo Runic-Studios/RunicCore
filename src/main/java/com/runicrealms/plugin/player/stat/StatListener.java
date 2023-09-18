@@ -7,12 +7,11 @@ import com.runicrealms.plugin.events.MagicDamageEvent;
 import com.runicrealms.plugin.events.ManaRegenEvent;
 import com.runicrealms.plugin.events.MobDamageEvent;
 import com.runicrealms.plugin.events.PhysicalDamageEvent;
-import com.runicrealms.plugin.events.RunicCombatExpEvent;
 import com.runicrealms.plugin.events.SpellCastEvent;
 import com.runicrealms.plugin.events.SpellHealEvent;
 import com.runicrealms.plugin.player.listener.ManaListener;
 import com.runicrealms.plugin.spellapi.spells.Potion;
-import com.runicrealms.runicitems.Stat;
+import com.runicrealms.plugin.runicitems.Stat;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -84,16 +83,6 @@ public class StatListener implements Listener {
                 damage = 1; // Damage can't drop below 0
             event.setAmount(damage);
         }
-    }
-
-    @EventHandler(priority = EventPriority.NORMAL)
-    public void onExp(RunicCombatExpEvent event) {
-        if (event.isCancelled()) return;
-        // No exp boost to quest exp
-        if (event.getRunicExpSource() == RunicCombatExpEvent.RunicExpSource.QUEST) return;
-        UUID uuid = event.getPlayer().getUniqueId();
-        double wisdomBonusPercent = Stat.getExpMult() * RunicCore.getStatAPI().getPlayerWisdom(uuid);
-        event.setBonus(RunicCombatExpEvent.BonusType.WISDOM, wisdomBonusPercent);
     }
 
     @EventHandler(priority = EventPriority.NORMAL)

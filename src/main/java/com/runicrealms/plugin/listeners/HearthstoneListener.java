@@ -1,9 +1,9 @@
 package com.runicrealms.plugin.listeners;
 
-import com.runicrealms.plugin.CityLocation;
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.SafeZoneLocation;
 import com.runicrealms.plugin.rdb.event.CharacterLoadedEvent;
-import com.runicrealms.runicitems.RunicItemsAPI;
+import com.runicrealms.plugin.runicitems.RunicItemsAPI;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.GameMode;
@@ -124,7 +124,7 @@ public class HearthstoneListener implements Listener {
         if (currentlyUsing.containsKey(player.getUniqueId())) return;
 
         player.getWorld().playSound(player.getLocation(), Sound.BLOCK_PORTAL_TRIGGER, 0.5f, 1.0f);
-        currentlyUsing.put(player.getUniqueId(), beginTeleportation(player, CityLocation.getLocationFromIdentifier(location)));
+        currentlyUsing.put(player.getUniqueId(), beginTeleportation(player, SafeZoneLocation.getLocationFromIdentifier(location)));
     }
 
     @EventHandler
@@ -151,7 +151,7 @@ public class HearthstoneListener implements Listener {
                 if (player.getInventory().getItem(8) == null
                         || (player.getInventory().getItem(8) != null
                         && player.getInventory().getItem(8).getType() != Material.CLAY_BALL)) {
-                    player.getInventory().setItem(8, CityLocation.TUTORIAL.getItemStack());
+                    player.getInventory().setItem(8, SafeZoneLocation.TUTORIAL.getItemStack());
                 }
             }
         }.runTaskLater(RunicCore.getInstance(), 2L);

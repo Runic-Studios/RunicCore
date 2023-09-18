@@ -6,10 +6,10 @@ import com.runicrealms.plugin.events.MobDamageEvent;
 import com.runicrealms.plugin.events.RunicDeathEvent;
 import com.runicrealms.plugin.rdb.RunicDatabase;
 import com.runicrealms.plugin.utilities.DamageUtil;
-import com.runicrealms.runicitems.RunicItemsAPI;
-import com.runicrealms.runicitems.item.RunicItemWeapon;
-import io.lumine.xikage.mythicmobs.MythicMobs;
-import io.lumine.xikage.mythicmobs.mobs.ActiveMob;
+import com.runicrealms.plugin.runicitems.RunicItemsAPI;
+import com.runicrealms.plugin.runicitems.item.RunicItemWeapon;
+import io.lumine.mythic.bukkit.MythicBukkit;
+import io.lumine.mythic.core.mobs.ActiveMob;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
@@ -123,7 +123,6 @@ public class DamageListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onDamage(EntityDamageByEntityEvent e) {
-
         if (e.getCause() == EntityDamageByEntityEvent.DamageCause.CUSTOM) return;
         if (e.getDamager() instanceof SmallFireball) return;
         if (e.getDamager() instanceof Arrow) return;
@@ -158,8 +157,8 @@ public class DamageListener implements Listener {
             }
             e.setCancelled(true);
             double dmgAmt = e.getDamage();
-            if (MythicMobs.inst().getMobManager().isActiveMob(Objects.requireNonNull(damager).getUniqueId())) {
-                ActiveMob mm = MythicMobs.inst().getAPIHelper().getMythicMobInstance(damager);
+            if (MythicBukkit.inst().getMobManager().isActiveMob(Objects.requireNonNull(damager).getUniqueId())) {
+                ActiveMob mm = MythicBukkit.inst().getAPIHelper().getMythicMobInstance(damager);
                 dmgAmt = mm.getDamage();
             }
             MobDamageEvent event = new MobDamageEvent((int) Math.ceil(dmgAmt), e.getDamager(), victim, false);

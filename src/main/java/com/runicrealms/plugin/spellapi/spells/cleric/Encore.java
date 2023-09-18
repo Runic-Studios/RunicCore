@@ -1,8 +1,8 @@
 package com.runicrealms.plugin.spellapi.spells.cleric;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.events.PhysicalDamageEvent;
 import com.runicrealms.plugin.common.CharacterClass;
+import com.runicrealms.plugin.events.PhysicalDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.RadiusSpell;
@@ -21,6 +21,10 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * @deprecated replaced with {@link Tempo}
+ */
+@Deprecated
 public class Encore extends Spell implements DurationSpell, MagicDamageSpell, RadiusSpell {
     private final Set<UUID> encoreCooldowns = new HashSet<>();
     private double cooldown;

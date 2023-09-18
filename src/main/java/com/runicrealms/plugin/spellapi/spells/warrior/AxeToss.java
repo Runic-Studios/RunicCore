@@ -19,7 +19,6 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 import java.util.HashMap;
@@ -32,15 +31,13 @@ public class AxeToss extends Spell implements DurationSpell, PhysicalDamageSpell
     private double damage;
     private double damagePerLevel;
     private double slowDuration;
-    private double speedDuration;
 
     public AxeToss() {
         super("Axe Toss", CharacterClass.WARRIOR);
         hasBeenHit = new HashMap<>();
         this.setDescription("You throw your weapon, dealing (" + damage + " + &f" + damagePerLevel +
-                "x&7 lvl) physical⚔ damage to the first enemy " +
-                "hit, slowing it for " + slowDuration + "s and granting you Speed II for" +
-                " " + speedDuration + "s!");
+                "x&7 lvl) physical⚔ damage and applying bleed to the enemy hit. " +
+                "If the enemy hit is already bleeding, they are also slowed for " + this.slowDuration + "s.");
     }
 
     @Override
@@ -53,36 +50,35 @@ public class AxeToss extends Spell implements DurationSpell, PhysicalDamageSpell
         Entity projectile = FloatingItemUtil.spawnFloatingItem(player.getEyeLocation(), artifactType, 0, path, durability);
         projectile.setTicksLived(1);
 
-        Spell spell = this;
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-
-                if (projectile.isOnGround() || projectile.isDead()) {
-                    if (projectile.isOnGround()) {
-                        projectile.remove();
-                    }
-                    this.cancel();
-                    return;
-                }
-
-                Location loc = projectile.getLocation();
-                projectile.getWorld().spawnParticle(Particle.CRIT, projectile.getLocation(), 1, 0, 0, 0, 0);
-
-                for (Entity entity : projectile.getWorld().getNearbyEntities(loc, 1.5, 1.5, 1.5, target -> isValidEnemy(player, target))) {
-                    if (hasBeenHit.get(player.getUniqueId()) == entity.getUniqueId()) continue;
-                    hasBeenHit.put(player.getUniqueId(), entity.getUniqueId()); // prevent concussive hits
-                    addStatusEffect((LivingEntity) entity, RunicStatusEffect.SLOW_III,
-                            slowDuration, false);
-                    addStatusEffect(player, RunicStatusEffect.SPEED_II, speedDuration, false);
-                    entity.getWorld().playSound(entity.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 0.5f, 0.2f);
-                    entity.getWorld().spawnParticle
-                            (Particle.VILLAGER_ANGRY, entity.getLocation(), 5, 0.5F, 0.5F, 0.5F, 0);
-                    DamageUtil.damageEntityPhysical(damage, (LivingEntity) entity, player, false, false, spell);
+        Bukkit.getScheduler().runTaskTimer(RunicCore.getInstance(), task -> {
+            if (projectile.isOnGround() || projectile.isDead()) {
+                if (projectile.isOnGround()) {
                     projectile.remove();
                 }
+                task.cancel();
+                return;
             }
-        }.runTaskTimer(RunicCore.getInstance(), 0, 1L);
+
+            Location loc = projectile.getLocation();
+            projectile.getWorld().spawnParticle(Particle.CRIT, projectile.getLocation(), 1, 0, 0, 0, 0);
+
+            for (Entity entity : projectile.getWorld().getNearbyEntities(loc, 1.5, 1.5, 1.5, target -> isValidEnemy(player, target))) {
+                if (hasBeenHit.get(player.getUniqueId()) == entity.getUniqueId()) continue;
+                hasBeenHit.put(player.getUniqueId(), entity.getUniqueId()); // prevent concussive hits
+
+                if (this.hasStatusEffect(entity.getUniqueId(), RunicStatusEffect.BLEED)) {
+                    addStatusEffect((LivingEntity) entity, RunicStatusEffect.SLOW_III,
+                            slowDuration, true);
+                }
+
+                addStatusEffect((LivingEntity) entity, RunicStatusEffect.BLEED, 6, true, player);
+                entity.getWorld().playSound(entity.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 0.5f, 0.2f);
+                entity.getWorld().spawnParticle
+                        (Particle.VILLAGER_ANGRY, entity.getLocation(), 5, 0.5F, 0.5F, 0.5F, 0);
+                DamageUtil.damageEntityPhysical(damage, (LivingEntity) entity, player, false, false, this);
+                projectile.remove();
+            }
+        }, 0, 1);
 
         Bukkit.getScheduler().runTaskLaterAsynchronously(RunicCore.getInstance(),
                 hasBeenHit::clear, (int) slowDuration * 20L);
@@ -102,8 +98,6 @@ public class AxeToss extends Spell implements DurationSpell, PhysicalDamageSpell
     public void loadDurationData(Map<String, Object> spellData) {
         Number duration = (Number) spellData.getOrDefault("slow-duration", 0);
         setDuration(duration.doubleValue());
-        Number speedDuration = (Number) spellData.getOrDefault("speed-duration", 0);
-        setSpeedDuration(speedDuration.doubleValue());
     }
 
     @Override
@@ -124,10 +118,6 @@ public class AxeToss extends Spell implements DurationSpell, PhysicalDamageSpell
     @Override
     public void setPhysicalDamagePerLevel(double physicalDamagePerLevel) {
         this.damagePerLevel = physicalDamagePerLevel;
-    }
-
-    public void setSpeedDuration(double speedDuration) {
-        this.speedDuration = speedDuration;
     }
 }
 

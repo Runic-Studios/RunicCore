@@ -1,10 +1,10 @@
 package com.runicrealms.plugin.player.death;
 
-import com.gmail.filoghost.holographicdisplays.api.Hologram;
-import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.utilities.BlocksUtil;
-import com.runicrealms.runicitems.RunicItemsAPI;
+import com.runicrealms.plugin.runicitems.RunicItemsAPI;
+import me.filoghost.holographicdisplays.api.HolographicDisplaysAPI;
+import me.filoghost.holographicdisplays.api.hologram.Hologram;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -69,12 +69,12 @@ public class Gravestone {
 
     private Hologram buildHologram(Player player) {
         // Spawn the hologram a few blocks above
-        Hologram hologram = HologramsAPI.createHologram(RunicCore.getInstance(), shulkerBox.getLocation().add(0.5f, 2.5f, 0.5f));
-        hologram.appendTextLine(ChatColor.RED + player.getName() + "'s Gravestone");
+        Hologram hologram = HolographicDisplaysAPI.get(RunicCore.getInstance()).createHologram(shulkerBox.getLocation().add(0.5f, 2.5f, 0.5f));
+        hologram.getLines().appendText(ChatColor.RED + player.getName() + "'s Gravestone");
         String priorityFormatted = String.format("%dm%ds", priorityTime / 60, 0);
         String durationFormatted = String.format("%dm%ds", duration / 60, 0);
-        hologram.appendTextLine(org.bukkit.ChatColor.YELLOW + "Priority: " + priorityFormatted); // Add the updated line
-        hologram.appendTextLine(org.bukkit.ChatColor.GRAY + "Time left: " + durationFormatted); // Add the updated line
+        hologram.getLines().appendText(org.bukkit.ChatColor.YELLOW + "Priority: " + priorityFormatted); // Add the updated line
+        hologram.getLines().appendText(org.bukkit.ChatColor.GRAY + "Time left: " + durationFormatted); // Add the updated line
         // Link the hologram to this gravestone
         return hologram;
     }

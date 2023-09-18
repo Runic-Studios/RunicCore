@@ -16,7 +16,6 @@ dependencies {
     compileOnly(commonLibs.springdatamongodb)
     compileOnly(commonLibs.holographicdisplays)
     compileOnly(commonLibs.spigot)
-    compileOnly(commonLibs.craftbukkit)
     compileOnly(commonLibs.mongodbdriversync)
     compileOnly(commonLibs.mongodbdrivercore)
     compileOnly(commonLibs.jedis)
@@ -35,12 +34,12 @@ dependencies {
     compileOnly(project(":Projects:Database"))
     compileOnly(commonLibs.paper)
     compileOnly(commonLibs.protocollib)
-    compileOnly(commonLibs.tabbed)
     compileOnly(commonLibs.worldguardcore)
     compileOnly(commonLibs.worldguardlegacy)
     compileOnly(commonLibs.viaversion)
     compileOnly(commonLibs.acf)
     compileOnly(commonLibs.luckperms)
+    compileOnly(commonLibs.modelengine)
 }
 
 java {

@@ -1,7 +1,7 @@
 package com.runicrealms.plugin.player.stat;
 
-import com.runicrealms.runicitems.RunicItemsAPI;
-import com.runicrealms.runicitems.Stat;
+import com.runicrealms.plugin.runicitems.RunicItemsAPI;
+import com.runicrealms.plugin.runicitems.Stat;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 

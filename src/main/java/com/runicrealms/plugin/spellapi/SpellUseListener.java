@@ -2,6 +2,7 @@ package com.runicrealms.plugin.spellapi;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.WeaponType;
+import com.runicrealms.plugin.events.PhysicalDamageEvent;
 import com.runicrealms.plugin.events.SpellCastEvent;
 import com.runicrealms.plugin.listeners.DamageListener;
 import com.runicrealms.plugin.rdb.RunicDatabase;
@@ -12,6 +13,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -142,7 +144,7 @@ public class SpellUseListener implements Listener {
     public void onSpellCast(SpellCastEvent event) {
         if (event.isCancelled()) return;
         if (event.willExecute()) {
-            boolean willCast = event.getSpellCasted().execute(event.getCaster(), SpellItemType.ARTIFACT);
+            boolean willCast = event.getSpell().execute(event.getCaster(), SpellItemType.ARTIFACT);
             if (!willCast)
                 event.setCancelled(true);
         } else {
@@ -158,13 +160,30 @@ public class SpellUseListener implements Listener {
         castSpell(event.getPlayer(), 1, RunicDatabase.getAPI().getCharacterAPI().getPlayerClass(event.getPlayer()).equalsIgnoreCase("archer"));
     }
 
+    //if player swaps hotbar and is casting reset them
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    public void onPlayerItemHeld(PlayerItemHeldEvent event) {
+        if (event.getNewSlot() == event.getPreviousSlot()) {
+            return;
+        }
+
+        BukkitTask task = casters.remove(event.getPlayer().getUniqueId());
+
+        if (task == null) {
+            return;
+        }
+
+        task.cancel();
+        event.getPlayer().resetTitle();
+    }
+
     @EventHandler
     public void onSwapHands(PlayerSwapHandItemsEvent e) {
         if (!casters.containsKey(e.getPlayer().getUniqueId())) return;
         castSpell(e.getPlayer(), 4, RunicDatabase.getAPI().getCharacterAPI().getPlayerClass(e.getPlayer()).equalsIgnoreCase("archer"));
     }
 
-    @EventHandler(priority = EventPriority.HIGH)
+    @EventHandler(priority = EventPriority.HIGH) //can't check if cancelled since right clicking air is cancelled
     public void onWeaponInteract(PlayerInteractEvent event) {
         if (event.getHand() != EquipmentSlot.HAND) return;
         if (event.getPlayer().getGameMode() == GameMode.CREATIVE) return;
@@ -172,6 +191,11 @@ public class SpellUseListener implements Listener {
         if (heldItemType == WeaponType.NONE) return;
         if (heldItemType == WeaponType.GATHERING_TOOL) return;
         if (!DamageListener.matchClass(event.getPlayer(), false)) return;
+
+        if (event.useInteractedBlock() != Event.Result.DENY) {
+            return; ////When right clicking the ground this event sometimes fires twice (useInteractedBlock returns ALLOW in one and DENY in the other), the hand is already accounted for at the top so I implemented a band-aid fix -BoBoBalloon
+        }
+
         Player player = event.getPlayer();
         String className = RunicDatabase.getAPI().getCharacterAPI().getPlayerClass(player); // lowercase
         boolean isArcher = className.equalsIgnoreCase("archer");
@@ -182,6 +206,26 @@ public class SpellUseListener implements Listener {
         }
     }
 
+    //trigger left click spell even if player hits mob
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    public void onPhysicalDamage(PhysicalDamageEvent event) {
+        if (!casters.containsKey(event.getPlayer().getUniqueId()) || event.getPlayer().getGameMode() == GameMode.CREATIVE) {
+            return;
+        }
+
+        WeaponType heldItemType = WeaponType.matchType(event.getPlayer().getInventory().getItemInMainHand());
+
+        if (heldItemType == WeaponType.NONE || heldItemType == WeaponType.GATHERING_TOOL || !DamageListener.matchClass(event.getPlayer(), false)) {
+            return;
+        }
+
+        String className = RunicDatabase.getAPI().getCharacterAPI().getPlayerClass(event.getPlayer()); // lowercase
+        boolean isArcher = className.equalsIgnoreCase("archer");
+
+        activateSpellMode(event.getPlayer(), ClickType.LEFT, 2, isArcher);
+        event.setCancelled(true);
+    }
+
     private String getActivationOne(Player player) {
         return RunicCore.getSettingsManager().getSettingsData(player.getUniqueId()).getSpellSlotOneDisplay();
     }
@@ -190,7 +234,7 @@ public class SpellUseListener implements Listener {
         return RunicCore.getSettingsManager().getSettingsData(player.getUniqueId()).getSpellSlotFourDisplay();
     }
 
-    enum ClickType {
+    private enum ClickType {
         LEFT,
         RIGHT
     }

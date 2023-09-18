@@ -6,6 +6,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * This custom event is called when a player 'dies', or their health *would* drop below 0,
@@ -14,7 +16,7 @@ import org.bukkit.event.HandlerList;
 public class RunicDeathEvent extends Event implements Cancellable {
     private static final HandlerList handlers = new HandlerList();
     private final Player victim;
-    private final Entity[] killer;
+    private final Entity killer;
     private final Location location;
     private boolean isCancelled;
 
@@ -25,31 +27,28 @@ public class RunicDeathEvent extends Event implements Cancellable {
      * @param location where the victim died (needed in case they log out)
      * @param killer   (optional) killer for mob/player-related deaths
      */
-    public RunicDeathEvent(Player victim, Location location, Entity... killer) {
+    public RunicDeathEvent(@NotNull Player victim, @NotNull Location location, @Nullable Entity killer) {
         this.victim = victim;
         this.location = location;
         this.killer = killer;
         this.isCancelled = false;
     }
 
-    public static HandlerList getHandlerList() {
-        return handlers;
+    public RunicDeathEvent(@NotNull Player victim, @NotNull Location location) {
+        this(victim, location, null);
     }
 
-    @SuppressWarnings("NullableProblems")
-    @Override
-    public HandlerList getHandlers() {
-        return handlers;
-    }
-
-    public Entity[] getKiller() {
+    @Nullable
+    public Entity getKiller() {
         return killer;
     }
 
+    @NotNull
     public Location getLocation() {
         return location;
     }
 
+    @NotNull
     public Player getVictim() {
         return victim;
     }
@@ -62,5 +61,15 @@ public class RunicDeathEvent extends Event implements Cancellable {
     @Override
     public void setCancelled(boolean arg0) {
         this.isCancelled = arg0;
+    }
+
+    public static HandlerList getHandlerList() {
+        return handlers;
+    }
+
+    @NotNull
+    @Override
+    public HandlerList getHandlers() {
+        return handlers;
     }
 }

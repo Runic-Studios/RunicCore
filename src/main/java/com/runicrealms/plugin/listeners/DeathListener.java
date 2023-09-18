@@ -1,20 +1,25 @@
 package com.runicrealms.plugin.listeners;
 
-import com.runicrealms.plugin.CityLocation;
 import com.runicrealms.plugin.DungeonLocation;
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.SafeZoneLocation;
 import com.runicrealms.plugin.common.DonorRank;
 import com.runicrealms.plugin.common.util.ColorUtil;
 import com.runicrealms.plugin.events.LeaveCombatEvent;
 import com.runicrealms.plugin.events.RunicDeathEvent;
 import com.runicrealms.plugin.player.death.Gravestone;
 import com.runicrealms.plugin.player.listener.ManaListener;
-import com.runicrealms.runicitems.RunicItems;
-import com.runicrealms.runicitems.RunicItemsAPI;
-import com.runicrealms.runicitems.item.RunicItem;
-import com.runicrealms.runicitems.item.stats.RunicItemTag;
-import com.runicrealms.runicitems.util.ItemUtils;
-import org.bukkit.*;
+import com.runicrealms.plugin.runicitems.RunicItems;
+import com.runicrealms.plugin.runicitems.RunicItemsAPI;
+import com.runicrealms.plugin.runicitems.item.RunicItem;
+import com.runicrealms.plugin.runicitems.item.stats.RunicItemTag;
+import com.runicrealms.plugin.runicitems.util.ItemUtils;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Color;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
+import org.bukkit.World;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -71,7 +76,7 @@ public class DeathListener implements Listener {
 
         // Broadcast the death message
         String message;
-        if (event.getKiller().length > 0 && event.getKiller()[0] instanceof Player killerPlayer) {
+        if (event.getKiller() != null && event.getKiller() instanceof Player killerPlayer) {
             message = ChatColor.RED + event.getVictim().getName() + " was killed by " + killerPlayer.getName() + "!";
         } else {
             message = ChatColor.RED + event.getVictim().getName() + " died!";
@@ -89,7 +94,7 @@ public class DeathListener implements Listener {
             Inventory droppedItemsInventory = droppedItemsInventory(victim, world);
             // If the player should drop items, create their Gravestone
             if (droppedItemsInventory != null && !droppedItemsInventory.isEmpty()) {
-                boolean victimHasPriority = event.getKiller().length == 0 || !(event.getKiller()[0] instanceof Player);
+                boolean victimHasPriority = event.getKiller() == null || !(event.getKiller() instanceof Player);
                 DonorRank rank = DonorRank.getDonorRank(event.getVictim());
                 new Gravestone(victim, event.getLocation(), droppedItemsInventory, victimHasPriority, rank.getGravestonePriorityDuration() * 60, rank.getGravestoneDuration() * 60);
             }
@@ -115,16 +120,21 @@ public class DeathListener implements Listener {
                 if (dungeonLocation != null)
                     victim.teleport(dungeonLocation.getLocation());
                 else {
-                    victim.teleport(CityLocation.getLocationFromItemStack(victim.getInventory().getItem(8)));
+                    victim.teleport(SafeZoneLocation.getLocationFromItemStack(victim.getInventory().getItem(8)));
                     victim.sendMessage(NO_LOCATION_FOUND);
                 }
             });
         } else {
-            victim.teleport(CityLocation.getLocationFromItemStack(victim.getInventory().getItem(8)));
+            victim.teleport(SafeZoneLocation.getLocationFromItemStack(victim.getInventory().getItem(8)));
+
+            Gravestone gravestone = RunicCore.getGravestoneManager().getGravestoneMap().get(victim.getUniqueId());
+
+            String gravestoneReminder = gravestone != null ? "Your &4&lGRAVESTONE &chas the remainder of your items and will last for " +
+                    gravestone.getPriorityTime() + "s until it can be looted by others." : "";
+
             victim.sendMessage(ColorUtil.format("&cYou have died! Your armor and hotbar have been returned. " +
-                    "Any soulbound, quest, and untradeable items have been returned also. " +
-                    "Your &4&lGRAVESTONE &chas the remainder of your items and will last for " +
-                    RunicCore.getGravestoneManager().getGravestoneMap().get(victim.getUniqueId()).getPriorityTime() + "s until it can be looted by others."));
+                    "Any soulbound, quest, and untradeable items have also been returned. " +
+                    gravestoneReminder));
         }
 
         // Particles, sounds

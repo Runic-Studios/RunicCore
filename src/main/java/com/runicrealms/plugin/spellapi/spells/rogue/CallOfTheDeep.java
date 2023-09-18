@@ -1,101 +1,119 @@
 package com.runicrealms.plugin.spellapi.spells.rogue;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.events.PhysicalDamageEvent;
 import com.runicrealms.plugin.common.CharacterClass;
+import com.runicrealms.plugin.events.PhysicalDamageEvent;
+import com.runicrealms.plugin.events.RunicDeathEvent;
+import com.runicrealms.plugin.rdb.event.CharacterQuitEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
-import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
-import com.runicrealms.plugin.spellapi.spelltypes.RadiusSpell;
+import com.runicrealms.plugin.spellapi.spelltypes.PhysicalDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.RunicStatusEffect;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.WarmupSpell;
-import com.runicrealms.plugin.spellapi.spellutil.particles.HorizontalCircleFrame;
 import com.runicrealms.plugin.utilities.DamageUtil;
+import io.lumine.mythic.bukkit.events.MythicMobDeathEvent;
 import org.bukkit.Bukkit;
-import org.bukkit.Color;
-import org.bukkit.Location;
-import org.bukkit.Particle;
-import org.bukkit.Sound;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.util.Vector;
 
+import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
-public class CallOfTheDeep extends Spell implements DurationSpell, MagicDamageSpell, RadiusSpell, WarmupSpell {
+public class CallOfTheDeep extends Spell implements WarmupSpell, PhysicalDamageSpell, DurationSpell {
+    private final Map<UUID, Long> harpooned;
+    private double dashBuff;
+    private double dashBuffDuration;
+    private double warmup;
     private double damage;
-    private double radius;
     private double damagePerLevel;
     private double duration;
-    private double multiplier;
-    private double warmup;
 
     public CallOfTheDeep() {
         super("Call Of The Deep", CharacterClass.ROGUE);
         this.setIsPassive(true);
-        this.setDescription("After " + warmup + "s, " +
-                "your &aHarpoon &7spell now summons a whirlpool " +
-                "at your target's feet for " + duration + "s! The whirlpool is " + radius + " " +
-                "blocks wide, deals (" + damage + " + &f" + damagePerLevel + "x&7 lvl) " +
-                "magicʔ damage to enemies inside each second and attempts to drag them " +
-                "into the center.");
+        this.setDescription("After you hit a harpoon on an enemy refund half of the &aHarpoon&7 cooldown!\n" +
+                "Additionally, reduce the cooldown of &aDash&7 by " + this.dashBuff + "s for every basic attack on the harpooned enemy within the next " + this.dashBuffDuration + " seconds.\n" +
+                "Applying the &aScurvy&7 debuff on players in the &aWhirlpool&7 summons a creature from the depths to their location after a " + this.warmup + "s delay! This deals (" + this.damage + " + &f" + this.damagePerLevel + "x&7 lvl) physical⚔ damage and stuns the affected enemy for " + this.duration + "s.");
+        this.harpooned = new HashMap<>();
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    private void onHarpoonHit(Harpoon.HarpoonHitEvent event) {
+        if (!this.hasPassive(event.getCaster().getUniqueId(), this.getName())) {
+            return;
+        }
+
+        Spell harpoon = RunicCore.getSpellAPI().getSpell("Harpoon");
+
+        if (harpoon == null) {
+            return;
+        }
+
+        RunicCore.getSpellAPI().reduceCooldown(event.getCaster(), harpoon, RunicCore.getSpellAPI().getUserCooldown(event.getCaster(), harpoon) / 2);
+        this.harpooned.put(event.getVictim().getUniqueId(), System.currentTimeMillis());
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    private void onPhysicalDamage(PhysicalDamageEvent event) {
+        if (!this.hasPassive(event.getPlayer().getUniqueId(), this.getName())) {
+            return;
+        }
+
+        Long time = this.harpooned.get(event.getVictim().getUniqueId());
+
+        if (time == null || System.currentTimeMillis() > time + (this.dashBuffDuration * 1000)) {
+            return;
+        }
+
+        RunicCore.getSpellAPI().reduceCooldown(event.getPlayer(), "Dash", this.dashBuff);
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    private void onScurvyDebuff(Scurvy.DebuffEvent event) {
+        if (!this.hasPassive(event.getCaster().getUniqueId(), this.getName())) {
+            return;
+        }
+
+        Spell spell = RunicCore.getSpellAPI().getSpell("Whirlpool");
+
+        if (!(spell instanceof Whirlpool whirlpool) || !whirlpool.isInWhirlPool(event.getVictim())) {
+            return;
+        }
+
+        Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), () -> {
+            DamageUtil.damageEntityPhysical(this.damage, event.getVictim(), event.getCaster(), false, false, false, this);
+            this.addStatusEffect(event.getVictim(), RunicStatusEffect.STUN, this.duration, true);
+        }, (long) (this.warmup * 20));
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    private void onMythicMobDeath(MythicMobDeathEvent event) {
+        this.harpooned.remove(event.getEntity().getUniqueId());
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    private void onRunicDeath(RunicDeathEvent event) {
+        this.harpooned.remove(event.getVictim().getUniqueId());
+    }
+
+    @EventHandler
+    private void onCharacterQuit(CharacterQuitEvent event) {
+        this.harpooned.remove(event.getPlayer().getUniqueId());
     }
 
     @Override
-    public double getDuration() {
-        return duration;
-    }
-
-    @Override
-    public void setDuration(double duration) {
-        this.duration = duration;
-    }
-
-    @Override
-    public void loadDurationData(Map<String, Object> spellData) {
-        Number duration = (Number) spellData.getOrDefault("duration", 0);
-        setDuration(duration.doubleValue());
-        Number multiplier = (Number) spellData.getOrDefault("pull-multiplier", 0);
-        setMultiplier(multiplier.doubleValue());
-    }
-
-    @Override
-    public double getMagicDamage() {
-        return damage;
-    }
-
-    @Override
-    public void setMagicDamage(double magicDamage) {
-        this.damage = magicDamage;
-    }
-
-    @Override
-    public double getMagicDamagePerLevel() {
-        return damagePerLevel;
-    }
-
-    @Override
-    public void setMagicDamagePerLevel(double magicDamagePerLevel) {
-        this.damagePerLevel = magicDamagePerLevel;
-    }
-
-    @Override
-    public double getRadius() {
-        return radius;
-    }
-
-    @Override
-    public void setRadius(double radius) {
-        this.radius = radius;
+    protected void loadSpellSpecificData(Map<String, Object> spellData) {
+        super.loadSpellSpecificData(spellData);
+        Number dashBuff = (Number) spellData.getOrDefault("dash-buff", 0.5);
+        this.dashBuff = dashBuff.doubleValue();
+        Number dashBuffDuration = (Number) spellData.getOrDefault("dash-buff-duration", 3.0);
+        this.dashBuffDuration = dashBuffDuration.doubleValue();
     }
 
     @Override
     public double getWarmup() {
-        return warmup;
+        return this.warmup;
     }
 
     @Override
@@ -103,75 +121,34 @@ public class CallOfTheDeep extends Spell implements DurationSpell, MagicDamageSp
         this.warmup = warmup;
     }
 
-    @EventHandler(priority = EventPriority.HIGH) // runs last
-    public void onPredatorHit(PhysicalDamageEvent event) {
-        if (event.isCancelled()) return;
-        if (!hasPassive(event.getPlayer().getUniqueId(), this.getName())) return;
-        // Summon whirlpool a few ticks after harpoon is landed
-        if (event.getSpell() != null && event.getSpell() instanceof Harpoon) {
-            Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(),
-                    () -> summonWhirlPool(event.getPlayer(), event.getVictim()), (long) warmup * 20L);
-        }
+    @Override
+    public double getPhysicalDamage() {
+        return this.damage;
     }
 
-    public void setMultiplier(double multiplier) {
-        this.multiplier = multiplier;
+    @Override
+    public void setPhysicalDamage(double physicalDamage) {
+        this.damage = physicalDamage;
     }
 
-    /**
-     * Creates the whirlpool effect
-     *
-     * @param caster    who cast the spell
-     * @param recipient of the harpoon
-     */
-    private void summonWhirlPool(Player caster, LivingEntity recipient) {
-        Spell spell = this;
-        Location castLocation = recipient.getLocation();
-        whirlpoolEffect(caster, recipient, castLocation);
-        new BukkitRunnable() {
-            double count = 1;
-
-            @Override
-            public void run() {
-
-                count += 0.25;
-                if (count > duration)
-                    this.cancel();
-
-                if (count % 1 == 0) {
-                    whirlpoolEffect(caster, recipient, castLocation);
-                }
-
-                for (Entity entity : recipient.getWorld().getNearbyEntities(castLocation, radius,
-                        radius, radius, target -> isValidEnemy(caster, target))) {
-                    if (count % 1 == 0) {
-                        DamageUtil.damageEntitySpell(damage, (LivingEntity) entity, caster, spell);
-                    }
-
-                    // Pull to middle
-                    Vector directionToMiddle = castLocation.clone().subtract(entity.getLocation()).toVector();
-                    if (directionToMiddle.lengthSquared() > 0) { // Check if the vector is not zero
-                        directionToMiddle.setY(0);
-                        directionToMiddle.normalize().multiply(multiplier); // Adjust this value to change the strength of the pull
-                        entity.setVelocity(directionToMiddle);
-                    }
-
-                    addStatusEffect((LivingEntity) entity, RunicStatusEffect.SLOW_II, 1, false);
-                }
-            }
-        }.runTaskTimer(RunicCore.getInstance(), 0, 5L);
+    @Override
+    public double getPhysicalDamagePerLevel() {
+        return this.damagePerLevel;
     }
 
-    private void whirlpoolEffect(Player caster, LivingEntity recipient, Location castLocation) {
-        new HorizontalCircleFrame((float) radius, false).playParticle(caster, Particle.REDSTONE,
-                castLocation, Color.fromRGB(0, 64, 128));
-        new HorizontalCircleFrame((float) (radius - 1), false).playParticle(caster, Particle.REDSTONE,
-                castLocation, Color.fromRGB(0, 89, 179));
-        new HorizontalCircleFrame((float) (radius - 2), false).playParticle(caster, Particle.REDSTONE,
-                castLocation, Color.fromRGB(0, 102, 204));
-        recipient.getWorld().playSound(castLocation,
-                Sound.ENTITY_PLAYER_SPLASH_HIGH_SPEED, 0.5f, 1.0f);
+    @Override
+    public void setPhysicalDamagePerLevel(double physicalDamagePerLevel) {
+        this.damagePerLevel = physicalDamagePerLevel;
     }
 
+    @Override
+    public double getDuration() {
+        return this.duration;
+    }
+
+    @Override
+    public void setDuration(double duration) {
+        this.duration = duration;
+    }
 }
 

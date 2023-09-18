@@ -6,12 +6,12 @@ import com.runicrealms.plugin.common.CharacterClass;
 import com.runicrealms.plugin.common.util.Pair;
 import com.runicrealms.plugin.events.PhysicalDamageEvent;
 import com.runicrealms.plugin.listeners.StaffListener;
+import com.runicrealms.plugin.runicitems.Stat;
+import com.runicrealms.plugin.runicitems.item.RunicItemWeapon;
 import com.runicrealms.plugin.spellapi.spelltypes.DistanceSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spellutil.particles.SlashEffect;
 import com.runicrealms.plugin.utilities.DamageUtil;
-import com.runicrealms.runicitems.Stat;
-import com.runicrealms.runicitems.item.RunicItemWeapon;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
@@ -91,9 +91,8 @@ public class SpectralBlade extends Spell {
         }
     }
 
-    @EventHandler(priority = EventPriority.LOW)
+    @EventHandler(ignoreCancelled = true)
     public void onStaffAttack(StaffAttackEvent event) {
-        if (event.isCancelled()) return;
         if (!RunicCore.getSpellAPI().isShielded(event.getPlayer().getUniqueId())) return;
         if (!hasPassive(event.getPlayer().getUniqueId(), this.getName())) return;
         event.setCancelled(true);

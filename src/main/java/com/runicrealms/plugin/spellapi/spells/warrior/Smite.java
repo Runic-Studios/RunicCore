@@ -33,7 +33,7 @@ public class Smite extends Spell implements DistanceSpell, MagicDamageSpell, Rad
         super("Smite", CharacterClass.WARRIOR);
         this.setDescription("You fire a beam of light, " +
                 "dealing (" + damage + " + &f" + damagePerLevel
-                + "x&7 lvl) magicʔ damage to the first enemy hit " +
+                + "x&7 lvl) magicʔ damage to the first enemy hit and double damage to mobs within " + radius + "blocks!" +
                 "and knocking away all enemies within " + radius + " blocks! " +
                 "This spell also taunts monsters, causing them to attack you!");
     }
@@ -68,6 +68,10 @@ public class Smite extends Spell implements DistanceSpell, MagicDamageSpell, Rad
                 Vector knockbackVector = knockbackDirection.multiply(knockback);
                 knockbackVector.setY(knockbackVector.getY() + 0.15);
                 entity.setVelocity(entity.getVelocity().add(knockbackVector));
+
+                if (entity instanceof LivingEntity target && !(entity instanceof Player)) {
+                    DamageUtil.damageEntitySpell(2 * (damage + (player.getLevel() * this.damagePerLevel)), target, player);
+                }
             }
             DamageUtil.damageEntitySpell(damage, livingEntity, player, this);
             ThreatUtil.generateThreat(player, livingEntity);

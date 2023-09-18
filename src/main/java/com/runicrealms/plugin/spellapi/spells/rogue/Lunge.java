@@ -2,7 +2,7 @@ package com.runicrealms.plugin.spellapi.spells.rogue;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.common.CharacterClass;
-import com.runicrealms.plugin.events.EnvironmentDamage;
+import com.runicrealms.plugin.events.EnvironmentDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
@@ -21,6 +21,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+/**
+ * @deprecated replaced by {@link Whirlpool}
+ */
+@Deprecated
 public class Lunge extends Spell implements DurationSpell {
     private static final Set<UUID> LUNGE_SET = new HashSet<>();
     private double duration;
@@ -100,9 +104,9 @@ public class Lunge extends Spell implements DurationSpell {
      * Disable fall damage for players who are lunging
      */
     @EventHandler(priority = EventPriority.LOW)
-    public void onFallDamage(EnvironmentDamage event) {
+    public void onFallDamage(EnvironmentDamageEvent event) {
         if (!LUNGE_SET.contains(event.getVictim().getUniqueId())) return;
-        if (event.getCause() == EnvironmentDamage.DamageCauses.FALL_DAMAGE)
+        if (event.getCause() == EnvironmentDamageEvent.DamageCauses.FALL_DAMAGE)
             event.setCancelled(true);
     }
 

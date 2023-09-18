@@ -2,8 +2,8 @@ package com.runicrealms.plugin.player;
 
 public enum CombatType {
 
-    MOB(10),
-    PLAYER(30);
+    MOB(CombatManager.COMBAT_DURATION_MOBS),
+    PLAYER(CombatManager.COMBAT_DURATION_PLAYERS);
 
     private final double cooldown;
 

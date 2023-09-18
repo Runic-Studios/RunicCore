@@ -1,5 +1,6 @@
 package com.runicrealms.plugin.spellapi.spells.mage;
 
+import com.google.common.util.concurrent.AtomicDouble;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.common.CharacterClass;
 import com.runicrealms.plugin.spellapi.spelltypes.DistanceSpell;
@@ -10,13 +11,13 @@ import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.spellapi.spellutil.particles.HorizontalCircleFrame;
 import com.runicrealms.plugin.utilities.DamageUtil;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -37,28 +38,26 @@ public class SnapFreeze extends Spell implements DistanceSpell, DurationSpell, M
         super("Snap Freeze", CharacterClass.MAGE);
         this.setDescription("You cast a wave of frost in a forward line, up to " + distance + " blocks away. " +
                 "Enemies hit by the spell take (" + damage + " + &f" + damagePerLevel
-                + "x&7 lvl) magicʔ damage and are stunned for " + duration + "s!");
+                + "x&7 lvl) magicʔ damage and are rooted for " + duration + "s! " +
+                "If an enemy is already slowed when hit by this ability, slow them for an additional " + this.duration * 3 + "s.");
     }
 
     @Override
     public void executeSpell(Player player, SpellItemType type) {
         Location castLocation = player.getEyeLocation();
         freeze(player, castLocation);
-        new BukkitRunnable() {
-            double count = 1;
 
-            @Override
-            public void run() {
-                if (count > distance) {
-                    this.cancel();
-                    damageMap.remove(player.getUniqueId());
-                } else {
-                    count += 1 * PERIOD;
-                    castLocation.add(castLocation.getDirection());
-                    freeze(player, castLocation);
-                }
+        AtomicDouble count = new AtomicDouble(1);
+        Bukkit.getScheduler().runTaskTimer(RunicCore.getInstance(), task -> {
+            if (count.get() > distance) {
+                task.cancel();
+                damageMap.remove(player.getUniqueId());
+            } else {
+                count.set(count.get() + PERIOD);
+                castLocation.add(castLocation.getDirection());
+                freeze(player, castLocation);
             }
-        }.runTaskTimer(RunicCore.getInstance(), 0, (long) PERIOD * 20L);
+        }, 0, (long) PERIOD * 20L);
     }
 
     private void freeze(Player player, Location location) {
@@ -69,8 +68,26 @@ public class SnapFreeze extends Spell implements DistanceSpell, DurationSpell, M
         for (Entity entity : player.getWorld().getNearbyEntities(location, BEAM_RADIUS, BEAM_RADIUS, BEAM_RADIUS, target -> isValidEnemy(player, target))) {
             if (damageMap.get(player.getUniqueId()).contains(entity.getUniqueId())) continue;
             DamageUtil.damageEntitySpell(damage, (LivingEntity) entity, player, this);
-            addStatusEffect((LivingEntity) entity, RunicStatusEffect.STUN, duration, true);
+            addStatusEffect((LivingEntity) entity, RunicStatusEffect.ROOT, duration, true);
             damageMap.get(player.getUniqueId()).add(entity.getUniqueId());
+
+            if (this.hasStatusEffect(entity.getUniqueId(), RunicStatusEffect.SLOW_I)) {
+                double current = RunicCore.getStatusEffectAPI().getStatusEffectDuration(entity.getUniqueId(), RunicStatusEffect.SLOW_I);
+                this.removeStatusEffect(entity, RunicStatusEffect.SLOW_I);
+                this.addStatusEffect((LivingEntity) entity, RunicStatusEffect.SLOW_I, current + (this.duration * 3), false);
+            }
+
+            if (this.hasStatusEffect(entity.getUniqueId(), RunicStatusEffect.SLOW_II)) {
+                double current = RunicCore.getStatusEffectAPI().getStatusEffectDuration(entity.getUniqueId(), RunicStatusEffect.SLOW_II);
+                this.removeStatusEffect(entity, RunicStatusEffect.SLOW_II);
+                this.addStatusEffect((LivingEntity) entity, RunicStatusEffect.SLOW_II, current + (this.duration * 3), false);
+            }
+
+            if (this.hasStatusEffect(entity.getUniqueId(), RunicStatusEffect.SLOW_III)) {
+                double current = RunicCore.getStatusEffectAPI().getStatusEffectDuration(entity.getUniqueId(), RunicStatusEffect.SLOW_III);
+                this.removeStatusEffect(entity, RunicStatusEffect.SLOW_III);
+                this.addStatusEffect((LivingEntity) entity, RunicStatusEffect.SLOW_III, current + (this.duration * 3), false);
+            }
         }
     }
 

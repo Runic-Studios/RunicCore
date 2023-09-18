@@ -11,7 +11,7 @@ import com.runicrealms.plugin.donor.boost.api.StoreBoost;
 import com.runicrealms.plugin.donor.boost.event.BoostActivateEvent;
 import com.runicrealms.plugin.donor.boost.event.BoostEndEvent;
 import com.runicrealms.plugin.rdb.event.CharacterLoadedEvent;
-import com.runicrealms.runicrestart.RunicRestart;
+import com.runicrealms.plugin.runicrestart.RunicRestart;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.boss.BarColor;

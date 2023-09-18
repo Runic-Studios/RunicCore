@@ -1,7 +1,7 @@
 package com.runicrealms.plugin.utilities;
 
-import com.runicrealms.runicitems.RunicItemsAPI;
-import com.runicrealms.runicitems.item.RunicItemGeneric;
+import com.runicrealms.plugin.runicitems.RunicItemsAPI;
+import com.runicrealms.plugin.runicitems.item.RunicItemGeneric;
 import org.bukkit.inventory.ItemStack;
 
 public class HearthstoneItemUtil {

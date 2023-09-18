@@ -12,10 +12,13 @@ import com.runicrealms.plugin.spellapi.skilltrees.util.ClericTreeUtil;
 import com.runicrealms.plugin.spellapi.skilltrees.util.MageTreeUtil;
 import com.runicrealms.plugin.spellapi.skilltrees.util.RogueTreeUtil;
 import com.runicrealms.plugin.spellapi.skilltrees.util.WarriorTreeUtil;
+import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.Nullable;
+import org.springframework.data.annotation.Transient;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +30,8 @@ import java.util.stream.Stream;
 public class SkillTreeData {
     public static final int FIRST_POINT_LEVEL = 10;
     private SkillTreePosition position;
+    private int totalAllocatedPoints; // Tracks how many points the player has invested in this Skill Tree
+    @Transient
     private List<Perk> perks = new ArrayList<>();
 
     @SuppressWarnings("unused")
@@ -43,7 +48,7 @@ public class SkillTreeData {
         this.position = position;
         CharacterClass characterClass = CharacterClass.getFromName(playerClass);
         SubClass subClass = SubClass.determineSubClass(characterClass, position);
-        this.perks = getSkillTreeBySubClass(subClass); // load default perks
+        this.perks = getSkillTreeBySubClass(subClass); // load default perks TODO: should NOT be null
     }
 
     /**
@@ -73,33 +78,76 @@ public class SkillTreeData {
      */
     public static void resetSkillTrees(Player player) {
         UUID uuid = player.getUniqueId();
-        /*
-        Wipe the memoized perk data
-         */
+        // Wipe the memoized perk data
         int slot = RunicDatabase.getAPI().getCharacterAPI().getCharacterSlot(uuid);
         Map<SkillTreePosition, SkillTreeData> skillTreeDataMap = RunicCore.getSkillTreeAPI().getSkillTreeDataMap(uuid, slot);
         SkillTreeData first = skillTreeDataMap.get(SkillTreePosition.FIRST);
         SkillTreeData second = skillTreeDataMap.get(SkillTreePosition.SECOND);
         SkillTreeData third = skillTreeDataMap.get(SkillTreePosition.THIRD);
+        // Set perks to their default values (no allocated points)
         first.setPerks(first.getSkillTreeBySubClass(first.getSubClass(uuid)));
+        first.setTotalAllocatedPoints(0);
         second.setPerks(second.getSkillTreeBySubClass(second.getSubClass(uuid)));
+        second.setTotalAllocatedPoints(0);
         third.setPerks(third.getSkillTreeBySubClass(third.getSubClass(uuid)));
+        third.setTotalAllocatedPoints(0);
         // --------------------------------------------
         SpellData spellData = RunicCore.getSkillTreeAPI().getPlayerSpellData(uuid, slot);
         spellData.resetSpells(RunicDatabase.getAPI().getCharacterAPI().getPlayerClass(uuid)); // reset assigned spells in-memory
         RunicCore.getSkillTreeAPI().getPassives(uuid).clear(); // reset passives
         RunicCore.getStatAPI().getPlayerStatContainer(player.getUniqueId()).resetValues(); // reset stat values
+        // Write skillTreeData to mongo
         RunicCore.getCoreWriteOperation().updateCorePlayerData
                 (
                         uuid,
                         slot,
-                        "spellDataMap",
-                        spellData,
-                        () -> player.sendMessage(ChatColor.LIGHT_PURPLE + "Your skill trees have been reset!")
+                        "skillTreeDataMap",
+                        skillTreeDataMap,
+                        () -> RunicCore.getCoreWriteOperation().updateCorePlayerData // Write spellData to Mongo
+                                (
+                                        uuid,
+                                        slot,
+                                        "spellDataMap",
+                                        spellData,
+                                        () -> player.sendMessage(ChatColor.LIGHT_PURPLE + "Your skill trees have been reset!")
+                                )
                 );
     }
 
-    public long getTotalPoints() {
+    /**
+     * Used when we load Skill Trees from MongoDB to dynamically
+     * allocate points at runtime
+     *
+     * @param playerClass the player's base class (e.g. "Archer)
+     */
+    public void loadPerksFromDTOs(String playerClass) {
+        int allocatedPoints = this.totalAllocatedPoints;
+        CharacterClass characterClass = CharacterClass.getFromName(playerClass);
+        SubClass subClass = SubClass.determineSubClass(characterClass, position);
+        this.perks = getSkillTreeBySubClass(subClass); // load default perks
+        /*
+        1. Loop through every default perk in-sequence
+        2. Fill it up while we still have 'points'
+        3. -= allocatedPoints
+        4. Stop if allocatedPoints <= 0
+         */
+        for (Perk perk : this.perks) {
+            if (allocatedPoints >= perk.getMaxAllocatedPoints()) {
+                perk.setCurrentlyAllocatedPoints(perk.getMaxAllocatedPoints());
+                allocatedPoints -= perk.getMaxAllocatedPoints();
+            } else {
+                perk.setCurrentlyAllocatedPoints(allocatedPoints);
+                break;
+            }
+        }
+    }
+
+    /**
+     * Tracks the total points the player has invested in this tree
+     *
+     * @return a number representing the total invested points (e.g. 20 points in Tree 1)
+     */
+    public int calculateTotalAllocatedPoints() {
         AtomicInteger result = new AtomicInteger();
         Stream<Perk> boughtPerks = this.perks.stream().filter(perk -> perk.getCurrentlyAllocatedPoints() > 0);
         boughtPerks.forEach(perk -> result.addAndGet(perk.getCurrentlyAllocatedPoints()));
@@ -164,8 +212,10 @@ public class SkillTreeData {
         UUID uuid = player.getUniqueId();
         // Retrieve the updated SkillTreeData from our in-memory storage, ensure it is up-to-date for this tree
         Map<SkillTreePosition, SkillTreeData> updatedSkillTreeData = RunicCore.getSkillTreeAPI().getSkillTreeDataMap(uuid, slot);
+        updatedSkillTreeData.get(this.position).setTotalAllocatedPoints(calculateTotalAllocatedPoints()); // Ensure our DTO is accurate
         updatedSkillTreeData.put(this.position, this);
         // Update in mongo
+        // todo: THIS NEEDS TO RUN ON LOGIN FOR PLAYERS W/ THE OLD FORMAT
         RunicCore.getCoreWriteOperation().updateCorePlayerData
                 (
                         uuid,
@@ -178,6 +228,14 @@ public class SkillTreeData {
                         }
                 );
         return true;
+    }
+
+    public int getTotalAllocatedPoints() {
+        return totalAllocatedPoints;
+    }
+
+    public void setTotalAllocatedPoints(int totalAllocatedPoints) {
+        this.totalAllocatedPoints = totalAllocatedPoints;
     }
 
     public List<Perk> getPerks() {
@@ -229,4 +287,25 @@ public class SkillTreeData {
         return SubClass.determineSubClass(characterClass, position);
     }
 
+    /**
+     * A method used to check if the skill tree has this spell unlocked!
+     *
+     * @param spell the spell to check
+     * @return if the skill tree has this spell unlocked
+     */
+    public boolean hasSpellUnlocked(@Nullable Spell spell) {
+        if (spell == null) {
+            return false;
+        }
+
+        for (Perk perk : this.perks) {
+            if (!(perk instanceof PerkSpell spellPerk) || !spellPerk.getSpellName().equals(spell.getName())) {
+                continue;
+            }
+
+            return spellPerk.getCurrentlyAllocatedPoints() > 0;
+        }
+
+        return false;
+    }
 }

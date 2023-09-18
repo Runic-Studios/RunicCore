@@ -13,7 +13,8 @@ public class RegionEventListener implements Listener {
     public void onRegionEntered(RegionEnteredEvent event) {
         if (event.getPlayer() == null) return;
         if (event.getRegionName().equalsIgnoreCase("jorundrskeep")
-                || event.getRegionName().equalsIgnoreCase("dead_mans_rest")) {
+                || event.getRegionName().equalsIgnoreCase("dead_mans_rest")
+                || event.getRegionName().equalsIgnoreCase("blackfrost_spire")) {
             event.getPlayer().setPlayerWeather(WeatherType.DOWNFALL);
         }
     }
@@ -22,7 +23,8 @@ public class RegionEventListener implements Listener {
     public void onRegionLeft(RegionLeftEvent event) {
         if (event.getPlayer() == null) return;
         if (event.getRegionName().equalsIgnoreCase("jorundrskeep")
-                || event.getRegionName().equalsIgnoreCase("dead_mans_rest")) {
+                || event.getRegionName().equalsIgnoreCase("dead_mans_rest")
+                || event.getRegionName().equalsIgnoreCase("blackfrost_spire")) {
             event.getPlayer().setPlayerWeather(WeatherType.CLEAR);
         }
     }

@@ -1,21 +1,21 @@
 package com.runicrealms.plugin.spellapi.skilltrees.util;
 
 import com.runicrealms.plugin.model.SpellData;
+import com.runicrealms.plugin.runicitems.Stat;
 import com.runicrealms.plugin.spellapi.skilltrees.Perk;
 import com.runicrealms.plugin.spellapi.skilltrees.PerkBaseStat;
 import com.runicrealms.plugin.spellapi.skilltrees.PerkSpell;
-import com.runicrealms.runicitems.Stat;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class WarriorTreeUtil {
 
-    public static Perk DEFAULT_WARRIOR_SPELL_PERK = new PerkSpell(997, 0, 1, 1, SpellData.DEFAULT_WARRIOR);
+    public static final Perk DEFAULT_WARRIOR_SPELL_PERK = new PerkSpell(997, 0, 1, 1, SpellData.DEFAULT_WARRIOR);
 
     public static List<Perk> berserkerPerkList() {
         List<Perk> perks = new ArrayList<>();
-        perks.add(new PerkSpell(144, 1, 0, 1, "Whirlwind"));
+        perks.add(new PerkSpell(144, 1, 0, 1, "Cleave"));
         perks.add(new PerkBaseStat(145, 1, 0, 5, Stat.STRENGTH));
         perks.add(new PerkSpell(146, 1, 0, 1, "Rupture"));
         perks.add(new PerkBaseStat(147, 1, 0, 3, Stat.VITALITY));
@@ -26,7 +26,7 @@ public class WarriorTreeUtil {
         perks.add(new PerkBaseStat(152, 1, 0, 5, Stat.VITALITY));
         perks.add(new PerkSpell(153, 1, 0, 1, "Adrenaline"));
         perks.add(new PerkBaseStat(154, 1, 0, 3, Stat.STRENGTH));
-        perks.add(new PerkSpell(155, 1, 0, 1, "Unstoppable"));
+        perks.add(new PerkSpell(155, 1, 0, 1, "Bloodbath"));
         return perks;
     }
 

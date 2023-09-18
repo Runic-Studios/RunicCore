@@ -1,11 +1,12 @@
 package com.runicrealms.plugin.listeners;
 
-import com.gmail.filoghost.holographicdisplays.api.Hologram;
-import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.common.util.ColorUtil;
 import com.runicrealms.plugin.events.RunicCombatExpEvent;
 import com.runicrealms.plugin.player.utilities.PlayerLevelUtil;
+import me.filoghost.holographicdisplays.api.HolographicDisplaysAPI;
+import me.filoghost.holographicdisplays.api.hologram.Hologram;
+import me.filoghost.holographicdisplays.api.hologram.VisibilitySettings;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -30,10 +31,10 @@ public class RunicExpListener implements Listener {
      * @param height         the height up from the original location
      */
     public static void createExpHologram(Player player, Location location, List<String> linesToDisplay, float height) {
-        Hologram hologram = HologramsAPI.createHologram(RunicCore.getInstance(), location.clone().add(0, height, 0));
-        hologram.getVisibilityManager().setVisibleByDefault(false);
-        linesToDisplay.forEach(hologram::appendTextLine);
-        hologram.getVisibilityManager().showTo(player);
+        Hologram hologram = HolographicDisplaysAPI.get(RunicCore.getInstance()).createHologram(location.clone().add(0, height, 0));
+        hologram.getVisibilitySettings().setGlobalVisibility(VisibilitySettings.Visibility.HIDDEN);
+        linesToDisplay.forEach(l -> hologram.getLines().appendText(l));
+        hologram.getVisibilitySettings().setIndividualVisibility(player, VisibilitySettings.Visibility.VISIBLE);
         Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), hologram::delete, 60L); // 2s
     }
 

@@ -10,20 +10,20 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 
-import java.util.HashMap;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * This class manages combat against mobs and players and handles each differently,
  * which is why we need both a HashMap and a List.
  */
 public class CombatManager implements CombatAPI, Listener {
-    private static final double COMBAT_DURATION_MOBS = 10;
-    private static final double COMBAT_DURATION_PLAYERS = 30;
-    private final HashMap<UUID, CombatPayload> playersInCombat;
+    public static final double COMBAT_DURATION_MOBS = 10;
+    public static final double COMBAT_DURATION_PLAYERS = 30;
+    private final ConcurrentHashMap<UUID, CombatPayload> playersInCombat;
 
     public CombatManager() {
-        this.playersInCombat = new HashMap<>();
+        this.playersInCombat = new ConcurrentHashMap<>();
         this.startCombatTask();
         Bukkit.getPluginManager().registerEvents(this, RunicCore.getInstance());
     }
@@ -68,17 +68,19 @@ public class CombatManager implements CombatAPI, Listener {
         Bukkit.getScheduler().runTaskTimer(RunicCore.getInstance(), () -> {
             for (UUID uuid : RunicDatabase.getAPI().getCharacterAPI().getLoadedCharacters()) {
                 Player player = Bukkit.getPlayer(uuid);
-                if (player == null) continue;
-                if (playersInCombat.containsKey(uuid)) {
-                    CombatType combatType = playersInCombat.get(uuid).getCombatType();
-                    double duration = combatType == CombatType.PLAYER ? COMBAT_DURATION_PLAYERS : COMBAT_DURATION_MOBS;
-                    if (System.currentTimeMillis() - playersInCombat.get(uuid).getLastRefreshTime() >= (duration * 1000)) {
-                        LeaveCombatEvent leaveCombatEvent = new LeaveCombatEvent(player);
-                        Bukkit.getPluginManager().callEvent(leaveCombatEvent);
-                    }
+
+                if (player == null || !playersInCombat.containsKey(uuid)) {
+                    continue;
+                }
+
+                CombatType combatType = playersInCombat.get(uuid).getCombatType();
+                double duration = combatType == CombatType.PLAYER ? COMBAT_DURATION_PLAYERS : COMBAT_DURATION_MOBS;
+
+                if (System.currentTimeMillis() - playersInCombat.get(uuid).getLastRefreshTime() >= (duration * 1000)) {
+                    Bukkit.getPluginManager().callEvent(new LeaveCombatEvent(player));
                 }
             }
-        }, 0, 20L);
+        }, 0, 20);
     }
 
     static class CombatPayload {

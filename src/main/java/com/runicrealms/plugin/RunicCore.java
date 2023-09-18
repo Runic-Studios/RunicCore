@@ -7,9 +7,9 @@ import co.aikar.taskchain.TaskChain;
 import co.aikar.taskchain.TaskChainFactory;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
-import com.runicrealms.RunicChat;
 import com.runicrealms.plugin.api.CombatAPI;
 import com.runicrealms.plugin.api.CoreWriteOperation;
+import com.runicrealms.plugin.api.LootAPI;
 import com.runicrealms.plugin.api.LootTableAPI;
 import com.runicrealms.plugin.api.PartyAPI;
 import com.runicrealms.plugin.api.PlayerDataAPI;
@@ -20,17 +20,16 @@ import com.runicrealms.plugin.api.SkillTreeAPI;
 import com.runicrealms.plugin.api.SpellAPI;
 import com.runicrealms.plugin.api.StatAPI;
 import com.runicrealms.plugin.api.StatusEffectAPI;
-import com.runicrealms.plugin.api.TabAPI;
 import com.runicrealms.plugin.api.TitleAPI;
 import com.runicrealms.plugin.api.VanishAPI;
 import com.runicrealms.plugin.character.gui.CharacterGuiManager;
+import com.runicrealms.plugin.chat.RunicChat;
 import com.runicrealms.plugin.commands.admin.ArmorStandCMD;
 import com.runicrealms.plugin.commands.admin.CooldownCMD;
 import com.runicrealms.plugin.commands.admin.FireworkCMD;
 import com.runicrealms.plugin.commands.admin.GameModeCMD;
 import com.runicrealms.plugin.commands.admin.ManaCMD;
 import com.runicrealms.plugin.commands.admin.ResetTreeCMD;
-import com.runicrealms.plugin.commands.admin.RunicBossCMD;
 import com.runicrealms.plugin.commands.admin.RunicDamage;
 import com.runicrealms.plugin.commands.admin.RunicGiveCMD;
 import com.runicrealms.plugin.commands.admin.RunicTeleportCMD;
@@ -50,6 +49,7 @@ import com.runicrealms.plugin.commands.player.RunicVoteCMD;
 import com.runicrealms.plugin.commands.player.SpawnCMD;
 import com.runicrealms.plugin.commands.player.WhoIsCMD;
 import com.runicrealms.plugin.common.RunicCommon;
+import com.runicrealms.plugin.common.util.ColorUtil;
 import com.runicrealms.plugin.config.ConfigManager;
 import com.runicrealms.plugin.converter.ConverterHandler;
 import com.runicrealms.plugin.database.DatabaseManager;
@@ -65,10 +65,6 @@ import com.runicrealms.plugin.donor.ui.DonorUIListener;
 import com.runicrealms.plugin.item.artifact.ArtifactOnCastListener;
 import com.runicrealms.plugin.item.artifact.ArtifactOnHitListener;
 import com.runicrealms.plugin.item.artifact.ArtifactOnKillListener;
-import com.runicrealms.plugin.item.lootchests.BossChestListener;
-import com.runicrealms.plugin.item.lootchests.BossTagger;
-import com.runicrealms.plugin.item.lootchests.LootChestListener;
-import com.runicrealms.plugin.item.lootchests.LootChestManager;
 import com.runicrealms.plugin.item.lootchests.LootTableManager;
 import com.runicrealms.plugin.item.shops.RunicItemShopManager;
 import com.runicrealms.plugin.item.shops.RunicShopManager;
@@ -104,8 +100,8 @@ import com.runicrealms.plugin.listeners.MobMechanicsListener;
 import com.runicrealms.plugin.listeners.MobTagger;
 import com.runicrealms.plugin.listeners.NoJockeysListener;
 import com.runicrealms.plugin.listeners.NpcListener;
+import com.runicrealms.plugin.listeners.PlayerInteractCorrectionListener;
 import com.runicrealms.plugin.listeners.PreCommandListener;
-import com.runicrealms.plugin.listeners.ResourcePackListener;
 import com.runicrealms.plugin.listeners.RuneListener;
 import com.runicrealms.plugin.listeners.RunicExpListener;
 import com.runicrealms.plugin.listeners.ServerListPingListener;
@@ -116,6 +112,8 @@ import com.runicrealms.plugin.listeners.StaffListener;
 import com.runicrealms.plugin.listeners.SwapHandsListener;
 import com.runicrealms.plugin.listeners.WeaponSkinListener;
 import com.runicrealms.plugin.listeners.WorldChangeListener;
+import com.runicrealms.plugin.loot.LootChestCommand;
+import com.runicrealms.plugin.loot.LootManager;
 import com.runicrealms.plugin.luckperms.LuckPermsManager;
 import com.runicrealms.plugin.model.MongoTask;
 import com.runicrealms.plugin.model.SettingsManager;
@@ -156,6 +154,8 @@ import com.runicrealms.plugin.rdb.api.RedisAPI;
 import com.runicrealms.plugin.rdb.event.MongoSaveEvent;
 import com.runicrealms.plugin.redis.RedisManager;
 import com.runicrealms.plugin.region.RegionEventListener;
+import com.runicrealms.plugin.resourcepack.ResourcePackManager;
+import com.runicrealms.plugin.runicrestart.event.PreShutdownEvent;
 import com.runicrealms.plugin.scoreboard.ScoreboardHandler;
 import com.runicrealms.plugin.scoreboard.ScoreboardListener;
 import com.runicrealms.plugin.sound.ambient.AmbientSoundHandler;
@@ -171,12 +171,9 @@ import com.runicrealms.plugin.spellapi.skilltrees.listener.SkillTreeGUIListener;
 import com.runicrealms.plugin.spellapi.skilltrees.listener.SpellEditorGUIListener;
 import com.runicrealms.plugin.spellapi.skilltrees.listener.SpellGUIListener;
 import com.runicrealms.plugin.spellapi.skilltrees.listener.SubClassGUIListener;
-import com.runicrealms.plugin.tablist.TabListManager;
-import com.runicrealms.plugin.utilities.FilterUtil;
 import com.runicrealms.plugin.utilities.NametagHandler;
 import com.runicrealms.plugin.utilities.PlaceholderAPI;
 import com.runicrealms.plugin.utilities.RegionHelper;
-import com.runicrealms.runicrestart.event.PreShutdownEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.ConsoleCommandSender;
@@ -186,24 +183,21 @@ import org.bukkit.event.Listener;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.io.File;
-
 public class RunicCore extends JavaPlugin implements Listener {
 
     private static final int BASE_OUTLAW_RATING = 1500;
+    public static final String VERSION_NUMBER = ColorUtil.format("&av2.0.6");
+    public static final String VERSION_TITLE = ColorUtil.format("&e&lRiders of the Outlands");
 
     private static RunicCore instance;
     private static TaskChainFactory taskChainFactory;
     private static CombatAPI combatAPI;
-    private static LootChestManager lootChestManager;
     private static RegenManager regenManager;
     private static PartyAPI partyAPI;
     private static ScoreboardAPI scoreboardAPI;
     private static SpellAPI spellAPI;
-    private static TabAPI tabAPI;
     private static LootTableAPI lootTableAPI;
     private static MobTagger mobTagger;
-    private static BossTagger bossTagger;
     private static ProtocolManager protocolManager;
     private static RegionAPI regionAPI;
     private static PartyChannel partyChannel;
@@ -223,6 +217,7 @@ public class RunicCore extends JavaPlugin implements Listener {
     private static BoostAPI boostAPI;
     private static VanishAPI vanishAPI;
     private static CoreWriteOperation coreWriteOperation;
+    private static LootAPI lootAPI;
 
     // getters for handlers
     public static RunicCore getInstance() {
@@ -237,10 +232,6 @@ public class RunicCore extends JavaPlugin implements Listener {
         return regenManager;
     }
 
-    public static LootChestManager getLootChestManager() {
-        return lootChestManager;
-    }
-
     public static PartyAPI getPartyAPI() {
         return partyAPI;
     }
@@ -253,20 +244,12 @@ public class RunicCore extends JavaPlugin implements Listener {
         return spellAPI;
     }
 
-    public static TabAPI getTabAPI() {
-        return tabAPI;
-    }
-
     public static LootTableAPI getLootTableAPI() {
         return lootTableAPI;
     }
 
     public static MobTagger getMobTagger() {
         return mobTagger;
-    }
-
-    public static BossTagger getBossTagger() {
-        return bossTagger;
     }
 
     public static ProtocolManager getProtocolManager() {
@@ -349,6 +332,10 @@ public class RunicCore extends JavaPlugin implements Listener {
         return vanishAPI;
     }
 
+    public static LootAPI getLootAPI() {
+        return lootAPI;
+    }
+
     /**
      * @return a TaskChain for thread context switching
      */
@@ -372,15 +359,12 @@ public class RunicCore extends JavaPlugin implements Listener {
     public void onDisable() {
         combatAPI = null;
         instance = null;
-        lootChestManager = null;
         regenManager = null;
         partyAPI = null;
         scoreboardAPI = null;
         spellAPI = null;
-        tabAPI = null;
         lootTableAPI = null;
         mobTagger = null;
-        bossTagger = null;
         regionAPI = null;
         partyChannel = null;
         skillTreeAPI = null;
@@ -399,6 +383,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         boostAPI = null;
         vanishAPI = null;
         coreWriteOperation = null;
+        lootAPI = null;
     }
 
     @Override
@@ -413,6 +398,9 @@ public class RunicCore extends JavaPlugin implements Listener {
         // Set database stuff first
         RunicCommon.registerConfigAPI(new ConfigManager());
         RunicCommon.registerLuckPermsAPI(new LuckPermsManager());
+
+        // Register command manager
+        commandManager = new PaperCommandManager(this);
 
         ConverterAPI converterAPI = new ConverterHandler();
         RedisAPI redisAPI = new RedisManager();
@@ -445,16 +433,13 @@ public class RunicCore extends JavaPlugin implements Listener {
         // instantiate everything we need
         taskChainFactory = BukkitTaskChainFactory.create(this);
         combatAPI = new CombatManager();
-        lootChestManager = new LootChestManager();
         regenManager = new RegenManager();
         partyAPI = new PartyManager();
         scoreboardAPI = new ScoreboardHandler();
         spellAPI = new SpellManager();
-        tabAPI = new TabListManager(this);
         lootTableAPI = new LootTableManager();
         regionAPI = new RegionHelper();
         mobTagger = new MobTagger();
-        bossTagger = new BossTagger();
         protocolManager = ProtocolLibrary.getProtocolManager();
         skillTreeAPI = new SkillTreeManager();
         statAPI = new StatManager();
@@ -469,6 +454,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         ambientSoundHandler = new AmbientSoundHandler();
         boostAPI = new BoostManager();
         vanishAPI = new VanishManager();
+        lootAPI = new LootManager();
         new DaylightCycleListener();
         new NpcListener();
         new ArtifactOnCastListener();
@@ -476,9 +462,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         new ArtifactOnKillListener();
         new PlayerQueueManager();
 
-
-        // ACF commands
-        commandManager = new PaperCommandManager(this);
+        // register commands
         registerACFCommands();
         commandManager.getCommandConditions().addCondition("is-console-or-op", context -> {
             if (!(context.getIssuer().getIssuer() instanceof ConsoleCommandSender) && !context.getIssuer().getIssuer().isOp()) // ops can execute console commands
@@ -497,12 +481,6 @@ public class RunicCore extends JavaPlugin implements Listener {
 
         // enable message
         getLogger().info(" §aRunicCore has been enabled.");
-
-        // save filter txt
-        this.saveResource("swearWords.txt", false);
-
-        // load filter
-        FilterUtil.loadFromFile(new File(this.getDataFolder(), "swearWords.txt"));
 
         // register our events, config, commands
         this.registerEvents();
@@ -539,7 +517,6 @@ public class RunicCore extends JavaPlugin implements Listener {
         commandManager.registerCommand(new ResetTreeCMD());
         commandManager.registerCommand(new PartyCommand());
         commandManager.registerCommand(new RunicTeleportCMD());
-        commandManager.registerCommand(new RunicBossCMD());
         commandManager.registerCommand(new HelpCMD());
         commandManager.registerCommand(new SpeedCMD());
         commandManager.registerCommand(new GameModeCMD());
@@ -554,6 +531,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         commandManager.registerCommand(new TempunbanCMD());
         commandManager.registerCommand(new TPHereCMD());
         commandManager.registerCommand(new DiscordCMD());
+        commandManager.registerCommand(new LootChestCommand());
 
         partyChannel = new PartyChannel();
         RunicChat.getRunicChatAPI().registerChatChannel(partyChannel);
@@ -565,13 +543,12 @@ public class RunicCore extends JavaPlugin implements Listener {
         PluginManager pm = this.getServer().getPluginManager();
 
         pm.registerEvents(RunicCore.getMobTagger(), this);
-        pm.registerEvents(RunicCore.getBossTagger(), this);
         pm.registerEvents(new ScoreboardListener(), this);
         pm.registerEvents(new DurabilityListener(), this);
         pm.registerEvents(new StaffListener(), this);
         pm.registerEvents(new BowListener(), this);
         pm.registerEvents(new DamageListener(), this);
-        pm.registerEvents(new ResourcePackListener(), this);
+        pm.registerEvents(new ResourcePackManager(), this);
         pm.registerEvents(new PlayerQuitListener(), this);
         pm.registerEvents(new PartyDamageListener(), this);
         pm.registerEvents(new ExpListener(), this);
@@ -593,7 +570,6 @@ public class RunicCore extends JavaPlugin implements Listener {
         pm.registerEvents(new MinLevelListener(), this);
         pm.registerEvents(new KeyClickListener(), this);
         pm.registerEvents(new WorldChangeListener(), this);
-        pm.registerEvents(new LootChestListener(), this);
         pm.registerEvents(new HearthstoneListener(), this);
         pm.registerEvents(new OffhandListener(), this);
         pm.registerEvents(new CharacterGuiManager(), this);
@@ -627,7 +603,6 @@ public class RunicCore extends JavaPlugin implements Listener {
         pm.registerEvents(new ArtifactSpellListener(), this);
         pm.registerEvents(new StatsGUIListener(), this);
         pm.registerEvents(new ServerListPingListener(), this);
-        pm.registerEvents(new BossChestListener(), this);
         pm.registerEvents(new ExpBoostListener(), this);
         pm.registerEvents(new ShieldListener(), this);
         pm.registerEvents(new PreCommandListener(), this);
@@ -642,6 +617,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         pm.registerEvents(new DonorPerksUIListener(), this);
         pm.registerEvents(new TempbanListener(), this);
         pm.registerEvents(new AFKListener(), this);
+        pm.registerEvents(new PlayerInteractCorrectionListener(), this);
     }
 
     private void registerOldStyleCommands() {

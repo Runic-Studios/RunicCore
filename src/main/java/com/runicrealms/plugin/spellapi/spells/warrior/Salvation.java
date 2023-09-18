@@ -1,7 +1,5 @@
 package com.runicrealms.plugin.spellapi.spells.warrior;
 
-import com.gmail.filoghost.holographicdisplays.api.Hologram;
-import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.common.CharacterClass;
 import com.runicrealms.plugin.spellapi.spelltypes.DistanceSpell;
@@ -11,6 +9,8 @@ import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.spellapi.spellutil.VectorUtil;
 import com.runicrealms.plugin.utilities.BlocksUtil;
+import me.filoghost.holographicdisplays.api.HolographicDisplaysAPI;
+import me.filoghost.holographicdisplays.api.hologram.Hologram;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
@@ -144,8 +144,8 @@ public class Salvation extends Spell implements DistanceSpell, DurationSpell, He
         }
         Material oldMaterial = bestLocation.getBlock().getType();
         bestLocation.getBlock().setType(Material.BELL, false);
-        Hologram hologram = HologramsAPI.createHologram(RunicCore.getInstance(), bestLocation.clone().add(0.5, 2.5, 0.5));
-        hologram.appendTextLine(ChatColor.WHITE + caster.getName() + "'s " + ChatColor.GRAY + "Bell");
+        Hologram hologram = HolographicDisplaysAPI.get(RunicCore.getInstance()).createHologram(bestLocation.clone().add(0.5, 2.5, 0.5));
+        hologram.getLines().appendText(ChatColor.WHITE + caster.getName() + "'s " + ChatColor.GRAY + "Bell");
         caster.getWorld().playSound(location, Sound.BLOCK_BELL_USE, 0.5f, 1.0f);
         BellTask bellTask = new BellTask(caster.getUniqueId(), hologram, bestLocation, oldMaterial, duration);
         blockMap.put(bestLocation.getBlock(), bellTask);

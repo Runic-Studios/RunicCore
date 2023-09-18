@@ -1,32 +1,32 @@
 package com.runicrealms.plugin.spellapi.skilltrees.util;
 
 import com.runicrealms.plugin.model.SpellData;
+import com.runicrealms.plugin.runicitems.Stat;
 import com.runicrealms.plugin.spellapi.skilltrees.Perk;
 import com.runicrealms.plugin.spellapi.skilltrees.PerkBaseStat;
 import com.runicrealms.plugin.spellapi.skilltrees.PerkSpell;
-import com.runicrealms.runicitems.Stat;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class ClericTreeUtil {
 
-    public static Perk DEFAULT_CLERIC_SPELL_PERK = new PerkSpell(996, 0, 1, 1, SpellData.DEFAULT_CLERIC);
+    public static final Perk DEFAULT_CLERIC_SPELL_PERK = new PerkSpell(996, 0, 1, 1, SpellData.DEFAULT_CLERIC);
 
     public static List<Perk> bardPerkList() {
         List<Perk> perks = new ArrayList<>();
-        perks.add(new PerkSpell(36, 1, 0, 1, "Warsong"));
+        perks.add(new PerkSpell(36, 1, 0, 1, "Battlecry"));
         perks.add(new PerkBaseStat(37, 1, 0, 5, Stat.INTELLIGENCE));
         perks.add(new PerkSpell(38, 1, 0, 1, "Accelerando"));
         perks.add(new PerkBaseStat(39, 1, 0, 3, Stat.DEXTERITY));
         perks.add(new PerkBaseStat(40, 1, 0, 3, Stat.INTELLIGENCE));
-        perks.add(new PerkSpell(41, 1, 0, 1, "Diminuendo"));
+        perks.add(new PerkSpell(41, 1, 0, 1, "Powerslide"));
         perks.add(new PerkBaseStat(42, 1, 0, 3, Stat.DEXTERITY));
         perks.add(new PerkBaseStat(43, 1, 0, 3, Stat.INTELLIGENCE));
         perks.add(new PerkBaseStat(44, 1, 0, 5, Stat.DEXTERITY));
-        perks.add(new PerkSpell(45, 1, 0, 1, "Discord"));
+        perks.add(new PerkSpell(45, 1, 0, 1, "Grand Symphony"));
         perks.add(new PerkBaseStat(46, 1, 0, 3, Stat.INTELLIGENCE));
-        perks.add(new PerkSpell(47, 1, 0, 1, "Encore"));
+        perks.add(new PerkSpell(47, 1, 0, 1, "Tempo"));
         return perks;
     }
 

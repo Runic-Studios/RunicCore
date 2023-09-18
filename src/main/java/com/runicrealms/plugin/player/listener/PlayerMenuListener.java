@@ -1,19 +1,19 @@
 package com.runicrealms.plugin.player.listener;
 
+import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.events.PacketContainer;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.common.util.ColorUtil;
 import com.runicrealms.plugin.donor.ui.DonorUI;
 import com.runicrealms.plugin.player.ui.ProfileUI;
 import com.runicrealms.plugin.player.ui.StatsGUI;
 import com.runicrealms.plugin.rdb.RunicDatabase;
-import net.minecraft.server.v1_16_R3.PacketPlayOutSetSlot;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.Sound;
-import org.bukkit.craftbukkit.v1_16_R3.entity.CraftPlayer;
-import org.bukkit.craftbukkit.v1_16_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -63,14 +63,36 @@ public class PlayerMenuListener implements Listener {
 
                     // uses packets to create visual items clientside that can't interact w/ the server
                     // prevents duping
-                    PacketPlayOutSetSlot packet1 = new PacketPlayOutSetSlot(0, 1, CraftItemStack.asNMSCopy(profileIcon(player)));
-                    PacketPlayOutSetSlot packet2 = new PacketPlayOutSetSlot(0, 2, CraftItemStack.asNMSCopy(gemMenuIcon(player)));
-                    PacketPlayOutSetSlot packet3 = new PacketPlayOutSetSlot(0, 3, CraftItemStack.asNMSCopy(gatheringLevelItemStack(player)));
-                    PacketPlayOutSetSlot packet4 = new PacketPlayOutSetSlot(0, 4, CraftItemStack.asNMSCopy(donorPerksIcon(player)));
-                    ((CraftPlayer) player).getHandle().playerConnection.sendPacket(packet1);
-                    ((CraftPlayer) player).getHandle().playerConnection.sendPacket(packet2);
-                    ((CraftPlayer) player).getHandle().playerConnection.sendPacket(packet3);
-                    ((CraftPlayer) player).getHandle().playerConnection.sendPacket(packet4);
+                    PacketContainer packet1 = ProtocolLibrary.getProtocolManager().createPacket(PacketType.Play.Server.SET_SLOT);
+                    packet1.getIntegers().write(0, 0); // Window ID
+                    packet1.getIntegers().write(2, 1); // Slot ID
+                    packet1.getItemModifier().write(0, profileIcon(player)); // Item
+
+                    PacketContainer packet2 = ProtocolLibrary.getProtocolManager().createPacket(PacketType.Play.Server.SET_SLOT);
+                    packet2.getIntegers().write(0, 0); // Window ID
+                    packet2.getIntegers().write(2, 2); // Slot ID
+                    packet2.getItemModifier().write(0, gemMenuIcon(player)); // Item
+
+                    PacketContainer packet3 = ProtocolLibrary.getProtocolManager().createPacket(PacketType.Play.Server.SET_SLOT);
+                    packet3.getIntegers().write(0, 0); // Window ID
+                    packet3.getIntegers().write(2, 3); // Slot ID
+                    packet3.getItemModifier().write(0, gatheringLevelItemStack(player)); // Item
+
+                    PacketContainer packet4 = ProtocolLibrary.getProtocolManager().createPacket(PacketType.Play.Server.SET_SLOT);
+                    packet4.getIntegers().write(0, 0); // Window ID
+                    packet4.getIntegers().write(2, 4); // Slot ID
+                    packet4.getItemModifier().write(0, donorPerksIcon(player)); // Item
+
+                    PacketContainer packet5 = ProtocolLibrary.getProtocolManager().createPacket(PacketType.Play.Server.SET_SLOT);
+                    packet5.getIntegers().write(0, 0); // Window ID
+                    packet5.getIntegers().write(2, 0); // Slot ID
+                    packet5.getItemModifier().write(0, mountMenuIcon(player)); // Item
+
+                    ProtocolLibrary.getProtocolManager().sendServerPacket(player, packet1);
+                    ProtocolLibrary.getProtocolManager().sendServerPacket(player, packet2);
+                    ProtocolLibrary.getProtocolManager().sendServerPacket(player, packet3);
+                    ProtocolLibrary.getProtocolManager().sendServerPacket(player, packet4);
+                    ProtocolLibrary.getProtocolManager().sendServerPacket(player, packet5);
                 }
             }
         }, 100L, 10L);
@@ -101,6 +123,7 @@ public class PlayerMenuListener implements Listener {
     }
 
     private void clearPlayerCraftingSlots(InventoryView view) {
+        view.setItem(0, null);
         view.setItem(1, null);
         view.setItem(2, null);
         view.setItem(3, null);
@@ -165,6 +188,26 @@ public class PlayerMenuListener implements Listener {
                 );
     }
 
+    /**
+     * The info item for the mount menu icon
+     *
+     * @param player to display menu for
+     * @return an ItemStack to display
+     */
+    private ItemStack mountMenuIcon(Player player) {
+        return item
+                (
+                        player,
+                        Material.SADDLE,
+                        ChatColor.YELLOW + "Mount Menu",
+                        """
+
+                                &6&lCLICK
+                                &7To view your mount appearances
+                                &7and riding achievements!"""
+                );
+    }
+
     private ItemStack item(Player player, Material material, String name, String description) {
         ItemStack item = new ItemStack(material);
         ItemMeta meta = item.getItemMeta();
@@ -213,6 +256,7 @@ public class PlayerMenuListener implements Listener {
             player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1.0f);
             player.openInventory(new DonorUI(player).getInventory());
         }
+        //the mount menu logic is handled by the RunicMounts plugin
     }
 
     /**

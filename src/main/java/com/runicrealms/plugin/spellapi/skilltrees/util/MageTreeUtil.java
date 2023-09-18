@@ -1,10 +1,10 @@
 package com.runicrealms.plugin.spellapi.skilltrees.util;
 
 import com.runicrealms.plugin.model.SpellData;
+import com.runicrealms.plugin.runicitems.Stat;
 import com.runicrealms.plugin.spellapi.skilltrees.Perk;
 import com.runicrealms.plugin.spellapi.skilltrees.PerkBaseStat;
 import com.runicrealms.plugin.spellapi.skilltrees.PerkSpell;
-import com.runicrealms.runicitems.Stat;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,16 +16,16 @@ import java.util.List;
  */
 public class MageTreeUtil {
 
-    public static Perk DEFAULT_MAGE_SPELL_PERK = new PerkSpell(997, 0, 1, 1, SpellData.DEFAULT_MAGE);
+    public static final Perk DEFAULT_MAGE_SPELL_PERK = new PerkSpell(997, 0, 1, 1, SpellData.DEFAULT_MAGE);
 
     public static List<Perk> cryomancerPerkList() {
         List<Perk> perks = new ArrayList<>();
-        perks.add(new PerkSpell(72, 1, 0, 1, "Snap Freeze"));
+        perks.add(new PerkSpell(72, 1, 0, 1, "Frostbite"));
         perks.add(new PerkBaseStat(73, 1, 0, 5, Stat.INTELLIGENCE));
-        perks.add(new PerkSpell(74, 1, 0, 1, "Cold Touch"));
+        perks.add(new PerkSpell(74, 1, 0, 1, "Shatter"));
         perks.add(new PerkBaseStat(75, 1, 0, 3, Stat.VITALITY));
         perks.add(new PerkBaseStat(76, 1, 0, 3, Stat.INTELLIGENCE));
-        perks.add(new PerkSpell(77, 1, 0, 1, "Frostbite"));
+        perks.add(new PerkSpell(77, 1, 0, 1, "Snap Freeze"));
         perks.add(new PerkBaseStat(78, 1, 0, 3, Stat.VITALITY));
         perks.add(new PerkBaseStat(79, 1, 0, 3, Stat.INTELLIGENCE));
         perks.add(new PerkBaseStat(80, 1, 0, 5, Stat.VITALITY));
@@ -39,14 +39,14 @@ public class MageTreeUtil {
         List<Perk> perks = new ArrayList<>();
         perks.add(new PerkSpell(84, 1, 0, 1, "Dragon's Breath"));
         perks.add(new PerkBaseStat(85, 1, 0, 5, Stat.INTELLIGENCE));
-        perks.add(new PerkSpell(86, 1, 0, 1, "Scald"));
-        perks.add(new PerkBaseStat(87, 1, 0, 3, Stat.WISDOM));
+        perks.add(new PerkSpell(86, 1, 0, 1, "Cindered Touch"));
+        perks.add(new PerkBaseStat(87, 1, 0, 3, Stat.DEXTERITY));
         perks.add(new PerkBaseStat(88, 1, 0, 3, Stat.INTELLIGENCE));
-        perks.add(new PerkSpell(89, 1, 0, 1, "Fire Blast"));
-        perks.add(new PerkBaseStat(90, 1, 0, 3, Stat.WISDOM));
+        perks.add(new PerkSpell(89, 1, 0, 1, "Erupt"));
+        perks.add(new PerkBaseStat(90, 1, 0, 3, Stat.DEXTERITY));
         perks.add(new PerkBaseStat(91, 1, 0, 3, Stat.INTELLIGENCE));
-        perks.add(new PerkBaseStat(92, 1, 0, 5, Stat.WISDOM));
-        perks.add(new PerkSpell(93, 1, 0, 1, "Meteor Shower"));
+        perks.add(new PerkBaseStat(92, 1, 0, 5, Stat.DEXTERITY));
+        perks.add(new PerkSpell(93, 1, 0, 1, "Meteor"));
         perks.add(new PerkBaseStat(94, 1, 0, 3, Stat.INTELLIGENCE));
         perks.add(new PerkSpell(95, 1, 0, 1, "Inferno"));
         return perks;

@@ -3,6 +3,7 @@ package com.runicrealms.plugin.model;
 import com.runicrealms.plugin.rdb.RunicDatabase;
 import com.runicrealms.plugin.rdb.model.SessionDataMongo;
 import org.bson.types.ObjectId;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -80,6 +81,7 @@ public class CorePlayerData implements SessionDataMongo {
      * @param slot of the character
      * @return the CharacterData for RunicCore
      */
+    @Nullable
     public CoreCharacterData getCharacter(int slot) {
         if (coreCharacterDataMap.get(slot) != null) {
             return coreCharacterDataMap.get(slot);
@@ -146,9 +148,13 @@ public class CorePlayerData implements SessionDataMongo {
      * @return their spell data wrapper
      */
     public SpellData getSpellData(int slot) {
-        if (spellDataMap.get(slot) != null) {
-            return spellDataMap.get(slot);
+        Map<SkillTreePosition, SkillTreeData> subclasses = this.skillTreeDataMap.get(slot);
+        CoreCharacterData character = this.coreCharacterDataMap.get(slot);
+
+        if (subclasses != null && character != null && this.spellDataMap.get(slot) != null) {
+            return this.spellDataMap.get(slot).clean(subclasses, character.getClassType().getName());
         }
+
         return null;
     }
 

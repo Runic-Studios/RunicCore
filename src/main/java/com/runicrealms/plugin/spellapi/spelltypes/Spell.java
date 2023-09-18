@@ -2,9 +2,9 @@ package com.runicrealms.plugin.spellapi.spelltypes;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.api.event.AllyVerifyEvent;
+import com.runicrealms.plugin.common.CharacterClass;
 import com.runicrealms.plugin.events.EnemyVerifyEvent;
 import com.runicrealms.plugin.rdb.RunicDatabase;
-import com.runicrealms.plugin.common.CharacterClass;
 import com.runicrealms.plugin.utilities.ActionBarUtil;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -17,6 +17,8 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.util.Vector;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
@@ -24,6 +26,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.Map;
 import java.util.UUID;
+import java.util.logging.Level;
 
 public abstract class Spell implements ISpell, Listener {
     private static final String SPELLS_DIRECTORY = "RunicCore/spells";
@@ -34,6 +37,7 @@ public abstract class Spell implements ISpell, Listener {
     private int manaCost;
     private String description = "";
     private boolean isPassive = false;
+    private boolean displayCastMessage = true;
 
     /**
      * Creates this spell object once on startup. Loads its values from flat file
@@ -41,7 +45,7 @@ public abstract class Spell implements ISpell, Listener {
      * @param name     of the spell
      * @param reqClass to use the spell
      */
-    public Spell(String name, CharacterClass reqClass) {
+    public Spell(@NotNull String name, @NotNull CharacterClass reqClass) {
         this.name = name;
         this.reqClass = reqClass;
         this.loadSpellData(); // Load values like mana, cooldown, etc. from file
@@ -49,12 +53,17 @@ public abstract class Spell implements ISpell, Listener {
     }
 
     @Override
-    public void addStatusEffect(LivingEntity livingEntity, RunicStatusEffect runicStatusEffect, double durationInSecs, boolean displayMessage) {
+    public void addStatusEffect(@NotNull LivingEntity livingEntity, @NotNull RunicStatusEffect runicStatusEffect, double durationInSecs, boolean displayMessage, @Nullable LivingEntity applier) {
+        RunicCore.getStatusEffectAPI().addStatusEffect(livingEntity, runicStatusEffect, durationInSecs, displayMessage, applier);
+    }
+
+    @Override
+    public void addStatusEffect(@NotNull LivingEntity livingEntity, @NotNull RunicStatusEffect runicStatusEffect, double durationInSecs, boolean displayMessage) {
         RunicCore.getStatusEffectAPI().addStatusEffect(livingEntity, runicStatusEffect, durationInSecs, displayMessage);
     }
 
     @Override
-    public boolean execute(Player player, SpellItemType type) {
+    public boolean execute(@NotNull Player player, @NotNull SpellItemType type) {
 
         if (isOnCooldown(player)) return false; // ensure spell is not on cooldown
         UUID uuid = player.getUniqueId();
@@ -75,7 +84,11 @@ public abstract class Spell implements ISpell, Listener {
         // cast the spell
         int currentMana = RunicCore.getRegenManager().getCurrentManaList().get(player.getUniqueId());
         RunicCore.getRegenManager().getCurrentManaList().put(player.getUniqueId(), currentMana - this.manaCost);
-        player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(ChatColor.GREEN + "You cast " + ChatColor.WHITE + getName() + ChatColor.GREEN + "!"));
+
+        if (this.displayCastMessage) {
+            player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(ChatColor.GREEN + "You cast " + ChatColor.WHITE + getName() + ChatColor.GREEN + "!"));
+        }
+
         RunicCore.getSpellAPI().addCooldown(player, this, this.getCooldown());
         this.executeSpell(player, type);
         return true;
@@ -86,6 +99,7 @@ public abstract class Spell implements ISpell, Listener {
         return this.cooldown;
     }
 
+    @NotNull
     @Override
     public String getDescription() {
         return this.description;
@@ -100,52 +114,54 @@ public abstract class Spell implements ISpell, Listener {
         return this.manaCost;
     }
 
+    @NotNull
     @Override
     public String getName() {
         return this.name;
     }
 
+    @NotNull
     @Override
     public CharacterClass getReqClass() {
         return reqClass;
     }
 
     @Override
-    public boolean hasPassive(UUID uuid, String passive) {
+    public boolean hasPassive(@NotNull UUID uuid, @NotNull String passive) {
         return RunicCore.getSkillTreeAPI().hasPassiveFromSkillTree(uuid, passive);
     }
 
     @Override
-    public boolean hasStatusEffect(UUID uuid, RunicStatusEffect runicStatusEffect) {
+    public boolean hasStatusEffect(@NotNull UUID uuid, @NotNull RunicStatusEffect runicStatusEffect) {
         return RunicCore.getStatusEffectAPI().hasStatusEffect(uuid, runicStatusEffect);
     }
 
     @Override
-    public void healPlayer(Player caster, Player recipient, double amount, Spell... spell) {
+    public void healPlayer(@NotNull Player caster, @NotNull Player recipient, double amount, @Nullable Spell spell) {
         RunicCore.getSpellAPI().healPlayer(caster, recipient, amount, spell);
     }
 
     @Override
-    public boolean isOnCooldown(Player player) {
+    public boolean isOnCooldown(@NotNull Player player) {
         return RunicCore.getSpellAPI().isOnCooldown(player, this.getName());
     }
 
     @Override
-    public boolean isValidAlly(Player caster, Entity ally) {
+    public boolean isValidAlly(@NotNull Player caster, @NotNull Entity ally) {
         AllyVerifyEvent allyVerifyEvent = new AllyVerifyEvent(caster, ally);
         Bukkit.getServer().getPluginManager().callEvent(allyVerifyEvent);
         return !allyVerifyEvent.isCancelled();
     }
 
     @Override
-    public boolean isValidEnemy(Player caster, Entity victim) {
+    public boolean isValidEnemy(@NotNull Player caster, @NotNull Entity victim) {
         EnemyVerifyEvent enemyVerifyEvent = new EnemyVerifyEvent(caster, victim);
         Bukkit.getServer().getPluginManager().callEvent(enemyVerifyEvent);
         return !enemyVerifyEvent.isCancelled();
     }
 
     @Override
-    public int percentMissingHealth(Entity entity, double percent) {
+    public int percentMissingHealth(@NotNull Entity entity, double percent) {
         if (!(entity instanceof LivingEntity livingEntity)) return 0;
         double max = livingEntity.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
         double missing = max - livingEntity.getHealth();
@@ -153,12 +169,12 @@ public abstract class Spell implements ISpell, Listener {
     }
 
     @Override
-    public boolean removeStatusEffect(Entity entity, RunicStatusEffect runicStatusEffect) {
+    public boolean removeStatusEffect(@NotNull Entity entity, @NotNull RunicStatusEffect runicStatusEffect) {
         return RunicCore.getStatusEffectAPI().removeStatusEffect(entity.getUniqueId(), runicStatusEffect);
     }
 
     @Override
-    public void shieldPlayer(Player caster, Player recipient, double amount, Spell... spell) {
+    public void shieldPlayer(@NotNull Player caster, @NotNull Player recipient, double amount, @Nullable Spell spell) {
         RunicCore.getSpellAPI().shieldPlayer(caster, recipient, amount, spell);
     }
 
@@ -178,8 +194,7 @@ public abstract class Spell implements ISpell, Listener {
      * Loads the spell balance values from flat file
      */
     private void loadSpellData() {
-        String nameNoFormatting = name.replace(" ", "").replace("'", "");
-        File filePath = new File(RunicCore.getInstance().getDataFolder().getParent(), SPELLS_DIRECTORY + "/" + nameNoFormatting + ".yml");
+        File filePath = new File(RunicCore.getInstance().getDataFolder().getParent(), SPELLS_DIRECTORY + "/" + this.getClass().getSimpleName() + ".yml");
 
         if (filePath.exists()) {
             Yaml yaml = new Yaml();
@@ -192,6 +207,8 @@ public abstract class Spell implements ISpell, Listener {
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
+        } else {
+            RunicCore.getInstance().getLogger().log(Level.SEVERE, "Missing spell data file for " + this.name);
         }
     }
 
@@ -245,5 +262,13 @@ public abstract class Spell implements ISpell, Listener {
 
     public void setIsPassive(boolean isPassive) {
         this.isPassive = isPassive;
+    }
+
+    public boolean isDisplayingCastMessage() {
+        return this.displayCastMessage;
+    }
+
+    public void setDisplayCastMessage(boolean displayCastMessage) {
+        this.displayCastMessage = displayCastMessage;
     }
 }

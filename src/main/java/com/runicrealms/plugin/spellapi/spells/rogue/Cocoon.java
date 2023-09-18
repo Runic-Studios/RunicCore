@@ -1,6 +1,7 @@
 package com.runicrealms.plugin.spellapi.spells.rogue;
 
 import com.runicrealms.plugin.common.CharacterClass;
+import com.runicrealms.plugin.common.util.Pair;
 import com.runicrealms.plugin.spellapi.spelltypes.DistanceSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.PhysicalDamageSpell;
@@ -15,10 +16,17 @@ import org.bukkit.Sound;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.util.RayTraceResult;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 public class Cocoon extends Spell implements DistanceSpell, DurationSpell, PhysicalDamageSpell {
     private static final double BEAM_WIDTH = 1.0D;
-    public double duration;
+    private final Map<UUID, Pair<UUID, Long>> lastTimeCocooned;
+    private double duration;
     private double damage;
     private double damagePerLevel;
     private double distance;
@@ -29,6 +37,7 @@ public class Cocoon extends Spell implements DistanceSpell, DurationSpell, Physi
                 "that deals (" + damage + " + &f" + damagePerLevel + "x&7 lvl) physical⚔ " +
                 "damage and slows the first enemy hit within " + distance + " blocks " +
                 "for " + duration + "s!");
+        this.lastTimeCocooned = new HashMap<>();
     }
 
     @Override
@@ -54,6 +63,7 @@ public class Cocoon extends Spell implements DistanceSpell, DurationSpell, Physi
             livingEntity.getWorld().playSound(livingEntity.getLocation(), Sound.ENTITY_ZOMBIE_ATTACK_WOODEN_DOOR, 0.25f, 2.0f);
             addStatusEffect(livingEntity, RunicStatusEffect.SLOW_III, duration, false);
             DamageUtil.damageEntityPhysical(damage, livingEntity, player, false, false, this);
+            this.lastTimeCocooned.put(livingEntity.getUniqueId(), Pair.pair(player.getUniqueId(), System.currentTimeMillis()));
         }
     }
 
@@ -95,6 +105,67 @@ public class Cocoon extends Spell implements DistanceSpell, DurationSpell, Physi
     @Override
     public void setPhysicalDamagePerLevel(double physicalDamagePerLevel) {
         this.damagePerLevel = physicalDamagePerLevel;
+    }
+
+    /**
+     * A method used to check if an entity is still under the spells effect
+     *
+     * @param uuid     the uuid of the target entity
+     * @param duration how long since the cocoon was applied
+     * @return if an entity is still under the spells effect
+     */
+    public boolean isCocooned(@NotNull UUID uuid, double duration) {
+        Pair<UUID, Long> data = this.lastTimeCocooned.get(uuid);
+
+        if (data == null) {
+            return false;
+        }
+
+        return (duration * 1000) + data.second > System.currentTimeMillis();
+    }
+
+    /**
+     * A method used to check if an entity is still under the spells effect
+     *
+     * @param uuid the uuid of the target entity
+     * @return if an entity is still under the spells effect
+     */
+    public boolean isCocooned(@NotNull UUID uuid) {
+        return this.isCocooned(uuid, this.duration);
+    }
+
+    /**
+     * A method used to get the uuid of who casted the Cocoon on the target
+     *
+     * @param target the target
+     * @return the uuid of who casted the Cocoon on the target
+     */
+    @Nullable
+    public UUID getCaster(@NotNull UUID target) {
+        Pair<UUID, Long> data = this.lastTimeCocooned.get(target);
+
+        if (data == null) {
+            return null;
+        }
+
+        return data.first;
+    }
+
+    /**
+     * A method used to get the target of Cocoon from the caster
+     *
+     * @param caster the caster
+     * @return the target of Cocoon from the caster
+     */
+    @Nullable
+    public UUID getTarget(@NotNull UUID caster) {
+        for (Map.Entry<UUID, Pair<UUID, Long>> entry : this.lastTimeCocooned.entrySet()) {
+            if (entry.getValue().first.equals(caster)) {
+                return entry.getKey();
+            }
+        }
+
+        return null;
     }
 }
 

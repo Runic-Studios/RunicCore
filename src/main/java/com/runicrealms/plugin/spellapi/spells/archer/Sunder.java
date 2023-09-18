@@ -16,6 +16,10 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * @deprecated replaced by {@link SteadyAim}
+ */
+@Deprecated
 public class Sunder extends Spell implements DurationSpell {
     private final Map<UUID, Long> sunderMap = new ConcurrentHashMap<>();
     private double duration;

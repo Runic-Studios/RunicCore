@@ -1,13 +1,15 @@
 package com.runicrealms.plugin.spellapi.spells.archer;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.events.SpellHealEvent;
 import com.runicrealms.plugin.common.CharacterClass;
+import com.runicrealms.plugin.events.PhysicalDamageEvent;
+import com.runicrealms.plugin.events.SpellHealEvent;
+import com.runicrealms.plugin.runicitems.Stat;
 import com.runicrealms.plugin.spellapi.spelltypes.AttributeSpell;
+import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.HealingSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.RadiusSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
-import com.runicrealms.runicitems.Stat;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
@@ -17,11 +19,12 @@ import org.bukkit.event.EventHandler;
 
 import java.util.Map;
 
-public class GiftsOfTheGrove extends Spell implements AttributeSpell {
+public class GiftsOfTheGrove extends Spell implements AttributeSpell, DurationSpell {
     private double baseValue;
     private double multiplier;
     private double percent;
     private String statName;
+    private double duration;
 
     public GiftsOfTheGrove() {
         super("Gifts Of The Grove", CharacterClass.ARCHER);
@@ -29,7 +32,8 @@ public class GiftsOfTheGrove extends Spell implements AttributeSpell {
         Stat stat = Stat.getFromName(statName);
         String prefix = stat == null ? "" : stat.getPrefix();
         this.setDescription("While inside your &aSacred Grove&7, " +
-                "your healing is increased by (" + baseValue + " + &f" + multiplier + "x &e" + prefix + "&7)%! " +
+                "your healing✦ is increased by (" + baseValue + " + &f" + multiplier + "x &e" + prefix + "&7)% " +
+                "and when you hit an enemy the cooldown for &aRemedy&7 is reduced by " + this.duration + "s " +
                 "If you are inside the grove when it expires, " +
                 "it releases one more pulse, " +
                 "healing allies for " + (percent * 100) + "% of its base value!");
@@ -83,6 +87,16 @@ public class GiftsOfTheGrove extends Spell implements AttributeSpell {
         this.percent = percent;
     }
 
+    @Override
+    public double getDuration() {
+        return this.duration;
+    }
+
+    @Override
+    public void setDuration(double duration) {
+        this.duration = duration;
+    }
+
     @EventHandler
     public void onGroveExpiry(SacredGrove.GroveExpiryEvent event) {
         if (event.isCancelled()) return;
@@ -116,9 +130,28 @@ public class GiftsOfTheGrove extends Spell implements AttributeSpell {
         // Ensure player is within grove radius
         if (event.getPlayer().getLocation().distanceSquared(groveLocation) > radius * radius)
             return;
-        int wisdom = RunicCore.getStatAPI().getPlayerWisdom(event.getPlayer().getUniqueId());
-        double bonus = (multiplier * wisdom) / 100;
+        int stat = RunicCore.getStatAPI().getStat(event.getPlayer().getUniqueId(), this.statName);
+        double bonus = (multiplier * stat) / 100;
         event.setAmount((int) (event.getAmount() + (event.getAmount() * bonus)));
     }
 
+    @EventHandler(ignoreCancelled = true)
+    public void onRangedPhysicalDamage(PhysicalDamageEvent event) {
+        if (!event.isRanged() || !this.hasPassive(event.getPlayer().getUniqueId(), this.getName()) || !RunicCore.getSpellAPI().isOnCooldown(event.getPlayer(), "Remedy")) {
+            return;
+        }
+
+        Location groveLocation = SacredGrove.getGroveLocationMap().get(event.getPlayer().getUniqueId());
+
+        if (groveLocation == null) {
+            return;
+        }
+
+        double radius = ((RadiusSpell) RunicCore.getSpellAPI().getSpell("Sacred Grove")).getRadius();
+        if (event.getPlayer().getLocation().distanceSquared(groveLocation) > radius * radius) {
+            return; //outside of radius
+        }
+
+        RunicCore.getSpellAPI().reduceCooldown(event.getPlayer(), "Remedy", this.duration);
+    }
 }

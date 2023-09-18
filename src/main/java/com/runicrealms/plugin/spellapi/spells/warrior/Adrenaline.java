@@ -1,69 +1,46 @@
 package com.runicrealms.plugin.spellapi.spells.warrior;
 
-import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.common.CharacterClass;
+import com.runicrealms.plugin.common.util.ColorUtil;
+import com.runicrealms.plugin.common.util.Pair;
 import com.runicrealms.plugin.events.PhysicalDamageEvent;
-import com.runicrealms.plugin.spellapi.spelltypes.AttributeSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.RunicStatusEffect;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
-import com.runicrealms.plugin.spellapi.spellutil.particles.Cone;
 import com.runicrealms.plugin.spellapi.spellutil.particles.HelixParticleFrame;
-import com.runicrealms.runicitems.Stat;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-import org.bukkit.scheduler.BukkitTask;
+import org.jetbrains.annotations.NotNull;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicInteger;
 
-public class Adrenaline extends Spell implements AttributeSpell, DurationSpell {
-    private final Map<UUID, AdrenalineTracker> adrenalineMap = new ConcurrentHashMap<>();
-    private double baseValue;
-    private double duration;
-    private double maxStacks;
-    private double multiplier;
-    private String statName;
+/**
+ * New ultimate spell for berserker
+ *
+ * @author BoBoBalloon
+ */
+public class Adrenaline extends Spell implements DurationSpell {
+    private final Map<UUID, Pair<Long, Integer>> stacks;
+    private double buffDuration;
+    private double stackDuration;
+    private int maxStacks;
+    private double percent;
 
     public Adrenaline() {
         super("Adrenaline", CharacterClass.WARRIOR);
-        Stat stat = Stat.getFromName(statName);
-        String prefix = stat == null ? "" : stat.getPrefix();
-        this.setDescription("For the next " + duration + "s, each time you basic attack, " +
-                "gain a stack of Adrenaline, granting additional physical damage equal to" +
-                " (" + baseValue + " + &f" + multiplier + "x &e" + prefix + "&7). " +
-                "Each hit refreshes the duration of your stacks, " +
-                "stacking up to " + maxStacks + " times. At max stacks, " +
-                "extend the duration of this effect by 5s and gain Speed II " +
-                "for the remainder of the effect!");
-    }
-
-    private int damageBasedOnStacks(Player player) {
-        // If the player is at max stacks, give them the max stacks damage
-        if (adrenalineMap.get(player.getUniqueId()).getStacks() >= maxStacks) {
-            double damageBonus = multiplier * RunicCore.getStatAPI().getPlayerStrength(player.getUniqueId());
-            damageBonus *= maxStacks;
-            return (int) (baseValue + damageBonus);
-        }
-        // Otherwise increment stacks
-        adrenalineMap.get(player.getUniqueId()).increment();
-        double damageBonus = multiplier * RunicCore.getStatAPI().getPlayerStrength(player.getUniqueId());
-        damageBonus *= adrenalineMap.get(player.getUniqueId()).getStacks();
-        // If this current increment brought us to threshold, refresh duration
-        if (adrenalineMap.get(player.getUniqueId()).getStacks() >= maxStacks) {
-            refresh(player);
-        }
-
-        return (int) (baseValue + damageBonus);
+        this.setDescription("For the next " + this.buffDuration + "s gain Speed II. " +
+                "Each of your basic attacks on bleeding enemies grant you a stack of rage. " +
+                "Each stack causes you to deal " + (this.percent * 100) + "% more physical⚔ damage. " +
+                "This effect can stack up to " + this.maxStacks + " times and lasts " + this.stackDuration + "s. " +
+                "If you reach maximum stacks within the " + this.buffDuration + "s, cleanse yourself of all negative effects and reset the duration of the speed bonus.");
+        this.stacks = new HashMap<>();
     }
 
     @Override
@@ -71,126 +48,104 @@ public class Adrenaline extends Spell implements AttributeSpell, DurationSpell {
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_WITHER_SPAWN, 0.5f, 1.0f);
         player.getWorld().playSound(player.getLocation(), Sound.BLOCK_PORTAL_TRAVEL, 0.5f, 1.0f);
         new HelixParticleFrame(1.0F, 30, 10.0F).playParticle(player, Particle.REDSTONE, player.getLocation(), Color.RED);
-        adrenalineMap.put(player.getUniqueId(), new AdrenalineTracker(player));
+        this.stacks.put(player.getUniqueId(), Pair.pair(System.currentTimeMillis(), 0));
+        this.addStatusEffect(player, RunicStatusEffect.SPEED_II, this.buffDuration, true);
     }
 
     @Override
-    public double getBaseValue() {
-        return baseValue;
-    }
-
-    @Override
-    public void setBaseValue(double baseValue) {
-        this.baseValue = baseValue;
-    }
-
-    @Override
-    public double getMultiplier() {
-        return multiplier;
-    }
-
-    @Override
-    public void setMultiplier(double multiplier) {
-        this.multiplier = multiplier;
-    }
-
-    @Override
-    public String getStatName() {
-        return statName;
-    }
-
-    @Override
-    public void setStatName(String statName) {
-        this.statName = statName;
-    }
-
-    @Override
-    public void loadAttributeData(Map<String, Object> spellData) {
-        setStatName((String) spellData.getOrDefault("attribute", ""));
-        Number baseValue = (Number) spellData.getOrDefault("attribute-base-value", 0);
-        setBaseValue(baseValue.doubleValue());
-        Number multiplier = (Number) spellData.getOrDefault("attribute-multiplier", 0);
-        setMultiplier(multiplier.doubleValue());
-        Number maxStacks = (Number) spellData.getOrDefault("max-stacks", 0);
-        setMaxStacks(maxStacks.doubleValue());
+    protected void loadSpellSpecificData(Map<String, Object> spellData) {
+        super.loadSpellSpecificData(spellData);
+        Number maxStacks = (Number) spellData.getOrDefault("max-stacks", 5);
+        this.maxStacks = maxStacks.intValue();
+        Number percent = (Number) spellData.getOrDefault("percent", .03);
+        this.percent = percent.doubleValue();
+        Number stackDuration = (Number) spellData.getOrDefault("stack-duration", 1);
+        this.stackDuration = stackDuration.doubleValue();
     }
 
     @Override
     public double getDuration() {
-        return duration;
+        return buffDuration;
     }
 
     @Override
     public void setDuration(double duration) {
-        this.duration = duration;
+        this.buffDuration = duration;
     }
 
     /**
-     * Activate on-hit effects
+     * A method used to check the duration of stacks of this ability and to remove any that have expired
+     *
+     * @param caster the caster
+     * @return the amount of stacks the player currently has
      */
-    @EventHandler(priority = EventPriority.HIGH)
-    public void onSuccessfulHit(PhysicalDamageEvent event) {
-        if (!event.isBasicAttack()) return;
-        if (!adrenalineMap.containsKey(event.getPlayer().getUniqueId())) return;
-        if (event.isCancelled()) return;
-        Player player = event.getPlayer();
-        event.setAmount(event.getAmount() + damageBasedOnStacks(player));
+    public int getStacks(@NotNull UUID caster) {
+        Pair<Long, Integer> data = this.stacks.get(caster);
+
+        if (data == null) {
+            return 0;
+        }
+
+        long now = System.currentTimeMillis();
+
+        if (now < data.first + (this.buffDuration * 1000)) {
+            return data.second;
+        }
+
+        if (data.second - 1 <= 0) {
+            this.stacks.remove(caster);
+            return 0;
+        } else {
+            this.stacks.put(caster, Pair.pair(data.first, data.second - 1));
+            return data.second - 1;
+        }
     }
 
-    private void refresh(Player player) {
-        adrenalineMap.get(player.getUniqueId()).refreshTask();
-        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDER_DRAGON_GROWL, 0.5f, 1.0f);
-        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 0.5f, 1.0f);
-        Cone.coneEffect(player, Particle.REDSTONE, duration, 0, 20, Color.RED);
-        addStatusEffect(player, RunicStatusEffect.SPEED_II, duration, false);
+    /**
+     * A method used to add a stack to the caster
+     *
+     * @param caster the caster
+     */
+    public void addStack(@NotNull UUID caster) {
+        Pair<Long, Integer> data = this.stacks.get(caster);
+
+        if (data == null) {
+            return;
+        }
+
+        long now = System.currentTimeMillis();
+
+        if (now < data.first + (this.buffDuration * 1000)) {
+            this.stacks.put(caster, Pair.pair(now, Math.min(data.second + 1, this.maxStacks)));
+        } else {
+            this.stacks.remove(caster);
+        }
     }
 
-    public void setMaxStacks(double maxStacks) {
-        this.maxStacks = maxStacks;
-    }
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    private void onPhysicalDamage(PhysicalDamageEvent event) {
+        int stacks = this.getStacks(event.getPlayer().getUniqueId());
 
-    class AdrenalineTracker {
-        private final Player player;
-        private final AtomicInteger stacks;
-        private BukkitTask bukkitTask;
-
-        public AdrenalineTracker(Player player) {
-            this.player = player;
-            this.stacks = new AtomicInteger(0);
-            this.bukkitTask =
-                    Bukkit.getScheduler().runTaskLaterAsynchronously(RunicCore.getInstance(),
-                            () -> {
-                                adrenalineMap.remove(player.getUniqueId());
-                                player.sendMessage(ChatColor.GRAY + "Adrenaline has expired.");
-                            }, (int) duration * 20L);
+        if (this.stacks.containsKey(event.getPlayer().getUniqueId()) && this.hasStatusEffect(event.getVictim().getUniqueId(), RunicStatusEffect.BLEED)) {
+            this.addStack(event.getPlayer().getUniqueId());
+            //stacks + 1 since stacks was calculated before the new stack was added
+            event.getPlayer().sendMessage(ColorUtil.format("&aYou have " + (stacks + 1) + " stacks of rage!"));
         }
 
-        public Player getPlayer() {
-            return player;
+        if (stacks <= 0) {
+            return;
         }
 
-        public int getStacks() {
-            return stacks.get();
+        double multiplier = 1 + (this.percent * stacks);
+        event.setAmount((int) (event.getAmount() * multiplier));
+
+        if (stacks < this.maxStacks) {
+            return;
         }
 
-        private void increment() {
-            this.stacks.getAndIncrement();
-            // Send message feedback
-            player.sendMessage(ChatColor.GRAY + "Adrenaline stacks: " + ChatColor.YELLOW + this.stacks.get());
-        }
-
-        /**
-         * Refreshes the task that expires the buff
-         */
-        public void refreshTask() {
-            this.bukkitTask.cancel();
-            this.bukkitTask =
-                    Bukkit.getScheduler().runTaskLaterAsynchronously(RunicCore.getInstance(),
-                            () -> {
-                                adrenalineMap.remove(player.getUniqueId());
-                                player.sendMessage(ChatColor.GRAY + "Adrenaline has expired.");
-                            }, (int) duration * 20L);
-        }
+        event.getPlayer().sendMessage(ColorUtil.format("&aYou are &c&lenraged&r&a!"));
+        this.stacks.remove(event.getPlayer().getUniqueId());
+        this.addStatusEffect(event.getPlayer(), RunicStatusEffect.SPEED_II, this.buffDuration, false);
     }
 }
 

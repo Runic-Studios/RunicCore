@@ -3,9 +3,9 @@ package com.runicrealms.plugin.item.artifact;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.events.RunicDeathEvent;
 import com.runicrealms.plugin.item.artifact.event.RunicArtifactOnKillEvent;
-import com.runicrealms.runicitems.item.util.RunicArtifactAbilityTrigger;
-import com.runicrealms.runicitems.util.ArtifactUtil;
-import io.lumine.xikage.mythicmobs.api.bukkit.events.MythicMobDeathEvent;
+import com.runicrealms.plugin.runicitems.item.util.RunicArtifactAbilityTrigger;
+import com.runicrealms.plugin.runicitems.util.ArtifactUtil;
+import io.lumine.mythic.bukkit.events.MythicMobDeathEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -45,8 +45,7 @@ public class ArtifactOnKillListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST) // last
     public void onMobKill(MythicMobDeathEvent event) {
         if (event.getKiller() == null) return;
-        if (!(event.getKiller() instanceof Player)) return;
-        Player killer = (Player) event.getKiller();
+        if (!(event.getKiller() instanceof Player killer)) return;
         ItemStack itemStack = killer.getInventory().getItemInMainHand();
         checkForKillTrigger(killer, itemStack, event.getEntity());
     }
@@ -55,9 +54,7 @@ public class ArtifactOnKillListener implements Listener {
     public void onPlayerKill(RunicDeathEvent event) {
         if (event.isCancelled()) return;
         if (event.getKiller() == null) return;
-        if (event.getKiller().length <= 0) return;
-        if (!(event.getKiller()[0] instanceof Player)) return;
-        Player killer = (Player) event.getKiller()[0];
+        if (!(event.getKiller() instanceof Player killer)) return;
         ItemStack itemStack = killer.getInventory().getItemInMainHand();
         checkForKillTrigger(killer, itemStack, event.getVictim());
     }

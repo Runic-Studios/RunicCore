@@ -5,6 +5,7 @@ import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.character.CharacterSelectUtil;
 import com.runicrealms.plugin.common.CharacterClass;
 import com.runicrealms.plugin.common.DonorRank;
+import com.runicrealms.plugin.common.util.ColorUtil;
 import com.runicrealms.plugin.common.util.GUIUtil;
 import com.runicrealms.plugin.model.ClassData;
 import com.runicrealms.plugin.model.CoreCharacterData;
@@ -39,6 +40,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import redis.clients.jedis.Jedis;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -196,6 +198,14 @@ public class CharacterGuiManager implements Listener {
         if (currentItem.getType() != CharacterSelectUtil.GO_BACK_ITEM.getType()) {
             player.sendMessage(ChatColor.GREEN + "Creating new character...");
             CorePlayerData corePlayerData = RunicCore.getPlayerDataAPI().getCorePlayerData(player.getUniqueId());
+
+            //debug for nullability problems that occur at the same time as item wipe bugs
+            if (corePlayerData == null) {
+                player.kickPlayer(ColorUtil.format("&cPlease take a screenshot of this message! There was an error loading your data at " + new Timestamp(System.currentTimeMillis()) + "! Please create a support ticket and ping an admin!"));
+                Thread.dumpStack();
+                return;
+            }
+
             String className = getClassNameFromIcon(currentItem);
             TaskChain<?> chain = RunicCore.newChain();
             chain
@@ -299,6 +309,14 @@ public class CharacterGuiManager implements Listener {
         Bukkit.getScheduler().runTaskAsynchronously(RunicCore.getInstance(), () -> {
             UUID uuid = player.getUniqueId();
             player.sendMessage(ChatColor.YELLOW + "You are now loading! Please do not disconnect.");
+
+            //debug for nullability problems that occur at the same time as item wipe bugs
+            if (RunicCore.getPlayerDataAPI().getCorePlayerData(uuid) == null) {
+                Bukkit.getScheduler().runTask(RunicCore.getInstance(), () -> player.kickPlayer(ColorUtil.format("&cThere was an error loading your data at " + new Timestamp(System.currentTimeMillis()) + "! Please rejoin the server.")));
+                Thread.dumpStack();
+                return;
+            }
+
             BukkitTask bukkitTask = displayLoadingTitle(player);
 
             CharacterSelectEvent characterSelectEvent = new CharacterSelectEvent

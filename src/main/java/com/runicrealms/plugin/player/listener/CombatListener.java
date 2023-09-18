@@ -25,6 +25,7 @@ public class CombatListener implements Listener {
     @EventHandler
     public void onLeaveCombat(LeaveCombatEvent event) {
         RunicCore.getCombatAPI().leaveCombat(event.getPlayer().getUniqueId());
+        RunicCore.getSpellAPI().setCooldown(event.getPlayer(), "Combat", 0);
         event.getPlayer().sendMessage(ChatColor.GREEN + "You have left combat!");
     }
 

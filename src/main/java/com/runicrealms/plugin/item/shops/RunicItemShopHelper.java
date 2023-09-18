@@ -1,12 +1,14 @@
 package com.runicrealms.plugin.item.shops;
 
-import com.runicrealms.plugin.CityLocation;
 import com.runicrealms.plugin.DungeonLocation;
+import com.runicrealms.plugin.SafeZoneLocation;
 import com.runicrealms.plugin.TravelLocation;
 import com.runicrealms.plugin.TravelType;
 import com.runicrealms.plugin.common.util.ChatUtils;
+import com.runicrealms.plugin.common.util.ColorUtil;
 import com.runicrealms.plugin.common.util.Pair;
-import com.runicrealms.runicitems.RunicItemsAPI;
+import com.runicrealms.plugin.runicitems.RunicItemsAPI;
+import com.runicrealms.plugin.runicitems.util.CurrencyUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -77,6 +79,9 @@ public class RunicItemShopHelper {
         getLibraryGatekeepers();
         getCryptsGatekeepers();
         getFortressGatekeepers();
+
+        //temp
+        this.getBrownSteedRefund();
     }
 
     private static ItemStack resetSkillTreesIcon() {
@@ -257,8 +262,9 @@ public class RunicItemShopHelper {
     private RunicItemRunnable runHearthstoneChange(String location) {
         return player -> {
             player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 1.0f);
-            player.sendMessage(ChatColor.AQUA + "You have changed your hearthstone location to " + CityLocation.getFromIdentifier(location).getDisplay() + "!");
-            player.getInventory().setItem(8, CityLocation.getFromIdentifier(location).getItemStack());
+            player.sendMessage(ChatColor.AQUA + "You have changed your hearthstone location to " + SafeZoneLocation.getFromIdentifier(location).getDisplay() + "!");
+            player.getInventory().setItem(8, SafeZoneLocation.getFromIdentifier(location).getItemStack());
+            player.closeInventory();
         };
     }
 
@@ -266,6 +272,24 @@ public class RunicItemShopHelper {
         return player -> {
             // attempt to give player item (does not drop on floor)
             Bukkit.dispatchCommand(Bukkit.getServer().getConsoleSender(), "resettree " + player.getName());
+            player.closeInventory();
         };
+    }
+
+    private RunicShopGeneric getBrownSteedRefund() {
+        ArrayList<RunicShopItem> shopItems = new ArrayList<>();
+        ItemStack coin = RunicItemsAPI.generateItemFromTemplate("coin").generateGUIItem();
+        coin.setAmount(64);
+        ItemMeta meta = coin.getItemMeta();
+        meta.setDisplayName(ColorUtil.format("&e1250 Coins"));
+        meta.setLore(Collections.singletonList(ColorUtil.format("&c&lClear your inventory before clicking this!")));
+        coin.setItemMeta(meta);
+
+        shopItems.add(new RunicShopItem(Collections.singletonList(Pair.pair("brown-steed", 1)), coin, player -> {
+            for (int i = 0; i < 1250; i++) {
+                RunicItemsAPI.addItem(player.getInventory(), CurrencyUtil.goldCoin(), true);
+            }
+        }));
+        return new RunicShopGeneric(9, ChatColor.YELLOW + "Refund Vendor", Collections.singletonList(816), shopItems);
     }
 }

@@ -5,6 +5,8 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * This event is called whenever a custom RunicStatusEffect is applied (stun, root, etc.)
@@ -15,6 +17,7 @@ public class StatusEffectEvent extends Event implements Cancellable {
     private final RunicStatusEffect runicStatusEffect;
     private final double durationInSeconds;
     private final boolean displayMessage;
+    private final LivingEntity applier;
     private boolean isCancelled;
 
     /**
@@ -23,33 +26,30 @@ public class StatusEffectEvent extends Event implements Cancellable {
      * @param durationInSeconds the duration of the effect
      * @param displayMessage    whether to display the chat message
      */
-    public StatusEffectEvent(LivingEntity livingEntity, RunicStatusEffect runicStatusEffect, double durationInSeconds, boolean displayMessage) {
+    public StatusEffectEvent(@NotNull LivingEntity livingEntity, @NotNull RunicStatusEffect runicStatusEffect, double durationInSeconds, boolean displayMessage, @Nullable LivingEntity applier) {
         this.livingEntity = livingEntity;
         this.runicStatusEffect = runicStatusEffect;
         this.durationInSeconds = durationInSeconds;
         this.displayMessage = displayMessage;
+        this.applier = applier;
     }
 
-    public static HandlerList getHandlerList() {
-        return handlers;
+    public StatusEffectEvent(@NotNull LivingEntity livingEntity, @NotNull RunicStatusEffect runicStatusEffect, double durationInSeconds, boolean displayMessage) {
+        this(livingEntity, runicStatusEffect, durationInSeconds, displayMessage, null);
     }
 
-    public double getDurationInSeconds() {
-        return durationInSeconds;
-    }
-
-    @SuppressWarnings("NullableProblems")
-    @Override
-    public HandlerList getHandlers() {
-        return handlers;
-    }
-
+    @NotNull
     public LivingEntity getLivingEntity() {
         return livingEntity;
     }
 
+    @NotNull
     public RunicStatusEffect getRunicStatusEffect() {
         return runicStatusEffect;
+    }
+
+    public double getDurationInSeconds() {
+        return durationInSeconds;
     }
 
     @Override
@@ -64,5 +64,20 @@ public class StatusEffectEvent extends Event implements Cancellable {
 
     public boolean willDisplayMessage() {
         return displayMessage;
+    }
+
+    @Nullable
+    public LivingEntity getApplier() {
+        return this.applier;
+    }
+
+    public static HandlerList getHandlerList() {
+        return handlers;
+    }
+
+    @NotNull
+    @Override
+    public HandlerList getHandlers() {
+        return handlers;
     }
 }

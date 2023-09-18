@@ -1,5 +1,5 @@
 name: RunicCore
-version: 2.0.5
+version: 2.1.0
 api-version: 1.15
 main: com.runicrealms.plugin.RunicCore
 description: Core plugin for the "Runic Realms" server
@@ -19,9 +19,9 @@ depend:
   - RunicItems
   - HolographicDisplays
   - ProtocolLib
-  - Tabbed
   - ViaVersion
   - LuckPerms
+  - ModelEngine
 commands:
   3d:
     usage: /<commands>

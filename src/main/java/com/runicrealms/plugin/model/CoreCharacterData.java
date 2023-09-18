@@ -1,7 +1,7 @@
 package com.runicrealms.plugin.model;
 
-import com.runicrealms.plugin.CityLocation;
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.SafeZoneLocation;
 import com.runicrealms.plugin.common.CharacterClass;
 import com.runicrealms.plugin.player.utilities.HealthUtils;
 import com.runicrealms.plugin.rdb.api.WriteCallback;
@@ -45,7 +45,7 @@ public class CoreCharacterData {
      */
     public static void createCoreCharacterData(CorePlayerData corePlayerData, String className, Integer slot, final WriteCallback callback) {
 
-        Location location = CityLocation.TUTORIAL.getLocation();
+        Location location = SafeZoneLocation.TUTORIAL.getLocation();
         CoreCharacterData coreCharacterData = new CoreCharacterData
                 (
                         CharacterClass.getFromName(className),

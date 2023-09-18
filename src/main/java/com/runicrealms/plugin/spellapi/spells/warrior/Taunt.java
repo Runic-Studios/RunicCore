@@ -3,7 +3,7 @@ package com.runicrealms.plugin.spellapi.spells.warrior;
 import com.runicrealms.plugin.events.PhysicalDamageEvent;
 import com.runicrealms.plugin.common.CharacterClass;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
-import io.lumine.xikage.mythicmobs.MythicMobs;
+import io.lumine.mythic.bukkit.MythicBukkit;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.entity.Entity;
@@ -32,7 +32,7 @@ public class Taunt extends Spell {
             entity.getWorld().playSound(entity.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 0.05f, 0.2f);
             victim.getWorld().spawnParticle(Particle.VILLAGER_ANGRY, victim.getEyeLocation(), 1, 0.3F, 0.3F, 0.3F, 0);
             if (victim instanceof Monster) ((Monster) entity).setTarget(player);
-            MythicMobs.inst().getAPIHelper().addThreat(entity, player, 1000);
+            MythicBukkit.inst().getAPIHelper().addThreat(entity, player, 1000);
         }
     }
 

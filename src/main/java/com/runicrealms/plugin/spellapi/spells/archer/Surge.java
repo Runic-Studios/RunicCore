@@ -2,7 +2,8 @@ package com.runicrealms.plugin.spellapi.spells.archer;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.common.CharacterClass;
-import com.runicrealms.plugin.events.EnvironmentDamage;
+import com.runicrealms.plugin.events.EnvironmentDamageEvent;
+import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import org.bukkit.Bukkit;
@@ -23,17 +24,19 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-public class Surge extends Spell {
+public class Surge extends Spell implements DurationSpell {
     private static final double DURATION_FALL = 2.5;
     private static final double DELAY = 0.75;
     private final Map<UUID, BukkitTask> surgeTasks = new HashMap<>();
     private double launchMultiplier;
     private double speedMultiplier;
     private double verticalPower;
+    private double duration;
 
     public Surge() {
         super("Surge", CharacterClass.ARCHER);
-        this.setDescription("You launch yourself forward!");
+        this.setDescription("You launch yourself forward! " +
+                "When you land a &aStormborn&7 arrow, reduce this skill’s cooldown by " + this.duration + "s.");
     }
 
     @Override
@@ -75,7 +78,6 @@ public class Surge extends Spell {
             Vector launchPath = new Vector(look.getX(), verticalPower, look.getZ()).normalize();
 
             // particles, sounds
-            Bukkit.getScheduler().runTask(RunicCore.getInstance(), () -> player.getWorld().spigot().strikeLightningEffect(player.getLocation(), true));
             player.getWorld().playSound(player.getLocation(), Sound.ENTITY_LIGHTNING_BOLT_IMPACT, 1.0F, 2.0F);
             player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 0.5f, 1.2f);
             player.getWorld().spawnParticle(Particle.REDSTONE, location,
@@ -93,6 +95,7 @@ public class Surge extends Spell {
         setSpeedMultiplier(speedMultiplier.doubleValue());
         Number verticalPower = (Number) spellData.getOrDefault("vertical-power", 0);
         setVerticalPower(verticalPower.doubleValue());
+        super.loadSpellSpecificData(spellData);
     }
 
     public void setLaunchMultiplier(double launchMultiplier) {
@@ -107,15 +110,35 @@ public class Surge extends Spell {
         this.verticalPower = verticalPower;
     }
 
+    @Override
+    public double getDuration() {
+        return this.duration;
+    }
+
+    @Override
+    public void setDuration(double duration) {
+        this.duration = duration;
+    }
+
     /**
      * Disable fall damage for players who are surging
      */
     @EventHandler(priority = EventPriority.LOW)
-    public void onFallDamage(EnvironmentDamage event) {
+    public void onFallDamage(EnvironmentDamageEvent event) {
         if (!surgeTasks.containsKey(event.getVictim().getUniqueId())) return;
-        if (event.getCause() == EnvironmentDamage.DamageCauses.FALL_DAMAGE)
+        if (event.getCause() == EnvironmentDamageEvent.DamageCauses.FALL_DAMAGE)
             event.setCancelled(true);
     }
 
+    @EventHandler(ignoreCancelled = true)
+    private void onStormbornArrowHit(Stormborn.ArrowHitEvent event) {
+        Set<Spell> onCooldown = RunicCore.getSpellAPI().getSpellsOnCooldown(event.getCaster().getUniqueId());
+
+        if (onCooldown == null || onCooldown.stream().noneMatch(spell -> spell.getName().equals(this.getName()))) {
+            return;
+        }
+
+        RunicCore.getSpellAPI().reduceCooldown(event.getCaster(), this, this.duration);
+    }
 }
 

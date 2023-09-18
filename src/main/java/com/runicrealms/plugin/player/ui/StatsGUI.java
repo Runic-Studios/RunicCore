@@ -5,7 +5,7 @@ import com.runicrealms.plugin.common.util.ColorUtil;
 import com.runicrealms.plugin.common.util.GUIUtil;
 import com.runicrealms.plugin.player.utilities.PlayerLevelUtil;
 import com.runicrealms.plugin.rdb.RunicDatabase;
-import com.runicrealms.runicitems.Stat;
+import com.runicrealms.plugin.runicitems.Stat;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -181,11 +181,9 @@ public class StatsGUI implements InventoryHolder {
     }
 
     private ItemStack wisdomMenuItem() {
-        double expBonus = (Stat.getExpMult() * 100) * wisdom;
         double maxManaPercent = (Stat.getMaxManaMult() * 100) * wisdom;
         double spellHealingPercent = (Stat.getSpellHealingMult() * 100) * wisdom;
         double spellShieldingPercent = (Stat.getSpellShieldingMult() * 100) * wisdom;
-        String expBonusString = expBonus > 0 ? DECIMAL_FORMAT.format(expBonus) : "0";
         String maxManaString = maxManaPercent > 0 ? DECIMAL_FORMAT.format(maxManaPercent) : "0";
         String spellHealingString = spellHealingPercent > 0 ? DECIMAL_FORMAT.format(spellHealingPercent) : "0";
         String spellShieldingString = spellShieldingPercent > 0 ? DECIMAL_FORMAT.format(spellShieldingPercent) : "0";
@@ -193,7 +191,6 @@ public class StatsGUI implements InventoryHolder {
                 {
                         "",
                         ChatColor.GREEN + "" + ChatColor.BOLD + "Combat bonuses:",
-                        ChatColor.GRAY + "Exp Bonus: " + statPrefix(wisdom) + expBonusString + "%",
                         ChatColor.GRAY + "Max Mana: " + statPrefix(wisdom) + maxManaString + "%",
                         ChatColor.GRAY + "Spell Healing: " + statPrefix(wisdom) + spellHealingString + "%",
                         ChatColor.GRAY + "Spell Shielding: " + statPrefix(wisdom) + spellShieldingString + "%"

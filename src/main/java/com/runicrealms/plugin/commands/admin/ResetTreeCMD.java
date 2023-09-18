@@ -8,11 +8,11 @@ import co.aikar.commands.annotation.CommandPermission;
 import co.aikar.commands.annotation.Conditions;
 import co.aikar.commands.annotation.Default;
 import co.aikar.commands.annotation.Syntax;
-import com.runicrealms.api.event.ChatChannelMessageEvent;
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.chat.api.event.ChatChannelMessageEvent;
 import com.runicrealms.plugin.model.SkillTreeData;
-import com.runicrealms.runicitems.util.CurrencyUtil;
-import com.runicrealms.runicitems.util.ItemUtils;
+import com.runicrealms.plugin.runicitems.util.CurrencyUtil;
+import com.runicrealms.plugin.runicitems.util.ItemUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
@@ -39,15 +39,16 @@ public class ResetTreeCMD extends BaseCommand implements Listener {
     }
 
     public static int getCostFromLevel(Player player) {
-        if (player.getLevel() <= 24) {
-            return 0;
-        } else if (player.getLevel() <= 40) {
-            return 50;
-        } else if (player.getLevel() <= 59) {
-            return 100;
-        } else {
-            return 250;
-        }
+        return 0;
+//        if (player.getLevel() <= 24) {
+//            return 0;
+//        } else if (player.getLevel() <= 40) {
+//            return 50;
+//        } else if (player.getLevel() <= 59) {
+//            return 100;
+//        } else {
+//            return 250;
+//        }
     }
 
     public static String getCostStringFromLevel(int cost) {

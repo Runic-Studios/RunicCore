@@ -25,6 +25,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+/**
+ * @deprecated Replaced with {@link Dash}
+ */
+@Deprecated
 public class Sprint extends Spell implements DurationSpell {
     private final Map<UUID, BukkitTask> sprintTasks = new HashMap<>();
     private double duration;
@@ -86,6 +90,7 @@ public class Sprint extends Spell implements DurationSpell {
     /**
      * This custom event is called when the player hits a target w/ empowered spring attack
      */
+    @Deprecated
     public static class EmpoweredSprintEvent extends Event implements Cancellable {
         private static final HandlerList handlers = new HandlerList();
         private final Player caster;

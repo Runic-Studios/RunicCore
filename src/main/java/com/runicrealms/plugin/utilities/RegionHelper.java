@@ -1,7 +1,7 @@
 package com.runicrealms.plugin.utilities;
 
-import com.runicrealms.plugin.CityLocation;
 import com.runicrealms.plugin.DungeonLocation;
+import com.runicrealms.plugin.SafeZoneLocation;
 import com.runicrealms.plugin.api.RegionAPI;
 import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
@@ -65,7 +65,7 @@ public final class RegionHelper implements RegionAPI {
     public boolean isSafezone(Location location) {
         List<String> regionIds = getRegionIds(location);
         for (String regionId : regionIds) {
-            if (Arrays.stream(CityLocation.values()).anyMatch(cityLocation -> regionId.equals(cityLocation.getIdentifier())))
+            if (Arrays.stream(SafeZoneLocation.values()).anyMatch(cityLocation -> regionId.equals(cityLocation.getIdentifier())))
                 return true;
         }
         return false;
