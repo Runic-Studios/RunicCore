@@ -117,7 +117,6 @@ import com.runicrealms.plugin.loot.LootManager;
 import com.runicrealms.plugin.luckperms.LuckPermsManager;
 import com.runicrealms.plugin.model.MongoTask;
 import com.runicrealms.plugin.model.SettingsManager;
-import com.runicrealms.plugin.model.SkillTreePosition;
 import com.runicrealms.plugin.model.TitleManager;
 import com.runicrealms.plugin.modtools.AFKListener;
 import com.runicrealms.plugin.modtools.TempbanListener;
@@ -153,7 +152,6 @@ import com.runicrealms.plugin.rdb.api.ConverterAPI;
 import com.runicrealms.plugin.rdb.api.DataAPI;
 import com.runicrealms.plugin.rdb.api.RedisAPI;
 import com.runicrealms.plugin.rdb.event.MongoSaveEvent;
-import com.runicrealms.plugin.rdb.model.CharacterField;
 import com.runicrealms.plugin.redis.RedisManager;
 import com.runicrealms.plugin.region.RegionEventListener;
 import com.runicrealms.plugin.resourcepack.ResourcePackManager;
@@ -176,7 +174,6 @@ import com.runicrealms.plugin.spellapi.skilltrees.listener.SubClassGUIListener;
 import com.runicrealms.plugin.utilities.NametagHandler;
 import com.runicrealms.plugin.utilities.PlaceholderAPI;
 import com.runicrealms.plugin.utilities.RegionHelper;
-import org.bson.Document;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.ConsoleCommandSender;
@@ -185,14 +182,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.data.mongodb.core.query.Update;
-
-import java.util.List;
-import java.util.UUID;
-import java.util.logging.Level;
 
 public class RunicCore extends JavaPlugin implements Listener {
 
@@ -506,138 +495,6 @@ public class RunicCore extends JavaPlugin implements Listener {
         if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
             new PlaceholderAPI().register();
         }
-
-        Bukkit.getScheduler().runTaskLater(this, () -> {
-            MongoTemplate template = RunicDatabase.getAPI().getDataAPI().getMongoTemplate();
-
-            template.executeQuery(new Query(), "core", document -> {
-                this.getLogger().log(Level.INFO, "-------------------------------------------------------------------------");
-                int[] characterSlots = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
-                Document skillTreeDataMap = document.get("skillTreeDataMap", Document.class);
-                for (int slot : characterSlots) {
-                    if (!skillTreeDataMap.containsKey(String.valueOf(slot))) {
-                        this.getLogger().log(Level.INFO, "does not contain slot " + slot);
-                        continue;
-                    }
-
-                    Document characterSlot = skillTreeDataMap.get(String.valueOf(slot), Document.class);
-
-                    for (SkillTreePosition position : SkillTreePosition.values()) {
-                        if (!characterSlot.containsKey(position.name())) {
-                            this.getLogger().log(Level.INFO, "does not contain skill tree position " + position.name());
-                            continue;
-                        }
-
-                        Document subclass = characterSlot.get(position.name(), Document.class);
-
-                        if (!subclass.containsKey("perks")) {
-                            this.getLogger().log(Level.INFO, "this not does contain a perks list... this must already be converted");
-                            continue;
-                        }
-
-                        List<Document> perks = subclass.getList("perks", Document.class);
-
-                        int sum = 0;
-                        for (Document perk : perks) {
-                            sum += perk.getInteger("currentPoints");
-                        }
-
-                        Update update = new Update();
-                        update.unset("skillTreeDataMap." + slot + "." + position.name() + ".perks");
-                        update.set("skillTreeDataMap." + slot + "." + position.name() + ".totalAllocatedPoints", sum);
-                        UUID uuid = document.get(CharacterField.PLAYER_UUID.getField(), UUID.class);
-                        template.updateFirst(new Query(Criteria.where(CharacterField.PLAYER_UUID.getField()).is(uuid)), update, "core");
-
-                        this.getLogger().log(Level.INFO, "total invested in " + position.name() + " = " + sum);
-                    }
-                }
-                this.getLogger().log(Level.INFO, "-------------------------------------------------------------------------");
-            });
-
-            /*
-            //converter for loot chests KEEP COMMENTED
-            File chests = new File(this.getDataFolder(), "chests.yml");
-
-            if (!chests.exists()) {
-                this.getLogger().log(Level.INFO, "old chest config does not exist");
-                return;
-            }
-
-            FileConfiguration chestConfig = YamlConfiguration.loadConfiguration(chests);
-            ConfigurationSection data = chestConfig.getConfigurationSection("Chests.Locations");
-
-            if (data == null) {
-                this.getLogger().log(Level.INFO, "old chest config does not exist");
-                return;
-            }
-
-            for (int i = 0; i < 500; i++) {
-                ConfigurationSection section = data.getConfigurationSection(String.valueOf(i));
-
-                if (section == null) {
-                    continue;
-                }
-
-                String world = section.getString("world");
-                int x = section.getInt("x", Integer.MAX_VALUE);
-                int y = section.getInt("y", Integer.MAX_VALUE);
-                int z = section.getInt("z", Integer.MAX_VALUE);
-
-                if (world == null || x == Integer.MAX_VALUE || y == Integer.MAX_VALUE || z == Integer.MAX_VALUE) {
-                    continue;
-                }
-
-                Location location = new Location(Bukkit.getWorld(world), x, y, z);
-
-                String tier = section.getString("tier");
-
-                if (tier == null) {
-                    continue;
-                }
-
-                int regenerationTime;
-                String title;
-                int minAccessLevel;
-                int minLevel;
-                int maxLevel;
-                if (tier.equalsIgnoreCase("common")) {
-                    regenerationTime = 600;
-                    title = "Common Loot Chest";
-                    minAccessLevel = 0;
-                    minLevel = 1;
-                    maxLevel = 9;
-                } else if (tier.equalsIgnoreCase("uncommon")) {
-                    regenerationTime = 900;
-                    title = "&aUncommon Loot Chest";
-                    minAccessLevel = 10;
-                    minLevel = 10;
-                    maxLevel = 24;
-                } else if (tier.equalsIgnoreCase("rare")) {
-                    regenerationTime = 1200;
-                    title = "&bRare Loot Chest";
-                    minAccessLevel = 25;
-                    minLevel = 25;
-                    maxLevel = 39;
-                } else if (tier.equalsIgnoreCase("epic")) {
-                    regenerationTime = 2700;
-                    title = "&dEpic Loot Chest";
-                    minAccessLevel = 40;
-                    minLevel = 40;
-                    maxLevel = 60;
-                } else {
-                    continue;
-                }
-
-                LootChestTemplate chestTemplate = lootAPI.getLootChestTemplate(tier + "-chest");
-
-                if (chestTemplate == null) {
-                    continue;
-                }
-
-                lootAPI.createRegenerativeLootChest(new RegenerativeLootChest(new LootChestPosition(location, BlockFace.NORTH), chestTemplate, new LootChestConditions(), minAccessLevel, minLevel, maxLevel, regenerationTime, title, null));
-            }
-             */
-        }, 200);
     }
 
     @EventHandler
