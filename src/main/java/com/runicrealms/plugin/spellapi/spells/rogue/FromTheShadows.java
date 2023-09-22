@@ -20,7 +20,6 @@ import java.util.Set;
 import java.util.UUID;
 
 public class FromTheShadows extends Spell {
-    private final int DURATION = 1; //in seconds
     private final Set<UUID> buffedPlayers = new HashSet<>();
     private final Set<UUID> cocooned;
     private double speedDuration;
@@ -32,7 +31,7 @@ public class FromTheShadows extends Spell {
         super("From The Shadows", CharacterClass.ROGUE);
         this.setIsPassive(true);
         this.setDescription("The next spell you cast after you cast &aUnseen &7is empowered!\n" +
-                "Your empowerment is removed " + DURATION + "s after reappearing.\n" +
+                "Your empowerment is removed once you are able to cast &aUnseen&7 again.\n" +
                 "&aDash &7- Gain Speed III for " + this.speedDuration + "s!\n" +
                 "&aTwin Fangs &7- This spell will critically strike!\n" +
                 "&aCocoon &7- Your web now roots your target (duration halved)!\n" +
@@ -103,7 +102,7 @@ public class FromTheShadows extends Spell {
         if (event.getSpell() instanceof Unseen unseen) {
             buffedPlayers.add(event.getCaster().getUniqueId());
             Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(),
-                    () -> buffedPlayers.remove(event.getCaster().getUniqueId()), (long) ((unseen.getDuration() + DURATION) * 20));
+                    () -> buffedPlayers.remove(event.getCaster().getUniqueId()), (long) (unseen.getCooldown() * 20));
             return;
         }
 
