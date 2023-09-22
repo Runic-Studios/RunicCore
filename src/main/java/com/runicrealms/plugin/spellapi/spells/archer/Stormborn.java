@@ -127,7 +127,7 @@ public class Stormborn extends Spell implements MagicDamageSpell, RadiusSpell {
 
         DamageUtil.damageEntitySpell(damage, event.getVictim(), event.getPlayer(), this);
 
-        DamageUtil.damageEntityPhysical(event.getAmount(), event.getVictim(), event.getPlayer(), true, true); //normal attack damage
+        DamageUtil.damageEntityRanged(event.getAmount(), event.getVictim(), event.getPlayer(), true, arrow); //normal attack damage
 
         this.hasAlreadyHit.put(event.getPlayer().getUniqueId(), System.currentTimeMillis()); // prevent concussive hits
 

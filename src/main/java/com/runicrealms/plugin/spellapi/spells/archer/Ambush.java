@@ -82,7 +82,7 @@ public class Ambush extends Spell implements DurationSpell, WarmupSpell {
         successfulPlayers.add(uuid);
     }
 
-    @EventHandler(ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onRangedPhysicalDamage(PhysicalDamageEvent event) {
         if (!event.isRanged() || !event.isBasicAttack() || !hasPassive(event.getPlayer().getUniqueId(), this.getName()) || !successfulPlayers.contains(event.getPlayer().getUniqueId())) {
             return;
