@@ -30,7 +30,7 @@ public class Inferno extends Spell implements RadiusSpell, DurationSpell {
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     private void onMagicDamage(MagicDamageEvent event) {
-        if (!this.hasPassive(event.getPlayer().getUniqueId(), this.getName()) || !(event.getSpell() instanceof Fireball)) {
+        if (!this.hasPassive(event.getPlayer().getUniqueId(), this.getName()) || !(event.getSpell() instanceof Fireball fireball)) {
             return;
         }
 
@@ -41,7 +41,7 @@ public class Inferno extends Spell implements RadiusSpell, DurationSpell {
                 return;
             }
 
-            DamageUtil.damageEntitySpell(event.getAmount(), target, event.getPlayer(), this);
+            DamageUtil.damageEntitySpell(event.getAmount(), target, event.getPlayer(), fireball);
         }
     }
 
