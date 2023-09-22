@@ -100,10 +100,10 @@ public class FromTheShadows extends Spell {
             return;
         }
         // Apply buff
-        if (event.getSpell() instanceof Unseen) {
+        if (event.getSpell() instanceof Unseen unseen) {
             buffedPlayers.add(event.getCaster().getUniqueId());
             Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(),
-                    () -> buffedPlayers.remove(event.getCaster().getUniqueId()), DURATION * 20);
+                    () -> buffedPlayers.remove(event.getCaster().getUniqueId()), (long) ((unseen.getDuration() + DURATION) * 20));
             return;
         }
 
