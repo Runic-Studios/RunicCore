@@ -27,38 +27,6 @@ import org.bukkit.inventory.meta.FireworkMeta;
 public class PlayerLevelListener implements Listener {
 
     /**
-     * This method is used to calculate how much HP the wearer has from items. So it subtracts the base hp of their
-     * level. Everything uses GENERIC_MAX_HEALTH, so this is the simplest way I've done it for now.
-     *
-     * @author Skyfallin
-     */
-    public static int getHpAtLevel(Player player) {
-
-        // grab the player's new info
-        String className;
-        try {
-            className = RunicDatabase.getAPI().getCharacterAPI().getPlayerClass(player);
-        } catch (Exception e) {
-            return HealthUtils.getBaseHealth();
-        }
-
-        switch (className.toLowerCase()) {
-            case "archer":
-                return (PlayerLevelUtil.getArcherHpLv() * player.getLevel()) + HealthUtils.getBaseHealth();
-            case "cleric":
-                return (PlayerLevelUtil.getClericHpLv() * player.getLevel()) + HealthUtils.getBaseHealth();
-            case "mage":
-                return (PlayerLevelUtil.getMageHpLv() * player.getLevel()) + HealthUtils.getBaseHealth();
-            case "rogue":
-                return (PlayerLevelUtil.getRogueHpLv() * player.getLevel()) + HealthUtils.getBaseHealth();
-            case "warrior":
-                return (PlayerLevelUtil.getWarriorHpLv() * player.getLevel()) + HealthUtils.getBaseHealth();
-        }
-
-        return HealthUtils.getBaseHealth();
-    }
-
-    /**
      * Returns of pair containing title and subtitle to display to player on level up and join
      *
      * @param player     who joined or gained a level (levels are restored from data on join)
