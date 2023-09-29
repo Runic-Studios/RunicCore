@@ -3,9 +3,9 @@ package com.runicrealms.plugin.spellapi.spells.warrior;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.common.CharacterClass;
 import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
-import com.runicrealms.plugin.spellapi.spelltypes.HealingSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.RadiusSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.RunicStatusEffect;
+import com.runicrealms.plugin.spellapi.spelltypes.ShieldingSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.spellapi.spellutil.particles.HorizontalCircleFrame;
@@ -26,21 +26,21 @@ import java.util.Map;
 import static java.lang.Math.cos;
 import static java.lang.Math.sin;
 
-public class Judgment extends Spell implements DurationSpell, HealingSpell, RadiusSpell {
+public class Judgment extends Spell implements DurationSpell, ShieldingSpell, RadiusSpell {
     private static final double UPDATES_PER_SECOND = 4;
     private double bubbleDuration;
-    private double heal;
-    private double healingPerLevel;
+    private double shield;
+    private double shieldPerLevel;
     private double knockbackMultiplier;
     private double radius;
 
     public Judgment() {
         super("Judgment", CharacterClass.WARRIOR);
         this.setDescription("You summon a barrier of magic " +
-                "around yourself for " + bubbleDuration + "s, instantly knocking away all enemies! The barrier " +
-                "prevents enemies from entering, but allies may pass through freely! " +
-                "Each second, allies within the barrier are healed for " +
-                "(" + heal + " + &f" + healingPerLevel + "x&7 lvl) health! " +
+                "around yourself for " + bubbleDuration + "s, instantly knocking away all enemies! " +
+                "Each second, allies within the barrier are shielded for " +
+                "(" + shield + " + &f" + shieldPerLevel + "x&7 lvl) health! " +
+                "You and allies within the barrier are invulnerable! " +
                 "During this time, you are rooted. Sneak to cancel the spell early.");
     }
 
@@ -61,17 +61,18 @@ public class Judgment extends Spell implements DurationSpell, HealingSpell, Radi
         player.getWorld().spigot().strikeLightningEffect(player.getLocation(), true);
         addStatusEffect(player, RunicStatusEffect.ROOT, bubbleDuration, true);
 
+        // Knock targets away
+        for (Entity entity : player.getWorld().getNearbyEntities(player.getLocation(), radius, radius, radius, target -> isValidEnemy(player, target))) {
+            Vector force = player.getLocation().toVector().subtract(entity.getLocation().toVector()).multiply(-knockbackMultiplier).setY(0.3);
+            entity.setVelocity(force);
+            entity.getWorld().playSound(entity.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 0.01F, 0.5F);
+        }
+
         // Heal caster, look for targets nearby
         BukkitTask healTask = Bukkit.getScheduler().runTaskTimer(RunicCore.getInstance(), () -> {
-            healPlayer(player, player, heal, this);
-            for (Entity entity : player.getNearbyEntities(radius, radius, radius)) {
-                if (isValidEnemy(player, entity)) {
-                    Vector force = player.getLocation().toVector().subtract(entity.getLocation().toVector()).multiply(-knockbackMultiplier).setY(0.3);
-                    entity.setVelocity(force);
-                    entity.getWorld().playSound(entity.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 0.01F, 0.5F);
-                } else if (isValidAlly(player, entity)) {
-                    healPlayer(player, (Player) entity, heal, this);
-                }
+            healPlayer(player, player, shield, this);
+            for (Entity entity : player.getWorld().getNearbyEntities(player.getLocation(), radius, radius, radius, target -> isValidAlly(player, target))) {
+                shieldPlayer(player, (Player) entity, shield, this);
             }
         }, 0, 20L);
 
@@ -133,26 +134,6 @@ public class Judgment extends Spell implements DurationSpell, HealingSpell, Radi
     }
 
     @Override
-    public double getHeal() {
-        return heal;
-    }
-
-    @Override
-    public void setHeal(double heal) {
-        this.heal = heal;
-    }
-
-    @Override
-    public double getHealingPerLevel() {
-        return healingPerLevel;
-    }
-
-    @Override
-    public void setHealingPerLevel(double healingPerLevel) {
-        this.healingPerLevel = healingPerLevel;
-    }
-
-    @Override
     public double getRadius() {
         return radius;
     }
@@ -166,5 +147,24 @@ public class Judgment extends Spell implements DurationSpell, HealingSpell, Radi
         this.knockbackMultiplier = knockbackMultiplier;
     }
 
+    @Override
+    public double getShield() {
+        return shield;
+    }
+
+    @Override
+    public void setShield(double shield) {
+        this.shield = shield;
+    }
+
+    @Override
+    public double getShieldingPerLevel() {
+        return shieldPerLevel;
+    }
+
+    @Override
+    public void setShieldPerLevel(double shieldingPerLevel) {
+        this.shieldPerLevel = shieldingPerLevel;
+    }
 }
 
