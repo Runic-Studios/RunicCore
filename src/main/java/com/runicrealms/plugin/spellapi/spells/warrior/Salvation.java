@@ -228,7 +228,7 @@ public class Salvation extends Spell implements DistanceSpell, DurationSpell, Ma
             bukkitTask = new BukkitRunnable() {
                 @Override
                 public void run() {
-                    if (count.get() > duration) {
+                    if (count.get() >= duration) {
                         this.cancel();
                         cleanupTask();
                     } else {
