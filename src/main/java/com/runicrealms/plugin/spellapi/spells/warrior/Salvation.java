@@ -45,6 +45,7 @@ public class Salvation extends Spell implements DistanceSpell, DurationSpell, Ma
     private double damagePerLevel;
     private double distance;
     private double duration;
+    private double maxDistance;
     private double radius;
     private double shield;
     private double shieldPerLevel;
@@ -77,6 +78,18 @@ public class Salvation extends Spell implements DistanceSpell, DurationSpell, Ma
         VectorUtil.drawLine(player, Particle.VILLAGER_HAPPY, Color.WHITE, player.getEyeLocation(), location, 0.5D, 1, 0.25f);
         player.getWorld().spawnParticle(Particle.VILLAGER_HAPPY, location, 8, 0.5f, 0.5f, 0.5f, 0);
         spawnBell(player, location);
+    }
+
+    @Override
+    public void loadDistanceData(Map<String, Object> spellData) {
+        Number distance = (Number) spellData.getOrDefault("distance", 0);
+        setDistance(distance.doubleValue());
+        Number maxDistance = (Number) spellData.getOrDefault("max-distance", 0);
+        setMaxDistance(maxDistance.doubleValue());
+    }
+
+    public void setMaxDistance(double maxDistance) {
+        this.maxDistance = maxDistance;
     }
 
     @Override
@@ -128,8 +141,18 @@ public class Salvation extends Spell implements DistanceSpell, DurationSpell, Ma
         shieldPlayer(caster, player, shield * count, this);
         // An ally clicked the bell (NOT the caster)
         if (!player.getUniqueId().equals(blockMap.get(block).getCasterUUID())) {
-            player.teleport(caster);
-            player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDERMAN_TELEPORT, 0.5f, 1.0f);
+            boolean canTeleport = false;
+            if (player.getWorld() == caster.getWorld()) {
+                double distanceSquared = player.getLocation().distanceSquared(caster.getLocation());
+                if (distanceSquared <= maxDistance * maxDistance) canTeleport = true;
+            }
+            if (canTeleport) {
+                player.teleport(caster);
+                player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDERMAN_TELEPORT, 0.5f, 1.0f);
+            } else {
+                player.sendMessage(ChatColor.RED + "Could not teleport you to the caster! Target is too far away!");
+                player.getWorld().playSound(player.getLocation(), Sound.BLOCK_FIRE_EXTINGUISH, 0.5f, 1.0f);
+            }
         }
     }
 

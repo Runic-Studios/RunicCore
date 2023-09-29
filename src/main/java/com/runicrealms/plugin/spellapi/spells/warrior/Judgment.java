@@ -2,6 +2,9 @@ package com.runicrealms.plugin.spellapi.spells.warrior;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.common.CharacterClass;
+import com.runicrealms.plugin.events.MagicDamageEvent;
+import com.runicrealms.plugin.events.MobDamageEvent;
+import com.runicrealms.plugin.events.PhysicalDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.RadiusSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.RunicStatusEffect;
@@ -17,17 +20,22 @@ import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
 
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import static java.lang.Math.cos;
 import static java.lang.Math.sin;
 
 public class Judgment extends Spell implements DurationSpell, ShieldingSpell, RadiusSpell {
     private static final double UPDATES_PER_SECOND = 4;
+    private final Map<Player, Location> judgmentCastersMap = new HashMap<>();
     private double bubbleDuration;
     private double shield;
     private double shieldPerLevel;
@@ -56,6 +64,7 @@ public class Judgment extends Spell implements DurationSpell, ShieldingSpell, Ra
 
     @Override
     public void executeSpell(Player player, SpellItemType type) {
+        judgmentCastersMap.put(player, player.getLocation());
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_LIGHTNING_BOLT_IMPACT, 0.5F, 1.0F);
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 0.5F, 1.0F);
         player.getWorld().spigot().strikeLightningEffect(player.getLocation(), true);
@@ -102,6 +111,7 @@ public class Judgment extends Spell implements DurationSpell, ShieldingSpell, Ra
                 // Spell duration, allow cancel by sneaking
                 long timePassed = System.currentTimeMillis() - startTime;
                 if (timePassed > bubbleDuration * 1000 || player.isSneaking()) {
+                    judgmentCastersMap.remove(player);
                     healTask.cancel();
                     this.cancel();
                     removeStatusEffect(player, RunicStatusEffect.ROOT);
@@ -113,6 +123,48 @@ public class Judgment extends Spell implements DurationSpell, ShieldingSpell, Ra
 
             }
         }.runTaskTimer(RunicCore.getInstance(), 0, (int) (20 / UPDATES_PER_SECOND));
+    }
+
+    @EventHandler
+    public void onMagicDamage(MagicDamageEvent event) {
+        boolean isInsideAllyJudgment = checkForAnyAllyJudgment(event.getVictim(), event.getVictim().getLocation());
+        if (isInsideAllyJudgment) {
+            event.setCancelled(true);
+        }
+    }
+
+    private boolean checkForAnyAllyJudgment(Entity victim, Location location) {
+        if (judgmentCastersMap.isEmpty()) return false;
+        Set<Location> validJudgmentLocations = new HashSet<>();
+        for (Player caster : judgmentCastersMap.keySet()) {
+            if (isValidAlly(caster, victim)) {
+                validJudgmentLocations.add(judgmentCastersMap.get(caster));
+            }
+        }
+        if (validJudgmentLocations.isEmpty()) return false;
+        for (Location judgmentLoc : validJudgmentLocations) {
+            if (location.distanceSquared(judgmentLoc) <= radius * radius) {
+                victim.getWorld().playSound(victim.getLocation(), Sound.ENTITY_ZOMBIE_ATTACK_IRON_DOOR, 0.25f, 1.0f);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @EventHandler
+    public void onMobDamage(MobDamageEvent event) {
+        boolean isInsideAllyJudgment = checkForAnyAllyJudgment(event.getVictim(), event.getVictim().getLocation());
+        if (isInsideAllyJudgment) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onPhysicalDamage(PhysicalDamageEvent event) {
+        boolean isInsideAllyJudgment = checkForAnyAllyJudgment(event.getVictim(), event.getVictim().getLocation());
+        if (isInsideAllyJudgment) {
+            event.setCancelled(true);
+        }
     }
 
     @Override
