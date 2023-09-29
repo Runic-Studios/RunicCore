@@ -51,7 +51,7 @@ public class WarriorTreeUtil {
         List<Perk> perks = new ArrayList<>();
         perks.add(new PerkSpell(168, 1, 0, 1, "Smite"));
         perks.add(new PerkBaseStat(169, 1, 0, 5, Stat.VITALITY));
-        perks.add(new PerkSpell(170, 1, 0, 1, "Consecrate"));
+        perks.add(new PerkSpell(170, 1, 0, 1, "Blessed Blade"));
         perks.add(new PerkBaseStat(171, 1, 0, 3, Stat.WISDOM));
         perks.add(new PerkBaseStat(172, 1, 0, 3, Stat.VITALITY));
         perks.add(new PerkSpell(173, 1, 0, 1, "Salvation"));
@@ -60,7 +60,7 @@ public class WarriorTreeUtil {
         perks.add(new PerkBaseStat(177, 1, 0, 5, Stat.WISDOM));
         perks.add(new PerkSpell(176, 1, 0, 1, "Judgment"));
         perks.add(new PerkBaseStat(178, 1, 0, 3, Stat.VITALITY));
-        perks.add(new PerkSpell(179, 1, 0, 1, "Blessed Blade"));
+        perks.add(new PerkSpell(179, 1, 0, 1, "Consecrate"));
         return perks;
     }
 }

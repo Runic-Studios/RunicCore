@@ -160,7 +160,7 @@ public class BlessedBlade extends Spell implements DurationSpell, HealingSpell, 
      */
     private void cleanupTask(Player player) {
         blessedBladeMap.remove(player.getUniqueId());
-        player.sendMessage(ChatColor.GRAY + "Blessed Blades has expired.");
+        player.sendMessage(ChatColor.GRAY + "Blessed Blade has expired.");
     }
 
     public void setMaxTargets(double maxTargets) {
