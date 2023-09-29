@@ -199,9 +199,10 @@ public class CharacterGuiManager implements Listener {
             player.sendMessage(ChatColor.GREEN + "Creating new character...");
             CorePlayerData corePlayerData = RunicCore.getPlayerDataAPI().getCorePlayerData(player.getUniqueId());
 
-            //debug for nullability problems that occur at the same time as item wipe bugs
+            // Debug for nullability problems that occur at the same time as item wipe bugs
             if (corePlayerData == null) {
                 player.kickPlayer(ColorUtil.format("&cPlease take a screenshot of this message! There was an error loading your data at " + new Timestamp(System.currentTimeMillis()) + "! Please create a support ticket and ping an admin!"));
+                Bukkit.getLogger().warning("A player logged in with null CorePlayerData!");
                 Thread.dumpStack();
                 return;
             }

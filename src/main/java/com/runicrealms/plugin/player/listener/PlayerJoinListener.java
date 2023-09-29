@@ -2,7 +2,6 @@ package com.runicrealms.plugin.player.listener;
 
 import co.aikar.taskchain.TaskChain;
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.database.DatabaseManager;
 import com.runicrealms.plugin.model.CoreCharacterData;
 import com.runicrealms.plugin.model.CorePlayerData;
 import com.runicrealms.plugin.player.utilities.HealthUtils;
@@ -24,7 +23,6 @@ import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
-import redis.clients.jedis.Jedis;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -159,22 +157,14 @@ public class PlayerJoinListener implements Listener {
             event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER,
                     ChatColor.GREEN + "You recently played and your data is saving!" +
                             "\n" + ChatColor.GREEN + "Try again in a moment");
-        } else {
-            try (Jedis jedis = RunicDatabase.getAPI().getRedisAPI().getNewJedisResource()) {
-                if (jedis.exists(event.getUniqueId() + ":" + DatabaseManager.DATA_SAVING_KEY)) {
-                    event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER,
-                            ChatColor.GREEN + "You recently played and your data is saving!" +
-                                    "\n" + ChatColor.GREEN + "Try again in a moment");
-                }
-            }
+        } else if (RunicDatabase.getAPI().getDataAPI().getLockedOutPlayers().contains(event.getUniqueId())) {
+            event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER,
+                    ChatColor.GREEN + "You recently played and your data is saving!" +
+                            "\n" + ChatColor.GREEN + "Try again in a moment");
         }
     }
 
     private void setupNewPlayer(Player player) {
-        // broadcast new player welcome message
-//        Bukkit.getServer().broadcastMessage(ChatColor.WHITE + player.getName()
-//                + ChatColor.LIGHT_PURPLE + " joined the realm for the first time!");
-        // heal player
         HealthUtils.setPlayerMaxHealth(player);
         player.setHealthScale(HealthUtils.getHeartAmount());
         int playerHealth = (int) player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
