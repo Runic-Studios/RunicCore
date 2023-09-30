@@ -14,7 +14,6 @@ import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spellutil.VectorUtil;
 import com.runicrealms.plugin.spellapi.spellutil.particles.EntityTrail;
 import com.runicrealms.plugin.utilities.DamageUtil;
-import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
@@ -102,35 +101,19 @@ public class Stormborn extends Spell implements MagicDamageSpell, RadiusSpell {
 
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void onPhysicalDamage(RangedDamageEvent event) {
-        if (!event.isRanged() || !event.isBasicAttack()) {
-            return;
-        }
+        if (event.getSpell() != null && event.getSpell().getName().equals("Stormborn")) return;
+        if (!event.isRanged() || !event.isBasicAttack()) return;
 
         Arrow arrow = event.getArrow();
-        if (!arrow.hasMetadata(ARROW_META_KEY) || !arrow.getMetadata(ARROW_META_KEY).get(0).asString().equalsIgnoreCase(ARROW_META_VALUE)) {
+        if (!arrow.hasMetadata(ARROW_META_KEY) || !arrow.getMetadata(ARROW_META_KEY).get(0).asString().equalsIgnoreCase(ARROW_META_VALUE))
             return;
-        }
 
         Long lastHit = this.hasAlreadyHit.get(event.getPlayer().getUniqueId());
 
-        if (lastHit != null && lastHit + 400 > System.currentTimeMillis()) { //less than 8 tick delay (ticks * 50 = milliseconds : 8 x 50 = 400)
-            return;
-        }
-
-        event.setCancelled(true);
-
-        ArrowHitEvent arrowHit = new ArrowHitEvent(event.getPlayer(), event.getVictim());
-        Bukkit.getPluginManager().callEvent(arrowHit);
-        if (arrowHit.isCancelled()) {
-            return;
-        }
-
+        // Less than 8 tick delay (ticks * 50 = milliseconds : 8 x 50 = 400)
+        if (lastHit != null && lastHit + 400 > System.currentTimeMillis()) return;
         DamageUtil.damageEntitySpell(damage, event.getVictim(), event.getPlayer(), this);
-
-        DamageUtil.damageEntityRanged(event.getAmount(), event.getVictim(), event.getPlayer(), true, arrow); //normal attack damage
-
-        this.hasAlreadyHit.put(event.getPlayer().getUniqueId(), System.currentTimeMillis()); // prevent concussive hits
-
+        this.hasAlreadyHit.put(event.getPlayer().getUniqueId(), System.currentTimeMillis()); // Prevent (immediate) concussive hits
         ricochetEffect(event.getPlayer(), event.getVictim());
     }
 
@@ -191,16 +174,20 @@ public class Stormborn extends Spell implements MagicDamageSpell, RadiusSpell {
      * @author BoBoBalloon
      */
     public static class ArrowHitEvent extends Event implements Cancellable {
+        private static final HandlerList HANDLER_LIST = new HandlerList();
         private final Player caster;
         private final LivingEntity victim;
         private boolean cancelled;
-
-        private static final HandlerList HANDLER_LIST = new HandlerList();
 
         public ArrowHitEvent(@NotNull Player caster, @NotNull LivingEntity victim) {
             this.caster = caster;
             this.victim = victim;
             this.cancelled = false;
+        }
+
+        @NotNull
+        public static HandlerList getHandlerList() {
+            return HANDLER_LIST;
         }
 
         @NotNull
@@ -226,11 +213,6 @@ public class Stormborn extends Spell implements MagicDamageSpell, RadiusSpell {
         @NotNull
         @Override
         public HandlerList getHandlers() {
-            return HANDLER_LIST;
-        }
-
-        @NotNull
-        public static HandlerList getHandlerList() {
             return HANDLER_LIST;
         }
     }
