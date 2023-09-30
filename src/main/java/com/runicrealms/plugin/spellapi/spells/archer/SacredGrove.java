@@ -44,7 +44,7 @@ public class SacredGrove extends Spell implements DurationSpell, HealingSpell, R
                 "it grows over the next " + warmup + "s. " +
                 "Upon reaching maturity, the flower pops, " +
                 "healing✦ your allies within " + radius + " blocks for (" +
-                (int) healAmt + " + &f" + healingPerLevel + "x&7 lvl) health every second for " + duration + "s!");
+                healAmt + " + &f" + healingPerLevel + "x&7 lvl) health every second for " + duration + "s!");
     }
 
     public static Map<UUID, Location> getGroveLocationMap() {

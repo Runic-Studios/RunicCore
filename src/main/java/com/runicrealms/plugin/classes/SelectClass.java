@@ -6,7 +6,12 @@ import org.bukkit.Color;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
-import static org.bukkit.Color.*;
+import static org.bukkit.Color.AQUA;
+import static org.bukkit.Color.FUCHSIA;
+import static org.bukkit.Color.LIME;
+import static org.bukkit.Color.RED;
+import static org.bukkit.Color.WHITE;
+import static org.bukkit.Color.YELLOW;
 
 public class SelectClass {
 
@@ -22,7 +27,7 @@ public class SelectClass {
                     player.sendTitle(
                             ChatColor.GOLD + "Try",
                             ChatColor.YELLOW + "Sneak + Right-Click!", 10, 100, 10);
-                    player.sendMessage(ChatColor.GOLD + "Try " + ChatColor.YELLOW + "Sneak + Right-Click " + ChatColor.GRAY + "to cast barrage!");
+                    player.sendMessage(ChatColor.GOLD + "Try " + ChatColor.YELLOW + "Sneak + Right-Click " + ChatColor.GRAY + "to cast rapid fire!");
                 } else {
                     player.sendTitle(
                             ChatColor.DARK_GREEN + "You selected",
