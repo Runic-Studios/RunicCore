@@ -26,11 +26,8 @@ import java.util.UUID;
 
 public class Surge extends Spell implements DurationSpell {
     private static final double DURATION_FALL = 2.5;
-    private static final double DELAY = 0.75;
     private final Map<UUID, BukkitTask> surgeTasks = new HashMap<>();
-    private double launchMultiplier;
     private double speedMultiplier;
-    private double verticalPower;
     private double duration;
 
     public Surge() {
@@ -69,45 +66,17 @@ public class Surge extends Spell implements DurationSpell {
         player.setVelocity(unitVector.multiply(speedMultiplier));
         player.setVelocity(unitVector);
         surgeTasks.put(player.getUniqueId(), surgeTask);
-
-        // Delayed upward momentum
-        Bukkit.getScheduler().runTaskLaterAsynchronously(RunicCore.getInstance(), () -> {
-            // spell variables, vectors
-            Location location = player.getLocation();
-            Vector look = location.getDirection();
-            Vector launchPath = new Vector(look.getX(), verticalPower, look.getZ()).normalize();
-
-            // particles, sounds
-            player.getWorld().playSound(player.getLocation(), Sound.ENTITY_LIGHTNING_BOLT_IMPACT, 1.0F, 2.0F);
-            player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 0.5f, 1.2f);
-            player.getWorld().spawnParticle(Particle.REDSTONE, location,
-                    1, 0, 0, 0, new Particle.DustOptions(Color.fromRGB(0, 71, 72), 3));
-
-            player.setVelocity(launchPath.multiply(launchMultiplier));
-        }, (long) (DELAY * 20L));
     }
 
     @Override
     public void loadSpellSpecificData(Map<String, Object> spellData) {
-        Number launchMultiplier = (Number) spellData.getOrDefault("launch-multiplier", 0);
-        setLaunchMultiplier(launchMultiplier.doubleValue());
         Number speedMultiplier = (Number) spellData.getOrDefault("speed-multiplier", 0);
         setSpeedMultiplier(speedMultiplier.doubleValue());
-        Number verticalPower = (Number) spellData.getOrDefault("vertical-power", 0);
-        setVerticalPower(verticalPower.doubleValue());
         super.loadSpellSpecificData(spellData);
-    }
-
-    public void setLaunchMultiplier(double launchMultiplier) {
-        this.launchMultiplier = launchMultiplier;
     }
 
     public void setSpeedMultiplier(double speedMultiplier) {
         this.speedMultiplier = speedMultiplier;
-    }
-
-    public void setVerticalPower(double verticalPower) {
-        this.verticalPower = verticalPower;
     }
 
     @Override
