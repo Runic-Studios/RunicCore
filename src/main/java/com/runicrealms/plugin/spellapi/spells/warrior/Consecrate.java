@@ -107,7 +107,7 @@ public class Consecrate extends Spell implements DurationSpell, HealingSpell, Ma
                             DamageUtil.damageEntitySpell(magicDamage, (LivingEntity) entity, caster, false, spell);
                             addStatusEffect((LivingEntity) entity, RunicStatusEffect.SLOW_II, slowDuration, false);
                         } else if (isValidAlly(caster, entity)) {
-                            healPlayer(caster, (Player) entity, heal);
+                            healPlayer(caster, (Player) entity, heal, spell);
                         }
                     }
                 }

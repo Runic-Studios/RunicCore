@@ -79,7 +79,7 @@ public class Judgment extends Spell implements DurationSpell, ShieldingSpell, Ra
 
         // Heal caster, look for targets nearby
         BukkitTask healTask = Bukkit.getScheduler().runTaskTimer(RunicCore.getInstance(), () -> {
-            healPlayer(player, player, shield, this);
+            shieldPlayer(player, player, shield, this);
             for (Entity entity : player.getWorld().getNearbyEntities(player.getLocation(), radius, radius, radius, target -> isValidAlly(player, target))) {
                 shieldPlayer(player, (Player) entity, shield, this);
             }
