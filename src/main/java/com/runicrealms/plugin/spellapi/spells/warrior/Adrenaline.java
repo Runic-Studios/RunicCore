@@ -4,8 +4,9 @@ import com.runicrealms.plugin.common.CharacterClass;
 import com.runicrealms.plugin.common.util.ColorUtil;
 import com.runicrealms.plugin.common.util.Pair;
 import com.runicrealms.plugin.events.PhysicalDamageEvent;
+import com.runicrealms.plugin.spellapi.effect.BleedEffect;
+import com.runicrealms.plugin.spellapi.effect.RunicStatusEffect;
 import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
-import com.runicrealms.plugin.spellapi.spelltypes.RunicStatusEffect;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.spellapi.spellutil.particles.HelixParticleFrame;
@@ -126,7 +127,8 @@ public class Adrenaline extends Spell implements DurationSpell {
     private void onPhysicalDamage(PhysicalDamageEvent event) {
         int stacks = this.getStacks(event.getPlayer().getUniqueId());
 
-        if (this.stacks.containsKey(event.getPlayer().getUniqueId()) && this.hasStatusEffect(event.getVictim().getUniqueId(), RunicStatusEffect.BLEED)) {
+        if (this.stacks.containsKey(event.getPlayer().getUniqueId())
+                && this.hasSpellEffect(event.getVictim().getUniqueId(), BleedEffect.IDENTIFIER)) {
             this.addStack(event.getPlayer().getUniqueId());
             //stacks + 1 since stacks was calculated before the new stack was added
             event.getPlayer().sendMessage(ColorUtil.format("&aYou have " + (stacks + 1) + " stacks of rage!"));

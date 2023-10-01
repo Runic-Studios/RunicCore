@@ -1,6 +1,6 @@
 package com.runicrealms.plugin.api.event;
 
-import com.runicrealms.plugin.spellapi.spelltypes.RunicStatusEffect;
+import com.runicrealms.plugin.spellapi.effect.RunicStatusEffect;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
@@ -34,8 +34,8 @@ public class StatusEffectEvent extends Event implements Cancellable {
         this.applier = applier;
     }
 
-    public StatusEffectEvent(@NotNull LivingEntity livingEntity, @NotNull RunicStatusEffect runicStatusEffect, double durationInSeconds, boolean displayMessage) {
-        this(livingEntity, runicStatusEffect, durationInSeconds, displayMessage, null);
+    public static HandlerList getHandlerList() {
+        return handlers;
     }
 
     @NotNull
@@ -69,10 +69,6 @@ public class StatusEffectEvent extends Event implements Cancellable {
     @Nullable
     public LivingEntity getApplier() {
         return this.applier;
-    }
-
-    public static HandlerList getHandlerList() {
-        return handlers;
     }
 
     @NotNull

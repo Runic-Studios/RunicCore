@@ -1,4 +1,4 @@
-package com.runicrealms.plugin.spellapi.spelltypes;
+package com.runicrealms.plugin.spellapi.effect;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
@@ -14,8 +14,7 @@ public enum RunicStatusEffect {
     SPEED_I("Speed", "You gain speed!", true, "speed!", Sound.ENTITY_FIREWORK_ROCKET_BLAST),
     SPEED_II("Speed", "You gain speed!", true, "speed!", Sound.ENTITY_FIREWORK_ROCKET_BLAST),
     SPEED_III("Speed", "You gain speed!", true, "speed!", Sound.ENTITY_FIREWORK_ROCKET_BLAST),
-    STUN("Stun", "Enemy cannot cast spells, deal damage, or move!", false, "stunned!", Sound.BLOCK_GLASS_BREAK),
-    BLEED("Bleed", "Enemy slowly takes damage!", false, "lacerated!", Sound.ENTITY_COD_HURT);
+    STUN("Stun", "Enemy cannot cast spells, deal damage, or move!", false, "stunned!", Sound.BLOCK_GLASS_BREAK);
 
     private final String name;
     private final String description;
@@ -45,7 +44,7 @@ public enum RunicStatusEffect {
     public String getMessage() {
         ChatColor chatColor = buff ? ChatColor.DARK_GREEN : ChatColor.DARK_RED;
         String prepend = buff ? "You have gained " : "You have been ";
-        return chatColor + "" + ChatColor.BOLD + prepend + message;
+        return chatColor + String.valueOf(ChatColor.BOLD) + prepend + message;
     }
 
     public String getName() {

@@ -5,6 +5,9 @@ import com.runicrealms.plugin.api.event.AllyVerifyEvent;
 import com.runicrealms.plugin.common.CharacterClass;
 import com.runicrealms.plugin.events.EnemyVerifyEvent;
 import com.runicrealms.plugin.rdb.RunicDatabase;
+import com.runicrealms.plugin.spellapi.effect.RunicStatusEffect;
+import com.runicrealms.plugin.spellapi.effect.SpellEffect;
+import com.runicrealms.plugin.spellapi.effect.event.SpellEffectEvent;
 import com.runicrealms.plugin.utilities.ActionBarUtil;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -25,6 +28,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.logging.Level;
 
@@ -50,6 +54,24 @@ public abstract class Spell implements ISpell, Listener {
         this.reqClass = reqClass;
         this.loadSpellData(); // Load values like mana, cooldown, etc. from file
         Bukkit.getPluginManager().registerEvents(this, plugin);
+    }
+
+    @Override
+    public void addSpellEffectToManager(SpellEffect spellEffect) {
+        SpellEffectEvent spellEffectEvent = new SpellEffectEvent(spellEffect);
+        Bukkit.getPluginManager().callEvent(spellEffectEvent);
+        if (spellEffectEvent.isCancelled()) return;
+        RunicCore.getSpellEffectAPI().addSpellEffectToManager(spellEffect);
+    }
+
+    @Override
+    public boolean hasSpellEffect(UUID uuid, String identifier) {
+        return RunicCore.getSpellEffectAPI().hasSpellEffect(uuid, identifier);
+    }
+
+    @Override
+    public Optional<SpellEffect> getSpellEffect(UUID casterUuid, UUID recipientUuid, String identifier) {
+        return RunicCore.getSpellEffectAPI().getSpellEffect(casterUuid, recipientUuid, identifier);
     }
 
     @Override

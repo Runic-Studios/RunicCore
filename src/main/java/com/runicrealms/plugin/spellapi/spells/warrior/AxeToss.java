@@ -2,9 +2,11 @@ package com.runicrealms.plugin.spellapi.spells.warrior;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.common.CharacterClass;
+import com.runicrealms.plugin.spellapi.effect.BleedEffect;
+import com.runicrealms.plugin.spellapi.effect.RunicStatusEffect;
+import com.runicrealms.plugin.spellapi.effect.SpellEffect;
 import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.PhysicalDamageSpell;
-import com.runicrealms.plugin.spellapi.spelltypes.RunicStatusEffect;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.utilities.DamageUtil;
@@ -24,6 +26,7 @@ import org.bukkit.util.Vector;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 
 public class AxeToss extends Spell implements DurationSpell, PhysicalDamageSpell {
@@ -36,8 +39,8 @@ public class AxeToss extends Spell implements DurationSpell, PhysicalDamageSpell
         super("Axe Toss", CharacterClass.WARRIOR);
         hasBeenHit = new HashMap<>();
         this.setDescription("You throw your weapon, dealing (" + damage + " + &f" + damagePerLevel +
-                "x&7 lvl) physical⚔ damage and applying bleed to the enemy hit. " +
-                "If the enemy hit is already bleeding, they are also slowed for " + this.slowDuration + "s.");
+                "x&7 lvl) physical⚔ damage and applying &cbleed &7to the first enemy hit. " +
+                "If the enemy is already &cbleeding&7, they are slowed for " + this.slowDuration + "s!");
     }
 
     @Override
@@ -66,15 +69,19 @@ public class AxeToss extends Spell implements DurationSpell, PhysicalDamageSpell
                 if (hasBeenHit.get(player.getUniqueId()) == entity.getUniqueId()) continue;
                 hasBeenHit.put(player.getUniqueId(), entity.getUniqueId()); // prevent concussive hits
 
-                if (this.hasStatusEffect(entity.getUniqueId(), RunicStatusEffect.BLEED)) {
-                    addStatusEffect((LivingEntity) entity, RunicStatusEffect.SLOW_III,
-                            slowDuration, true);
+
+                Optional<SpellEffect> bleedEffect = this.getSpellEffect(player.getUniqueId(), entity.getUniqueId(), BleedEffect.IDENTIFIER);
+                if (bleedEffect.isEmpty()) {
+                    BleedEffect newEffect = new BleedEffect(player, (LivingEntity) entity, this);
+                    addSpellEffectToManager(newEffect);
+                } else {
+                    ((BleedEffect) bleedEffect.get()).refreshStacks();
+                    addStatusEffect((LivingEntity) entity, RunicStatusEffect.SLOW_III, slowDuration, true);
+                    entity.getWorld().spawnParticle
+                            (Particle.VILLAGER_ANGRY, entity.getLocation(), 5, 0.5F, 0.5F, 0.5F, 0);
                 }
 
-                addStatusEffect((LivingEntity) entity, RunicStatusEffect.BLEED, 6, true, player);
                 entity.getWorld().playSound(entity.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 0.5f, 0.2f);
-                entity.getWorld().spawnParticle
-                        (Particle.VILLAGER_ANGRY, entity.getLocation(), 5, 0.5F, 0.5F, 0.5F, 0);
                 DamageUtil.damageEntityPhysical(damage, (LivingEntity) entity, player, false, false, this);
                 projectile.remove();
             }

@@ -2,17 +2,18 @@ package com.runicrealms.plugin.spellapi.spells.warrior;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.common.CharacterClass;
+import com.runicrealms.plugin.spellapi.effect.BleedEffect;
 import com.runicrealms.plugin.spellapi.spelltypes.DistanceSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.PhysicalDamageSpell;
-import com.runicrealms.plugin.spellapi.spelltypes.RunicStatusEffect;
+import com.runicrealms.plugin.spellapi.spelltypes.RadiusSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
-import com.runicrealms.plugin.spellapi.spellutil.EntityUtil;
 import com.runicrealms.plugin.spellapi.spellutil.particles.SlashEffect;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Sound;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -26,48 +27,56 @@ import java.util.concurrent.atomic.AtomicInteger;
  *
  * @author BoBoBalloon
  */
-public class Cleave extends Spell implements PhysicalDamageSpell, DurationSpell, DistanceSpell {
-    private static final double ANGLE = Math.PI / 2; //90 degrees
+public class Cleave extends Spell implements DistanceSpell, DurationSpell, PhysicalDamageSpell, RadiusSpell {
+    private static final double ANGLE_DEGREES = 180;
     private double damage;
     private double damagePerLevel;
     private double duration;
     private double distance;
+    private double radius;
     private double tick;
 
     public Cleave() {
         super("Cleave", CharacterClass.WARRIOR);
-        this.setDescription("You brutally slash around yourself, dealing (" + this.damage + " + &f" + this.damagePerLevel + "x&7 lvl) physical⚔ damage every " + this.tick + "s for " + this.duration + "s! " +
-                "The last wound causes enemies to bleed!");
+        this.setDescription("You brutally slash around yourself, dealing (" + this.damage +
+                " + &f" + this.damagePerLevel + "x&7 lvl) physical⚔ damage every " +
+                this.tick + "s for " + this.duration + "s! " +
+                "The final slash causes enemies to &cbleed&7!" +
+                "\n\n&2&lEFFECT &aBleed" +
+                "\n&cBleeding &7enemies take 3% max health physical⚔ damage every 2.0s for 6.0s. " +
+                "(Capped at " + BleedEffect.DAMAGE_CAP + " damage). " +
+                "During this time, they receive 20% less healing.");
+    }
+
+    private void cleaveEffect(Player player, int count) {
+        double maxAngleCos = Math.cos(Math.toRadians(ANGLE_DEGREES));
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_PLAYER_ATTACK_CRIT, 0.75f, 0.5f);
+        // Damage entities in front of the player
+        SlashEffect.slashHorizontal(player.getLocation());
+        for (Entity entity : player.getWorld().getNearbyEntities(player.getLocation(), radius, radius, radius, target -> isValidEnemy(player, target))) {
+            Location entityLocation = entity.getLocation();
+            Vector directionToEntity = entityLocation.subtract(player.getLocation()).toVector().normalize();
+            // Check if the entity is in front of the player (cosine of the angle between the vectors > 0)
+            double dot = player.getLocation().getDirection().dot(directionToEntity);
+            if (dot < maxAngleCos) continue;
+            DamageUtil.damageEntityPhysical(this.damage, (LivingEntity) entity, player, false, false, this);
+            if (count >= this.duration - 1) {
+                BleedEffect bleedEffect = new BleedEffect(player, (LivingEntity) entity, this);
+                this.addSpellEffectToManager(bleedEffect);
+            }
+        }
     }
 
     @Override
     public void executeSpell(Player player, SpellItemType type) {
         AtomicInteger count = new AtomicInteger(0);
-
         Bukkit.getScheduler().runTaskTimer(RunicCore.getInstance(), task -> {
             if (count.get() >= this.duration) {
                 task.cancel();
                 return;
             }
-
-            Vector direction = player.getLocation().getDirection();
-            Location origin = player.getLocation().clone().add(direction.getX(), 0, direction.getZ());
-
-            SlashEffect.slashHorizontal(origin);
-
-            for (Entity entity : EntityUtil.getEnemiesInCone(player, (int) this.distance, Cleave.ANGLE, entity -> this.isValidEnemy(player, entity))) {
-                if (!(entity instanceof LivingEntity target)) {
-                    continue;
-                }
-
-                DamageUtil.damageEntityPhysical(this.damage, target, player, false, false, this);
-
-                if (count.get() >= this.duration - 1) {
-                    this.addStatusEffect(target, RunicStatusEffect.BLEED, 6, true, player);
-                }
-            }
-
-            count.set(count.get() + 1);
+            cleaveEffect(player, count.get());
+            count.getAndIncrement();
         }, 0, (long) (this.tick * 20));
     }
 
@@ -116,5 +125,15 @@ public class Cleave extends Spell implements PhysicalDamageSpell, DurationSpell,
     @Override
     public void setPhysicalDamagePerLevel(double physicalDamagePerLevel) {
         this.damagePerLevel = physicalDamagePerLevel;
+    }
+
+    @Override
+    public double getRadius() {
+        return radius;
+    }
+
+    @Override
+    public void setRadius(double radius) {
+        this.radius = radius;
     }
 }

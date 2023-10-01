@@ -2,7 +2,7 @@ package com.runicrealms.plugin.spellapi.spells.warrior;
 
 import com.runicrealms.plugin.api.event.StatusEffectEvent;
 import com.runicrealms.plugin.common.CharacterClass;
-import com.runicrealms.plugin.spellapi.spelltypes.RunicStatusEffect;
+import com.runicrealms.plugin.spellapi.effect.RunicStatusEffect;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;

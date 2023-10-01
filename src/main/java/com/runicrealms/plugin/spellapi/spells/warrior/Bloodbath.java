@@ -3,9 +3,11 @@ package com.runicrealms.plugin.spellapi.spells.warrior;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.common.CharacterClass;
 import com.runicrealms.plugin.events.PhysicalDamageEvent;
-import com.runicrealms.plugin.spellapi.spelltypes.HealingSpell;
-import com.runicrealms.plugin.spellapi.spelltypes.RunicStatusEffect;
+import com.runicrealms.plugin.runicitems.Stat;
+import com.runicrealms.plugin.spellapi.effect.BleedEffect;
+import com.runicrealms.plugin.spellapi.spelltypes.AttributeSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
+import org.bukkit.Bukkit;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -17,17 +19,20 @@ import java.util.Map;
  *
  * @author BoBoBalloon
  */
-public class Bloodbath extends Spell implements HealingSpell {
-    private double healing;
-    private double healingPerStrength;
+public class Bloodbath extends Spell implements AttributeSpell {
+    private static final Stat STAT = Stat.STRENGTH;
     private double percent;
     private double healthCeiling;
+    private double multiplier;
+    private double baseValue;
 
     public Bloodbath() {
         super("Bloodbath", CharacterClass.WARRIOR);
         this.setIsPassive(true);
-        this.setDescription("Hitting an enemy with &aCleave&7 heals you for (" + this.healing + " + &f" + this.healingPerStrength + "x &eSTR&7)% of your missing HP. " +
-                "Additionally you do " + (this.percent * 100) + "% more damage to bleeding enemies that are below " + (this.healthCeiling * 100) + "% max HP.");
+        this.setDescription("Hitting an enemy with &aCleave&7 heals✦ you for " +
+                "(" + this.baseValue + " + &f" + this.multiplier + "x &e" + STAT.getPrefix() + "&7)% health! " +
+                "Additionally you do " + (this.percent * 100) + "% more damage to &cbleeding &7enemies " +
+                "that are below " + (this.healthCeiling * 100) + "% of their max health.");
     }
 
     @Override
@@ -39,47 +44,52 @@ public class Bloodbath extends Spell implements HealingSpell {
         this.healthCeiling = healthCeiling.doubleValue();
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGHEST)
     private void onPhysicalDamage(PhysicalDamageEvent event) {
-        if (!this.hasPassive(event.getPlayer().getUniqueId(), this.getName()) || !(event.getSpell() instanceof Cleave)) {
-            return;
-        }
+        if (!this.hasPassive(event.getPlayer().getUniqueId(), this.getName())) return;
+        if (!(event.getSpell() instanceof Cleave)) return;
 
-        double percent = RunicCore.getStatAPI().getPlayerStrength(event.getPlayer().getUniqueId()) * this.healingPerStrength;
-        double heal = event.getPlayer().getHealth() * (percent / 100);
+        Bukkit.broadcastMessage("hello");
+        double percentHealth = RunicCore.getStatAPI().getPlayerStrength(event.getPlayer().getUniqueId()) * this.multiplier;
 
-        this.healPlayer(event.getPlayer(), event.getPlayer(), heal);
+        this.healPlayer(event.getPlayer(), event.getPlayer(), baseValue + percentHealth);
 
-        if (!this.hasStatusEffect(event.getVictim().getUniqueId(), RunicStatusEffect.BLEED)) {
-            return;
-        }
+        if (!this.hasSpellEffect(event.getVictim().getUniqueId(), BleedEffect.IDENTIFIER)) return;
 
         double healthRatio = event.getVictim().getHealth() / event.getVictim().getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
 
-        if (healthRatio >= this.healthCeiling) {
-            return;
-        }
+        if (healthRatio >= this.healthCeiling) return;
 
         event.setAmount((int) (event.getAmount() * (1 + this.percent)));
     }
 
     @Override
-    public double getHeal() {
-        return this.healing;
+    public double getBaseValue() {
+        return baseValue;
     }
 
     @Override
-    public void setHeal(double heal) {
-        this.healing = heal;
+    public void setBaseValue(double baseValue) {
+        this.baseValue = baseValue;
     }
 
     @Override
-    public double getHealingPerLevel() {
-        return this.healingPerStrength;
+    public double getMultiplier() {
+        return multiplier;
     }
 
     @Override
-    public void setHealingPerLevel(double healingPerLevel) {
-        this.healingPerStrength = healingPerLevel;
+    public void setMultiplier(double multiplier) {
+        this.multiplier = multiplier;
+    }
+
+    @Override
+    public String getStatName() {
+        return STAT.getName();
+    }
+
+    @Override
+    public void setStatName(String statName) {
+
     }
 }

@@ -1,15 +1,17 @@
 package com.runicrealms.plugin.spellapi.spells.warrior;
 
-import com.runicrealms.plugin.api.event.StatusEffectEvent;
 import com.runicrealms.plugin.common.CharacterClass;
 import com.runicrealms.plugin.events.PhysicalDamageEvent;
 import com.runicrealms.plugin.rdb.event.CharacterQuitEvent;
-import com.runicrealms.plugin.spellapi.spelltypes.RunicStatusEffect;
+import com.runicrealms.plugin.spellapi.effect.BleedEffect;
+import com.runicrealms.plugin.spellapi.effect.SpellEffect;
+import com.runicrealms.plugin.spellapi.effect.event.SpellEffectEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -19,41 +21,42 @@ import java.util.UUID;
  * @author BoBoBalloon
  */
 public class Rupture extends Spell {
-    private final Set<UUID> nextCrit;
+    private final Set<UUID> nextCriticalSet;
 
     public Rupture() {
         super("Rupture", CharacterClass.WARRIOR);
         this.setIsPassive(true);
-        this.setDescription("After successfully applying a bleed, your next basic attack is a critical hit! " +
-                "If your enemy is bleeding, reset the duration of their bleed.");
-        this.nextCrit = new HashSet<>();
+        this.setDescription("After successfully applying &cbleed&7, your next basic attack will critically strike! " +
+                "If your enemy is &cbleeding&7, reset the duration of their &cbleed&7.");
+        this.nextCriticalSet = new HashSet<>();
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     private void onPhysicalDamage(PhysicalDamageEvent event) {
-        if (!this.hasPassive(event.getPlayer().getUniqueId(), this.getName()) || !this.nextCrit.remove(event.getPlayer().getUniqueId()) || !event.isBasicAttack()) {
-            return;
-        }
+        if (!this.nextCriticalSet.contains(event.getPlayer().getUniqueId())) return;
+        if (!event.isBasicAttack()) return;
+        if (!this.hasPassive(event.getPlayer().getUniqueId(), this.getName())) return;
 
         event.setCritical(true);
+        this.nextCriticalSet.remove(event.getPlayer().getUniqueId());
 
-        if (this.hasStatusEffect(event.getVictim().getUniqueId(), RunicStatusEffect.BLEED)) {
-            this.addStatusEffect(event.getVictim(), RunicStatusEffect.BLEED, 6, false, event.getPlayer());
-        }
+        Optional<SpellEffect> bleedEffect = this.getSpellEffect(event.getPlayer().getUniqueId(), event.getVictim().getUniqueId(), BleedEffect.IDENTIFIER);
+        if (bleedEffect.isEmpty()) return;
+        ((BleedEffect) bleedEffect.get()).refreshStacks();
     }
 
-    @EventHandler(ignoreCancelled = true) //the effect apply is on high priority, this is right before it
-    private void onStatusEffect(StatusEffectEvent event) {
-        if (event.getRunicStatusEffect() != RunicStatusEffect.BLEED || event.getApplier() == null || !this.hasPassive(event.getApplier().getUniqueId(), this.getName()) || this.nextCrit.contains(event.getApplier().getUniqueId())) {
-            return;
-        }
-        
-        this.nextCrit.add(event.getApplier().getUniqueId());
+    @EventHandler(ignoreCancelled = true)
+    private void onStatusEffect(SpellEffectEvent event) {
+        if (this.nextCriticalSet.contains(event.getSpellEffect().getCaster().getUniqueId())) return;
+        if (!event.getSpellEffect().getIdentifier().equals(BleedEffect.IDENTIFIER)) return;
+        if (!this.hasPassive(event.getSpellEffect().getCaster().getUniqueId(), this.getName())) return;
+
+        this.nextCriticalSet.add(event.getSpellEffect().getCaster().getUniqueId());
     }
 
     @EventHandler
     private void onCharacterQuit(CharacterQuitEvent event) {
-        this.nextCrit.remove(event.getPlayer().getUniqueId());
+        this.nextCriticalSet.remove(event.getPlayer().getUniqueId());
     }
 }
 

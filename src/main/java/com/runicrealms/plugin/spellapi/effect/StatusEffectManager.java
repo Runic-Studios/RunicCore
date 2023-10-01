@@ -1,7 +1,6 @@
-package com.runicrealms.plugin.spellapi;
+package com.runicrealms.plugin.spellapi.effect;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.api.StatusEffectAPI;
 import com.runicrealms.plugin.api.event.StatusEffectEvent;
 import com.runicrealms.plugin.common.util.Pair;
 import com.runicrealms.plugin.events.MagicDamageEvent;
@@ -9,13 +8,9 @@ import com.runicrealms.plugin.events.MobDamageEvent;
 import com.runicrealms.plugin.events.PhysicalDamageEvent;
 import com.runicrealms.plugin.events.SpellCastEvent;
 import com.runicrealms.plugin.events.SpellHealEvent;
-import com.runicrealms.plugin.spellapi.spelltypes.RunicStatusEffect;
-import com.runicrealms.plugin.spellapi.statuseffects.EntityBleedEvent;
-import com.runicrealms.plugin.utilities.DamageUtil;
+import com.runicrealms.plugin.spellapi.api.StatusEffectAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -29,9 +24,6 @@ import org.bukkit.potion.PotionEffectType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -39,55 +31,12 @@ import java.util.concurrent.ConcurrentHashMap;
  * A manager and a container for the custom runic status effects impacting a given player
  */
 public class StatusEffectManager implements Listener, StatusEffectAPI {
-
     private final ConcurrentHashMap<UUID, ConcurrentHashMap<RunicStatusEffect, Pair<Long, Double>>> statusEffectMap;
-    private final Map<UUID, Long> lastbledMap;
 
     public StatusEffectManager() {
         this.statusEffectMap = new ConcurrentHashMap<>();
         Bukkit.getPluginManager().registerEvents(this, RunicCore.getInstance());
         startRemovalTask();
-
-        this.lastbledMap = new ConcurrentHashMap<>();
-        //task chain does not directly support repeating tasks, I could do it using taskchain but even this ugly block is cleaner and easier -BoBo
-        Bukkit.getScheduler().runTaskTimerAsynchronously(RunicCore.getInstance(), () -> {
-            long now = System.currentTimeMillis();
-            Set<UUID> bleeding = new HashSet<>();
-            for (Map.Entry<UUID, Long> pair : this.lastbledMap.entrySet()) {
-                if (pair.getValue() + 2000 > now) { //2 second delay in milliseconds
-                    continue;
-                }
-
-                pair.setValue(now);
-                bleeding.add(pair.getKey());
-            }
-
-            if (bleeding.isEmpty()) {
-                return;
-            }
-
-            Bukkit.getScheduler().runTask(RunicCore.getInstance(), () -> {
-                for (UUID uuid : bleeding) {
-                    LivingEntity recipient = (LivingEntity) Bukkit.getEntity(uuid); //safe to cast since only living entities can have bleeding applied in the first place
-
-                    if (recipient == null || recipient.isDead()) {
-                        this.removeStatusEffect(uuid, RunicStatusEffect.BLEED);
-                        continue;
-                    }
-
-                    EntityBleedEvent event = new EntityBleedEvent(recipient);
-                    Bukkit.getPluginManager().callEvent(event);
-                    if (event.isCancelled()) {
-                        continue;
-                    }
-
-                    recipient.getWorld().playSound(recipient.getLocation(), Sound.ENTITY_COD_HURT, 0.5f, 1.0f);
-                    recipient.getWorld().spawnParticle(Particle.BLOCK_CRACK, recipient.getLocation(), 10, Math.random() * 1.5, Math.random() / 2, Math.random() * 1.5, Material.REDSTONE_BLOCK.createBlockData());
-
-                    DamageUtil.damageEntityGeneric(Math.min(event.getAmount(), 100), recipient, false);
-                }
-            });
-        }, 0, 1);
     }
 
     @Override
@@ -149,10 +98,6 @@ public class StatusEffectManager implements Listener, StatusEffectAPI {
                 if (entity == null) return false;
                 if (!(entity instanceof LivingEntity)) return false;
                 removePotionEffect((LivingEntity) entity, PotionEffectType.SPEED);
-            }
-
-            if (statusEffect == RunicStatusEffect.BLEED) {
-                this.lastbledMap.remove(uuid); //if stop bleeding remove from the bled tick map
             }
 
             statusEffectMap.get(uuid).remove(statusEffect);
@@ -255,10 +200,6 @@ public class StatusEffectManager implements Listener, StatusEffectAPI {
                 || hasStatusEffect(event.getPlayer().getUniqueId(), RunicStatusEffect.STUN)) {
             event.setCancelled(true);
         }
-
-        if (hasStatusEffect(event.getPlayer().getUniqueId(), RunicStatusEffect.BLEED)) {
-            event.setAmount((int) (event.getAmount() * .8)); //receive 20% less healing when bleeding
-        }
     }
 
     @EventHandler(priority = EventPriority.HIGH)
@@ -312,10 +253,6 @@ public class StatusEffectManager implements Listener, StatusEffectAPI {
             }
         }
 
-        if (runicStatusEffect == RunicStatusEffect.BLEED && !this.lastbledMap.containsKey(uuid)) {
-            this.lastbledMap.put(uuid, 0L);
-        }
-
         if (!statusEffectMap.containsKey(uuid)) {
             statusEffectMap.put(uuid, new ConcurrentHashMap<>());
         }
@@ -344,10 +281,6 @@ public class StatusEffectManager implements Listener, StatusEffectAPI {
                         statusEffectMap.get(uuid).remove(runicStatusEffect);
                         if (statusEffectMap.get(uuid).isEmpty()) {
                             statusEffectMap.remove(uuid);
-                        }
-
-                        if (runicStatusEffect == RunicStatusEffect.BLEED) {
-                            this.lastbledMap.remove(uuid);
                         }
                     }
                 }

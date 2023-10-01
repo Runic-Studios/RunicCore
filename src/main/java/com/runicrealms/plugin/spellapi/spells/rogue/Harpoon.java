@@ -3,9 +3,9 @@ package com.runicrealms.plugin.spellapi.spells.rogue;
 import com.destroystokyo.paper.event.entity.ProjectileCollideEvent;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.common.CharacterClass;
+import com.runicrealms.plugin.spellapi.effect.RunicStatusEffect;
 import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.PhysicalDamageSpell;
-import com.runicrealms.plugin.spellapi.spelltypes.RunicStatusEffect;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.utilities.DamageUtil;
@@ -161,14 +161,18 @@ public class Harpoon extends Spell implements DurationSpell, PhysicalDamageSpell
     }
 
     public static class HarpoonHitEvent extends Event {
+        private static final HandlerList HANDLER_LIST = new HandlerList();
         private final Player caster;
         private final LivingEntity victim;
-
-        private static final HandlerList HANDLER_LIST = new HandlerList();
 
         public HarpoonHitEvent(@NotNull Player caster, @NotNull LivingEntity victim) {
             this.caster = caster;
             this.victim = victim;
+        }
+
+        @NotNull
+        public static HandlerList getHandlerList() {
+            return HANDLER_LIST;
         }
 
         @NotNull
@@ -184,11 +188,6 @@ public class Harpoon extends Spell implements DurationSpell, PhysicalDamageSpell
         @NotNull
         @Override
         public HandlerList getHandlers() {
-            return HANDLER_LIST;
-        }
-
-        @NotNull
-        public static HandlerList getHandlerList() {
             return HANDLER_LIST;
         }
     }

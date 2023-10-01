@@ -1,6 +1,6 @@
-package com.runicrealms.plugin.api;
+package com.runicrealms.plugin.spellapi.api;
 
-import com.runicrealms.plugin.spellapi.spelltypes.RunicStatusEffect;
+import com.runicrealms.plugin.spellapi.effect.RunicStatusEffect;
 import org.bukkit.entity.LivingEntity;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

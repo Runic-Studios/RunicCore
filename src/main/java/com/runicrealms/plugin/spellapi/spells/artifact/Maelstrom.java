@@ -1,11 +1,11 @@
 package com.runicrealms.plugin.spellapi.spells.artifact;
 
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.common.CharacterClass;
 import com.runicrealms.plugin.item.artifact.event.RunicArtifactOnHitEvent;
 import com.runicrealms.plugin.item.artifact.event.RunicItemArtifactTriggerEvent;
-import com.runicrealms.plugin.common.CharacterClass;
+import com.runicrealms.plugin.spellapi.effect.RunicStatusEffect;
 import com.runicrealms.plugin.spellapi.spelltypes.ArtifactSpell;
-import com.runicrealms.plugin.spellapi.spelltypes.RunicStatusEffect;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.Particle;

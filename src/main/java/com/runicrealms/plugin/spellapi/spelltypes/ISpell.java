@@ -1,15 +1,24 @@
 package com.runicrealms.plugin.spellapi.spelltypes;
 
 import com.runicrealms.plugin.common.CharacterClass;
+import com.runicrealms.plugin.spellapi.effect.RunicStatusEffect;
+import com.runicrealms.plugin.spellapi.effect.SpellEffect;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Optional;
 import java.util.UUID;
 
 public interface ISpell {
+
+    void addSpellEffectToManager(SpellEffect spellEffect);
+
+    boolean hasSpellEffect(UUID uuid, String identifier);
+    
+    Optional<SpellEffect> getSpellEffect(UUID casterUuid, UUID recipientUuid, String identifier);
 
     /**
      * Adds a custom status effect to an entity that interacts with runic systems, like silence preventing spells

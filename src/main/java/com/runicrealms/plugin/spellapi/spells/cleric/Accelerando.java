@@ -10,12 +10,11 @@ import com.runicrealms.plugin.events.RunicDamageEvent;
 import com.runicrealms.plugin.events.SpellCastEvent;
 import com.runicrealms.plugin.rdb.event.CharacterQuitEvent;
 import com.runicrealms.plugin.runicitems.Stat;
+import com.runicrealms.plugin.spellapi.effect.RunicStatusEffect;
 import com.runicrealms.plugin.spellapi.spelltypes.AttributeSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.RadiusSpell;
-import com.runicrealms.plugin.spellapi.spelltypes.RunicStatusEffect;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
-import com.runicrealms.plugin.spellapi.statuseffects.EntityBleedEvent;
 import org.bukkit.Color;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
@@ -91,11 +90,6 @@ public class Accelerando extends Spell implements DurationSpell, RadiusSpell, At
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     private void onEnvironmentDamage(EnvironmentDamageEvent event) {
-        this.reduceDamage(event);
-    }
-
-    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
-    private void onBleed(EntityBleedEvent event) {
         this.reduceDamage(event);
     }
 

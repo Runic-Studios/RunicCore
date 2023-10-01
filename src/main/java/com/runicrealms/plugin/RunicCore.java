@@ -19,7 +19,6 @@ import com.runicrealms.plugin.api.ShopAPI;
 import com.runicrealms.plugin.api.SkillTreeAPI;
 import com.runicrealms.plugin.api.SpellAPI;
 import com.runicrealms.plugin.api.StatAPI;
-import com.runicrealms.plugin.api.StatusEffectAPI;
 import com.runicrealms.plugin.api.TitleAPI;
 import com.runicrealms.plugin.api.VanishAPI;
 import com.runicrealms.plugin.character.gui.CharacterGuiManager;
@@ -164,7 +163,10 @@ import com.runicrealms.plugin.spellapi.ArtifactSpellListener;
 import com.runicrealms.plugin.spellapi.SpellManager;
 import com.runicrealms.plugin.spellapi.SpellScalingListener;
 import com.runicrealms.plugin.spellapi.SpellUseListener;
-import com.runicrealms.plugin.spellapi.StatusEffectManager;
+import com.runicrealms.plugin.spellapi.api.SpellEffectAPI;
+import com.runicrealms.plugin.spellapi.api.StatusEffectAPI;
+import com.runicrealms.plugin.spellapi.effect.SpellEffectManager;
+import com.runicrealms.plugin.spellapi.effect.StatusEffectManager;
 import com.runicrealms.plugin.spellapi.skilltrees.SkillTreeManager;
 import com.runicrealms.plugin.spellapi.skilltrees.listener.RuneGUIListener;
 import com.runicrealms.plugin.spellapi.skilltrees.listener.SkillTreeGUIListener;
@@ -185,10 +187,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public class RunicCore extends JavaPlugin implements Listener {
 
-    private static final int BASE_OUTLAW_RATING = 1500;
     public static final String VERSION_NUMBER = ColorUtil.format("&av2.0.6");
     public static final String VERSION_TITLE = ColorUtil.format("&e&lRiders of the Outlands");
-
+    private static final int BASE_OUTLAW_RATING = 1500;
     private static RunicCore instance;
     private static TaskChainFactory taskChainFactory;
     private static CombatAPI combatAPI;
@@ -210,6 +211,7 @@ public class RunicCore extends JavaPlugin implements Listener {
     private static SettingsManager settingsManager;
     private static ShopAPI shopAPI;
     private static MongoTask mongoTask;
+    private static SpellEffectAPI spellEffectAPI;
     private static StatusEffectAPI statusEffectAPI;
     private static GravestoneManager gravestoneManager;
     private static PlayerDataAPI playerDataAPI;
@@ -258,6 +260,10 @@ public class RunicCore extends JavaPlugin implements Listener {
 
     public static ShopAPI getShopAPI() {
         return shopAPI;
+    }
+
+    public static SpellEffectAPI getSpellEffectAPI() {
+        return spellEffectAPI;
     }
 
     public static StatusEffectAPI getStatusEffectAPI() {
@@ -375,6 +381,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         settingsManager = null;
         shopAPI = null;
         mongoTask = null;
+        spellEffectAPI = null;
         statusEffectAPI = null;
         taskChainFactory = null;
         gravestoneManager = null;
@@ -449,6 +456,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         settingsManager = new SettingsManager();
         shopAPI = new RunicItemShopManager();
         mongoTask = new MongoTask();
+        spellEffectAPI = new SpellEffectManager();
         statusEffectAPI = new StatusEffectManager();
         gravestoneManager = new GravestoneManager();
         ambientSoundHandler = new AmbientSoundHandler();
