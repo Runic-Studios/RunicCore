@@ -12,6 +12,7 @@ import org.bukkit.entity.Player;
 public class BleedEffect implements SpellEffect {
     public static final int DAMAGE_CAP = 100;
     public static final String IDENTIFIER = "Bleed";
+    public static final double HEALING_REDUCTION = .25;
     private static final int DEFAULT_STACKS = 3;
     private static final int PERIOD = 40;
     private static final double MAX_HEALTH_PERCENT = .03;
@@ -83,7 +84,7 @@ public class BleedEffect implements SpellEffect {
         recipient.getWorld().playSound(recipient.getLocation(), Sound.ENTITY_COD_HURT, 0.5f, 1.0f);
         recipient.getWorld().spawnParticle(Particle.BLOCK_CRACK, recipient.getEyeLocation(), 10, Math.random() * 1.5, Math.random() / 2, Math.random() * 1.5, Material.REDSTONE_BLOCK.createBlockData());
         double percentMaxHealthAmount = recipient.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue() * MAX_HEALTH_PERCENT;
-        DamageUtil.damageEntityPhysical(Math.min(percentMaxHealthAmount, 100), recipient, caster, false, false, this.spellSource);
+        DamageUtil.damageEntityPhysical(Math.min(percentMaxHealthAmount, 100), recipient, caster, false, false);
     }
 
     @Override

@@ -27,7 +27,7 @@ public class SpellEffectManager implements Listener, SpellEffectAPI {
     @EventHandler
     public void onSpellHeal(SpellHealEvent event) {
         if (hasSpellEffect(event.getPlayer().getUniqueId(), BleedEffect.IDENTIFIER)) {
-            event.setAmount((int) (event.getAmount() * .8)); // Receive 20% less healing when bleeding
+            event.setAmount((int) (event.getAmount() * (1 - BleedEffect.HEALING_REDUCTION))); // Receive less healing when bleeding
         }
     }
 
