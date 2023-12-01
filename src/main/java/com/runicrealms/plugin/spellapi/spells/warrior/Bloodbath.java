@@ -7,7 +7,6 @@ import com.runicrealms.plugin.runicitems.Stat;
 import com.runicrealms.plugin.spellapi.effect.BleedEffect;
 import com.runicrealms.plugin.spellapi.spelltypes.AttributeSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
-import org.bukkit.Bukkit;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -20,17 +19,19 @@ import java.util.Map;
  * @author BoBoBalloon
  */
 public class Bloodbath extends Spell implements AttributeSpell {
-    private static final Stat STAT = Stat.STRENGTH;
     private double percent;
     private double healthCeiling;
     private double multiplier;
     private double baseValue;
+    private String statName;
 
     public Bloodbath() {
         super("Bloodbath", CharacterClass.WARRIOR);
         this.setIsPassive(true);
+        Stat stat = Stat.getFromName(statName);
+        String prefix = stat == null ? "" : stat.getPrefix();
         this.setDescription("Hitting an enemy with &aCleave&7 heals✦ you for " +
-                "(" + this.baseValue + " + &f" + this.multiplier + "x &e" + STAT.getPrefix() + "&7)% health! " +
+                "(" + this.baseValue + " + &f" + this.multiplier + "x &e" + prefix + "&7)% health! " +
                 "Additionally you do " + (this.percent * 100) + "% more damage to &cbleeding &7enemies " +
                 "that are below " + (this.healthCeiling * 100) + "% of their max health.");
     }
@@ -49,17 +50,12 @@ public class Bloodbath extends Spell implements AttributeSpell {
         if (!this.hasPassive(event.getPlayer().getUniqueId(), this.getName())) return;
         if (!(event.getSpell() instanceof Cleave)) return;
 
-        Bukkit.broadcastMessage("hello");
-        double percentHealth = RunicCore.getStatAPI().getPlayerStrength(event.getPlayer().getUniqueId()) * this.multiplier;
-
+        double percentHealth = RunicCore.getStatAPI().getStat(event.getPlayer().getUniqueId(), this.getStatName()) * this.multiplier;
         this.healPlayer(event.getPlayer(), event.getPlayer(), baseValue + percentHealth);
 
         if (!this.hasSpellEffect(event.getVictim().getUniqueId(), BleedEffect.IDENTIFIER)) return;
-
         double healthRatio = event.getVictim().getHealth() / event.getVictim().getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
-
         if (healthRatio >= this.healthCeiling) return;
-
         event.setAmount((int) (event.getAmount() * (1 + this.percent)));
     }
 
@@ -85,11 +81,12 @@ public class Bloodbath extends Spell implements AttributeSpell {
 
     @Override
     public String getStatName() {
-        return STAT.getName();
+        return statName;
     }
 
     @Override
     public void setStatName(String statName) {
-
+        this.statName = statName;
     }
+
 }
