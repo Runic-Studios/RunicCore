@@ -6,11 +6,14 @@ import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.UUID;
+
 /**
  * Superclass of all custom damage event mechanics on runic
  */
 public abstract class RunicDamageEvent extends Event implements Cancellable {
     private static final HandlerList handlers = new HandlerList();
+    private final UUID eventId;
     private final LivingEntity victim;
     private int amount;
     private boolean isCancelled;
@@ -22,6 +25,7 @@ public abstract class RunicDamageEvent extends Event implements Cancellable {
      * @param amount the amount of damage dealt
      */
     public RunicDamageEvent(LivingEntity victim, int amount) {
+        this.eventId = UUID.randomUUID();
         this.victim = victim;
         this.amount = amount;
         this.isCancelled = false;
@@ -29,6 +33,16 @@ public abstract class RunicDamageEvent extends Event implements Cancellable {
 
     public static HandlerList getHandlerList() {
         return handlers;
+    }
+
+    /**
+     * A unique id that is generated for each damage event.
+     * Useful for executing code for each unique damage event
+     *
+     * @return a random uuid
+     */
+    public UUID getEventId() {
+        return eventId;
     }
 
     /**

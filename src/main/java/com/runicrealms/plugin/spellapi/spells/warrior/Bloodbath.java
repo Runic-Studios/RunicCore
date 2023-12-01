@@ -11,7 +11,9 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 
+import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * New ultimate passive for berserker
@@ -19,6 +21,8 @@ import java.util.Map;
  * @author BoBoBalloon
  */
 public class Bloodbath extends Spell implements AttributeSpell {
+    private static final long EXPIRY_DURATION = 5; // 5 seconds
+    private final Map<UUID, Long> eventMap = new HashMap<>(); // Prevents multiple benefits per cast
     private double percent;
     private double healthCeiling;
     private double multiplier;
@@ -31,9 +35,10 @@ public class Bloodbath extends Spell implements AttributeSpell {
         Stat stat = Stat.getFromName(statName);
         String prefix = stat == null ? "" : stat.getPrefix();
         this.setDescription("Hitting an enemy with &aCleave&7 heals✦ you for " +
-                "(" + this.baseValue + " + &f" + this.multiplier + "x &e" + prefix + "&7)% health! " +
+                "(" + this.baseValue + " + &f" + this.multiplier + "x &e" + prefix + "&7) health! " +
                 "Additionally you do " + (this.percent * 100) + "% more damage to &cbleeding &7enemies " +
-                "that are below " + (this.healthCeiling * 100) + "% of their max health.");
+                "that are below " + (this.healthCeiling * 100) + "% of their max health. " +
+                "Cannot occur more than once per cast.");
     }
 
     @Override
@@ -49,6 +54,14 @@ public class Bloodbath extends Spell implements AttributeSpell {
     private void onPhysicalDamage(PhysicalDamageEvent event) {
         if (!this.hasPassive(event.getPlayer().getUniqueId(), this.getName())) return;
         if (!(event.getSpell() instanceof Cleave)) return;
+
+        eventMap.entrySet().removeIf(entry -> System.currentTimeMillis() - entry.getValue() > EXPIRY_DURATION); // Clean up old entries
+
+        if (eventMap.containsKey(event.getPlayer().getUniqueId())) {
+            return;
+        }
+
+        eventMap.put(event.getPlayer().getUniqueId(), System.currentTimeMillis());
 
         double percentHealth = RunicCore.getStatAPI().getStat(event.getPlayer().getUniqueId(), this.getStatName()) * this.multiplier;
         this.healPlayer(event.getPlayer(), event.getPlayer(), baseValue + percentHealth);
@@ -88,5 +101,4 @@ public class Bloodbath extends Spell implements AttributeSpell {
     public void setStatName(String statName) {
         this.statName = statName;
     }
-
 }
