@@ -25,6 +25,7 @@ import com.runicrealms.plugin.character.gui.CharacterGuiManager;
 import com.runicrealms.plugin.chat.RunicChat;
 import com.runicrealms.plugin.commands.admin.ArmorStandCMD;
 import com.runicrealms.plugin.commands.admin.CooldownCMD;
+import com.runicrealms.plugin.commands.admin.DistributeCommand;
 import com.runicrealms.plugin.commands.admin.FireworkCMD;
 import com.runicrealms.plugin.commands.admin.GameModeCMD;
 import com.runicrealms.plugin.commands.admin.ManaCMD;
@@ -540,6 +541,8 @@ public class RunicCore extends JavaPlugin implements Listener {
         commandManager.registerCommand(new TPHereCMD());
         commandManager.registerCommand(new DiscordCMD());
         commandManager.registerCommand(new LootChestCommand());
+        commandManager.registerCommand(new DistributeCommand());
+
 
         partyChannel = new PartyChannel();
         RunicChat.getRunicChatAPI().registerChatChannel(partyChannel);

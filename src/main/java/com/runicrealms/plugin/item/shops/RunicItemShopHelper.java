@@ -8,13 +8,17 @@ import com.runicrealms.plugin.common.util.ChatUtils;
 import com.runicrealms.plugin.common.util.ColorUtil;
 import com.runicrealms.plugin.common.util.Pair;
 import com.runicrealms.plugin.runicitems.RunicItemsAPI;
+import com.runicrealms.plugin.runicitems.item.template.RunicItemTemplate;
 import com.runicrealms.plugin.runicitems.util.CurrencyUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -38,6 +42,8 @@ public class RunicItemShopHelper {
     private static final String WARDENS_KEY = "wardens-key";
     private static final String BOREALIS_KEY = "borealis-key";
     private static final String XALAKYTE_KEY = "xalakyte-key";
+
+    private static final String[] KEYS = {SILVER_KEY, GOLD_KEY, ETHEREAL_KEY, GENERALS_KEY, KEEPERS_KEY, WARDENS_KEY, BOREALIS_KEY, XALAKYTE_KEY};
 
     static {
         SILVER_KEY_ITEM.add(Pair.pair(SILVER_KEY, 1));
@@ -291,5 +297,46 @@ public class RunicItemShopHelper {
             }
         }));
         return new RunicShopGeneric(9, ChatColor.YELLOW + "Refund Vendor", Collections.singletonList(816), shopItems);
+    }
+
+    /**
+     * A hardcoded method to check if an item is the template id of a dungeon key
+     *
+     * @param templateId the id of the item
+     * @return if an item is the template id of a dungeon key
+     */
+    public static boolean isDungeonKey(@Nullable String templateId) {
+        for (String key : KEYS) {
+            if (key.equals(templateId)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * A method that removes dungeon keys from a player
+     *
+     * @param player the player
+     */
+    public static void clearDungeonKeys(@NotNull Player player) {
+        boolean removedItem = false;
+        for (ItemStack item : player.getInventory().getContents()) {
+            if (item == null || item.getAmount() <= 0 || item.getType() == Material.AIR) {
+                continue;
+            }
+
+            RunicItemTemplate template = RunicItemsAPI.getItemStackTemplate(item);
+
+            if (template != null && RunicItemShopHelper.isDungeonKey(template.getId())) {
+                item.setAmount(0);
+                removedItem = true;
+            }
+        }
+
+        if (removedItem) {
+            player.sendMessage(ChatColor.GRAY + "Your dungeon keys have been removed.");
+        }
     }
 }
