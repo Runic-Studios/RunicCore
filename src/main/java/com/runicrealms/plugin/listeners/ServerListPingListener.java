@@ -12,11 +12,6 @@ public class ServerListPingListener implements Listener {
     private static final String PREFIX = ColorUtil.format("                &d&lRunic Realms &r" + RunicCore.VERSION_NUMBER + "&r\n              ");
     private static String SERVER_MOTD;
 
-    @EventHandler
-    public void onServerListPing(ServerListPingEvent event) {
-        event.setMotd(getMOTD());
-    }
-
     /**
      * Get the lazy init variable of the server motd
      *
@@ -39,9 +34,14 @@ public class ServerListPingListener implements Listener {
             return PREFIX + RunicCore.VERSION_TITLE;
         }
 
-        String description = database.equals("writer") ? ColorUtil.format("     &a&lWRITER SERVER") : database.equals("dev") ? ColorUtil.format("  &a&lDEVELOPER SERVER") : RunicCore.VERSION_TITLE;
+        String description = database.equals("writer") ? ColorUtil.format("     &a&lCONTENT SERVER") : database.equals("dev") ? ColorUtil.format("  &a&lDEVELOPER SERVER") : RunicCore.VERSION_TITLE;
 
         SERVER_MOTD = PREFIX + description;
         return SERVER_MOTD;
+    }
+
+    @EventHandler
+    public void onServerListPing(ServerListPingEvent event) {
+        event.setMotd(getMOTD());
     }
 }
