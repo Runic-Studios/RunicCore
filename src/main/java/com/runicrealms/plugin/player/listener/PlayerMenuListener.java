@@ -33,7 +33,9 @@ import org.bukkit.inventory.meta.SkullMeta;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -45,6 +47,9 @@ public class PlayerMenuListener implements Listener {
     private static final int PLAYER_CRAFT_INV_SIZE = 5;
     private static final Set<Integer> PLAYER_CRAFTING_SLOTS = new HashSet<>(Arrays.asList(1, 2, 3, 4));
 
+    // Cache the packets so that we don't have to reconstruct them
+    private static final Map<UUID, Set<PacketContainer>> craftingSlotPackets = new HashMap<>();
+
     public PlayerMenuListener() {
 
         Bukkit.getScheduler().runTaskTimerAsynchronously(RunicCore.getInstance(), () -> {
@@ -55,44 +60,12 @@ public class PlayerMenuListener implements Listener {
                 if (player == null) continue;
                 InventoryView view = player.getOpenInventory();
 
-                // If the open inventory is a player inventory
-                // Update to the ring item
-                // This will update even when it is closed, but
-                // it is a small price to pay IMO
                 if (isPlayerCraftingInv(view)) {
-
-                    // uses packets to create visual items clientside that can't interact w/ the server
-                    // prevents duping
-                    PacketContainer packet1 = ProtocolLibrary.getProtocolManager().createPacket(PacketType.Play.Server.SET_SLOT);
-                    packet1.getIntegers().write(0, 0); // Window ID
-                    packet1.getIntegers().write(2, 1); // Slot ID
-                    packet1.getItemModifier().write(0, profileIcon(player)); // Item
-
-                    PacketContainer packet2 = ProtocolLibrary.getProtocolManager().createPacket(PacketType.Play.Server.SET_SLOT);
-                    packet2.getIntegers().write(0, 0); // Window ID
-                    packet2.getIntegers().write(2, 2); // Slot ID
-                    packet2.getItemModifier().write(0, gemMenuIcon(player)); // Item
-
-                    PacketContainer packet3 = ProtocolLibrary.getProtocolManager().createPacket(PacketType.Play.Server.SET_SLOT);
-                    packet3.getIntegers().write(0, 0); // Window ID
-                    packet3.getIntegers().write(2, 3); // Slot ID
-                    packet3.getItemModifier().write(0, gatheringLevelItemStack(player)); // Item
-
-                    PacketContainer packet4 = ProtocolLibrary.getProtocolManager().createPacket(PacketType.Play.Server.SET_SLOT);
-                    packet4.getIntegers().write(0, 0); // Window ID
-                    packet4.getIntegers().write(2, 4); // Slot ID
-                    packet4.getItemModifier().write(0, donorPerksIcon(player)); // Item
-
-                    PacketContainer packet5 = ProtocolLibrary.getProtocolManager().createPacket(PacketType.Play.Server.SET_SLOT);
-                    packet5.getIntegers().write(0, 0); // Window ID
-                    packet5.getIntegers().write(2, 0); // Slot ID
-                    packet5.getItemModifier().write(0, mountMenuIcon(player)); // Item
-
-                    ProtocolLibrary.getProtocolManager().sendServerPacket(player, packet1);
-                    ProtocolLibrary.getProtocolManager().sendServerPacket(player, packet2);
-                    ProtocolLibrary.getProtocolManager().sendServerPacket(player, packet3);
-                    ProtocolLibrary.getProtocolManager().sendServerPacket(player, packet4);
-                    ProtocolLibrary.getProtocolManager().sendServerPacket(player, packet5);
+                    Set<PacketContainer> packets = craftingSlotPackets.get(uuid);
+                    if (packets == null) continue;
+                    for (PacketContainer packet : packets) {
+                        ProtocolLibrary.getProtocolManager().sendServerPacket(player, packet);
+                    }
                 }
             }
         }, 100L, 10L);
@@ -100,6 +73,14 @@ public class PlayerMenuListener implements Listener {
 
     private static boolean isPlayerCraftingInv(InventoryView view) {
         return view.getTopInventory().getSize() == PLAYER_CRAFT_INV_SIZE;
+    }
+
+    private static PacketContainer constructCraftingSlotPacket(int slot, ItemStack item) {
+        PacketContainer packet = ProtocolLibrary.getProtocolManager().createPacket(PacketType.Play.Server.SET_SLOT);
+        packet.getIntegers().write(0, 0); // Window ID
+        packet.getIntegers().write(2, slot); // Slot ID
+        packet.getItemModifier().write(0, item); // Item
+        return packet;
     }
 
     /**
@@ -292,6 +273,15 @@ public class PlayerMenuListener implements Listener {
         if (isPlayerCraftingInv(view)) {
             clearPlayerCraftingSlots(view);
         }
+        // Cache the items in their crafting menu
+        Set<PacketContainer> packets = new HashSet<>();
+        packets.add(constructCraftingSlotPacket(0, mountMenuIcon(event.getPlayer())));
+        packets.add(constructCraftingSlotPacket(1, profileIcon(event.getPlayer())));
+        packets.add(constructCraftingSlotPacket(2, gemMenuIcon(event.getPlayer())));
+        packets.add(constructCraftingSlotPacket(3, gatheringLevelItemStack(event.getPlayer())));
+        packets.add(constructCraftingSlotPacket(4, donorPerksIcon(event.getPlayer())));
+
+        craftingSlotPackets.put(event.getPlayer().getUniqueId(), packets);
     }
 
     @EventHandler(priority = EventPriority.LOWEST) // first
@@ -301,5 +291,7 @@ public class PlayerMenuListener implements Listener {
         if (isPlayerCraftingInv(view)) {
             clearPlayerCraftingSlots(view);
         }
+        craftingSlotPackets.remove(event.getPlayer().getUniqueId());
     }
+
 }
