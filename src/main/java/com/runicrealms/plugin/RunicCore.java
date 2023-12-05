@@ -62,9 +62,6 @@ import com.runicrealms.plugin.donor.boost.ui.BoostConfirmUIListener;
 import com.runicrealms.plugin.donor.boost.ui.BoostsUIListener;
 import com.runicrealms.plugin.donor.ui.DonorPerksUIListener;
 import com.runicrealms.plugin.donor.ui.DonorUIListener;
-import com.runicrealms.plugin.item.artifact.ArtifactOnCastListener;
-import com.runicrealms.plugin.item.artifact.ArtifactOnHitListener;
-import com.runicrealms.plugin.item.artifact.ArtifactOnKillListener;
 import com.runicrealms.plugin.item.lootchests.LootTableManager;
 import com.runicrealms.plugin.item.shops.RunicItemShopManager;
 import com.runicrealms.plugin.item.shops.RunicShopManager;
@@ -160,7 +157,6 @@ import com.runicrealms.plugin.scoreboard.ScoreboardHandler;
 import com.runicrealms.plugin.scoreboard.ScoreboardListener;
 import com.runicrealms.plugin.sound.ambient.AmbientSoundHandler;
 import com.runicrealms.plugin.sound.music.MusicListener;
-import com.runicrealms.plugin.spellapi.ArtifactSpellListener;
 import com.runicrealms.plugin.spellapi.SpellManager;
 import com.runicrealms.plugin.spellapi.SpellScalingListener;
 import com.runicrealms.plugin.spellapi.SpellUseListener;
@@ -466,9 +462,6 @@ public class RunicCore extends JavaPlugin implements Listener {
         lootAPI = new LootManager();
         new DaylightCycleListener();
         new NpcListener();
-        new ArtifactOnCastListener();
-        new ArtifactOnHitListener();
-        new ArtifactOnKillListener();
         new PlayerQueueManager();
 
         // register commands
@@ -611,7 +604,6 @@ public class RunicCore extends JavaPlugin implements Listener {
         pm.registerEvents(new ArmorEquipListener(), this);
         pm.registerEvents(new CampfireListener(), this);
         pm.registerEvents(new EnderpearlListener(), this);
-        pm.registerEvents(new ArtifactSpellListener(), this);
         pm.registerEvents(new StatsGUIListener(), this);
         pm.registerEvents(new ServerListPingListener(), this);
         pm.registerEvents(new ExpBoostListener(), this);
