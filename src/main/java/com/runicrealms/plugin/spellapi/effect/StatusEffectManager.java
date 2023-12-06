@@ -12,6 +12,8 @@ import com.runicrealms.plugin.spellapi.api.StatusEffectAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Sound;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -247,10 +249,22 @@ public class StatusEffectManager implements Listener, StatusEffectAPI {
             livingEntity.getWorld().playSound(livingEntity.getLocation(),
                     Sound.ENTITY_ZOMBIE_BREAK_WOODEN_DOOR, 0.75f, 1.0f);
             // Since there's no entity move event, we handle root & stun the old-fashioned way for mobs
-            if (!(livingEntity instanceof Player)) {
-                livingEntity.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, (int) (durationInSecs * 20), 127));
-                livingEntity.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, (int) (durationInSecs * 20), 127));
+            if (livingEntity instanceof Player) {
+                return;
             }
+
+            //livingEntity.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, (int) (durationInSecs * 20), 127));
+            //livingEntity.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, (int) (durationInSecs * 20), 127));
+
+            AttributeInstance attribute = livingEntity.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED);
+
+            if (attribute == null) {
+                return;
+            }
+
+            double value = attribute.getBaseValue();
+            attribute.setBaseValue(0);
+            Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), () -> attribute.setBaseValue(value), (long) durationInSecs * 20);
         }
 
         if (!statusEffectMap.containsKey(uuid)) {

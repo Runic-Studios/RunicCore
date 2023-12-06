@@ -34,7 +34,7 @@ public class ServerListPingListener implements Listener {
             return PREFIX + RunicCore.VERSION_TITLE;
         }
 
-        String description = database.equals("writer") ? ColorUtil.format("     &a&lCONTENT SERVER") : database.equals("dev") ? ColorUtil.format("  &a&lDEVELOPER SERVER") : RunicCore.VERSION_TITLE;
+        String description = database.equals("writer") ? ColorUtil.format("    &a&lCONTENT SERVER") : database.equals("dev") ? ColorUtil.format("  &a&lDEVELOPER SERVER") : RunicCore.VERSION_TITLE;
 
         SERVER_MOTD = PREFIX + description;
         return SERVER_MOTD;
