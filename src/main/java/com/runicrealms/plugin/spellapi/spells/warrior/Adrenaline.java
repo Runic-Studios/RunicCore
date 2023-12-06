@@ -30,7 +30,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class Adrenaline extends Spell implements DurationSpell {
     private final Map<UUID, RagePayload> rageMap;
-    private double buffDuration;
+    private double buffDuration; // TODO: do we ever remove them from the rage map?
     private int maxStacks;
     private double percent;
 
@@ -53,6 +53,7 @@ public class Adrenaline extends Spell implements DurationSpell {
         this.rageMap.put(player.getUniqueId(), new RagePayload());
         this.addStatusEffect(player, RunicStatusEffect.SPEED_II, this.buffDuration, false);
         Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), () -> {
+            Bukkit.broadcastMessage("removing rage payload");
             this.rageMap.remove(player.getUniqueId());
             player.playSound(player.getLocation(), Sound.BLOCK_BEACON_DEACTIVATE, 0.5f, 1.0f);
         }, (long) buffDuration * 20);
@@ -90,33 +91,27 @@ public class Adrenaline extends Spell implements DurationSpell {
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     private void onPhysicalDamage(PhysicalDamageEvent event) {
-        if (!this.rageMap.containsKey(event.getPlayer().getUniqueId())) return;
-        if (!event.isBasicAttack()) return;
+        UUID playerId = event.getPlayer().getUniqueId();
+        if (!this.rageMap.containsKey(playerId) || !event.isBasicAttack()) return;
 
-        RagePayload ragePayload = this.rageMap.get(event.getPlayer().getUniqueId());
+        RagePayload ragePayload = this.rageMap.get(playerId);
         int stacks = ragePayload.getStacks();
 
-        if (this.hasSpellEffect(event.getVictim().getUniqueId(), BleedEffect.IDENTIFIER)) {
+        if (this.hasSpellEffect(event.getVictim().getUniqueId(), BleedEffect.IDENTIFIER) && stacks < this.maxStacks) {
             this.addStack(event.getPlayer());
+            stacks = ragePayload.getStacks();
+
+            if (!ragePayload.isEnraged() && stacks >= this.maxStacks) {
+                ragePayload.setEnraged(true);
+                event.getPlayer().sendMessage(ColorUtil.format("&aYou are &c&lenraged&r&a!"));
+                RunicCore.getStatusEffectAPI().cleanse(playerId);
+                this.addStatusEffect(event.getPlayer(), RunicStatusEffect.SPEED_II, this.buffDuration, false);
+            }
         }
 
-        if (stacks <= 0) {
-            return;
-        }
-
+        // Apply damage multiplier
         double multiplier = 1 + (this.percent * stacks);
         event.setAmount((int) (event.getAmount() * multiplier));
-
-        if (stacks < this.maxStacks) {
-            return;
-        }
-
-        if (!ragePayload.isEnraged()) {
-            ragePayload.setEnraged(true);
-            event.getPlayer().sendMessage(ColorUtil.format("&aYou are &c&lenraged&r&a!"));
-            RunicCore.getStatusEffectAPI().cleanse(event.getPlayer().getUniqueId());
-            this.addStatusEffect(event.getPlayer(), RunicStatusEffect.SPEED_II, this.buffDuration, false);
-        }
     }
 
     static class RagePayload {
