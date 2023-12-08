@@ -53,7 +53,6 @@ public class Adrenaline extends Spell implements DurationSpell {
         this.rageMap.put(player.getUniqueId(), new RagePayload());
         this.addStatusEffect(player, RunicStatusEffect.SPEED_II, this.buffDuration, false);
         Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), () -> {
-            Bukkit.broadcastMessage("removing rage payload");
             this.rageMap.remove(player.getUniqueId());
             player.playSound(player.getLocation(), Sound.BLOCK_BEACON_DEACTIVATE, 0.5f, 1.0f);
         }, (long) buffDuration * 20);

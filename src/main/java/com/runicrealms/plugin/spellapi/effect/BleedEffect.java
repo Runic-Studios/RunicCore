@@ -83,7 +83,7 @@ public class BleedEffect implements SpellEffect {
         recipient.getWorld().playSound(recipient.getLocation(), Sound.ENTITY_COD_HURT, 0.5f, 1.0f);
         recipient.getWorld().spawnParticle(Particle.BLOCK_CRACK, recipient.getEyeLocation(), 10, Math.random() * 1.5, Math.random() / 2, Math.random() * 1.5, Material.REDSTONE_BLOCK.createBlockData());
         double percentMaxHealthAmount = recipient.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue() * MAX_HEALTH_PERCENT;
-        DamageUtil.damageEntityPhysical(Math.min(percentMaxHealthAmount, 100), recipient, caster, false, false);
+        DamageUtil.damageEntityPhysical(Math.min(percentMaxHealthAmount, 100), recipient, caster, false, false, false);
     }
 
     @Override

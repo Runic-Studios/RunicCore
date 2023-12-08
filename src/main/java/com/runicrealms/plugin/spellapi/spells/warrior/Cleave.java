@@ -45,7 +45,7 @@ public class Cleave extends Spell implements DistanceSpell, DurationSpell, Physi
                 "\n\n&2&lEFFECT &aBleed" +
                 "\n&cBleeding &7enemies take 3% max health physical⚔ damage every 2.0s for 6.0s. " +
                 "(Capped at " + BleedEffect.DAMAGE_CAP + " damage). " +
-                "During this time, they receive " + (BleedEffect.HEALING_REDUCTION * 100) + "% less healing.");
+                "During this time, enemy players receive " + (BleedEffect.HEALING_REDUCTION * 100) + "% less healing.");
     }
 
     private void cleaveEffect(Player player, int count) {

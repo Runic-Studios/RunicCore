@@ -86,6 +86,11 @@ public class DamageUtil {
         damageEntityPhysical(dmgAmt, recipient, caster, isBasicAttack, isRanged, null);
     }
 
+    public static void damageEntityPhysical(double dmgAmt, @NotNull LivingEntity recipient, @NotNull Player caster,
+                                            boolean isBasicAttack, boolean isRanged, boolean knockback) {
+        damageEntityPhysical(dmgAmt, recipient, caster, isBasicAttack, isRanged, knockback, null);
+    }
+
     /**
      * Our universal method to apply physical damage to a player using custom calculation.
      *
