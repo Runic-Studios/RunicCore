@@ -5,6 +5,7 @@ import com.runicrealms.plugin.events.PhysicalDamageEvent;
 import com.runicrealms.plugin.rdb.event.CharacterQuitEvent;
 import com.runicrealms.plugin.spellapi.effect.BleedEffect;
 import com.runicrealms.plugin.spellapi.effect.SpellEffect;
+import com.runicrealms.plugin.spellapi.effect.SpellEffectType;
 import com.runicrealms.plugin.spellapi.effect.event.SpellEffectEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import org.bukkit.event.EventHandler;
@@ -40,7 +41,7 @@ public class Rupture extends Spell {
         event.setCritical(true);
         this.nextCriticalSet.remove(event.getPlayer().getUniqueId());
 
-        Optional<SpellEffect> bleedEffect = this.getSpellEffect(event.getPlayer().getUniqueId(), event.getVictim().getUniqueId(), BleedEffect.IDENTIFIER);
+        Optional<SpellEffect> bleedEffect = this.getSpellEffect(event.getPlayer().getUniqueId(), event.getVictim().getUniqueId(), SpellEffectType.BLEED);
         if (bleedEffect.isEmpty()) return;
         ((BleedEffect) bleedEffect.get()).refreshStacks();
     }
@@ -48,7 +49,7 @@ public class Rupture extends Spell {
     @EventHandler(ignoreCancelled = true)
     private void onStatusEffect(SpellEffectEvent event) {
         if (this.nextCriticalSet.contains(event.getSpellEffect().getCaster().getUniqueId())) return;
-        if (!event.getSpellEffect().getIdentifier().equals(BleedEffect.IDENTIFIER)) return;
+        if (event.getSpellEffect().getEffectType() != SpellEffectType.BLEED) return;
         if (!this.hasPassive(event.getSpellEffect().getCaster().getUniqueId(), this.getName())) return;
 
         this.nextCriticalSet.add(event.getSpellEffect().getCaster().getUniqueId());

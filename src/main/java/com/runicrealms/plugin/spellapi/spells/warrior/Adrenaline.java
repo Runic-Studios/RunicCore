@@ -4,8 +4,8 @@ import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.common.CharacterClass;
 import com.runicrealms.plugin.common.util.ColorUtil;
 import com.runicrealms.plugin.events.PhysicalDamageEvent;
-import com.runicrealms.plugin.spellapi.effect.BleedEffect;
 import com.runicrealms.plugin.spellapi.effect.RunicStatusEffect;
+import com.runicrealms.plugin.spellapi.effect.SpellEffectType;
 import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
@@ -97,7 +97,7 @@ public class Adrenaline extends Spell implements DurationSpell {
         RagePayload ragePayload = this.rageMap.get(playerId);
         int stacks = ragePayload.getStacks();
 
-        if (this.hasSpellEffect(event.getVictim().getUniqueId(), BleedEffect.IDENTIFIER) && stacks < this.maxStacks) {
+        if (this.hasSpellEffect(event.getVictim().getUniqueId(), SpellEffectType.BLEED) && stacks < this.maxStacks) {
             this.addStack(event.getPlayer());
             stacks = ragePayload.getStacks();
 

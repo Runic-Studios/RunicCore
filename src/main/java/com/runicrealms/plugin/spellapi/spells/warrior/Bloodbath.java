@@ -4,7 +4,7 @@ import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.common.CharacterClass;
 import com.runicrealms.plugin.events.PhysicalDamageEvent;
 import com.runicrealms.plugin.runicitems.Stat;
-import com.runicrealms.plugin.spellapi.effect.BleedEffect;
+import com.runicrealms.plugin.spellapi.effect.SpellEffectType;
 import com.runicrealms.plugin.spellapi.spelltypes.AttributeSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import org.bukkit.attribute.Attribute;
@@ -66,7 +66,7 @@ public class Bloodbath extends Spell implements AttributeSpell {
         double percentHealth = RunicCore.getStatAPI().getStat(event.getPlayer().getUniqueId(), this.getStatName()) * this.multiplier;
         this.healPlayer(event.getPlayer(), event.getPlayer(), baseValue + percentHealth);
 
-        if (!this.hasSpellEffect(event.getVictim().getUniqueId(), BleedEffect.IDENTIFIER)) return;
+        if (!this.hasSpellEffect(event.getVictim().getUniqueId(), SpellEffectType.BLEED)) return;
         double healthRatio = event.getVictim().getHealth() / event.getVictim().getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
         if (healthRatio >= this.healthCeiling) return;
         event.setAmount((int) (event.getAmount() * (1 + this.percent)));

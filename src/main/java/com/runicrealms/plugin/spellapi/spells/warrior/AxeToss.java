@@ -5,6 +5,7 @@ import com.runicrealms.plugin.common.CharacterClass;
 import com.runicrealms.plugin.spellapi.effect.BleedEffect;
 import com.runicrealms.plugin.spellapi.effect.RunicStatusEffect;
 import com.runicrealms.plugin.spellapi.effect.SpellEffect;
+import com.runicrealms.plugin.spellapi.effect.SpellEffectType;
 import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.PhysicalDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
@@ -70,7 +71,7 @@ public class AxeToss extends Spell implements DurationSpell, PhysicalDamageSpell
                 hasBeenHit.put(player.getUniqueId(), entity.getUniqueId()); // prevent concussive hits
 
 
-                Optional<SpellEffect> bleedEffect = this.getSpellEffect(player.getUniqueId(), entity.getUniqueId(), BleedEffect.IDENTIFIER);
+                Optional<SpellEffect> bleedEffect = this.getSpellEffect(player.getUniqueId(), entity.getUniqueId(), SpellEffectType.BLEED);
                 if (bleedEffect.isEmpty()) {
                     BleedEffect newEffect = new BleedEffect(player, (LivingEntity) entity, this);
                     addSpellEffectToManager(newEffect);

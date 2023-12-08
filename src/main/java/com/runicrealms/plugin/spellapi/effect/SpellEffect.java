@@ -9,7 +9,7 @@ public interface SpellEffect {
     /**
      * @return a unique string to identify the effect type (e.g. Bleed)
      */
-    String getIdentifier();
+    SpellEffectType getEffectType();
 
     /**
      * @return true if the effect should be currently active

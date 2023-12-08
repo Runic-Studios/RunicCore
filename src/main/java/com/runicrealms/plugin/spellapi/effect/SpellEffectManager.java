@@ -26,7 +26,7 @@ public class SpellEffectManager implements Listener, SpellEffectAPI {
 
     @EventHandler
     public void onSpellHeal(SpellHealEvent event) {
-        if (hasSpellEffect(event.getPlayer().getUniqueId(), BleedEffect.IDENTIFIER)) {
+        if (hasSpellEffect(event.getPlayer().getUniqueId(), SpellEffectType.BLEED)) {
             event.setAmount((int) (event.getAmount() * (1 - BleedEffect.HEALING_REDUCTION))); // Receive less healing when bleeding
         }
     }
@@ -51,21 +51,21 @@ public class SpellEffectManager implements Listener, SpellEffectAPI {
     }
 
     @Override
-    public boolean hasSpellEffect(UUID uuid, String identifier) {
+    public boolean hasSpellEffect(UUID uuid, SpellEffectType spellEffectType) {
         return activeSpellEffects.stream().anyMatch
                 (
                         spellEffect -> spellEffect.getRecipient().getUniqueId().equals(uuid)
-                                && spellEffect.getIdentifier().equalsIgnoreCase(identifier)
+                                && spellEffect.getEffectType() == spellEffectType
                 );
     }
 
     @Override
-    public Optional<SpellEffect> getSpellEffect(UUID casterUuid, UUID recipientUuid, String identifier) {
+    public Optional<SpellEffect> getSpellEffect(UUID casterUuid, UUID recipientUuid, SpellEffectType identifier) {
         return activeSpellEffects.stream().filter
                 (
                         spellEffect -> spellEffect.getCaster().getUniqueId().equals(casterUuid)
                                 && spellEffect.getRecipient().getUniqueId().equals(recipientUuid)
-                                && spellEffect.getIdentifier().equalsIgnoreCase(identifier)
+                                && spellEffect.getEffectType() == identifier
                 ).findFirst();
     }
 }

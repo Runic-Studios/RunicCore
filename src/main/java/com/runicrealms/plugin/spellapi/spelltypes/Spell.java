@@ -7,6 +7,7 @@ import com.runicrealms.plugin.events.EnemyVerifyEvent;
 import com.runicrealms.plugin.rdb.RunicDatabase;
 import com.runicrealms.plugin.spellapi.effect.RunicStatusEffect;
 import com.runicrealms.plugin.spellapi.effect.SpellEffect;
+import com.runicrealms.plugin.spellapi.effect.SpellEffectType;
 import com.runicrealms.plugin.spellapi.effect.event.SpellEffectEvent;
 import com.runicrealms.plugin.utilities.ActionBarUtil;
 import net.md_5.bungee.api.ChatMessageType;
@@ -65,12 +66,12 @@ public abstract class Spell implements ISpell, Listener {
     }
 
     @Override
-    public boolean hasSpellEffect(UUID uuid, String identifier) {
+    public boolean hasSpellEffect(UUID uuid, SpellEffectType identifier) {
         return RunicCore.getSpellEffectAPI().hasSpellEffect(uuid, identifier);
     }
 
     @Override
-    public Optional<SpellEffect> getSpellEffect(UUID casterUuid, UUID recipientUuid, String identifier) {
+    public Optional<SpellEffect> getSpellEffect(UUID casterUuid, UUID recipientUuid, SpellEffectType identifier) {
         return RunicCore.getSpellEffectAPI().getSpellEffect(casterUuid, recipientUuid, identifier);
     }
 

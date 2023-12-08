@@ -11,7 +11,6 @@ import org.bukkit.entity.Player;
 
 public class BleedEffect implements SpellEffect {
     public static final int DAMAGE_CAP = 100;
-    public static final String IDENTIFIER = "Bleed";
     public static final double HEALING_REDUCTION = .25;
     private static final int DEFAULT_STACKS = 3;
     private static final int PERIOD = 40;
@@ -42,8 +41,8 @@ public class BleedEffect implements SpellEffect {
     }
 
     @Override
-    public String getIdentifier() {
-        return IDENTIFIER;
+    public SpellEffectType getEffectType() {
+        return SpellEffectType.BLEED;
     }
 
     @Override
