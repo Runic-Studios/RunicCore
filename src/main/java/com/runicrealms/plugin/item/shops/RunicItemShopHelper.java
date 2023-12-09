@@ -85,6 +85,7 @@ public class RunicItemShopHelper {
         getLibraryGatekeepers();
         getCryptsGatekeepers();
         getFortressGatekeepers();
+        getIgnarothLairGatekeepers();
 
         //temp
         this.getBrownSteedRefund();
@@ -191,6 +192,17 @@ public class RunicItemShopHelper {
         gateKeepers.add(second);
         gateKeepers.add(third);
         gateKeepers.add(fourth);
+        return gateKeepers;
+    }
+
+    public Set<RunicShopGeneric> getIgnarothLairGatekeepers() {
+        Set<RunicShopGeneric> gateKeepers = new HashSet<>();
+        Gatekeeper first = new Gatekeeper(818, Arrays.asList(Pair.pair("paimon-vessel", 1), Pair.pair("cyrus-vessel", 1)), DungeonLocation.IGNAROTHS_LAIR, 1);
+        Gatekeeper second = new Gatekeeper(831, Arrays.asList(Pair.pair("paimon-vessel", 1), Pair.pair("cyrus-vessel", 1), Pair.pair("crimson-flesh", 8)), DungeonLocation.IGNAROTHS_LAIR, 2);
+        Gatekeeper third = new Gatekeeper(832, Arrays.asList(Pair.pair("paimon-vessel", 1), Pair.pair("cyrus-vessel", 1), Pair.pair("crimson-flesh", 50)), DungeonLocation.IGNAROTHS_LAIR, 3);
+        gateKeepers.add(first);
+        gateKeepers.add(second);
+        gateKeepers.add(third);
         return gateKeepers;
     }
 

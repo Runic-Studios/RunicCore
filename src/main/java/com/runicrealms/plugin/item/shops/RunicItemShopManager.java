@@ -1,10 +1,10 @@
 package com.runicrealms.plugin.item.shops;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.npcs.api.NpcClickEvent;
 import com.runicrealms.plugin.api.ShopAPI;
 import com.runicrealms.plugin.common.util.Pair;
 import com.runicrealms.plugin.config.ShopConfigLoader;
+import com.runicrealms.plugin.npcs.api.NpcClickEvent;
 import com.runicrealms.plugin.runicitems.RunicItemsAPI;
 import com.runicrealms.plugin.runicitems.util.ItemUtils;
 import com.runicrealms.plugin.runicitems.weaponskin.WeaponSkinObtainEvent;
@@ -143,7 +143,9 @@ public class RunicItemShopManager implements Listener, ShopAPI {
                         );
             }
             player.updateInventory();
-            player.sendMessage(ChatColor.GREEN + "You purchased " + displayName + ChatColor.GREEN + "!");
+            if (!(inShop.get(player.getUniqueId()) instanceof Gatekeeper)) {
+                player.sendMessage(ChatColor.GREEN + "You purchased " + displayName + ChatColor.GREEN + "!");
+            }
         }
         runicShopItem.runBuy(player);
         WeaponSkinObtainEvent obtainEvent = WeaponSkinUtil.createObtainEvent(player, runicShopItem.getShopItem());

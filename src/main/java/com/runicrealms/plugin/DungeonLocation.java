@@ -1,11 +1,9 @@
 package com.runicrealms.plugin;
 
-import com.runicrealms.plugin.item.lootchests.BossChestTier;
 import com.runicrealms.plugin.utilities.ConfigUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
-import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 
 import java.util.HashMap;
@@ -15,64 +13,48 @@ public enum DungeonLocation {
 
     SEBATHS_CAVE
             ("sebathscave",
-                    "Sebath's Cave",
-                    "head-of-sebath",
-                    BossChestTier.SEBATHS_CAVE
+                    "Sebath's Cave"
             ),
     CRYSTAL_CAVERN
             (
                     "crystalcavern",
-                    "Crystal Cavern",
-                    "head-of-hexagonis",
-                    BossChestTier.CRYSTAL_CAVERN
+                    "Crystal Cavern"
             ),
     JORUNDRS_KEEP
             (
                     "jorundrskeep",
-                    "Jorundr's Keep",
-                    "head-of-jorundr",
-                    BossChestTier.JORUNDRS_KEEP
+                    "Jorundr's Keep"
             ),
     SUNKEN_LIBRARY
             (
                     "library",
-                    "Sunken Library",
-                    "head-of-librarian",
-                    BossChestTier.SUNKEN_LIBRARY
+                    "Sunken Library"
             ),
     CRYPTS_OF_DERA
             (
                     "crypts",
-                    "Crypts of Dera",
-                    "head-of-pharaoh",
-                    BossChestTier.CRYPTS_OF_DERA
+                    "Crypts of Dera"
             ),
+    IGNAROTHS_LAIR(
+            "ignaroth",
+            "Ignaroth's Lair"
+    ),
     FROZEN_FORTRESS
             (
                     "fortress",
-                    "Frozen Fortress",
-                    "head-of-eldrid",
-                    BossChestTier.FROZEN_FORTRESS
+                    "Frozen Fortress"
             );
 
     private final String identifier;
     private final String display;
-    private final String currencyTemplateId;
-    private final BossChestTier bossChestTier;
     private final Location location;
-    private final Location chestLocation; // used for boss drops
     private final Map<Integer, Location> checkpoints;
-    private final BlockFace blockFace;
 
-    DungeonLocation(String identifier, String display, String currencyTemplateId, BossChestTier bossChestTier) {
+    DungeonLocation(String identifier, String display) {
         this.identifier = identifier;
         this.display = display;
-        this.currencyTemplateId = currencyTemplateId;
-        this.bossChestTier = bossChestTier;
         this.location = loadLocationFromFile("");
-        this.chestLocation = loadLocationFromFile("chest.");
         this.checkpoints = loadCheckpointsFromFile();
-        this.blockFace = loadChestBlockFaceFromFile();
     }
 
     /**
@@ -103,24 +85,8 @@ public enum DungeonLocation {
         return null;
     }
 
-    public BossChestTier getBossChestTier() {
-        return bossChestTier;
-    }
-
     public Map<Integer, Location> getCheckpoints() {
         return checkpoints;
-    }
-
-    public BlockFace getChestBlockFace() {
-        return blockFace;
-    }
-
-    public Location getChestLocation() {
-        return chestLocation;
-    }
-
-    public String getCurrencyTemplateId() {
-        return currencyTemplateId;
     }
 
     public String getDisplay() {
@@ -139,6 +105,7 @@ public enum DungeonLocation {
         ConfigurationSection dungeonSection = ConfigUtil.getDungeonConfigurationSection().getConfigurationSection(this.identifier);
         ConfigurationSection checkpointsSection = dungeonSection.getConfigurationSection("checkpoints");
         Map<Integer, Location> checkpoints = new HashMap<>();
+
         if (checkpointsSection == null) {
             Bukkit.getLogger().info(ChatColor.RED + "Checkpoints for " + this.display + " failed to load.");
             return checkpoints;
@@ -163,17 +130,6 @@ public enum DungeonLocation {
             Bukkit.getLogger().info(ChatColor.DARK_RED + "Error loading dungeon yaml file!");
         }
         return checkpoints;
-    }
-
-    private BlockFace loadChestBlockFaceFromFile() {
-        ConfigurationSection dungeonSection = ConfigUtil.getDungeonConfigurationSection().getConfigurationSection(this.identifier);
-        try {
-            return BlockFace.valueOf(dungeonSection.getString("chest.blockFace").toUpperCase());
-        } catch (NullPointerException e) {
-            e.printStackTrace();
-            Bukkit.getLogger().info(ChatColor.DARK_RED + "Error loading dungeon yaml file!");
-        }
-        return null;
     }
 
     private Location loadLocationFromFile(String prefix) {
