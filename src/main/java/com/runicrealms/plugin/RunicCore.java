@@ -66,6 +66,7 @@ import com.runicrealms.plugin.dynamicitem.DynamicItemManager;
 import com.runicrealms.plugin.item.lootchests.LootTableManager;
 import com.runicrealms.plugin.item.shops.RunicItemShopManager;
 import com.runicrealms.plugin.item.shops.RunicShopManager;
+import com.runicrealms.plugin.itemperks.ItemPerksRegistrar;
 import com.runicrealms.plugin.listeners.AllyVerifyListener;
 import com.runicrealms.plugin.listeners.ArmorEquipListener;
 import com.runicrealms.plugin.listeners.ArmorTypeListener;
@@ -219,6 +220,7 @@ public class RunicCore extends JavaPlugin implements Listener {
     private static CoreWriteOperation coreWriteOperation;
     private static LootAPI lootAPI;
     private static DynamicItemManager dynamicItemManager;
+    private static ItemPerksRegistrar itemPerksRegistrar;
 
     // getters for handlers
     public static RunicCore getInstance() {
@@ -345,6 +347,10 @@ public class RunicCore extends JavaPlugin implements Listener {
         return dynamicItemManager;
     }
 
+    public static ItemPerksRegistrar getItemPerksRegistrar() {
+        return itemPerksRegistrar;
+    }
+
     /**
      * @return a TaskChain for thread context switching
      */
@@ -395,6 +401,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         coreWriteOperation = null;
         lootAPI = null;
         dynamicItemManager = null;
+        itemPerksRegistrar = null;
     }
 
     @Override
@@ -468,6 +475,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         vanishAPI = new VanishManager();
         lootAPI = new LootManager();
         dynamicItemManager = new DynamicItemManager();
+        itemPerksRegistrar = new ItemPerksRegistrar();
         new DaylightCycleListener();
         new NpcListener();
         new PlayerQueueManager();
