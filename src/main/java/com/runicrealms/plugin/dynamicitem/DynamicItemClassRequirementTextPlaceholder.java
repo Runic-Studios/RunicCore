@@ -28,9 +28,10 @@ import java.util.UUID;
 public class DynamicItemClassRequirementTextPlaceholder extends DynamicItemTextPlaceholder implements Listener {
 
     /*
-    We use our own cached classes here instead of RunicDatabase.getAPI().getCharacterAPI().getCharacterClass for two reasons:
-    1) That method makes calls to a concurrent hash map which we would end up locking out hundreds of times per tick for no reason
-    2) To prevent conversions between CharacterClass and RunicItemClass every replacement generation
+    We use our own cached classes here instead of RunicDatabase.getAPI().getCharacterAPI().getCharacterClass for three reasons:
+    1) Our generateReplacement method may be called hundreds of times per tick
+    2) Using the RDB method makes calls to a concurrent hash map which we would then lock hundreds of times for no reason
+    3) To prevent conversions between CharacterClass and RunicItemClass every replacement generation (which involves just iterating enums)
      */
     private final Map<UUID, RunicItemClass> cachedClasses = new HashMap<>();
 

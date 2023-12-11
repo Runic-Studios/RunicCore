@@ -8,6 +8,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * Replaces <level> on items with an X or a checkmark
+ */
 public class DynamicItemLevelRequirementTextPlaceholder extends DynamicItemTextPlaceholder {
 
     public DynamicItemLevelRequirementTextPlaceholder() {
