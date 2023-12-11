@@ -62,6 +62,7 @@ import com.runicrealms.plugin.donor.boost.ui.BoostConfirmUIListener;
 import com.runicrealms.plugin.donor.boost.ui.BoostsUIListener;
 import com.runicrealms.plugin.donor.ui.DonorPerksUIListener;
 import com.runicrealms.plugin.donor.ui.DonorUIListener;
+import com.runicrealms.plugin.dynamicitem.DynamicItemManager;
 import com.runicrealms.plugin.item.lootchests.LootTableManager;
 import com.runicrealms.plugin.item.shops.RunicItemShopManager;
 import com.runicrealms.plugin.item.shops.RunicShopManager;
@@ -217,6 +218,7 @@ public class RunicCore extends JavaPlugin implements Listener {
     private static VanishAPI vanishAPI;
     private static CoreWriteOperation coreWriteOperation;
     private static LootAPI lootAPI;
+    private static DynamicItemManager dynamicItemManager;
 
     // getters for handlers
     public static RunicCore getInstance() {
@@ -339,6 +341,10 @@ public class RunicCore extends JavaPlugin implements Listener {
         return lootAPI;
     }
 
+    public static DynamicItemManager getDynamicItemManager() {
+        return dynamicItemManager;
+    }
+
     /**
      * @return a TaskChain for thread context switching
      */
@@ -388,6 +394,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         vanishAPI = null;
         coreWriteOperation = null;
         lootAPI = null;
+        dynamicItemManager = null;
     }
 
     @Override
@@ -460,6 +467,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         boostAPI = new BoostManager();
         vanishAPI = new VanishManager();
         lootAPI = new LootManager();
+        dynamicItemManager = new DynamicItemManager();
         new DaylightCycleListener();
         new NpcListener();
         new PlayerQueueManager();
