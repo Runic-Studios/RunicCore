@@ -48,7 +48,7 @@ public class GaleblessedPerk extends ItemPerkHandler implements Listener {
             @Nullable
             @Override
             public String generateReplacement(Player viewer, ItemStack item, NBTItem itemNBT, RunicItemTemplate template) {
-                return String.valueOf((int) (getCurrentStacks(viewer) * PERCENT_SPEED_PER_STACK * 100));
+                return String.valueOf(getDisplayedPercentSpeedChange(viewer));
             }
         });
     }
@@ -68,7 +68,7 @@ public class GaleblessedPerk extends ItemPerkHandler implements Listener {
         }
     }
 
-    private int getPercentSpeedChange(Player player) {
+    private int getDisplayedPercentSpeedChange(Player player) {
         return (int) (getCurrentStacks(player) * PERCENT_SPEED_PER_STACK * 100);
     }
 
@@ -81,7 +81,7 @@ public class GaleblessedPerk extends ItemPerkHandler implements Listener {
             int percentage = (int) (modifier.getAmount() * 100);
             event.getPlayer().sendMessage(
                     ChatColor.AQUA + "" + ChatColor.ITALIC + "Galeblessed: +"
-                            + ChatColor.YELLOW + ChatColor.ITALIC + getPercentSpeedChange(event.getPlayer()) + "% "
+                            + ChatColor.YELLOW + ChatColor.ITALIC + getDisplayedPercentSpeedChange(event.getPlayer()) + "% "
                             + ChatColor.AQUA + ChatColor.ITALIC + "walk speed");
             deactivationTasks.put(event.getPlayer().getUniqueId(), new BukkitRunnable() {
                 @Override
