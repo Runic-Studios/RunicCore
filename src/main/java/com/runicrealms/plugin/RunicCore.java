@@ -172,6 +172,7 @@ import com.runicrealms.plugin.spellapi.skilltrees.listener.SkillTreeGUIListener;
 import com.runicrealms.plugin.spellapi.skilltrees.listener.SpellEditorGUIListener;
 import com.runicrealms.plugin.spellapi.skilltrees.listener.SpellGUIListener;
 import com.runicrealms.plugin.spellapi.skilltrees.listener.SubClassGUIListener;
+import com.runicrealms.plugin.utilities.NameTagPartyHandler;
 import com.runicrealms.plugin.utilities.NametagHandler;
 import com.runicrealms.plugin.utilities.PlaceholderAPI;
 import com.runicrealms.plugin.utilities.RegionHelper;
@@ -479,6 +480,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         new DaylightCycleListener();
         new NpcListener();
         new PlayerQueueManager();
+        new NameTagPartyHandler();
 
         // register commands
         registerACFCommands();

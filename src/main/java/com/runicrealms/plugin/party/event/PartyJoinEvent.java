@@ -3,16 +3,19 @@ package com.runicrealms.plugin.party.event;
 import com.runicrealms.plugin.party.Party;
 import org.bukkit.entity.Player;
 
+/**
+ * Called before the member joins the party
+ */
 public class PartyJoinEvent extends PartyEvent {
 
-    private final Player member;
+    private final Player joining;
 
-    public PartyJoinEvent(Party party, Player member) {
+    public PartyJoinEvent(Party party, Player joining) {
         super(party);
-        this.member = member;
+        this.joining = joining;
     }
 
-    public Player getMember() {
-        return member;
+    public Player getJoining() {
+        return joining;
     }
 }

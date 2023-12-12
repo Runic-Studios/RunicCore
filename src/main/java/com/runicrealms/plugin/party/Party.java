@@ -2,6 +2,7 @@ package com.runicrealms.plugin.party;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.party.event.LeaveReason;
+import com.runicrealms.plugin.party.event.PartyCreateEvent;
 import com.runicrealms.plugin.party.event.PartyEvent;
 import com.runicrealms.plugin.party.event.PartyJoinEvent;
 import com.runicrealms.plugin.party.event.PartyLeaveEvent;
@@ -29,7 +30,7 @@ public class Party {
         this.members = new HashSet<>();
         this.invites = new HashSet<>();
         this.leader = leader;
-        PartyEvent partyEvent = new PartyEvent(this);
+        PartyEvent partyEvent = new PartyCreateEvent(this);
         Bukkit.getPluginManager().callEvent(partyEvent);
     }
 
@@ -112,9 +113,9 @@ public class Party {
      * @param leaveReason reason the player left
      */
     public void kickMember(Player player, LeaveReason leaveReason) {
-        this.members.remove(player);
         PartyLeaveEvent partyLeaveEvent = new PartyLeaveEvent(this, player, leaveReason);
         Bukkit.getPluginManager().callEvent(partyLeaveEvent);
+        this.members.remove(player);
     }
 
     public void removeInvite(Player player) {

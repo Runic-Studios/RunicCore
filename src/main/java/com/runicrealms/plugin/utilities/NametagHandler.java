@@ -42,6 +42,30 @@ public class NametagHandler implements Listener {
                 });
     }
 
+    /**
+     * A method that returns the color of the user's health in the tab display while in a party
+     *
+     * @param player the user to get health from
+     * @return the color of the user's health in the tab display while in a party
+     */
+    @NotNull
+    private static ChatColor getHealthChatColor(@NotNull Player player) {
+        int healthToDisplay = (int) (player.getHealth());
+        int maxHealth = (int) player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
+        double healthPercent = (double) healthToDisplay / maxHealth;
+        ChatColor chatColor;
+        if (healthPercent >= .75) {
+            chatColor = ChatColor.GREEN;
+        } else if (healthPercent >= .5) {
+            chatColor = ChatColor.YELLOW;
+        } else if (healthPercent >= .25) {
+            chatColor = ChatColor.RED;
+        } else {
+            chatColor = ChatColor.DARK_RED;
+        }
+        return chatColor;
+    }
+
     @EventHandler
     public void onGenericDamage(EnvironmentDamageEvent event) {
         if (!(event.getVictim() instanceof Player player)) return;
@@ -84,29 +108,5 @@ public class NametagHandler implements Listener {
             ChatColor healthColor = NametagHandler.getHealthChatColor(player);
             NametagEdit.getApi().setSuffix(player, healthColor + " " + (int) player.getHealth() + "❤");
         });
-    }
-
-    /**
-     * A method that returns the color of the user's health in the tab display while in a party
-     *
-     * @param player the user to get health from
-     * @return the color of the user's health in the tab display while in a party
-     */
-    @NotNull
-    private static ChatColor getHealthChatColor(@NotNull Player player) {
-        int healthToDisplay = (int) (player.getHealth());
-        int maxHealth = (int) player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
-        double healthPercent = (double) healthToDisplay / maxHealth;
-        ChatColor chatColor;
-        if (healthPercent >= .75) {
-            chatColor = ChatColor.GREEN;
-        } else if (healthPercent >= .5) {
-            chatColor = ChatColor.YELLOW;
-        } else if (healthPercent >= .25) {
-            chatColor = ChatColor.RED;
-        } else {
-            chatColor = ChatColor.DARK_RED;
-        }
-        return chatColor;
     }
 }

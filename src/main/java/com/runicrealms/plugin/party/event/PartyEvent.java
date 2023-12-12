@@ -8,14 +8,19 @@ import org.bukkit.event.HandlerList;
 /**
  * This custom event is called when a party is formed or disbanded.
  */
-public class PartyEvent extends Event implements Cancellable {
+public abstract class PartyEvent extends Event implements Cancellable {
 
+    private static final HandlerList handlers = new HandlerList();
     private final Party party;
     private boolean isCancelled;
 
     public PartyEvent(Party party) {
         this.party = party;
         this.isCancelled = false;
+    }
+
+    public static HandlerList getHandlerList() {
+        return handlers;
     }
 
     public Party getParty() {
@@ -32,15 +37,9 @@ public class PartyEvent extends Event implements Cancellable {
         this.isCancelled = arg0;
     }
 
-    private static final HandlerList handlers = new HandlerList();
-
     @SuppressWarnings("NullableProblems")
     @Override
     public HandlerList getHandlers() {
-        return handlers;
-    }
-
-    public static HandlerList getHandlerList() {
         return handlers;
     }
 }
