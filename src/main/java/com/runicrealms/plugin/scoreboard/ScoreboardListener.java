@@ -5,8 +5,8 @@ import com.runicrealms.plugin.api.event.ScoreboardUpdateEvent;
 import com.runicrealms.plugin.player.utilities.HealthUtils;
 import com.runicrealms.plugin.rdb.RunicDatabase;
 import com.runicrealms.plugin.rdb.event.CharacterLoadedEvent;
-import com.runicrealms.plugin.utilities.NametagHandler;
 import com.runicrealms.plugin.runicitems.item.event.RunicStatUpdateEvent;
+import com.runicrealms.plugin.utilities.NameTagHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -67,7 +67,7 @@ public class ScoreboardListener implements Listener {
     public void onPlayerJoin(CharacterLoadedEvent event) {
         Player player = event.getPlayer();
         RunicCore.getScoreboardAPI().setupScoreboard(player);
-        NametagHandler.updateNametag(player, event.getCharacterSelectEvent().getSlot());
+        NameTagHandler.updateNametag(player, event.getCharacterSelectEvent().getSlot());
     }
 
     @EventHandler(priority = EventPriority.HIGHEST) // last thing to run

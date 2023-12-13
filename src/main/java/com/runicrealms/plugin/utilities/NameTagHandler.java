@@ -18,7 +18,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.jetbrains.annotations.NotNull;
 
-public class NametagHandler implements Listener {
+public class NameTagHandler implements Listener {
 
     /**
      * Calls a new name tag event
@@ -36,7 +36,6 @@ public class NametagHandler implements Listener {
                                     player,
                                     slot,
                                     prefixColor,
-                                    ChatColor.RESET,
                                     "[" + player.getLevel() + "]"
                             ));
                 });
@@ -92,7 +91,7 @@ public class NametagHandler implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST) // Last thing to run
     public void onNameTagEvent(NameTagEvent event) {
         if (event.isCancelled()) return;
-        final String finalName = event.getPrefixColor() + event.getNametag() + event.getNameColor();
+        final String finalName = event.getPrefixColor() + event.getNametag();
         NametagEdit.getApi().setPrefix(event.getPlayer(), finalName + " ");
         updateHealthBar(event.getPlayer());
     }
@@ -105,7 +104,7 @@ public class NametagHandler implements Listener {
 
     private void updateHealthBar(Player player) {
         Bukkit.getScheduler().runTask(RunicCore.getInstance(), () -> {
-            ChatColor healthColor = NametagHandler.getHealthChatColor(player);
+            ChatColor healthColor = NameTagHandler.getHealthChatColor(player);
             NametagEdit.getApi().setSuffix(player, healthColor + " " + (int) player.getHealth() + "❤");
         });
     }

@@ -14,7 +14,7 @@ import com.runicrealms.plugin.common.util.Pair;
 import com.runicrealms.plugin.model.CoreCharacterData;
 import com.runicrealms.plugin.player.utilities.PlayerLevelUtil;
 import com.runicrealms.plugin.rdb.RunicDatabase;
-import com.runicrealms.plugin.utilities.NametagHandler;
+import com.runicrealms.plugin.utilities.NameTagHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
@@ -99,7 +99,7 @@ public class SetCMD extends BaseCommand {
 
         // Upload scoreboard, nametag
         RunicCore.getScoreboardAPI().setupScoreboard(player);
-        NametagHandler.updateNametag(player, slot);
+        NameTagHandler.updateNametag(player, slot);
     }
 
     // set hearthstone [player] [location]

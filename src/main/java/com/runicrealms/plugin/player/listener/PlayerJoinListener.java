@@ -82,7 +82,7 @@ public class PlayerJoinListener implements Listener {
                     Bukkit.getScheduler().runTask(RunicCore.getInstance(), () -> Bukkit.getPluginManager().callEvent(characterLoadedEvent));
                 }
             }
-        }.runTaskTimerAsynchronously(RunicCore.getInstance(), 0, 20L);
+        }.runTaskTimerAsynchronously(RunicCore.getInstance(), 5L, 20L);
     }
 
     @EventHandler(priority = EventPriority.NORMAL)

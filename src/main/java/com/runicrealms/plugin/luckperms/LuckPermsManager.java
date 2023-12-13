@@ -96,7 +96,7 @@ public class LuckPermsManager implements LuckPermsAPI, Listener {
             if (cachedData.get() != null && !ignoreCache) return CompletableFuture.completedFuture(cachedData.get());
 
             final CompletableFuture<LuckPermsData> future = new CompletableFuture<>();
-            LuckPermsProvider.get().getUserManager().loadUser(owner).thenAcceptAsync(user -> {
+            LuckPermsProvider.get().getUserManager().loadUser(owner).thenAccept(user -> {
                 // Convert loaded luckperms metadata into runic interface
                 LuckPermsData data = UserLuckPermsMetaData.loadFromCachedMetaData(user.getCachedData().getMetaData());
                 cachedData.set(data); // Save cached data

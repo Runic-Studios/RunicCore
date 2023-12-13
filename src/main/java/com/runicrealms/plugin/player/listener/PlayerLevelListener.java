@@ -4,7 +4,7 @@ import com.runicrealms.plugin.common.util.Pair;
 import com.runicrealms.plugin.player.utilities.HealthUtils;
 import com.runicrealms.plugin.player.utilities.PlayerLevelUtil;
 import com.runicrealms.plugin.rdb.RunicDatabase;
-import com.runicrealms.plugin.utilities.NametagHandler;
+import com.runicrealms.plugin.utilities.NameTagHandler;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
@@ -88,7 +88,7 @@ public class PlayerLevelListener implements Listener {
         if (player.getLevel() == 0) return;
 
         int slot = RunicDatabase.getAPI().getCharacterAPI().getCharacterSlot(player.getUniqueId());
-        NametagHandler.updateNametag(player, slot);
+        NameTagHandler.updateNametag(player, slot);
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 1.0f);
 
         if (!PlayerJoinListener.LOADING_SCREEN_PLAYERS.contains(player.getUniqueId())) {

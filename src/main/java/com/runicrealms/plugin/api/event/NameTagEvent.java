@@ -14,21 +14,18 @@ public class NameTagEvent extends Event implements Cancellable {
     private final Player player;
     private final int slot;
     private ChatColor prefixColor;
-    private ChatColor nameColor;
     private String nametag;
     private boolean isCancelled;
 
     /**
      * @param prefixColor the color of the class|level prefix
      * @param slot        of the character
-     * @param nameColor   the color of the name itself
      * @param nametag     the contents of the tag (should include the player's name)
      */
-    public NameTagEvent(Player player, int slot, ChatColor prefixColor, ChatColor nameColor, String nametag) {
+    public NameTagEvent(Player player, int slot, ChatColor prefixColor, String nametag) {
         this.player = player;
         this.slot = slot;
         this.prefixColor = prefixColor;
-        this.nameColor = nameColor;
         this.nametag = nametag;
     }
 
@@ -40,14 +37,6 @@ public class NameTagEvent extends Event implements Cancellable {
     @Override
     public HandlerList getHandlers() {
         return handlers;
-    }
-
-    public ChatColor getNameColor() {
-        return nameColor;
-    }
-
-    public void setNameColor(ChatColor nameColor) {
-        this.nameColor = nameColor;
     }
 
     public String getNametag() {

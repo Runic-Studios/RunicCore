@@ -172,8 +172,8 @@ import com.runicrealms.plugin.spellapi.skilltrees.listener.SkillTreeGUIListener;
 import com.runicrealms.plugin.spellapi.skilltrees.listener.SpellEditorGUIListener;
 import com.runicrealms.plugin.spellapi.skilltrees.listener.SpellGUIListener;
 import com.runicrealms.plugin.spellapi.skilltrees.listener.SubClassGUIListener;
-import com.runicrealms.plugin.utilities.NameTagPartyHandler;
-import com.runicrealms.plugin.utilities.NametagHandler;
+import com.runicrealms.plugin.utilities.NameTagColorHandler;
+import com.runicrealms.plugin.utilities.NameTagHandler;
 import com.runicrealms.plugin.utilities.PlaceholderAPI;
 import com.runicrealms.plugin.utilities.RegionHelper;
 import org.bukkit.Bukkit;
@@ -480,7 +480,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         new DaylightCycleListener();
         new NpcListener();
         new PlayerQueueManager();
-        new NameTagPartyHandler();
+        new NameTagColorHandler();
 
         // register commands
         registerACFCommands();
@@ -598,7 +598,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         pm.registerEvents(new SwapHandsListener(), this);
         pm.registerEvents(new HerbFallDamageListener(), this);
         pm.registerEvents(new HorseFeedListener(), this);
-        pm.registerEvents(new NametagHandler(), this);
+        pm.registerEvents(new NameTagHandler(), this);
         pm.registerEvents(new RunicExpListener(), this);
         pm.registerEvents(new EnemyVerifyListener(), this);
         pm.registerEvents(new AllyVerifyListener(), this);
