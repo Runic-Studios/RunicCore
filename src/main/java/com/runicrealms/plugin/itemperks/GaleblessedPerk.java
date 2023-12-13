@@ -46,14 +46,19 @@ public class GaleblessedPerk extends ItemPerkHandler implements Listener {
         RunicItemsAPI.getDynamicItemHandler().registerTextPlaceholder(new DynamicItemPerkTextPlaceholder("galeblessed-percent") { // This is used in the configured lore
             @Override
             public String generateReplacement(Player viewer, ItemStack item, NBTItem itemNBT, RunicItemTemplate template) {
-                int defaultAmount = (int) (PERCENT_SPEED_PER_STACK * 100);
-                if (getEquippedSlot(viewer, item, template) != null) {
-                    int displayedPercent = getDisplayedPercentSpeedChange(viewer);
-                    return defaultAmount == displayedPercent
-                            ? String.valueOf(defaultAmount)
-                            : (ChatColor.GRAY.toString() + ChatColor.STRIKETHROUGH + defaultAmount + "%" + ChatColor.YELLOW + " " + displayedPercent);
+                int basePercentage = (int) (PERCENT_SPEED_PER_STACK * 100);
+
+                int percentage;
+                if (getEquippedSlot(viewer, item, template) != null) { // Item is equipped
+                    percentage = getDisplayedPercentSpeedChange(viewer);
                 } else {
-                    return String.valueOf(defaultAmount);
+                    percentage = itemNBT.getInteger("perks-" + GaleblessedPerk.this.getType().getIdentifier()) * basePercentage;
+                }
+
+                if (percentage != basePercentage) {
+                    return ChatColor.GRAY.toString() + ChatColor.STRIKETHROUGH + basePercentage + "%" + ChatColor.YELLOW + " " + percentage + "%";
+                } else {
+                    return ChatColor.YELLOW.toString() + basePercentage + "%";
                 }
             }
         });
