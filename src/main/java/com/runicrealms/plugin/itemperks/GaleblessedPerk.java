@@ -4,7 +4,7 @@ import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.events.EnterCombatEvent;
 import com.runicrealms.plugin.events.LeaveCombatEvent;
 import com.runicrealms.plugin.runicitems.RunicItemsAPI;
-import com.runicrealms.plugin.runicitems.dynamic.DynamicItemTextPlaceholder;
+import com.runicrealms.plugin.runicitems.item.perk.DynamicItemPerkTextPlaceholder;
 import com.runicrealms.plugin.runicitems.item.perk.ItemPerkHandler;
 import com.runicrealms.plugin.runicitems.item.template.RunicItemTemplate;
 import com.runicrealms.plugin.runicrestart.event.PreShutdownEvent;
@@ -21,7 +21,6 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -44,11 +43,18 @@ public class GaleblessedPerk extends ItemPerkHandler implements Listener {
         PERCENT_SPEED_PER_STACK = ((Number) this.config.get("speed-per-stack")).floatValue();
 
         Bukkit.getPluginManager().registerEvents(this, RunicCore.getInstance());
-        RunicItemsAPI.getDynamicItemHandler().registerTextPlaceholder(new DynamicItemTextPlaceholder("galeblessed-percent") { // This is used in the configured lore
-            @Nullable
+        RunicItemsAPI.getDynamicItemHandler().registerTextPlaceholder(new DynamicItemPerkTextPlaceholder("galeblessed-percent") { // This is used in the configured lore
             @Override
             public String generateReplacement(Player viewer, ItemStack item, NBTItem itemNBT, RunicItemTemplate template) {
-                return String.valueOf(getDisplayedPercentSpeedChange(viewer));
+                int defaultAmount = (int) (PERCENT_SPEED_PER_STACK * 100);
+                if (getEquippedSlot(viewer, item, template) != null) {
+                    int displayedPercent = getDisplayedPercentSpeedChange(viewer);
+                    return defaultAmount == displayedPercent
+                            ? String.valueOf(defaultAmount)
+                            : (ChatColor.GRAY.toString() + ChatColor.STRIKETHROUGH + defaultAmount + "%" + ChatColor.YELLOW + " " + displayedPercent);
+                } else {
+                    return String.valueOf(defaultAmount);
+                }
             }
         });
     }
