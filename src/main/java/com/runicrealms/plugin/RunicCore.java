@@ -505,9 +505,6 @@ public class RunicCore extends JavaPlugin implements Listener {
         // register our events, config, commands
         this.registerEvents();
 
-        // register custom yml files
-        this.saveResource("item_prefixes.yml", true);
-
         // register commands
         this.registerOldStyleCommands();
 
