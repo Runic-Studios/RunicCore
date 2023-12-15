@@ -4,9 +4,16 @@ import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.common.api.LuckPermsAPI;
 import com.runicrealms.plugin.common.api.LuckPermsData;
 import com.runicrealms.plugin.common.api.LuckPermsPayload;
+import com.runicrealms.plugin.common.util.BukkitPromise;
+import com.runicrealms.plugin.common.util.LazyField;
 import net.luckperms.api.LuckPermsProvider;
+import net.luckperms.api.cacheddata.CachedMetaData;
+import net.luckperms.api.context.ContextSet;
+import net.luckperms.api.context.ImmutableContextSet;
+import net.luckperms.api.context.MutableContextSet;
 import net.luckperms.api.node.NodeType;
 import net.luckperms.api.node.types.MetaNode;
+import net.luckperms.api.query.QueryOptions;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -16,7 +23,6 @@ import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -24,7 +30,33 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 
+/**
+ * Important note about the LuckPermsManager: This only caches server-specific metadata values!
+ * Any global values are completely ignored.
+ */
 public class LuckPermsManager implements LuckPermsAPI, Listener {
+
+    private final static LazyField<ImmutableContextSet> serverContextSet = new LazyField<>(() -> {
+        String serverType = LuckPermsProvider.get().getContextManager().getStaticContext()
+                .toSet()
+                .stream()
+                .filter(context -> context.getKey().equals("server"))
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("FATAL: This instance does not have a LP server context set! NO LUCK PERMS DATA IS BEING SAVED!"))
+                .getValue();
+        return ImmutableContextSet.of("server", serverType);
+    });
+
+    // Stupid method of determining if a node is global: check it exists in server context, but not in this "impossible" context
+    private final static LazyField<ImmutableContextSet> globalOnlyContextSet = new LazyField<>(() -> {
+        return ImmutableContextSet.of("server", "aowieuibweifd");  // just don't name a server this please
+    });
+
+    private final static LazyField<ImmutableContextSet> combinedContextSet = new LazyField<>(() -> {
+        MutableContextSet set = serverContextSet.get().mutableCopy();
+        set.addAll(globalOnlyContextSet.get());
+        return set.immutableCopy();
+    });
 
     private final Map<UUID, UserPayloadManager> payloadManagers = new HashMap<>();
 
@@ -54,12 +86,12 @@ public class LuckPermsManager implements LuckPermsAPI, Listener {
     }
 
     @Override
-    public CompletableFuture<LuckPermsData> retrieveData(UUID owner) {
+    public BukkitPromise<LuckPermsData> retrieveData(UUID owner) {
         return retrieveData(owner, false);
     }
 
     @Override
-    public CompletableFuture<LuckPermsData> retrieveData(UUID owner, boolean ignoreCache) {
+    public BukkitPromise<LuckPermsData> retrieveData(UUID owner, boolean ignoreCache) {
         if (!payloadManagers.containsKey(owner))
             payloadManagers.put(owner, new UserPayloadManager(owner));
         return payloadManagers.get(owner).loadData(ignoreCache);
@@ -80,6 +112,11 @@ public class LuckPermsManager implements LuckPermsAPI, Listener {
         };
     }
 
+    @Override
+    public ContextSet getServerSpecificContext() {
+        return serverContextSet.get();
+    }
+
     private static class UserPayloadManager {
 
         private final ConcurrentLinkedQueue<LuckPermsPayload> queuedSaves = new ConcurrentLinkedQueue<>();
@@ -91,49 +128,63 @@ public class LuckPermsManager implements LuckPermsAPI, Listener {
             this.owner = owner;
         }
 
-        private CompletableFuture<LuckPermsData> loadData(boolean ignoreCache) {
+        private BukkitPromise<LuckPermsData> loadData(boolean ignoreCache) {
             // If we have cached the data, then return that immediately
-            if (cachedData.get() != null && !ignoreCache) return CompletableFuture.completedFuture(cachedData.get());
+            if (cachedData.get() != null && !ignoreCache) return BukkitPromise.fulfilled(cachedData.get());
 
-            final CompletableFuture<LuckPermsData> future = new CompletableFuture<>();
-            LuckPermsProvider.get().getUserManager().loadUser(owner).thenAccept(user -> {
+            final BukkitPromise<LuckPermsData> promise = new BukkitPromise<>();
+            LuckPermsProvider.get().getUserManager().loadUser(owner).thenAccept(user -> Bukkit.getScheduler().runTaskAsynchronously(RunicCore.getInstance(), () -> {
                 // Convert loaded luckperms metadata into runic interface
-                LuckPermsData data = UserLuckPermsMetaData.loadFromCachedMetaData(user.getCachedData().getMetaData());
+
+                // Stupid method don't ask
+                CachedMetaData serverMeta = user.getCachedData().getMetaData(QueryOptions.contextual(serverContextSet.get()));
+                CachedMetaData globalOnlyMeta = user.getCachedData().getMetaData(QueryOptions.contextual(combinedContextSet.get()));
+                Map<String, String> loadedData = new HashMap<>();
+                for (String key : serverMeta.getMeta().keySet()) {
+                    if (globalOnlyMeta.getMetaValue(key) == null) loadedData.put(key, serverMeta.getMetaValue(key));
+                }
+
+                LuckPermsData data = new UserLuckPermsMetaData(loadedData);
                 cachedData.set(data); // Save cached data
-                future.complete(data); // Complete the future
-            });
-            return future;
+                promise.fulfill(data); // Complete the future
+            }));
+            return promise;
         }
 
         private CompletableFuture<Void> savePayload(final LuckPermsPayload payload, boolean ignoreCache) {
 
             // First load existing data before saving
-            CompletableFuture<LuckPermsData> loadFuture;
+            BukkitPromise<LuckPermsData> loadFuture;
             if (cachedData.get() != null && !ignoreCache) {
-                loadFuture = CompletableFuture.completedFuture(cachedData.get());
+                loadFuture = BukkitPromise.fulfilled(cachedData.get());
             } else {
                 loadFuture = loadData(ignoreCache);
             }
 
             CompletableFuture<Void> future = new CompletableFuture<>();
             // Begin save after loading data
-            loadFuture.thenAcceptAsync(data -> {
+
+            loadFuture.thenAsync(data -> {
                 // Save our payload to existing data
                 payload.saveToData(data);
 
                 // Update the cache
                 if (cachedData.get() != null) cachedData.get().add(data);
 
-                LuckPermsProvider.get().getUserManager().loadUser(owner).thenAcceptAsync(user -> {
+                LuckPermsProvider.get().getUserManager().loadUser(owner).thenAccept(user -> {
                     try {
-                        // Clear the metadata keys that we are overwriting, if they exist
-                        user.data().clear(NodeType.META.predicate(metaNode -> data.containsKey(metaNode.getMetaKey())
-                                && !Objects.equals(data.get(metaNode.getMetaKey()).toString(), metaNode.getMetaValue())));
                         // Write each metadata key
-                        for (String key : data.getKeys())
-                            user.data().add(MetaNode.builder(key, data.get(key).toString()).build());
+                        for (String key : data.getKeys()) {
+                            // So we don't want to save any keys that are global across the entire network
+                            // Clear the metadata keys that we are overwriting
+                            user.data().clear(serverContextSet.get(), NodeType.META.predicate(metaNode -> metaNode.getKey().equals(key)));
+                            // Write
+                            user.data().add(MetaNode.builder(key, data.get(key).toString()).context(serverContextSet.get()).build());
+                        }
+
                         // Save
                         LuckPermsProvider.get().getUserManager().saveUser(user).thenAcceptAsync($ -> future.complete(null));
+
                     } catch (Exception exception) {
                         Bukkit.getLogger().log(Level.SEVERE, "ERROR: Could not save luckperms payload");
                         exception.printStackTrace();

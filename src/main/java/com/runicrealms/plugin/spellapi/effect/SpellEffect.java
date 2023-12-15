@@ -5,7 +5,6 @@ import org.bukkit.entity.Player;
 
 public interface SpellEffect {
 
-
     /**
      * @return a unique string to identify the effect type (e.g. Bleed)
      */
@@ -46,14 +45,13 @@ public interface SpellEffect {
     LivingEntity getRecipient();
 
     /**
-     * @param counter checks the current iterator counter
+     * @param globalCounter checks the current global iterator counter value
      */
-    void tick(int counter);
+    void tick(int globalCounter);
 
     /**
-     * @return the interval at which this specific effect should tick (longer for counter-based effects like Bleed)
+     * Handles the logic for the actual mechanic
      */
-    int getTickInterval();
-
+    void executeSpellEffect();
 }
 

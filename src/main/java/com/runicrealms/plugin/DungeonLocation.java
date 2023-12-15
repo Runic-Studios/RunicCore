@@ -2,9 +2,9 @@ package com.runicrealms.plugin;
 
 import com.runicrealms.plugin.utilities.ConfigUtil;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.InvalidConfigurationException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -51,10 +51,22 @@ public enum DungeonLocation {
     private final Map<Integer, Location> checkpoints;
 
     DungeonLocation(String identifier, String display) {
+        Location temp;
         this.identifier = identifier;
         this.display = display;
-        this.location = loadLocationFromFile("");
-        this.checkpoints = loadCheckpointsFromFile();
+        temp = SafeZoneLocation.AZANA.getLocation(); // Default if something goes wrong
+        this.checkpoints = new HashMap<>();
+        try {
+            temp = loadLocationFromFile();
+        } catch (InvalidConfigurationException e) {
+            Bukkit.getLogger().severe("An error occurred during DungeonLocation location initialization!");
+        }
+        this.location = temp;
+        try {
+            this.checkpoints.putAll(loadCheckpointsFromFile());
+        } catch (InvalidConfigurationException e) {
+            Bukkit.getLogger().severe("An error occurred during DungeonLocation checkpoint initialization!");
+        }
     }
 
     /**
@@ -101,15 +113,24 @@ public enum DungeonLocation {
         return location;
     }
 
-    private Map<Integer, Location> loadCheckpointsFromFile() {
+    private Map<Integer, Location> loadCheckpointsFromFile() throws InvalidConfigurationException {
         ConfigurationSection dungeonSection = ConfigUtil.getDungeonConfigurationSection().getConfigurationSection(this.identifier);
+
+        if (dungeonSection == null) {
+            String errorMessage = "Dungeon section for '" + this.identifier + "' is missing in the configuration.";
+            Bukkit.getLogger().severe(errorMessage);
+            throw new InvalidConfigurationException(errorMessage);
+        }
+
         ConfigurationSection checkpointsSection = dungeonSection.getConfigurationSection("checkpoints");
         Map<Integer, Location> checkpoints = new HashMap<>();
 
         if (checkpointsSection == null) {
-            Bukkit.getLogger().info(ChatColor.RED + "Checkpoints for " + this.display + " failed to load.");
-            return checkpoints;
+            String errorMessage = "Checkpoints section for '" + this.display + "' is missing in the configuration.";
+            Bukkit.getLogger().severe(errorMessage);
+            throw new InvalidConfigurationException(errorMessage);
         }
+
         try {
             for (String entry : checkpointsSection.getKeys(false)) {
                 String world = checkpointsSection.getString(entry + ".world");
@@ -125,20 +146,27 @@ public enum DungeonLocation {
                 );
                 checkpoints.put(Integer.valueOf(entry), location);
             }
-        } catch (NullPointerException e) {
-            e.printStackTrace();
-            Bukkit.getLogger().info(ChatColor.DARK_RED + "Error loading dungeon yaml file!");
+        } catch (Exception e) {
+            Bukkit.getLogger().severe("Error loading checkpoints from dungeon yaml file: " + e.getMessage());
+            throw e; // Re-throw the exception for higher-level handling if needed
         }
         return checkpoints;
     }
 
-    private Location loadLocationFromFile(String prefix) {
+    private Location loadLocationFromFile() throws InvalidConfigurationException {
         ConfigurationSection dungeonSection = ConfigUtil.getDungeonConfigurationSection().getConfigurationSection(this.identifier);
+
+        if (dungeonSection == null) {
+            String errorMessage = "Dungeon section for '" + this.identifier + "' is missing in the configuration.";
+            Bukkit.getLogger().severe(errorMessage);
+            throw new InvalidConfigurationException(errorMessage);
+        }
+
         try {
-            String world = dungeonSection.getString(prefix + "world");
-            double x = dungeonSection.getDouble(prefix + "x");
-            double y = dungeonSection.getDouble(prefix + "y");
-            double z = dungeonSection.getDouble(prefix + "z");
+            String world = dungeonSection.getString("world");
+            double x = dungeonSection.getDouble("x");
+            double y = dungeonSection.getDouble("y");
+            double z = dungeonSection.getDouble("z");
             return new Location(Bukkit.getWorld((world != null ? world : "dungeons")),
                     x,
                     y,
@@ -148,7 +176,7 @@ public enum DungeonLocation {
             );
         } catch (NullPointerException e) {
             e.printStackTrace();
-            Bukkit.getLogger().info(ChatColor.DARK_RED + "Error loading dungeon yaml file!");
+            Bukkit.getLogger().severe("Error loading dungeon yaml file!");
         }
         return null;
     }

@@ -14,7 +14,7 @@ import java.util.Set;
 import java.util.UUID;
 
 public class SpellEffectManager implements Listener, SpellEffectAPI {
-    private static final long TICK_PERIOD = 5; // Game ticks
+    private static final long TICK_PERIOD = 5; // Game ticks between each effect update (1/4 second)
     private final Set<SpellEffect> activeSpellEffects;
     private int counter = 0; // Add a counter field
 
@@ -47,6 +47,10 @@ public class SpellEffectManager implements Listener, SpellEffectAPI {
 
     @Override
     public void addSpellEffectToManager(SpellEffect spellEffect) {
+        if (spellEffect instanceof StackEffect) {
+            Bukkit.broadcastMessage("initializing stack effect, global counter is " + counter);
+            ((StackEffect) spellEffect).initializeNextTick(counter);
+        }
         this.activeSpellEffects.add(spellEffect);
     }
 
