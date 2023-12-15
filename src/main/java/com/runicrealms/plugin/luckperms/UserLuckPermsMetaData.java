@@ -1,7 +1,6 @@
 package com.runicrealms.plugin.luckperms;
 
 import com.runicrealms.plugin.common.api.LuckPermsData;
-import net.luckperms.api.cacheddata.CachedMetaData;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -17,12 +16,6 @@ public class UserLuckPermsMetaData implements LuckPermsData {
 
     public UserLuckPermsMetaData(Map<String, String> data) {
         this.data = data;
-    }
-
-    public static UserLuckPermsMetaData loadFromCachedMetaData(CachedMetaData meta) {
-        Map<String, String> loadedData = new HashMap<>();
-        for (String key : meta.getMeta().keySet()) loadedData.put(key, meta.getMetaValue(key));
-        return new UserLuckPermsMetaData(loadedData);
     }
 
     @Override
