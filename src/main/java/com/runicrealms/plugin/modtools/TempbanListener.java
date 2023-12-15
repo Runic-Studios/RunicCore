@@ -40,7 +40,7 @@ public class TempbanListener implements Listener {
         if (event.getPlayer().hasPermission("runic.tempbanned") && !event.getPlayer().isOp()) {
             final UUID target = event.getPlayer().getUniqueId();
             if (!tempUnbanTimestamps.containsKey(event.getPlayer().getUniqueId())) {
-                RunicCommon.getLuckPermsAPI().retrieveData(event.getPlayer().getUniqueId()).thenAcceptAsync(data -> {
+                RunicCommon.getLuckPermsAPI().retrieveData(event.getPlayer().getUniqueId()).then(data -> {
                     if (data.containsKey("runic.tempban.timestamp"))
                         tempUnbanTimestamps.put(target, data.getLong("runic.tempban.timestamp"));
                 });
@@ -49,7 +49,7 @@ public class TempbanListener implements Listener {
                         "\ncontact a moderator on our discord server.");
             } else {
                 long duration = tempUnbanTimestamps.get(event.getPlayer().getUniqueId()) - System.currentTimeMillis();
-                RunicCommon.getLuckPermsAPI().retrieveData(event.getPlayer().getUniqueId()).thenAcceptAsync(data -> {
+                RunicCommon.getLuckPermsAPI().retrieveData(event.getPlayer().getUniqueId()).then(data -> {
                     if (data.containsKey("runic.tempban.timestamp"))
                         tempUnbanTimestamps.put(target, data.getLong("runic.tempban.timestamp"));
                 });

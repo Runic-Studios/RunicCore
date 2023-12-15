@@ -4,6 +4,7 @@ import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.common.api.LuckPermsAPI;
 import com.runicrealms.plugin.common.api.LuckPermsData;
 import com.runicrealms.plugin.common.api.LuckPermsPayload;
+import com.runicrealms.plugin.common.util.BukkitPromise;
 import com.runicrealms.plugin.common.util.LazyField;
 import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.cacheddata.CachedMetaData;
@@ -85,12 +86,12 @@ public class LuckPermsManager implements LuckPermsAPI, Listener {
     }
 
     @Override
-    public CompletableFuture<LuckPermsData> retrieveData(UUID owner) {
+    public BukkitPromise<LuckPermsData> retrieveData(UUID owner) {
         return retrieveData(owner, false);
     }
 
     @Override
-    public CompletableFuture<LuckPermsData> retrieveData(UUID owner, boolean ignoreCache) {
+    public BukkitPromise<LuckPermsData> retrieveData(UUID owner, boolean ignoreCache) {
         if (!payloadManagers.containsKey(owner))
             payloadManagers.put(owner, new UserPayloadManager(owner));
         return payloadManagers.get(owner).loadData(ignoreCache);
@@ -127,11 +128,11 @@ public class LuckPermsManager implements LuckPermsAPI, Listener {
             this.owner = owner;
         }
 
-        private CompletableFuture<LuckPermsData> loadData(boolean ignoreCache) {
+        private BukkitPromise<LuckPermsData> loadData(boolean ignoreCache) {
             // If we have cached the data, then return that immediately
-            if (cachedData.get() != null && !ignoreCache) return CompletableFuture.completedFuture(cachedData.get());
+            if (cachedData.get() != null && !ignoreCache) return BukkitPromise.fulfilled(cachedData.get());
 
-            final CompletableFuture<LuckPermsData> future = new CompletableFuture<>();
+            final BukkitPromise<LuckPermsData> promise = new BukkitPromise<>();
             LuckPermsProvider.get().getUserManager().loadUser(owner).thenAccept(user -> Bukkit.getScheduler().runTaskAsynchronously(RunicCore.getInstance(), () -> {
                 // Convert loaded luckperms metadata into runic interface
 
@@ -145,17 +146,17 @@ public class LuckPermsManager implements LuckPermsAPI, Listener {
 
                 LuckPermsData data = new UserLuckPermsMetaData(loadedData);
                 cachedData.set(data); // Save cached data
-                future.complete(data); // Complete the future
+                promise.fulfill(data); // Complete the future
             }));
-            return future;
+            return promise;
         }
 
         private CompletableFuture<Void> savePayload(final LuckPermsPayload payload, boolean ignoreCache) {
 
             // First load existing data before saving
-            CompletableFuture<LuckPermsData> loadFuture;
+            BukkitPromise<LuckPermsData> loadFuture;
             if (cachedData.get() != null && !ignoreCache) {
-                loadFuture = CompletableFuture.completedFuture(cachedData.get());
+                loadFuture = BukkitPromise.fulfilled(cachedData.get());
             } else {
                 loadFuture = loadData(ignoreCache);
             }
@@ -163,7 +164,7 @@ public class LuckPermsManager implements LuckPermsAPI, Listener {
             CompletableFuture<Void> future = new CompletableFuture<>();
             // Begin save after loading data
 
-            loadFuture.thenAccept(data -> Bukkit.getScheduler().runTaskAsynchronously(RunicCore.getInstance(), () -> {
+            loadFuture.thenAsync(data -> {
                 // Save our payload to existing data
                 payload.saveToData(data);
 
@@ -190,7 +191,7 @@ public class LuckPermsManager implements LuckPermsAPI, Listener {
                         future.complete(null); // Make sure we complete the future
                     }
                 });
-            }));
+            });
             return future;
         }
 
