@@ -33,7 +33,7 @@ public class Surge extends Spell implements DurationSpell {
     public Surge() {
         super("Surge", CharacterClass.ARCHER);
         this.setDescription("You launch yourself forward! " +
-                "When you land a &aStormborn&7 arrow, reduce this skill’s cooldown by " + this.duration + "s.");
+                "When you land a &aStormborn&7 arrow, reduce this spell's cooldown by " + this.duration + "s.");
     }
 
     @Override
