@@ -3,6 +3,7 @@ package com.runicrealms.plugin.spellapi.spells.warrior;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.common.CharacterClass;
 import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
+import com.runicrealms.plugin.spellapi.spelltypes.HealingSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.RadiusSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.RunicStatusEffect;
@@ -24,8 +25,10 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
 
-public class Consecrate extends Spell implements DurationSpell, MagicDamageSpell, RadiusSpell {
+public class Consecrate extends Spell implements DurationSpell, HealingSpell, MagicDamageSpell, RadiusSpell {
     private double duration;
+    private double heal;
+    private double healingPerLevel;
     private double magicDamage;
     private double magicDamagePerLevel;
     private double radius;
@@ -37,8 +40,9 @@ public class Consecrate extends Spell implements DurationSpell, MagicDamageSpell
         this.setDescription("Your &aSlam &7spell now leaves behind " +
                 "an area of consecrated ground in a " + radius + " block " +
                 "radius, dealing (" + magicDamage + " + &f" + magicDamagePerLevel
-                + "x&7 lvl) magicʔ damage each second for " + duration + "s " +
-                "and causing enemies to receive slowness II for " + slowDuration + "s!");
+                + "x&7 lvl) magicʔ damage to enemies and slowing them for " + slowDuration + "s! " +
+                "You and allies are instead healed for (" + heal + " + &f" + healingPerLevel + "x&7 lvl) health! " +
+                "This effect ticks every second for " + duration + "s.");
     }
 
     /**
@@ -98,9 +102,13 @@ public class Consecrate extends Spell implements DurationSpell, MagicDamageSpell
                     count += 1;
                     new HorizontalCircleFrame((float) radius, false).playParticle(caster, Particle.SPELL_INSTANT, castLocation, 3, Color.YELLOW);
                     createStarParticles(castLocation, radius, Particle.VILLAGER_ANGRY, 5);
-                    for (Entity entity : castLocation.getWorld().getNearbyEntities(castLocation, radius, radius, radius, target -> isValidEnemy(caster, target))) {
-                        DamageUtil.damageEntitySpell(magicDamage, (LivingEntity) entity, caster, spell);
-                        addStatusEffect((LivingEntity) entity, RunicStatusEffect.SLOW_II, slowDuration, false);
+                    for (Entity entity : castLocation.getWorld().getNearbyEntities(castLocation, radius, radius, radius)) {
+                        if (isValidEnemy(caster, entity)) {
+                            DamageUtil.damageEntitySpell(magicDamage, (LivingEntity) entity, caster, false, spell);
+                            addStatusEffect((LivingEntity) entity, RunicStatusEffect.SLOW_II, slowDuration, false);
+                        } else if (isValidAlly(caster, entity)) {
+                            healPlayer(caster, (Player) entity, heal, spell);
+                        }
                     }
                 }
             }
@@ -166,4 +174,23 @@ public class Consecrate extends Spell implements DurationSpell, MagicDamageSpell
         this.slowDuration = slowDuration;
     }
 
+    @Override
+    public double getHeal() {
+        return heal;
+    }
+
+    @Override
+    public void setHeal(double heal) {
+        this.heal = heal;
+    }
+
+    @Override
+    public double getHealingPerLevel() {
+        return healingPerLevel;
+    }
+
+    @Override
+    public void setHealingPerLevel(double healingPerLevel) {
+        this.healingPerLevel = healingPerLevel;
+    }
 }

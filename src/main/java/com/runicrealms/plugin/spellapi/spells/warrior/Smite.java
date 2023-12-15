@@ -2,8 +2,10 @@ package com.runicrealms.plugin.spellapi.spells.warrior;
 
 import com.runicrealms.plugin.common.CharacterClass;
 import com.runicrealms.plugin.spellapi.spelltypes.DistanceSpell;
+import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.RadiusSpell;
+import com.runicrealms.plugin.spellapi.spelltypes.RunicStatusEffect;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.spellapi.spellutil.ThreatUtil;
@@ -21,11 +23,12 @@ import org.bukkit.util.Vector;
 
 import java.util.Map;
 
-public class Smite extends Spell implements DistanceSpell, MagicDamageSpell, RadiusSpell {
+public class Smite extends Spell implements DistanceSpell, MagicDamageSpell, RadiusSpell, DurationSpell {
     private static final double BEAM_WIDTH = 1.5;
     private double maxDistance;
     private double damage;
     private double damagePerLevel;
+    private double duration;
     private double knockback;
     private double radius;
 
@@ -33,8 +36,8 @@ public class Smite extends Spell implements DistanceSpell, MagicDamageSpell, Rad
         super("Smite", CharacterClass.WARRIOR);
         this.setDescription("You fire a beam of light, " +
                 "dealing (" + damage + " + &f" + damagePerLevel
-                + "x&7 lvl) magicʔ damage to the first enemy hit and double damage to mobs within " + radius + "blocks!" +
-                "and knocking away all enemies within " + radius + " blocks! " +
+                + "x&7 lvl) magicʔ damage to the first target hit and enemies within " + radius + " blocks! " +
+                "Your primary target is slowed for " + duration + "s, while other enemies are knocked away! " +
                 "This spell also taunts monsters, causing them to attack you!");
     }
 
@@ -60,6 +63,7 @@ public class Smite extends Spell implements DistanceSpell, MagicDamageSpell, Rad
             livingEntity.getWorld().playSound(livingEntity.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 0.25f, 2.0f);
             livingEntity.getWorld().spawnParticle(Particle.VILLAGER_ANGRY, livingEntity.getEyeLocation(), 8, 0.8f, 0.5f, 0.8f, 0);
             for (Entity entity : livingEntity.getWorld().getNearbyEntities(livingEntity.getLocation(), radius, radius, radius, target -> isValidEnemy(player, target))) {
+                if (livingEntity.equals(entity)) continue;
                 // Calculate knockback direction
                 Vector attackerPos = player.getLocation().toVector();
                 Vector enemyPos = entity.getLocation().toVector();
@@ -68,12 +72,11 @@ public class Smite extends Spell implements DistanceSpell, MagicDamageSpell, Rad
                 Vector knockbackVector = knockbackDirection.multiply(knockback);
                 knockbackVector.setY(knockbackVector.getY() + 0.15);
                 entity.setVelocity(entity.getVelocity().add(knockbackVector));
-
-                if (entity instanceof LivingEntity target && !(entity instanceof Player)) {
-                    DamageUtil.damageEntitySpell(2 * (damage + (player.getLevel() * this.damagePerLevel)), target, player);
-                }
+                // Apply damage
+                DamageUtil.damageEntitySpell(damage, (LivingEntity) entity, player, this);
             }
-            DamageUtil.damageEntitySpell(damage, livingEntity, player, this);
+            DamageUtil.damageEntitySpell(damage, livingEntity, player, false, this);
+            addStatusEffect(livingEntity, RunicStatusEffect.SLOW_II, duration, false);
             ThreatUtil.generateThreat(player, livingEntity);
         }
     }
@@ -130,5 +133,14 @@ public class Smite extends Spell implements DistanceSpell, MagicDamageSpell, Rad
         this.knockback = knockback;
     }
 
+    @Override
+    public double getDuration() {
+        return duration;
+    }
+
+    @Override
+    public void setDuration(double duration) {
+        this.duration = duration;
+    }
 }
 

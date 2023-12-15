@@ -46,7 +46,7 @@ public enum SubClass {
      */
     BERSERKER("Berserker", 1, CharacterClass.WARRIOR, berserkerItem(), "Berserker fights ferociously with &cphysical⚔ &7attacks that cleave enemies!"),
     DREADLORD("Dreadlord", 2, CharacterClass.WARRIOR, dreadlordItem(), "Dreadlord is a &3magicalʔ &7knight that harvests the souls of enemies!"),
-    PALADIN("Paladin", 3, CharacterClass.WARRIOR, paladinItem(), "Paladin is a hybrid &3magicalʔ &7fighter and &ahealer✦&7!");
+    PALADIN("Paladin", 3, CharacterClass.WARRIOR, paladinItem(), "Paladin is a hybrid &3magicalʔ &7fighter and &fdefensive■ &7tank!");
 
     public static final Set<SubClass> ARCHER_SUBCLASSES = new LinkedHashSet<>();
     public static final Set<SubClass> CLERIC_SUBCLASSES = new LinkedHashSet<>();

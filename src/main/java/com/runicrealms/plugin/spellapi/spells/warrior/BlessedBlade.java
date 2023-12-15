@@ -12,7 +12,7 @@ import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.StackTask;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
+import org.bukkit.Sound;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -160,7 +160,7 @@ public class BlessedBlade extends Spell implements DurationSpell, HealingSpell, 
      */
     private void cleanupTask(Player player) {
         blessedBladeMap.remove(player.getUniqueId());
-        player.sendMessage(ChatColor.GRAY + "Blessed Blades has expired.");
+        player.playSound(player.getLocation(), Sound.BLOCK_BEACON_DEACTIVATE, 0.25f, 1.5f);
     }
 
     public void setMaxTargets(double maxTargets) {

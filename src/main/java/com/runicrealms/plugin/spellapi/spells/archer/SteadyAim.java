@@ -5,6 +5,7 @@ import com.runicrealms.plugin.api.event.RunicBowEvent;
 import com.runicrealms.plugin.common.CharacterClass;
 import com.runicrealms.plugin.common.util.ColorUtil;
 import com.runicrealms.plugin.events.PhysicalDamageEvent;
+import com.runicrealms.plugin.rdb.event.CharacterLoadedEvent;
 import com.runicrealms.plugin.rdb.event.CharacterQuitEvent;
 import com.runicrealms.plugin.runicitems.Stat;
 import com.runicrealms.plugin.spellapi.spelltypes.AttributeSpell;
@@ -124,6 +125,15 @@ public class SteadyAim extends Spell implements AttributeSpell, DurationSpell {
     @EventHandler
     private void onCharacterQuit(CharacterQuitEvent event) {
         this.stacks.remove(event.getPlayer().getUniqueId());
+    }
+
+    @EventHandler
+    private void onCharacterLoaded(CharacterLoadedEvent event) {
+        if (!this.hasPassive(event.getPlayer().getUniqueId(), this.getName())) {
+            return;
+        }
+
+        this.stacks.put(event.getPlayer().getUniqueId(), new SpellPayload());
     }
 
     @Override

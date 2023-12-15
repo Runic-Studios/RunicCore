@@ -43,8 +43,10 @@ import redis.clients.jedis.Jedis;
 
 import java.time.LocalDate;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
@@ -61,6 +63,7 @@ public class DatabaseManager implements CharacterAPI, DataAPI, PlayerDataAPI, Li
     // Player is prevented from joining network while data is saving, or for a max of 30 seconds
     public static final String DATA_SAVING_KEY = "isSavingData";
     private static final int DATA_LOCKOUT_TIMEOUT = 30;
+    private final Set<UUID> lockedOutPlayers; // For preventing logins to server while data saves
     private final ConcurrentHashMap<UUID, Pair<Integer, CharacterClass>> loadedCharacterMap; // stores the current character the player is playing
     private final Map<UUID, CorePlayerData> corePlayerDataMap; // For caching session data in-memory
     private MongoClient mongoClient;
@@ -69,6 +72,7 @@ public class DatabaseManager implements CharacterAPI, DataAPI, PlayerDataAPI, Li
 
     public DatabaseManager() {
         Bukkit.getServer().getPluginManager().registerEvents(this, RunicCore.getInstance());
+        this.lockedOutPlayers = new HashSet<>();
         loadedCharacterMap = new ConcurrentHashMap<>();
         corePlayerDataMap = new HashMap<>();
         /*
@@ -92,7 +96,6 @@ public class DatabaseManager implements CharacterAPI, DataAPI, PlayerDataAPI, Li
                 } finally {
                     Bukkit.getLogger().info(ChatColor.GREEN + springString());
                     RunicRestart.getAPI().markPluginLoaded("core");
-//                    startLocationSaveTask(); // Save location periodically
                 }
             }
         }.runTaskTimerAsynchronously(RunicCore.getInstance(), 0, 10L);
@@ -121,13 +124,12 @@ public class DatabaseManager implements CharacterAPI, DataAPI, PlayerDataAPI, Li
 
     @Override
     public void preventLogin(UUID uuid) {
-        String database = RunicDatabase.getAPI().getDataAPI().getMongoDatabase().getName();
-        Bukkit.getScheduler().runTaskAsynchronously(RunicCore.getInstance(), () -> {
-            try (Jedis jedis = RunicDatabase.getAPI().getRedisAPI().getNewJedisResource()) {
-                jedis.set(database + ":" + uuid + ":" + DATA_SAVING_KEY, "true");
-                jedis.expire(database + ":" + uuid + ":" + DATA_SAVING_KEY, DATA_LOCKOUT_TIMEOUT);
-            }
-        });
+        this.lockedOutPlayers.add(uuid);
+    }
+
+    @Override
+    public Set<UUID> getLockedOutPlayers() {
+        return lockedOutPlayers;
     }
 
     @Override
@@ -237,7 +239,7 @@ public class DatabaseManager implements CharacterAPI, DataAPI, PlayerDataAPI, Li
      * Allows player to log back in
      */
     @EventHandler(priority = EventPriority.HIGHEST) // last thing that runs
-    public void onCharacterQuitFinished(CharacterQuitEvent event) {
+    public void onCharacterQuit(CharacterQuitEvent event) {
         UUID uuid = event.getPlayer().getUniqueId();
         int slot = event.getSlot();
         Location location = event.getPlayer().getLocation();
@@ -334,33 +336,7 @@ public class DatabaseManager implements CharacterAPI, DataAPI, PlayerDataAPI, Li
                         |_|                 |___/                                              |___/                   \s
                 """;
     }
-
-    /**
-     * Periodic task to save player location
-     */
-//    private void startLocationSaveTask() {
-//        Bukkit.getScheduler().runTaskTimerAsynchronously(RunicCore.getInstance(), () -> {
-//            for (UUID uuid : loadedCharacterMap.keySet()) {
-////                if (PlayerJoinListener.LOADING_PLAYERS.contains(uuid)) continue; // Not yet teleported
-//                Player player = Bukkit.getPlayer(uuid);
-//                if (player == null) continue; // Player not online
-//                int slot = RunicDatabase.getAPI().getCharacterAPI().getCharacterSlot(uuid);
-//                Location location = player.getLocation();
-//                try (Jedis jedis = RunicDatabase.getAPI().getRedisAPI().getNewJedisResource()) {
-//                    CorePlayerData corePlayerData = getCorePlayerData(uuid);
-//                    corePlayerData.getCharacter(slot).setLocation(location);
-//                    corePlayerData.getCharacter(slot).setCurrentHp((int) player.getHealth());
-//                    RunicCore.getCoreWriteOperation().updateCoreCharacterData
-//                            (
-//                                    uuid,
-//                                    slot,
-//
-//                            );
-//                    corePlayerData.writeToJedis(jedis);
-//                }
-//            }
-//        }, 0, CHARACTER_SAVE_PERIOD * 20L);
-//    }
+    
     @Override
     public void updateCorePlayerData(UUID uuid, int slot, CorePlayerData newValue, WriteCallback callback) {
         TaskChain<?> chain = RunicCore.newChain();
