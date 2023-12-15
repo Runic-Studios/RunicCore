@@ -114,10 +114,9 @@ public class Overcharge extends Spell implements DurationSpell {
     }
 
     private void addChargedStack(Player player) {
-        Bukkit.broadcastMessage("adding charged stack");
         Optional<SpellEffect> effectOptional = this.getSpellEffect(player.getUniqueId(), player.getUniqueId(), SpellEffectType.CHARGED);
         ChargedEffect chargedEffect;
-        // todo: sound queue?
+        // todo: sound queue? is there one?
         if (effectOptional.isPresent()) {
             chargedEffect = (ChargedEffect) effectOptional.get();
             chargedEffect.increment();
@@ -125,6 +124,7 @@ public class Overcharge extends Spell implements DurationSpell {
             chargedEffect = new ChargedEffect(player, (int) this.maxStacks, (int) this.stackDuration);
             this.addSpellEffectToManager(chargedEffect);
         }
+        Bukkit.broadcastMessage(ChatColor.DARK_AQUA + "adding charged stack, stack count: " + chargedEffect.getStacks().get());
     }
 
     /**
@@ -152,7 +152,7 @@ public class Overcharge extends Spell implements DurationSpell {
      * @return
      */
     private int calculateCooldownTicksToReduce(int originalCooldownTicks, ChargedEffect chargedEffect) {
-        Bukkit.broadcastMessage("curent stacks is " + chargedEffect.getStacks().get());
+        Bukkit.broadcastMessage(ChatColor.GOLD + "current stacks is " + chargedEffect.getStacks().get());
         Bukkit.broadcastMessage(ChatColor.RED + "reducing attack speed!");
         int stacks = chargedEffect.getStacks().get();
 

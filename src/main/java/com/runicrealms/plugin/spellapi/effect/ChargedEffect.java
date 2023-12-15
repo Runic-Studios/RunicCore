@@ -5,12 +5,13 @@ import org.bukkit.entity.Player;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class ChargedEffect implements SpellEffect {
+public class ChargedEffect implements StackEffect {
     private static final int PERIOD = 20;
     private final Player caster;
     private final int maxStacks;
     private final int stackDuration;
     private final AtomicInteger stacks;
+    private int nextTickCounter;
 
     /**
      * @param caster        uuid of the caster
@@ -61,23 +62,35 @@ public class ChargedEffect implements SpellEffect {
     }
 
     @Override
-    public void tick(int counter) {
+    public void setNextTickCounter(int nextTickCounter) {
+        this.nextTickCounter = nextTickCounter;
+    }
+
+    @Override
+    public void tick(int globalCounter) {
+        if (globalCounter < nextTickCounter) {
+            return;
+        }
         if (caster.isDead()) {
             stacks.set(0);
             return;
         }
-        // Decrement one stack every few seconds
-        if (counter % (PERIOD * stackDuration) == 0) {
-            if (stacks.get() > 0) {
-                stacks.getAndDecrement();
-                // todo: recalculate additional attk speed here
-            }
+        // Decrement one stack every stackDuration seconds
+        if (stacks.get() > 0) {
+            stacks.getAndDecrement();
         }
-        // todo: cone if at max stacks
+        executeSpellEffect();
+        // Set the next tick
+        nextTickCounter += getTickInterval();
+    }
+
+    @Override
+    public void executeSpellEffect() {
+        // todo: cone if at max stacks? sounds and visuals managed here?
     }
 
     @Override
     public int getTickInterval() {
-        return PERIOD;
+        return PERIOD * stackDuration;
     }
 }

@@ -9,7 +9,7 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
-public class BleedEffect implements SpellEffect {
+public class BleedEffect implements StackEffect {
     public static final int DAMAGE_CAP = 100;
     public static final double HEALING_REDUCTION = .25;
     private static final int DEFAULT_STACKS = 3;
@@ -18,6 +18,7 @@ public class BleedEffect implements SpellEffect {
     private final Player caster;
     private final LivingEntity recipient;
     private final Spell spellSource;
+    private int nextTickCounter;
     private int stacksRemaining;
 
     /**
@@ -66,24 +67,33 @@ public class BleedEffect implements SpellEffect {
     }
 
     @Override
-    public void tick(int counter) {
+    public void tick(int globalCounter) {
+        if (globalCounter < nextTickCounter) {
+            return;
+        }
         if (recipient.isDead()) {
             stacksRemaining = 0;
             return;
         }
-        if (counter % PERIOD == 0) {
-            if (stacksRemaining > 0) {
-                bleedEffect();
-                stacksRemaining--;
-            }
+        if (stacksRemaining > 0) {
+            executeSpellEffect();
+            stacksRemaining--;
         }
+        // Set the next tick
+        nextTickCounter += getTickInterval();
     }
 
-    private void bleedEffect() {
+    @Override
+    public void executeSpellEffect() {
         recipient.getWorld().playSound(recipient.getLocation(), Sound.ENTITY_COD_HURT, 0.5f, 1.0f);
         recipient.getWorld().spawnParticle(Particle.BLOCK_CRACK, recipient.getEyeLocation(), 10, Math.random() * 1.5, Math.random() / 2, Math.random() * 1.5, Material.REDSTONE_BLOCK.createBlockData());
         double percentMaxHealthAmount = recipient.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue() * MAX_HEALTH_PERCENT;
         DamageUtil.damageEntityPhysical(Math.min(percentMaxHealthAmount, 100), recipient, caster, false, false, false);
+    }
+
+    @Override
+    public void setNextTickCounter(int nextTickCounter) {
+        this.nextTickCounter = nextTickCounter;
     }
 
     @Override

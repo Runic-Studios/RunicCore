@@ -58,23 +58,19 @@ public class StaticEffect implements SpellEffect {
     }
 
     @Override
-    public void tick(int counter) {
+    public void tick(int globalCounter) {
         if (recipient.isDead()) {
             this.cancel();
             return;
         }
-        if (counter % 10 == 0) { // Show particle effect twice per second
-            staticEffect();
+        if (globalCounter % 10 == 0) { // Show particle effect twice per second
+            executeSpellEffect();
         }
     }
 
-    private void staticEffect() {
+    @Override
+    public void executeSpellEffect() {
         caster.playSound(recipient.getLocation(), Sound.ENTITY_TNT_PRIMED, 0.25f, 1.0f);
         caster.spawnParticle(Particle.BLOCK_CRACK, recipient.getEyeLocation(), 10, Math.random() * 1.5, Math.random() / 2, Math.random() * 1.5, Material.LAPIS_BLOCK.createBlockData());
-    }
-
-    @Override
-    public int getTickInterval() {
-        return -1;
     }
 }
