@@ -21,8 +21,8 @@ public class BleedEffect implements SpellEffect {
     private int stacksRemaining;
 
     /**
-     * @param caster      uuid of the caster
-     * @param recipient   uuid of the victim
+     * @param caster      player who caused the bleed
+     * @param recipient   entity who is bleeding
      * @param spellSource the spell which caused the bleed (for scaling)
      */
     public BleedEffect(Player caster, LivingEntity recipient, Spell spellSource) {
