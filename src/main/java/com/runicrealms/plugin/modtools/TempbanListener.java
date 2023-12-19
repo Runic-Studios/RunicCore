@@ -40,7 +40,7 @@ public class TempbanListener implements Listener {
         if (event.getPlayer().hasPermission("runic.tempbanned") && !event.getPlayer().isOp()) {
             final UUID target = event.getPlayer().getUniqueId();
             if (!tempUnbanTimestamps.containsKey(event.getPlayer().getUniqueId())) {
-                RunicCommon.getLuckPermsAPI().retrieveData(event.getPlayer().getUniqueId()).then(data -> {
+                RunicCommon.getLuckPermsAPI().retrieveData(event.getPlayer().getUniqueId()).thenAccept(data -> {
                     if (data.containsKey("runic.tempban.timestamp"))
                         tempUnbanTimestamps.put(target, data.getLong("runic.tempban.timestamp"));
                 });
@@ -49,7 +49,7 @@ public class TempbanListener implements Listener {
                         "\ncontact a moderator on our discord server.");
             } else {
                 long duration = tempUnbanTimestamps.get(event.getPlayer().getUniqueId()) - System.currentTimeMillis();
-                RunicCommon.getLuckPermsAPI().retrieveData(event.getPlayer().getUniqueId()).then(data -> {
+                RunicCommon.getLuckPermsAPI().retrieveData(event.getPlayer().getUniqueId()).thenAccept(data -> {
                     if (data.containsKey("runic.tempban.timestamp"))
                         tempUnbanTimestamps.put(target, data.getLong("runic.tempban.timestamp"));
                 });
@@ -58,9 +58,9 @@ public class TempbanListener implements Listener {
                     Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + event.getPlayer().getName() + " meta unset runic.tempban.timestamp");
                     duration *= -1;
                     if (duration > 60000) {
-                        event.getPlayer().sendMessage(ChatColor.DARK_GREEN + "" + ChatColor.BOLD + "Your tempban expired " + prettyPrintMillis(duration) + " ago.");
+                        event.getPlayer().sendMessage(ChatColor.DARK_GREEN.toString() + ChatColor.BOLD + "Your tempban expired " + prettyPrintMillis(duration) + " ago.");
                     } else {
-                        event.getPlayer().sendMessage(ChatColor.DARK_GREEN + "" + ChatColor.BOLD + "Your tempban recently expired.");
+                        event.getPlayer().sendMessage(ChatColor.DARK_GREEN.toString() + ChatColor.BOLD + "Your tempban recently expired.");
                     }
                     unTempBannedMessage.put(event.getPlayer().getUniqueId(), duration);
                     tempUnbanTimestamps.remove(event.getPlayer().getUniqueId());

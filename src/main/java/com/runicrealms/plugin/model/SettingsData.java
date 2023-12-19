@@ -16,7 +16,7 @@ public class SettingsData {
      * Build the player's settings data from redis, then add to memory
      */
     public SettingsData(UUID owner) {
-        RunicCommon.getLuckPermsAPI().retrieveData(owner).then(data -> {
+        RunicCommon.getLuckPermsAPI().retrieveData(owner).thenAccept(data -> {
             if (data.containsKey("settings.cast-menu"))
                 castMenuEnabled = data.getBoolean("settings.cast-menu");
             if (data.containsKey("settings.open-runestone"))
