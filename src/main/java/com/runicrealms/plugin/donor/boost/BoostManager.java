@@ -69,7 +69,7 @@ public class BoostManager implements BoostAPI, Listener {
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
-        RunicCommon.getLuckPermsAPI().retrieveData(event.getPlayer().getUniqueId()).then(data -> {
+        RunicCommon.getLuckPermsAPI().retrieveData(event.getPlayer().getUniqueId()).thenAccept(data -> {
             Map<StoreBoost, Integer> boosts = new HashMap<>();
             for (StoreBoost boost : StoreBoost.values()) {
                 if (data.getKeys().contains(boost.getPermission())) {

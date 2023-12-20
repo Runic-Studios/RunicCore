@@ -4,7 +4,6 @@ import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.common.api.LuckPermsAPI;
 import com.runicrealms.plugin.common.api.LuckPermsData;
 import com.runicrealms.plugin.common.api.LuckPermsPayload;
-import com.runicrealms.plugin.common.util.BukkitPromise;
 import com.runicrealms.plugin.common.util.LazyField;
 import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.cacheddata.CachedMetaData;
@@ -21,6 +20,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -52,12 +52,6 @@ public class LuckPermsManager implements LuckPermsAPI, Listener {
         return ImmutableContextSet.of("server", "aowieuibweifd");  // just don't name a server this please
     });
 
-    private final static LazyField<ImmutableContextSet> combinedContextSet = new LazyField<>(() -> {
-        MutableContextSet set = serverContextSet.get().mutableCopy();
-        set.addAll(globalOnlyContextSet.get());
-        return set.immutableCopy();
-    });
-
     private final Map<UUID, UserPayloadManager> payloadManagers = new HashMap<>();
 
     public LuckPermsManager() {
@@ -86,12 +80,12 @@ public class LuckPermsManager implements LuckPermsAPI, Listener {
     }
 
     @Override
-    public BukkitPromise<LuckPermsData> retrieveData(UUID owner) {
+    public CompletableFuture<LuckPermsData> retrieveData(UUID owner) {
         return retrieveData(owner, false);
     }
 
     @Override
-    public BukkitPromise<LuckPermsData> retrieveData(UUID owner, boolean ignoreCache) {
+    public CompletableFuture<LuckPermsData> retrieveData(UUID owner, boolean ignoreCache) {
         if (!payloadManagers.containsKey(owner))
             payloadManagers.put(owner, new UserPayloadManager(owner));
         return payloadManagers.get(owner).loadData(ignoreCache);
@@ -128,17 +122,18 @@ public class LuckPermsManager implements LuckPermsAPI, Listener {
             this.owner = owner;
         }
 
-        private BukkitPromise<LuckPermsData> loadData(boolean ignoreCache) {
+        private CompletableFuture<LuckPermsData> loadData(boolean ignoreCache) {
             // If we have cached the data, then return that immediately
-            if (cachedData.get() != null && !ignoreCache) return BukkitPromise.fulfilled(cachedData.get());
+            if (cachedData.get() != null && !ignoreCache) return CompletableFuture.completedFuture(cachedData.get());
 
-            final BukkitPromise<LuckPermsData> promise = new BukkitPromise<>();
+            final CompletableFuture<LuckPermsData> future = new CompletableFuture<>();
             LuckPermsProvider.get().getUserManager().loadUser(owner).thenAccept(user -> Bukkit.getScheduler().runTaskAsynchronously(RunicCore.getInstance(), () -> {
                 // Convert loaded luckperms metadata into runic interface
 
                 // Stupid method don't ask
                 CachedMetaData serverMeta = user.getCachedData().getMetaData(QueryOptions.contextual(serverContextSet.get()));
-                CachedMetaData globalOnlyMeta = user.getCachedData().getMetaData(QueryOptions.contextual(combinedContextSet.get()));
+                CachedMetaData globalOnlyMeta = user.getCachedData().getMetaData(QueryOptions.contextual(globalOnlyContextSet.get()));
+
                 Map<String, String> loadedData = new HashMap<>();
                 for (String key : serverMeta.getMeta().keySet()) {
                     if (globalOnlyMeta.getMetaValue(key) == null) loadedData.put(key, serverMeta.getMetaValue(key));
@@ -146,17 +141,24 @@ public class LuckPermsManager implements LuckPermsAPI, Listener {
 
                 LuckPermsData data = new UserLuckPermsMetaData(loadedData);
                 cachedData.set(data); // Save cached data
-                promise.fulfill(data); // Complete the future
+                future.complete(data); // Complete the future
             }));
-            return promise;
+
+            // Modify the default behavior of not printing exceptions
+            future.exceptionally(exception -> {
+                exception.printStackTrace();
+                return null;
+            });
+
+            return future;
         }
 
         private CompletableFuture<Void> savePayload(final LuckPermsPayload payload, boolean ignoreCache) {
 
             // First load existing data before saving
-            BukkitPromise<LuckPermsData> loadFuture;
+            CompletableFuture<LuckPermsData> loadFuture;
             if (cachedData.get() != null && !ignoreCache) {
-                loadFuture = BukkitPromise.fulfilled(cachedData.get());
+                loadFuture = CompletableFuture.completedFuture(cachedData.get());
             } else {
                 loadFuture = loadData(ignoreCache);
             }
@@ -164,7 +166,7 @@ public class LuckPermsManager implements LuckPermsAPI, Listener {
             CompletableFuture<Void> future = new CompletableFuture<>();
             // Begin save after loading data
 
-            loadFuture.thenAsync(data -> {
+            loadFuture.thenAcceptAsync(data -> {
                 // Save our payload to existing data
                 payload.saveToData(data);
 
@@ -173,17 +175,16 @@ public class LuckPermsManager implements LuckPermsAPI, Listener {
 
                 LuckPermsProvider.get().getUserManager().loadUser(owner).thenAccept(user -> {
                     try {
+                        // Clear the metadata keys that we are overwriting
+                        user.data().clear(serverContextSet.get(), NodeType.META.predicate(metaNode -> data.containsKey(metaNode.getKey())));
+
                         // Write each metadata key
                         for (String key : data.getKeys()) {
-                            // So we don't want to save any keys that are global across the entire network
-                            // Clear the metadata keys that we are overwriting
-                            user.data().clear(serverContextSet.get(), NodeType.META.predicate(metaNode -> metaNode.getKey().equals(key)));
-                            // Write
                             user.data().add(MetaNode.builder(key, data.get(key).toString()).context(serverContextSet.get()).build());
                         }
 
                         // Save
-                        LuckPermsProvider.get().getUserManager().saveUser(user).thenAcceptAsync($ -> future.complete(null));
+                        LuckPermsProvider.get().getUserManager().saveUser(user).thenAccept($ -> future.complete(null));
 
                     } catch (Exception exception) {
                         Bukkit.getLogger().log(Level.SEVERE, "ERROR: Could not save luckperms payload");
@@ -191,12 +192,19 @@ public class LuckPermsManager implements LuckPermsAPI, Listener {
                         future.complete(null); // Make sure we complete the future
                     }
                 });
+            }, executor -> Bukkit.getScheduler().runTaskAsynchronously(RunicCore.getInstance(), executor));
+
+            // Modify the default behavior of not printing exceptions
+            future.exceptionally(exception -> {
+                exception.printStackTrace();
+                return null;
             });
+
             return future;
         }
 
         private void queueSave(final LuckPermsPayload payload, final boolean ignoreCache) {
-            synchronized (UserPayloadManager.class) {
+            synchronized (this) {
                 queuedSaves.add(payload); // add payload to queue
                 Runnable queuedRunnable = () -> {
                     LuckPermsPayload polledPayload = queuedSaves.poll();
