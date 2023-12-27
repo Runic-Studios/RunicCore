@@ -1,5 +1,6 @@
 package com.runicrealms.plugin.spellapi.effect;
 
+import com.runicrealms.plugin.RunicCore;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
@@ -53,5 +54,12 @@ public interface SpellEffect {
      * Handles the logic for the actual mechanic
      */
     void executeSpellEffect();
+
+    /**
+     * Initializes the spell effect, tracking it and adding it to the manager
+     */
+    default void initialize() {
+        RunicCore.getSpellEffectAPI().addSpellEffectToManager(this);
+    }
 }
 

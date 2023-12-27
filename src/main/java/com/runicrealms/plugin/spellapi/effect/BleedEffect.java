@@ -9,6 +9,8 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
+import java.util.Set;
+
 public class BleedEffect implements StackEffect {
     public static final int DAMAGE_CAP = 100;
     public static final double HEALING_REDUCTION = .25;
@@ -18,6 +20,7 @@ public class BleedEffect implements StackEffect {
     private final Player caster;
     private final LivingEntity recipient;
     private final Spell spellSource;
+    private final StackHologram stackHologram;
     private int nextTickCounter;
     private int stacksRemaining;
 
@@ -31,6 +34,11 @@ public class BleedEffect implements StackEffect {
         this.recipient = recipient;
         this.spellSource = spellSource;
         this.stacksRemaining = DEFAULT_STACKS;
+        this.stackHologram = new StackHologram(
+                SpellEffectType.BLEED,
+                caster.getLocation(),
+                Set.of(caster)
+        );
     }
 
     public Spell getSpellSource() {
@@ -89,6 +97,7 @@ public class BleedEffect implements StackEffect {
         recipient.getWorld().spawnParticle(Particle.BLOCK_CRACK, recipient.getEyeLocation(), 10, Math.random() * 1.5, Math.random() / 2, Math.random() * 1.5, Material.REDSTONE_BLOCK.createBlockData());
         double percentMaxHealthAmount = recipient.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue() * MAX_HEALTH_PERCENT;
         DamageUtil.damageEntityPhysical(Math.min(percentMaxHealthAmount, 100), recipient, caster, false, false, false);
+        this.stackHologram.showHologram(this.recipient.getLocation(), this.stacksRemaining);
     }
 
     @Override
@@ -99,5 +108,10 @@ public class BleedEffect implements StackEffect {
     @Override
     public int getTickInterval() {
         return PERIOD;
+    }
+
+    @Override
+    public StackHologram getStackHologram() {
+        return stackHologram;
     }
 }

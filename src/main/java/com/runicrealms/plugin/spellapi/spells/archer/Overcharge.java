@@ -11,8 +11,7 @@ import com.runicrealms.plugin.spellapi.effect.SpellEffectType;
 import com.runicrealms.plugin.spellapi.effect.StaticEffect;
 import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -37,6 +36,7 @@ public class Overcharge extends Spell implements DurationSpell {
     private double markedDuration;
     private double maxStacks;
     private double stackDuration;
+    private double stacksPerIncrement;
 
     public Overcharge() {
         super("Overcharge", CharacterClass.ARCHER);
@@ -44,7 +44,7 @@ public class Overcharge extends Spell implements DurationSpell {
         this.setDescription("When you deal damage to an enemy with &aThunder Arrow &7or &aJolt&7, " +
                 "you mark them with static electricity for " + this.markedDuration + "s. " +
                 "When you land a ranged basic attack against a static target, " +
-                "you gain a stack of &9charged &7and restore " + this.manaToRestore + " mana!" +
+                "consume the mark to gain " + stacksPerIncrement + " stack(s) of &9charged &7and restore " + this.manaToRestore + " mana!" +
                 "\n\n&2&lEFFECT &aCharged" +
                 "\n&7While &9charged&7, you gain " + (this.percent * 100) + "% attack speed! " +
                 "Max " + maxStacks + " stacks. " +
@@ -64,6 +64,8 @@ public class Overcharge extends Spell implements DurationSpell {
         this.maxStacks = maxStacks.doubleValue();
         Number stackDuration = (Number) spellData.getOrDefault("stack-duration", 5);
         this.stackDuration = stackDuration.doubleValue();
+        Number stacksPerIncrement = (Number) spellData.getOrDefault("stacks-per-increment", 2);
+        this.stacksPerIncrement = stacksPerIncrement.doubleValue();
     }
 
     @Override
@@ -93,8 +95,7 @@ public class Overcharge extends Spell implements DurationSpell {
             staticEffect.refresh();
             return;
         }
-        StaticEffect staticEffect = new StaticEffect(player, event.getVictim(), (int) this.markedDuration);
-        this.addSpellEffectToManager(staticEffect);
+        new StaticEffect(player, event.getVictim(), (int) this.markedDuration).initialize();
     }
 
     /**
@@ -109,22 +110,20 @@ public class Overcharge extends Spell implements DurationSpell {
             StaticEffect staticEffect = (StaticEffect) effectOptional.get();
             staticEffect.cancel();
             RunicCore.getRegenManager().addMana(player, (int) this.manaToRestore);
-            addChargedStack(player);
+            addChargedStack(player, victim.getEyeLocation());
         }
     }
 
-    private void addChargedStack(Player player) {
+    private void addChargedStack(Player player, Location victimLocation) {
         Optional<SpellEffect> effectOptional = this.getSpellEffect(player.getUniqueId(), player.getUniqueId(), SpellEffectType.CHARGED);
         ChargedEffect chargedEffect;
-        // todo: sound queue? is there one?
         if (effectOptional.isPresent()) {
             chargedEffect = (ChargedEffect) effectOptional.get();
-            chargedEffect.increment();
+            chargedEffect.increment(victimLocation, (int) this.stacksPerIncrement);
         } else {
-            chargedEffect = new ChargedEffect(player, (int) this.maxStacks, (int) this.stackDuration);
-            this.addSpellEffectToManager(chargedEffect);
+            chargedEffect = new ChargedEffect(player, (int) this.maxStacks, (int) this.stackDuration, (int) this.stacksPerIncrement, victimLocation);
+            chargedEffect.initialize();
         }
-        Bukkit.broadcastMessage(ChatColor.DARK_AQUA + "adding charged stack, stack count: " + chargedEffect.getStacks().get());
     }
 
     /**
@@ -144,21 +143,10 @@ public class Overcharge extends Spell implements DurationSpell {
         event.setCooldownTicks(Math.max(event.getCooldownTicks() - ticksToReduce, BasicAttackEvent.MINIMUM_COOLDOWN_TICKS)); //apply reduction to current cooldown time
     }
 
-    /**
-     * ?
-     *
-     * @param originalCooldownTicks
-     * @param chargedEffect
-     * @return
-     */
     private int calculateCooldownTicksToReduce(int originalCooldownTicks, ChargedEffect chargedEffect) {
-        Bukkit.broadcastMessage(ChatColor.GOLD + "current stacks is " + chargedEffect.getStacks().get());
-        Bukkit.broadcastMessage(ChatColor.RED + "reducing attack speed!");
         int stacks = chargedEffect.getStacks().get();
-
         int ticksToReduce = (int) (originalCooldownTicks * this.percent); //reduce the cooldown based on the total cooldown time
         ticksToReduce *= stacks;
-        Bukkit.broadcastMessage("reduced ticks is " + ticksToReduce);
         return ticksToReduce;
     }
 }

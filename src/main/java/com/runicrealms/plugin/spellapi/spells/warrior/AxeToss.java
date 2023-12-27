@@ -73,8 +73,7 @@ public class AxeToss extends Spell implements DurationSpell, PhysicalDamageSpell
 
                 Optional<SpellEffect> bleedEffect = this.getSpellEffect(player.getUniqueId(), entity.getUniqueId(), SpellEffectType.BLEED);
                 if (bleedEffect.isEmpty()) {
-                    BleedEffect newEffect = new BleedEffect(player, (LivingEntity) entity, this);
-                    addSpellEffectToManager(newEffect);
+                    new BleedEffect(player, (LivingEntity) entity, this).initialize();
                 } else {
                     ((BleedEffect) bleedEffect.get()).refreshStacks();
                     addStatusEffect((LivingEntity) entity, RunicStatusEffect.SLOW_III, slowDuration, true);

@@ -26,4 +26,11 @@ public interface StackEffect extends SpellEffect {
      * @return the interval at which this specific effect should tick (in game ticks! e.g. 40 = 2 seconds)
      */
     int getTickInterval();
+
+    /**
+     * A hologram displayed only to the relevant parties to show the current number of stacks
+     *
+     * @return a client-side StackHologram
+     */
+    StackHologram getStackHologram();
 }
