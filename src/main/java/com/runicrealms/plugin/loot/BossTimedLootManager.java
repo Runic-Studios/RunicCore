@@ -53,7 +53,7 @@ public class BossTimedLootManager implements Listener {
                 if (percent >= loot.getLootDamageThreshold()) {
                     RunicCore.getLootAPI().displayTimedLootChest(player, loot.getLootChest());
                 } else {
-                    player.sendMessage(ChatColor.RED + "You did not deal enough damage to the boss to quality for boss loot!");
+                    player.sendMessage(ChatColor.RED + "You did not deal enough damage to the boss to qualify for boss loot!");
                 }
 
                 player.teleport(loot.getComplete(), PlayerTeleportEvent.TeleportCause.PLUGIN);
