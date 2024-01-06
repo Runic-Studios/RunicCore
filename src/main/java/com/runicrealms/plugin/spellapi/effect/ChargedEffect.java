@@ -112,13 +112,13 @@ public class ChargedEffect implements StackEffect {
             return;
         }
         if (caster.isDead()) {
-            stacks.set(0);
+            cancel();
             return;
         }
         // Decrement one stack every stackDuration seconds
         if (stacks.get() > 0) {
             stacks.getAndDecrement();
-            caster.playSound(caster.getLocation(), Sound.BLOCK_CONDUIT_DEACTIVATE, 0.5f, 3.0f);
+            caster.playSound(caster.getLocation(), Sound.BLOCK_CONDUIT_DEACTIVATE, 0.25f, 3.0f);
         }
         executeSpellEffect();
         // Set the next tick
@@ -132,6 +132,12 @@ public class ChargedEffect implements StackEffect {
         if (stacks == this.maxStacks) {
             Cone.coneEffect(caster, Particle.CRIT_MAGIC, stackDuration, 0, 20, Color.BLUE);
         }
+    }
+
+    @Override
+    public void cancel() {
+        stacks.set(0);
+        caster.playSound(caster.getLocation(), Sound.BLOCK_CONDUIT_DEACTIVATE, 0.25f, 3.0f);
     }
 
     @Override

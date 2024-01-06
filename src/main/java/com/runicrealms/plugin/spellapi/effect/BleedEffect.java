@@ -80,7 +80,7 @@ public class BleedEffect implements StackEffect {
             return;
         }
         if (recipient.isDead()) {
-            stacksRemaining = 0;
+            cancel();
             return;
         }
         if (stacksRemaining > 0) {
@@ -98,6 +98,11 @@ public class BleedEffect implements StackEffect {
         double percentMaxHealthAmount = recipient.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue() * MAX_HEALTH_PERCENT;
         DamageUtil.damageEntityPhysical(Math.min(percentMaxHealthAmount, 100), recipient, caster, false, false, false);
         this.stackHologram.showHologram(this.recipient.getLocation(), this.stacksRemaining);
+    }
+
+    @Override
+    public void cancel() {
+        stacksRemaining = 0;
     }
 
     @Override

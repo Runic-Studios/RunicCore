@@ -24,6 +24,7 @@ public class StaticEffect implements SpellEffect {
         this.startTime = System.currentTimeMillis();
     }
 
+    @Override
     public void cancel() {
         startTime = (long) (System.currentTimeMillis() - (duration * 1000)); // Immediately end effect
     }

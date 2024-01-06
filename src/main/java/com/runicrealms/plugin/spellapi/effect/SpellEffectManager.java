@@ -52,7 +52,6 @@ public class SpellEffectManager implements Listener, SpellEffectAPI {
     @Override
     public void addSpellEffectToManager(SpellEffect spellEffect) {
         if (spellEffect instanceof StackEffect) {
-            Bukkit.broadcastMessage("initializing stack effect, global counter is " + counter);
             ((StackEffect) spellEffect).initializeNextTick(counter);
         }
         this.activeSpellEffects.add(spellEffect);

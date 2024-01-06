@@ -61,5 +61,10 @@ public interface SpellEffect {
     default void initialize() {
         RunicCore.getSpellEffectAPI().addSpellEffectToManager(this);
     }
+
+    /**
+     * Cancels the spell effect early, regardless of duration or ticks remaining
+     */
+    void cancel();
 }
 

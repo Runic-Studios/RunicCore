@@ -3,6 +3,7 @@ package com.runicrealms.plugin.spellapi.spells.archer;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.api.event.BasicAttackEvent;
 import com.runicrealms.plugin.common.CharacterClass;
+import com.runicrealms.plugin.events.LeaveCombatEvent;
 import com.runicrealms.plugin.events.MagicDamageEvent;
 import com.runicrealms.plugin.events.RangedDamageEvent;
 import com.runicrealms.plugin.spellapi.effect.ChargedEffect;
@@ -48,7 +49,21 @@ public class Overcharge extends Spell implements DurationSpell {
                 "\n\n&2&lEFFECT &aCharged" +
                 "\n&7While &9charged&7, you gain " + (this.percent * 100) + "% attack speed! " +
                 "Max " + maxStacks + " stacks. " +
-                "Each stack expires after " + stackDuration + "s.");
+                "Each stack expires after " + stackDuration + "s. Lose all stacks upon exiting combat.");
+    }
+
+    /**
+     * Charged stacks expire upon combat exit
+     */
+    @EventHandler
+    public void onExitCombat(LeaveCombatEvent event) {
+        UUID uuid = event.getPlayer().getUniqueId();
+
+        Optional<SpellEffect> effectOptional = this.getSpellEffect(uuid, uuid, SpellEffectType.CHARGED);
+        if (effectOptional.isPresent()) {
+            ChargedEffect chargedEffect = (ChargedEffect) effectOptional.get();
+            chargedEffect.cancel();
+        }
     }
 
     @Override
