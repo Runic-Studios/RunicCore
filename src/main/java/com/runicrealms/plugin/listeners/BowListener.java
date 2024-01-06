@@ -41,8 +41,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class BowListener implements Listener {
 
-    private static final int ARROW_SPEED_MULTIPLIER = 3;
-    private static final int BOW_GLOBAL_COOLDOWN = 15; // ticks
+    private static final double ARROW_SPEED_MULTIPLIER = 1.75;
 
     /**
      * Removes any arrows stuck in bodies
@@ -64,15 +63,14 @@ public class BowListener implements Listener {
     @EventHandler(priority = EventPriority.NORMAL)
     public void onDamage(EntityDamageByEntityEvent event) {
         // only listen for arrows
-        if (!(event.getDamager() instanceof Arrow)) return;
+        if (!(event.getDamager() instanceof Arrow arrow)) return;
 
-        Arrow arrow = (Arrow) event.getDamager();
         if (!(arrow.getShooter() instanceof LivingEntity)) return;
         if (!(event.getEntity() instanceof LivingEntity)) return;
         Entity shooter = (Entity) arrow.getShooter();
 
         // only listen for arrows NOT shot by a player
-        if (!(arrow.getShooter() instanceof Player)) {
+        if (!(arrow.getShooter() instanceof Player damager)) {
             // mobs
             event.setCancelled(true);
             double dmgAmt = event.getDamage();
@@ -100,8 +98,6 @@ public class BowListener implements Listener {
 
             // skip NPCs
             if (victim.hasMetadata("NPC")) return;
-
-            Player damager = (Player) arrow.getShooter();
 
             // skip party members
             if (RunicCore.getPartyAPI().getParty(damager.getUniqueId()) != null) {
