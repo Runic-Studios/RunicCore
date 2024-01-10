@@ -33,8 +33,8 @@ public class CosmicPrism extends Spell implements DurationSpell, RadiusSpell, Sh
                 "the ground in a " + radius + " block radius for the next " + duration + "s. " +
                 "Allies standing in the light receive a " +
                 "stacking (" + shield + " + &f" + shieldPerLevel +
-                "x&7 lvl) shield every " + period + "s! " +
-                "When the prism expires, it releases an additional shield equal to " +
+                "x&7 lvl) &eshield &7every " + period + "s! " +
+                "When the prism expires, it releases an additional &eshield &7equal to " +
                 (percent * 100) + "% of its base amount!");
     }
 

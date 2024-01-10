@@ -8,7 +8,7 @@ import com.runicrealms.plugin.spellapi.spelltypes.RadiusSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.spellapi.spelltypes.WarmupSpell;
-import com.runicrealms.plugin.spellapi.spellutil.particles.Cone;
+import com.runicrealms.plugin.spellapi.spellutil.particles.HelixParticleFrame;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Location;
@@ -119,7 +119,8 @@ public class Nightfall extends Spell implements DurationSpell, RadiusSpell, Warm
         addStatusEffect(player, RunicStatusEffect.SLOW_III, warmup, false);
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 2.0f);
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_TNT_PRIMED, 0.5f, 1.0f);
-        Cone.coneEffect(player, Particle.REDSTONE, warmup, 0, 20, Color.BLACK);
+        new HelixParticleFrame(1.0f, 30, 6.0F).playParticle(player, Particle.REDSTONE, player.getLocation(), Color.YELLOW);
+        new HelixParticleFrame(1.0f, 30, 10.0F).playParticle(player, Particle.REDSTONE, player.getLocation(), Color.BLACK);
         Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> conjureNightfall(player), (long) warmup * 20L);
     }
 
