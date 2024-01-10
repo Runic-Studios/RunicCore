@@ -72,7 +72,7 @@ public class ChargedEffect implements StackEffect {
     }
 
     public void increment(Location hologramLocation, int amountToIncrement) {
-        this.setHologramLocation(hologramLocation);
+        this.setHologramLocation(hologramLocation.add(0, 1.5f, 0));
         int currentStacks = this.stacks.get();
         if (currentStacks >= this.maxStacks) {
             return;

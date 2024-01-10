@@ -3,6 +3,8 @@ package com.runicrealms.plugin.spellapi.spells.warrior;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.common.CharacterClass;
 import com.runicrealms.plugin.spellapi.effect.BleedEffect;
+import com.runicrealms.plugin.spellapi.effect.SpellEffect;
+import com.runicrealms.plugin.spellapi.effect.SpellEffectType;
 import com.runicrealms.plugin.spellapi.spelltypes.DistanceSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.PhysicalDamageSpell;
@@ -20,6 +22,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -61,7 +64,10 @@ public class Cleave extends Spell implements DistanceSpell, DurationSpell, Physi
             if (dot < maxAngleCos) continue;
             DamageUtil.damageEntityPhysical(this.damage, (LivingEntity) entity, player, false, false, this);
             if (count >= this.duration - 1) {
-                new BleedEffect(player, (LivingEntity) entity, this).initialize();
+                Optional<SpellEffect> bleedEffect = this.getSpellEffect(player.getUniqueId(), entity.getUniqueId(), SpellEffectType.BLEED);
+                if (bleedEffect.isEmpty()) {
+                    new BleedEffect(player, (LivingEntity) entity, this).initialize();
+                }
             }
         }
     }

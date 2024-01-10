@@ -97,7 +97,7 @@ public class BleedEffect implements StackEffect {
         recipient.getWorld().spawnParticle(Particle.BLOCK_CRACK, recipient.getEyeLocation(), 10, Math.random() * 1.5, Math.random() / 2, Math.random() * 1.5, Material.REDSTONE_BLOCK.createBlockData());
         double percentMaxHealthAmount = recipient.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue() * MAX_HEALTH_PERCENT;
         DamageUtil.damageEntityPhysical(Math.min(percentMaxHealthAmount, 100), recipient, caster, false, false, false);
-        this.stackHologram.showHologram(this.recipient.getLocation(), this.stacksRemaining);
+        this.stackHologram.showHologram(this.recipient.getEyeLocation().add(0, 1.5f, 0), this.stacksRemaining);
     }
 
     @Override

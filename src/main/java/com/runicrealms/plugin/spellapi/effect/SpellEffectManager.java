@@ -3,6 +3,7 @@ package com.runicrealms.plugin.spellapi.effect;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.events.SpellHealEvent;
 import com.runicrealms.plugin.spellapi.api.SpellEffectAPI;
+import com.runicrealms.plugin.spellapi.effect.event.SpellEffectEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -51,6 +52,9 @@ public class SpellEffectManager implements Listener, SpellEffectAPI {
 
     @Override
     public void addSpellEffectToManager(SpellEffect spellEffect) {
+        SpellEffectEvent spellEffectEvent = new SpellEffectEvent(spellEffect);
+        Bukkit.getPluginManager().callEvent(spellEffectEvent);
+        if (spellEffectEvent.isCancelled()) return;
         if (spellEffect instanceof StackEffect) {
             ((StackEffect) spellEffect).initializeNextTick(counter);
         }

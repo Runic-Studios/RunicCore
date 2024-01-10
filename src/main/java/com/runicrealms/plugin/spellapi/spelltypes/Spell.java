@@ -8,7 +8,6 @@ import com.runicrealms.plugin.rdb.RunicDatabase;
 import com.runicrealms.plugin.spellapi.effect.RunicStatusEffect;
 import com.runicrealms.plugin.spellapi.effect.SpellEffect;
 import com.runicrealms.plugin.spellapi.effect.SpellEffectType;
-import com.runicrealms.plugin.spellapi.effect.event.SpellEffectEvent;
 import com.runicrealms.plugin.utilities.ActionBarUtil;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -55,14 +54,6 @@ public abstract class Spell implements ISpell, Listener {
         this.reqClass = reqClass;
         this.loadSpellData(); // Load values like mana, cooldown, etc. from file
         Bukkit.getPluginManager().registerEvents(this, plugin);
-    }
-
-    @Override
-    public void addSpellEffectToManager(SpellEffect spellEffect) {
-        SpellEffectEvent spellEffectEvent = new SpellEffectEvent(spellEffect);
-        Bukkit.getPluginManager().callEvent(spellEffectEvent);
-        if (spellEffectEvent.isCancelled()) return;
-        RunicCore.getSpellEffectAPI().addSpellEffectToManager(spellEffect);
     }
 
     @Override

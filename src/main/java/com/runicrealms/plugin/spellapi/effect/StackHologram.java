@@ -27,7 +27,7 @@ public class StackHologram {
     }
 
     private Hologram createHologram() {
-        Hologram hologram = HolographicDisplaysAPI.get(RunicCore.getInstance()).createHologram(initialLocation.add(0.5f, 1.5f, 0.5f));
+        Hologram hologram = HolographicDisplaysAPI.get(RunicCore.getInstance()).createHologram(initialLocation.add(0, 1.5f, 0));
         hologram.getVisibilitySettings().setGlobalVisibility(VisibilitySettings.Visibility.HIDDEN);
         playersToShowTo.forEach(player -> hologram.getVisibilitySettings().setIndividualVisibility(player, VisibilitySettings.Visibility.VISIBLE));
         return hologram;
