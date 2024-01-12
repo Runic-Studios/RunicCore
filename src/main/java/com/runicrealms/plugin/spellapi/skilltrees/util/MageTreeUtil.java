@@ -48,7 +48,7 @@ public class MageTreeUtil {
         perks.add(new PerkBaseStat(92, 1, 0, 5, Stat.DEXTERITY));
         perks.add(new PerkSpell(93, 1, 0, 1, "Meteor"));
         perks.add(new PerkBaseStat(94, 1, 0, 3, Stat.INTELLIGENCE));
-        perks.add(new PerkSpell(95, 1, 0, 1, "Inferno"));
+        perks.add(new PerkSpell(95, 1, 0, 1, "Wildfire"));
         return perks;
     }
 
