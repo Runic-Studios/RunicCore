@@ -66,7 +66,7 @@ public class Cleave extends Spell implements DistanceSpell, DurationSpell, Physi
             if (count >= this.duration - 1) {
                 Optional<SpellEffect> bleedEffect = this.getSpellEffect(player.getUniqueId(), entity.getUniqueId(), SpellEffectType.BLEED);
                 if (bleedEffect.isEmpty()) {
-                    new BleedEffect(player, (LivingEntity) entity, this).initialize();
+                    new BleedEffect(player, (LivingEntity) entity).initialize();
                 }
             }
         }

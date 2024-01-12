@@ -1,6 +1,5 @@
 package com.runicrealms.plugin.spellapi.effect;
 
-import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.Material;
 import org.bukkit.Particle;
@@ -19,30 +18,23 @@ public class BleedEffect implements StackEffect {
     private static final double MAX_HEALTH_PERCENT = .03;
     private final Player caster;
     private final LivingEntity recipient;
-    private final Spell spellSource;
     private final StackHologram stackHologram;
     private int nextTickCounter;
     private int stacksRemaining;
 
     /**
-     * @param caster      player who caused the bleed
-     * @param recipient   entity who is bleeding
-     * @param spellSource the spell which caused the bleed (for scaling)
+     * @param caster    player who caused the bleed
+     * @param recipient entity who is bleeding
      */
-    public BleedEffect(Player caster, LivingEntity recipient, Spell spellSource) {
+    public BleedEffect(Player caster, LivingEntity recipient) {
         this.caster = caster;
         this.recipient = recipient;
-        this.spellSource = spellSource;
         this.stacksRemaining = DEFAULT_STACKS;
         this.stackHologram = new StackHologram(
                 SpellEffectType.BLEED,
                 caster.getLocation(),
                 Set.of(caster)
         );
-    }
-
-    public Spell getSpellSource() {
-        return spellSource;
     }
 
     public void refreshStacks() {

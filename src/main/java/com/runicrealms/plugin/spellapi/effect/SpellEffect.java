@@ -14,7 +14,9 @@ public interface SpellEffect {
     /**
      * @return true if the effect should be currently active
      */
-    boolean isActive(); // Is the effect currently active?
+    default boolean isActive() {
+        return (System.currentTimeMillis() - getStartTime()) <= (getDuration() * 1000);
+    }
 
     /**
      * @return true if this is a positive effect
