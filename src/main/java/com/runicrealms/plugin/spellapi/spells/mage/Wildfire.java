@@ -45,16 +45,7 @@ public class Wildfire extends Spell implements RadiusSpell, DurationSpell {
         this.maxTargets = maxTargets;
     }
 
-    //    @EventHandler
-//    public void onSpellCast(SpellCastEvent event) {
-//        if (!this.hasPassive(event.getCaster().getUniqueId(), this.getName()) || !(event.getSpell() instanceof Fireball)) {
-//            return;
-//        }
-//
-//        RunicCore.getSpellAPI().reduceCooldown(event.getCaster(), event.getSpell(), this.fireballCooldownPercent);
-//    }
-
-    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.LOW)
     private void onMagicDamage(MagicDamageEvent event) {
         if (!this.hasPassive(event.getPlayer().getUniqueId(), this.getName()) || !(event.getSpell() instanceof Fireball)) {
             return;
@@ -63,9 +54,10 @@ public class Wildfire extends Spell implements RadiusSpell, DurationSpell {
         Player player = event.getPlayer();
         LivingEntity victim = event.getVictim();
 
-        int count = 0;
+        int count = 1;
         for (Entity entity : victim.getWorld().getNearbyEntities(
                 victim.getLocation(), this.radius, this.radius, this.radius, target -> isValidEnemy(player, target))) {
+            if (entity.equals(victim)) continue;
             count++;
             if (count > maxTargets) break;
             DamageUtil.damageEntitySpell(event.getAmount(), (LivingEntity) entity, event.getPlayer(), this);

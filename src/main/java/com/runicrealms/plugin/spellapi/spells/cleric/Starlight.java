@@ -29,7 +29,7 @@ import java.util.UUID;
 public class Starlight extends Spell implements DistanceSpell, DurationSpell, MagicDamageSpell, RadiusSpell {
     private static final double PERIOD = 0.5;
     private static final int BEAM_RADIUS = 1;
-    private final Map<UUID, Set<UUID>> damageMap = new HashMap<>();
+    private final Map<UUID, Set<UUID>> damageMap = new HashMap<>(); // Prevents repeat hits on same target
     private double distance;
     private double damage;
     private double damagePerLevel;
