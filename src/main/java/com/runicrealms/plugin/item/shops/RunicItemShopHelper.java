@@ -8,6 +8,7 @@ import com.runicrealms.plugin.common.util.ChatUtils;
 import com.runicrealms.plugin.common.util.ColorUtil;
 import com.runicrealms.plugin.common.util.Pair;
 import com.runicrealms.plugin.runicitems.RunicItemsAPI;
+import com.runicrealms.plugin.runicitems.item.stats.RunicItemTag;
 import com.runicrealms.plugin.runicitems.item.template.RunicItemTemplate;
 import com.runicrealms.plugin.runicitems.util.CurrencyUtil;
 import org.bukkit.Bukkit;
@@ -332,7 +333,7 @@ public class RunicItemShopHelper {
      *
      * @param player the player
      */
-    public static void clearDungeonKeys(@NotNull Player player) {
+    public static void clearDungeonItems(@NotNull Player player) {
         boolean removedItem = false;
         for (ItemStack item : player.getInventory().getContents()) {
             if (item == null || item.getAmount() <= 0 || item.getType() == Material.AIR) {
@@ -341,14 +342,14 @@ public class RunicItemShopHelper {
 
             RunicItemTemplate template = RunicItemsAPI.getItemStackTemplate(item);
 
-            if (template != null && RunicItemShopHelper.isDungeonKey(template.getId())) {
+            if (template != null && (RunicItemShopHelper.isDungeonKey(template.getId()) || template.getTags().contains(RunicItemTag.DUNGEON_ITEM))) {
                 item.setAmount(0);
                 removedItem = true;
             }
         }
 
         if (removedItem) {
-            player.sendMessage(ChatColor.GRAY + "Your dungeon keys have been removed.");
+            player.sendMessage(ChatColor.GRAY + "Your dungeon items have been removed.");
         }
     }
 }
