@@ -32,14 +32,16 @@ public class DragonsBreath extends Spell implements DurationSpell, MagicDamageSp
 
     public DragonsBreath() {
         super("Dragon's Breath", CharacterClass.MAGE);
-        this.setDescription("Enemies in a " + radius + " block cone in front of you " +
-                "suffer (" + damageAmt + " + &f" + damagePerLevel +
-                "x&7 lvl) magicʔ damage per second for " + duration + "s! " +
+        this.setDescription("You conjure a torrent of flame ahead of you " +
+                "in a cone! Your fiery breath deals (" + damageAmt + " + &f" + damagePerLevel +
+                "x&7 lvl) magicʔ damage every second for " + duration + "s and " +
+                "grows in size each tick, up to " + radius + " blocks! " +
                 "Silences and stuns end this spell early. " +
-                "You have Slowness I applied while this effect is ongoing.");
+                "You are slowed for the duration of the effect.");
     }
 
-    private void conjureBreath(Player player) {
+    private void conjureBreath(Player player, int count) {
+        double effectiveRadius = radius - (duration - count);
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 0.5f, 2.0f);
         // Visual effect
         double maxAngle = 45;
@@ -52,11 +54,11 @@ public class DragonsBreath extends Spell implements DurationSpell, MagicDamageSp
 
         Vector[] vectors = new Vector[]{one, two, three, four};
         for (Vector vector : vectors) {
-            spawnWaveFlameLine(player, vector, player.getEyeLocation());
+            spawnWaveFlameLine(player, vector, player.getEyeLocation(), effectiveRadius);
         }
         double maxAngleCos = Math.cos(Math.toRadians(maxAngle));
         // Damage entities in front of the player
-        for (Entity entity : player.getWorld().getNearbyEntities(player.getLocation(), radius, radius, radius, target -> isValidEnemy(player, target))) {
+        for (Entity entity : player.getWorld().getNearbyEntities(player.getLocation(), effectiveRadius, effectiveRadius, effectiveRadius, target -> isValidEnemy(player, target))) {
             Location entityLocation = entity.getLocation();
             Vector directionToEntity = entityLocation.subtract(player.getLocation()).toVector().normalize();
             // Check if the entity is in front of the player (cosine of the angle between the vectors > 0)
@@ -79,7 +81,7 @@ public class DragonsBreath extends Spell implements DurationSpell, MagicDamageSp
                 removeStatusEffect(player, RunicStatusEffect.SLOW_I);
             } else {
                 count.set(count.get() + PERIOD);
-                conjureBreath(player);
+                conjureBreath(player, count.get());
             }
         }, 0, PERIOD * 20);
     }
@@ -124,7 +126,7 @@ public class DragonsBreath extends Spell implements DurationSpell, MagicDamageSp
         this.radius = radius;
     }
 
-    public void spawnWaveFlameLine(Player player, Vector vector, Location location) {
+    public void spawnWaveFlameLine(Player player, Vector vector, Location location, double effectiveRadius) {
         Vector look = vector.normalize();
         World world = player.getWorld();
         double distanceStep = 0.5;
@@ -132,7 +134,7 @@ public class DragonsBreath extends Spell implements DurationSpell, MagicDamageSp
         SimplexOctaveGenerator generator = new SimplexOctaveGenerator(new Random(), 1);
         generator.setScale(0.5);
 
-        for (double distance = 0.5; distance <= radius - 0.5; distance += distanceStep) {
+        for (double distance = 0.5; distance <= effectiveRadius - 0.5; distance += distanceStep) {
             double yOffset = generator.noise(distance, 0, 0) * 0.5;
             Vector offset = new Vector(0, yOffset, 0);
             Vector particleDirection = look.clone().multiply(distance).add(offset);
