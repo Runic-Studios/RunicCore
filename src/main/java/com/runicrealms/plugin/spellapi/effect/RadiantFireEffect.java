@@ -95,7 +95,7 @@ public class RadiantFireEffect implements StackEffect {
 
     @Override
     public void tick(int globalCounter) {
-        if (globalCounter % 20 == 0) { // Show particle effect once per second
+        if (globalCounter % 60 == 0) { // Show particle effect once per two three
             executeSpellEffect();
         }
         if (globalCounter < nextTickCounter) {
