@@ -2,7 +2,10 @@ package com.runicrealms.plugin.spellapi.spells.cleric;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.common.CharacterClass;
+import com.runicrealms.plugin.spellapi.effect.RadiantFireEffect;
 import com.runicrealms.plugin.spellapi.effect.RunicStatusEffect;
+import com.runicrealms.plugin.spellapi.effect.SpellEffect;
+import com.runicrealms.plugin.spellapi.effect.SpellEffectType;
 import com.runicrealms.plugin.spellapi.spelltypes.HealingSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.RadiusSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
@@ -17,9 +20,8 @@ import org.bukkit.Sound;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
-import java.util.Map;
+import java.util.Optional;
 import java.util.Random;
-import java.util.UUID;
 
 public class RadiantNova extends Spell implements HealingSpell, RadiusSpell, WarmupSpell {
     public static final Random random = new Random(System.nanoTime());
@@ -54,10 +56,16 @@ public class RadiantNova extends Spell implements HealingSpell, RadiusSpell, War
 
     @Override
     public void executeSpell(Player player, SpellItemType type) {
-        RadiantFire radiantFire = (RadiantFire) RunicCore.getSpellAPI().getSpell("Radiant Fire");
-        Map<UUID, RadiantFire.RadiantFireTask> radiantFireTaskMap = radiantFire.getRadiantFireMap();
-        boolean hasWarmup = !radiantFireTaskMap.containsKey(player.getUniqueId()) || radiantFireTaskMap.get(player.getUniqueId()).getStacks().get() != radiantFire.getMaxStacks();
-        if (hasWarmup) {
+        Optional<SpellEffect> spellEffectOpt = this.getSpellEffect(player.getUniqueId(), player.getUniqueId(), SpellEffectType.RADIANT_FIRE);
+        boolean reachedMaxStacks;
+        if (spellEffectOpt.isPresent()) {
+            RadiantFireEffect radiantFireEffect = (RadiantFireEffect) spellEffectOpt.get();
+            reachedMaxStacks = radiantFireEffect.getStacks().get() == radiantFireEffect.getMaxStacks();
+        } else {
+            reachedMaxStacks = false;
+        }
+
+        if (!reachedMaxStacks) {
             player.getWorld().playSound(player.getLocation(), Sound.BLOCK_CAMPFIRE_CRACKLE, 1.0f, 1.0f);
             player.getWorld().playSound(player.getLocation(), Sound.ENTITY_TNT_PRIMED, 1.0f, 2.0f);
             Cone.coneEffect(player, Particle.FIREWORKS_SPARK, 1, 0, 20, Color.WHITE);

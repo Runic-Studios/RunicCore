@@ -8,6 +8,7 @@ public enum SpellEffectType {
     CHILLED(ChatColor.AQUA, "Chilled", "❈"),
     IGNITED(ChatColor.DARK_RED, "Ignited", ""),
     INCENDIARY(ChatColor.DARK_RED, "Incendiary", ""),
+    RADIANT_FIRE(ChatColor.YELLOW, "Radiant Fire", "☀"),
     STATIC(ChatColor.GRAY, "Static", "");
 
     private final ChatColor chatColor;

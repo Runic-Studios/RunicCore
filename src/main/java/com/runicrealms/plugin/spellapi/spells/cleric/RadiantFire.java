@@ -4,24 +4,22 @@ import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.common.CharacterClass;
 import com.runicrealms.plugin.events.MagicDamageEvent;
 import com.runicrealms.plugin.events.SpellHealEvent;
+import com.runicrealms.plugin.spellapi.effect.RadiantFireEffect;
+import com.runicrealms.plugin.spellapi.effect.SpellEffect;
+import com.runicrealms.plugin.spellapi.effect.SpellEffectType;
 import com.runicrealms.plugin.spellapi.spelltypes.AttributeSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.HealingSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Sound;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.scheduler.BukkitTask;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class RadiantFire extends Spell implements AttributeSpell, DurationSpell {
-    private static final Map<UUID, RadiantFireTask> RADIANT_FIRE_MAP = new HashMap<>();
     private double baseValue;
     private double maxStacks;
     private double multiplier;
@@ -32,10 +30,11 @@ public class RadiantFire extends Spell implements AttributeSpell, DurationSpell 
         super("Radiant Fire", CharacterClass.CLERIC);
         this.setIsPassive(true);
         this.setDescription("Each time you land your &aSear &7spell, you gain " +
-                "a stack (and refresh current stacks) of Radiant Fire! For each stack, you gain " + (multiplier * 100) +
+                "a stack of &eradiant fire&7! " +
+                "\n\n&2&lEFFECT &eRadiant Fire" +
+                "\n&7For each stack of &eradiant fire&7, you gain " + (multiplier * 100) +
                 "% of your total &eWisdom✸ &7as increased healing! " +
-                "While at max stacks, you glow bright with divine power " +
-                "and your &aRadiant Nova &7has no warmup and cleanses!" +
+                "While at max stacks, your &aRadiant Nova &7has no warmup and cleanses!" +
                 "\nMax stacks: " + (int) maxStacks + "\nStacks expiry: " + stackDuration + "s");
     }
 
@@ -47,38 +46,14 @@ public class RadiantFire extends Spell implements AttributeSpell, DurationSpell 
      */
     private void attemptToStackRadiantFire(MagicDamageEvent event) {
         Player player = event.getPlayer();
-        if (!RADIANT_FIRE_MAP.containsKey(player.getUniqueId())) {
-            BukkitTask bukkitTask = Bukkit.getScheduler().runTaskLaterAsynchronously(RunicCore.getInstance(), () -> {
-                RADIANT_FIRE_MAP.remove(player.getUniqueId());
-                player.setGlowing(false);
-                player.sendMessage(ChatColor.GRAY + "Radiant Fire has expired.");
-            }, (int) stackDuration * 20L);
-            RADIANT_FIRE_MAP.put(player.getUniqueId(), new RadiantFireTask(new AtomicInteger(1), bukkitTask));
+        Location hologramLocation = event.getVictim().getEyeLocation();
+        Optional<SpellEffect> spellEffectOpt = this.getSpellEffect(player.getUniqueId(), player.getUniqueId(), SpellEffectType.RADIANT_FIRE);
+        if (spellEffectOpt.isEmpty()) {
+            new RadiantFireEffect(player, (int) this.maxStacks, (int) this.stackDuration, 1, hologramLocation).initialize();
         } else {
-            AtomicInteger stacks = RADIANT_FIRE_MAP.get(player.getUniqueId()).getStacks();
-
-            // Refresh stack duration
-            BukkitTask bukkitTask = Bukkit.getScheduler().runTaskLaterAsynchronously(RunicCore.getInstance(), () -> {
-                RADIANT_FIRE_MAP.remove(player.getUniqueId());
-                player.setGlowing(false);
-                player.sendMessage(ChatColor.GRAY + "Radiant Fire has expired.");
-            }, (int) stackDuration * 20L);
-            RADIANT_FIRE_MAP.get(player.getUniqueId()).getBukkitTask().cancel();
-            RADIANT_FIRE_MAP.get(player.getUniqueId()).setBukkitTask(bukkitTask);
-
-            if (stacks.get() >= maxStacks) return;
-            // Increment stacks (add glow if max stacks reached)
-            player.playSound(player.getLocation(), Sound.BLOCK_FIRE_EXTINGUISH, 0.5f, 0.5f);
-            player.playSound(player.getLocation(), Sound.BLOCK_FIRE_AMBIENT, 0.5f, 0.5f);
-            player.playSound(player.getLocation(), Sound.BLOCK_FURNACE_FIRE_CRACKLE, 0.5f, 1);
-            RADIANT_FIRE_MAP.get(player.getUniqueId()).getAndIncrement();
-            stacks = RADIANT_FIRE_MAP.get(player.getUniqueId()).getStacks();
-            if (stacks.get() >= maxStacks) {
-                player.setGlowing(true);
-            }
+            RadiantFireEffect radiantFireEffect = (RadiantFireEffect) spellEffectOpt.get();
+            radiantFireEffect.increment(hologramLocation, 1);
         }
-        // Send message feedback
-        player.sendMessage(ChatColor.GRAY + "Radiant Fire stacks: " + ChatColor.YELLOW + RADIANT_FIRE_MAP.get(player.getUniqueId()).getStacks().get());
     }
 
     @Override
@@ -129,16 +104,8 @@ public class RadiantFire extends Spell implements AttributeSpell, DurationSpell 
         setMaxStacks(stacks.doubleValue());
     }
 
-    public double getMaxStacks() {
-        return maxStacks;
-    }
-
     public void setMaxStacks(double maxStacks) {
         this.maxStacks = maxStacks;
-    }
-
-    public Map<UUID, RadiantFireTask> getRadiantFireMap() {
-        return RADIANT_FIRE_MAP;
     }
 
     @EventHandler
@@ -156,41 +123,15 @@ public class RadiantFire extends Spell implements AttributeSpell, DurationSpell 
         if (!hasPassive(event.getPlayer().getUniqueId(), this.getName())) return;
         if (event.getSpell() == null) return;
         if (!(event.getSpell() instanceof HealingSpell)) return;
-        if (!RADIANT_FIRE_MAP.containsKey(event.getPlayer().getUniqueId())) return;
+        UUID uuid = event.getPlayer().getUniqueId();
+        Optional<SpellEffect> spellEffectOpt = this.getSpellEffect(uuid, uuid, SpellEffectType.RADIANT_FIRE);
+        if (spellEffectOpt.isEmpty()) return;
         int wisdom = RunicCore.getStatAPI().getPlayerWisdom(event.getPlayer().getUniqueId());
         double bonus = (multiplier * wisdom) / 100;
-        bonus *= RADIANT_FIRE_MAP.get(event.getPlayer().getUniqueId()).getStacks().get();
+        RadiantFireEffect radiantFireEffect = (RadiantFireEffect) spellEffectOpt.get();
+        int stacks = radiantFireEffect.getStacks().get();
+        bonus *= stacks;
         event.setAmount((int) (event.getAmount() + (event.getAmount() * bonus)));
-    }
-
-    /**
-     * Used to keep track of the Radiant Fire stack refresh task.
-     * Uses AtomicInteger to be thread-safe
-     */
-    static class RadiantFireTask {
-        private final AtomicInteger stacks;
-        private BukkitTask bukkitTask;
-
-        public RadiantFireTask(AtomicInteger stacks, BukkitTask bukkitTask) {
-            this.stacks = stacks;
-            this.bukkitTask = bukkitTask;
-        }
-
-        public void getAndIncrement() {
-            this.stacks.getAndIncrement();
-        }
-
-        public BukkitTask getBukkitTask() {
-            return bukkitTask;
-        }
-
-        public void setBukkitTask(BukkitTask bukkitTask) {
-            this.bukkitTask = bukkitTask;
-        }
-
-        public AtomicInteger getStacks() {
-            return stacks;
-        }
     }
 }
 

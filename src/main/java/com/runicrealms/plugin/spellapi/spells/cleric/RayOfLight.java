@@ -45,8 +45,8 @@ public class RayOfLight extends Spell implements DistanceSpell, DurationSpell, M
         this.setDescription("You call forth a ray of light that falls " +
                 "from the sky at your target enemy or location within " +
                 "8 blocks! Enemies within " + radius + " blocks of the impact take (" +
-                damage + " + &f" + damagePerLevel + "x&7 lvl) magicʔ damage are " +
-                "knocked away, and are silenced for " + duration + "s!");
+                damage + " + &f" + damagePerLevel + "x&7 lvl) magicʔ damage and " +
+                "are knocked away and silenced for " + duration + "s!");
     }
 
     @Override
