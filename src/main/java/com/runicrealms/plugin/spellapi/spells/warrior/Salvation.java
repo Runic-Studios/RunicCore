@@ -52,12 +52,14 @@ public class Salvation extends Spell implements DistanceSpell, DurationSpell, Ma
 
     public Salvation() {
         super("Salvation", CharacterClass.WARRIOR);
-        this.setDescription("You summon an enchanted bell up to " + distance + " blocks away! " +
+        this.setDescription("You conjure a bell up to " + distance + " blocks away! " +
                 "For the next " + duration + "s, the bell charges with &6holy power&7! " +
                 "You or an ally can right-click the bell; allies will be teleported to you! " +
-                "Upon clicking the bell, it explodes, granting you or your ally a shield equal to (" + shield + "x &6holy power &7+ &f" +
-                shieldPerLevel + "x&7 lvl) and releasing a blast dealing (" + damage + "x &6holy power &7+ &f" + damagePerLevel
-                + "x&7 lvl) magicʔ damage to enemies within " + radius + " blocks!");
+                "Upon clicking the bell, it explodes, granting you or your ally a &eshield &7equal to (" + shield + "x &6holy power &7+ &f" +
+                shieldPerLevel + "x&7 lvl) and dealing (" + damage + "x &6holy power &7+ &f" + damagePerLevel
+                + "x&7 lvl) magicʔ damage to enemies within " + radius + " blocks!" +
+                "\n\n&2&lEFFECT &eShield" +
+                "\n&7Shields absorb damage and appear as yellow hearts!");
     }
 
     private static String determineHologramString(int count) {

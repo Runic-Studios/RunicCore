@@ -6,6 +6,7 @@ public enum SpellEffectType {
     BLEED(ChatColor.DARK_RED, "Bleed", "☠"),
     CHARGED(ChatColor.BLUE, "Charged", "➹"),
     CHILLED(ChatColor.AQUA, "Chilled", "❈"),
+    HOLY_FERVOR(ChatColor.GOLD, "Holy Fervor", ""),
     IGNITED(ChatColor.DARK_RED, "Ignited", ""),
     INCENDIARY(ChatColor.DARK_RED, "Incendiary", ""),
     RADIANT_FIRE(ChatColor.YELLOW, "Radiant Fire", "☀"),
