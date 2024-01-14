@@ -207,6 +207,11 @@ public class DamageListener implements Listener {
         Bukkit.getPluginManager().callEvent(new RunicDeathEvent(victim, victim.getLocation()));
     }
 
+    /**
+     * A band-aid fix to custom models not registering hits (no bukkit events even fired). RIGHT-CLICKS WORK FINE
+     *
+     * @author BoBoBalloon
+     */
     private void onPacket(@NotNull PacketEvent event) {
         if (event.getPacketType() != PacketType.Play.Client.USE_ENTITY) {
             return;
@@ -234,7 +239,7 @@ public class DamageListener implements Listener {
                 return;
             }
 
-            entity.damage(1, event.getPlayer());
+            entity.damage(1, event.getPlayer()); //damage number does not matter since we re-calculate anyway
         }, DELAY);
     }
 
