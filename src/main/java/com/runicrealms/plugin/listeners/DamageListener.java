@@ -5,9 +5,9 @@ import com.runicrealms.plugin.api.event.BasicAttackEvent;
 import com.runicrealms.plugin.events.MobDamageEvent;
 import com.runicrealms.plugin.events.RunicDeathEvent;
 import com.runicrealms.plugin.rdb.RunicDatabase;
-import com.runicrealms.plugin.utilities.DamageUtil;
 import com.runicrealms.plugin.runicitems.RunicItemsAPI;
 import com.runicrealms.plugin.runicitems.item.RunicItemWeapon;
+import com.runicrealms.plugin.utilities.DamageUtil;
 import io.lumine.mythic.bukkit.MythicBukkit;
 import io.lumine.mythic.core.mobs.ActiveMob;
 import org.bukkit.Bukkit;
@@ -225,8 +225,18 @@ public class DamageListener implements Listener {
                 // successful damage
                 if (((Player) damager).getCooldown(artifact.getType()) != 0)
                     return;
-                DamageUtil.damageEntityPhysical(randomNum, victim, (Player) damager, true, false);
-                Bukkit.getPluginManager().callEvent(new BasicAttackEvent(player, artifact.getType(), BasicAttackEvent.BASE_MELEE_COOLDOWN, BasicAttackEvent.BASE_MELEE_COOLDOWN));
+                BasicAttackEvent basicAttackEvent = new BasicAttackEvent(
+                        player,
+                        artifact.getType(),
+                        BasicAttackEvent.BASE_MELEE_COOLDOWN,
+                        BasicAttackEvent.BASE_MELEE_COOLDOWN,
+                        damage,
+                        maxDamage);
+                Bukkit.getPluginManager().callEvent(basicAttackEvent);
+                if (!basicAttackEvent.isCancelled()) {
+                    DamageUtil.damageEntityPhysical(randomNum, victim, (Player) damager, true, false);
+
+                }
                 // ---------------------------
 
             } else {

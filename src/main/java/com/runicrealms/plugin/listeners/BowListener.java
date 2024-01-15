@@ -175,10 +175,16 @@ public class BowListener implements Listener {
         if (!className.equals("Archer")) return;
 
         int reqLv;
+        int damage;
+        int maxDamage;
         try {
             RunicItemWeapon runicItemWeapon = (RunicItemWeapon) RunicItemsAPI.getRunicItemFromItemStack(artifact);
+            damage = runicItemWeapon.getWeaponDamage().getMin();
+            maxDamage = runicItemWeapon.getWeaponDamage().getMax();
             reqLv = runicItemWeapon.getLevel();
         } catch (Exception ex) {
+            damage = 1;
+            maxDamage = 1;
             reqLv = 0;
         }
 
@@ -217,7 +223,14 @@ public class BowListener implements Listener {
         }.runTaskTimer(RunicCore.getInstance(), 0, 1L);
 
         // Set the cooldown
-        Bukkit.getPluginManager().callEvent(new BasicAttackEvent(player, Material.BOW, BasicAttackEvent.BASE_BOW_COOLDOWN, BasicAttackEvent.BASE_BOW_COOLDOWN));
+        Bukkit.getPluginManager().callEvent(new BasicAttackEvent(
+                player,
+                Material.BOW,
+                BasicAttackEvent.BASE_BOW_COOLDOWN,
+                BasicAttackEvent.BASE_BOW_COOLDOWN,
+                damage,
+                maxDamage
+        ));
 
         RunicBowEvent bowFireEvent = new RunicBowEvent(player, myArrow);
 

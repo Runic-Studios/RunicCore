@@ -38,6 +38,7 @@ public class HolyFervorEffect implements SpellEffect {
         this.caster = caster;
         this.duration = duration;
         this.startTime = System.currentTimeMillis();
+        this.executeSpellEffect(); // show particles
     }
 
     public static Vector rotateAroundAxisY(Vector v, double fire) {

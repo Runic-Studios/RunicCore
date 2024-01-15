@@ -55,6 +55,36 @@ public class StaffListener implements Listener {
         this.droppedItem = new HashMap<>();
     }
 
+    /**
+     * Verifies that the player's held item is a runic weapon and a staff.
+     * Returns a pair whose first arg is true if the item is a staff and the second arg is the item weapon, the player can wield it, high enough level, etc.
+     *
+     * @param player who is holding the staff
+     * @return the pair whose first arg is true if all checks pass
+     */
+    public static Pair<Boolean, RunicItemWeapon> verifyStaff(Player player, ItemStack itemStack) {
+        RunicItem runicItem = RunicItemsAPI.getRunicItemFromItemStack(itemStack);
+        if (runicItem == null) return Pair.pair(false, null);
+        if (!(runicItem instanceof RunicItemWeapon runicItemWeapon)) return Pair.pair(false, null);
+        Material runicItemType = runicItemWeapon.getDisplayableItem().getMaterial();
+        double cooldown = player.getCooldown(runicItemType);
+        if (cooldown != 0) return Pair.pair(false, null);
+
+        // Check for mage
+        String className = RunicDatabase.getAPI().getCharacterAPI().getPlayerClass(player);
+        if (className == null) return Pair.pair(false, null);
+        if (!className.equals("Mage")) return Pair.pair(false, null);
+        if (RunicCore.getSpellAPI().isCasting(player)) return Pair.pair(false, null);
+        int reqLv = runicItemWeapon.getLevel();
+        if (reqLv > player.getLevel()) {
+            player.playSound(player.getLocation(), Sound.BLOCK_FIRE_EXTINGUISH, 0.5f, 1.0f);
+            player.sendMessage(ChatColor.RED + "Your level is too low to wield this!");
+            return Pair.pair(false, null);
+        }
+
+        return Pair.pair(true, runicItemWeapon);
+    }
+
     @EventHandler(priority = EventPriority.LOWEST)
     public void onStaffAttack(PlayerInteractEvent event) {
         // Only listen for left clicks
@@ -133,12 +163,17 @@ public class StaffListener implements Listener {
             damageStaff(player, livingEntity, runicItemWeapon);
         }
 
+        int minDamage = runicItemWeapon.getWeaponDamage().getMin();
+        int maxDamage = runicItemWeapon.getWeaponDamage().getMax();
+
         Bukkit.getPluginManager().callEvent(new BasicAttackEvent
                 (
                         player,
                         runicItemWeapon.getDisplayableItem().getMaterial(),
                         BasicAttackEvent.BASE_STAFF_COOLDOWN,
-                        BasicAttackEvent.BASE_STAFF_COOLDOWN
+                        BasicAttackEvent.BASE_STAFF_COOLDOWN,
+                        minDamage,
+                        maxDamage
                 ));
     }
 
@@ -173,35 +208,5 @@ public class StaffListener implements Listener {
         EnemyVerifyEvent enemyVerifyEvent = new EnemyVerifyEvent(player, victim);
         Bukkit.getServer().getPluginManager().callEvent(enemyVerifyEvent);
         return !enemyVerifyEvent.isCancelled();
-    }
-
-    /**
-     * Verifies that the player's held item is a runic weapon and a staff.
-     * Returns a pair whose first arg is true if the item is a staff and the second arg is the item weapon, the player can wield it, high enough level, etc.
-     *
-     * @param player who is holding the staff
-     * @return the pair whose first arg is true if all checks pass
-     */
-    public static Pair<Boolean, RunicItemWeapon> verifyStaff(Player player, ItemStack itemStack) {
-        RunicItem runicItem = RunicItemsAPI.getRunicItemFromItemStack(itemStack);
-        if (runicItem == null) return Pair.pair(false, null);
-        if (!(runicItem instanceof RunicItemWeapon runicItemWeapon)) return Pair.pair(false, null);
-        Material runicItemType = runicItemWeapon.getDisplayableItem().getMaterial();
-        double cooldown = player.getCooldown(runicItemType);
-        if (cooldown != 0) return Pair.pair(false, null);
-
-        // Check for mage
-        String className = RunicDatabase.getAPI().getCharacterAPI().getPlayerClass(player);
-        if (className == null) return Pair.pair(false, null);
-        if (!className.equals("Mage")) return Pair.pair(false, null);
-        if (RunicCore.getSpellAPI().isCasting(player)) return Pair.pair(false, null);
-        int reqLv = runicItemWeapon.getLevel();
-        if (reqLv > player.getLevel()) {
-            player.playSound(player.getLocation(), Sound.BLOCK_FIRE_EXTINGUISH, 0.5f, 1.0f);
-            player.sendMessage(ChatColor.RED + "Your level is too low to wield this!");
-            return Pair.pair(false, null);
-        }
-
-        return Pair.pair(true, runicItemWeapon);
     }
 }

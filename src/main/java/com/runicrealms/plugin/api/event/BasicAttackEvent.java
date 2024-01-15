@@ -18,18 +18,30 @@ public class BasicAttackEvent extends Event implements Cancellable {
     private final int originalCooldownTicks; // Used as a reference to the original value
     private final Player player;
     private final Material material;
+    private final int damage;
+    private final int maxDamage;
     private int cooldownTicks;
     private boolean isCancelled;
 
-    public BasicAttackEvent(Player player, Material material, int originalCooldownTicks, int cooldownTicks) {
+    public BasicAttackEvent(Player player, Material material, int originalCooldownTicks, int cooldownTicks, int damage, int maxDamage) {
         this.player = player;
         this.material = material;
         this.originalCooldownTicks = originalCooldownTicks;
         this.cooldownTicks = cooldownTicks;
+        this.damage = damage;
+        this.maxDamage = maxDamage;
     }
 
     public static HandlerList getHandlerList() {
         return handlers;
+    }
+
+    public int getDamage() {
+        return damage;
+    }
+
+    public int getMaxDamage() {
+        return maxDamage;
     }
 
     public int getCooldownTicks() {
