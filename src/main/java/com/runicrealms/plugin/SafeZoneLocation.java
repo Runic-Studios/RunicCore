@@ -1,8 +1,8 @@
 package com.runicrealms.plugin;
 
-import com.runicrealms.plugin.utilities.HearthstoneItemUtil;
 import com.runicrealms.plugin.runicitems.RunicItemsAPI;
 import com.runicrealms.plugin.runicitems.item.RunicItem;
+import com.runicrealms.plugin.utilities.HearthstoneItemUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.inventory.ItemStack;
@@ -32,7 +32,7 @@ public enum SafeZoneLocation {
     ZENYTH("zenyth", "Zenyth",
             new Location(Bukkit.getWorld("Alterra"), 1564.5, 38, -158.5, 180, 0), HearthstoneItemUtil.HEARTHSTONE_ZENYTH_ITEMSTACK),
     NAHEEN("naheen", "Naheen",
-            new Location(Bukkit.getWorld("Alterra"), 1962.5, 42, 349.5, 270, 0), HearthstoneItemUtil.HEARTHSTONE_NAHEEN_ITEMSTACK),
+            new Location(Bukkit.getWorld("Alterra"), 1981.5, 41, 239.5, 270, 0), HearthstoneItemUtil.HEARTHSTONE_NAHEEN_ITEMSTACK),
     NAZMORA("nazmora", "Naz'mora",
             new Location(Bukkit.getWorld("Alterra"), 2587.5, 33, 979.5, 270, 0), HearthstoneItemUtil.HEARTHSTONE_NAZMORA_ITEMSTACK),
     ORC_OUTPOST("orc_outpost", "Orc Outpost",
