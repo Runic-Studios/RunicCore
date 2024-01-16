@@ -6,6 +6,7 @@ import com.runicrealms.plugin.events.PhysicalDamageEvent;
 import com.runicrealms.plugin.events.SpellCastEvent;
 import com.runicrealms.plugin.runicitems.Stat;
 import com.runicrealms.plugin.spellapi.spelltypes.AttributeSpell;
+import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import org.bukkit.Bukkit;
 import org.bukkit.Particle;
@@ -17,9 +18,10 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
-public class Agility extends Spell implements AttributeSpell {
+public class Agility extends Spell implements AttributeSpell, DurationSpell {
     private static final Set<UUID> agilityPlayers = new HashSet<>();
     private double baseValue;
+    private double duration;
     private double multiplier;
     private String statName;
 
@@ -28,8 +30,9 @@ public class Agility extends Spell implements AttributeSpell {
         this.setIsPassive(true);
         Stat stat = Stat.getFromName(statName);
         String prefix = stat == null ? "" : stat.getPrefix();
-        this.setDescription("While &aDash &7is active, you gain bonus basic attack damage " +
-                "equal to (" + baseValue + " + &f" + multiplier + "x &e" + prefix + "&7)!");
+        this.setDescription("After you cast your &aDash &7spell, you gain bonus basic attack damage " +
+                "equal to (" + baseValue + " + &f" + multiplier + "x &e" + prefix + "&7) for " +
+                duration + "s!");
     }
 
     /**
@@ -40,10 +43,10 @@ public class Agility extends Spell implements AttributeSpell {
         if (event.isCancelled()) return;
         if (!hasPassive(event.getCaster().getUniqueId(), this.getName())) return;
         if (event.getSpell() == null) return;
-        if (!(event.getSpell() instanceof Dash dash)) return;
+        if (!(event.getSpell() instanceof Dash)) return;
         agilityPlayers.add(event.getCaster().getUniqueId());
         Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(),
-                () -> agilityPlayers.remove(event.getCaster().getUniqueId()), (long) dash.getDuration() * 20L);
+                () -> agilityPlayers.remove(event.getCaster().getUniqueId()), (long) duration * 20L);
     }
 
     @EventHandler(priority = EventPriority.HIGH) // runs last
@@ -87,6 +90,16 @@ public class Agility extends Spell implements AttributeSpell {
     @Override
     public void setStatName(String statName) {
         this.statName = statName;
+    }
+
+    @Override
+    public double getDuration() {
+        return duration;
+    }
+
+    @Override
+    public void setDuration(double duration) {
+        this.duration = duration;
     }
 }
 

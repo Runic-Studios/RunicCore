@@ -35,6 +35,7 @@ public class Dash extends Spell implements DurationSpell, PhysicalDamageSpell, R
     private double damagePerLevel;
     private double duration;
     private double launchMultiplier;
+    private double percent;
     private double radius;
     private double verticalPower;
 
@@ -42,7 +43,18 @@ public class Dash extends Spell implements DurationSpell, PhysicalDamageSpell, R
         super("Dash", CharacterClass.ROGUE);
         this.setDescription("You dash forward, dealing (" + damage + " + &f" + damagePerLevel + "x&7 lvl) " +
                 "physical⚔ damage to all enemies you pass through! While dashing, " +
-                "you are immune to damage from monsters.");
+                "you receive " + (percent * 100) + "% reduced damage from monsters!");
+    }
+
+    @Override
+    public void loadSpellSpecificData(Map<String, Object> spellData) {
+        super.loadSpellSpecificData(spellData);
+        Number launchMultiplier = (Number) spellData.getOrDefault("launch-multiplier", 1.0);
+        setLaunchMultiplier(launchMultiplier.doubleValue());
+        Number percent = (Number) spellData.getOrDefault("percent", 0.75);
+        setPercent(percent.doubleValue());
+        Number verticalPower = (Number) spellData.getOrDefault("vertical-power", 1.0);
+        setVerticalPower(verticalPower.doubleValue());
     }
 
     @Override
@@ -96,16 +108,6 @@ public class Dash extends Spell implements DurationSpell, PhysicalDamageSpell, R
         this.duration = duration;
     }
 
-    @Override
-    public void loadDurationData(Map<String, Object> spellData) {
-        Number duration = (Number) spellData.getOrDefault("duration", 0);
-        setDuration(duration.doubleValue());
-        Number launchMultiplier = (Number) spellData.getOrDefault("launch-multiplier", 0);
-        setLaunchMultiplier(launchMultiplier.doubleValue());
-        Number verticalPower = (Number) spellData.getOrDefault("vertical-power", 0);
-        setVerticalPower(verticalPower.doubleValue());
-    }
-
     public void setLaunchMultiplier(double launchMultiplier) {
         this.launchMultiplier = launchMultiplier;
     }
@@ -121,7 +123,8 @@ public class Dash extends Spell implements DurationSpell, PhysicalDamageSpell, R
     public void onFallDamage(MobDamageEvent event) {
         if (!(event.getVictim() instanceof Player player)) return;
         if (!LUNGE_SET.contains(player)) return;
-        event.setCancelled(true);
+        double damageToReduce = event.getAmount() * percent;
+        event.setAmount((int) (event.getAmount() - damageToReduce));
     }
 
     @Override
@@ -152,5 +155,9 @@ public class Dash extends Spell implements DurationSpell, PhysicalDamageSpell, R
     @Override
     public void setRadius(double radius) {
         this.radius = radius;
+    }
+
+    public void setPercent(double percent) {
+        this.percent = percent;
     }
 }
