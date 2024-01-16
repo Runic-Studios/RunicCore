@@ -79,4 +79,8 @@ public class SpellEffectManager implements Listener, SpellEffectAPI {
                                 && spellEffect.getEffectType() == identifier
                 ).findFirst();
     }
+
+    public int getGlobalCounter() {
+        return counter;
+    }
 }

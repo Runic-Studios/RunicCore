@@ -4,6 +4,7 @@ import org.bukkit.ChatColor;
 
 public enum SpellEffectType {
     BLEED(ChatColor.DARK_RED, "Bleed", "☠"),
+    BLESSED_BLADE(ChatColor.GREEN, "Blessed Blade", "⚔"),
     CHARGED(ChatColor.BLUE, "Charged", "➹"),
     CHILLED(ChatColor.AQUA, "Chilled", "❈"),
     HOLY_FERVOR(ChatColor.GOLD, "Holy Fervor", ""),

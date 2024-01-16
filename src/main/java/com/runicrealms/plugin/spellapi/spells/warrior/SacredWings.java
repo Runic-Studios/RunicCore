@@ -11,9 +11,9 @@ import com.runicrealms.plugin.spellapi.spelltypes.RadiusSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.ShieldingSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
+import com.runicrealms.plugin.spellapi.spellutil.KnockbackUtil;
 import com.runicrealms.plugin.spellapi.spellutil.particles.SlashEffect;
 import com.runicrealms.plugin.utilities.DamageUtil;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Particle;
@@ -35,6 +35,7 @@ public class SacredWings extends Spell implements DurationSpell, RadiusSpell, Sh
     private static final double BEAM_WIDTH = 2;
     private static final double DISTANCE = 2;
     private final Map<UUID, Map<UUID, Long>> sweepCooldownMap = new HashMap<>();
+    private final Random random = new Random();
     private double allyShield;
     private double allyShieldPerLevel;
     private double duration;
@@ -43,7 +44,6 @@ public class SacredWings extends Spell implements DurationSpell, RadiusSpell, Sh
     private double shield;
     private double shieldPerLevel;
     private double sweepCooldown;
-    private Random random = new Random();
 
     public SacredWings() {
         super("Sacred Wings", CharacterClass.WARRIOR);
@@ -53,7 +53,7 @@ public class SacredWings extends Spell implements DurationSpell, RadiusSpell, Sh
                 "\n\n&2&lEFFECT &6Holy Fervor" +
                 "\n&7While &6holy fervor &7lasts, your basic attacks " +
                 "transform into radiant sweeps of holy might, launching enemies back and " +
-                "&eshielding &7allies within " + radius + " blocks for " +
+                "&eshielding &7other allies within " + radius + " blocks for " +
                 "(" + allyShield + " + &f" + allyShieldPerLevel + "x&7 lvl) health! " +
                 "Cannot sweep the same target more than once every " + sweepCooldown + "s.");
     }
@@ -86,7 +86,7 @@ public class SacredWings extends Spell implements DurationSpell, RadiusSpell, Sh
         }
         sweepCooldownMap.computeIfAbsent(uuid, k -> new HashMap<>());
         sweepCooldownMap.get(uuid).put(victimId, System.currentTimeMillis());
-        this.sweepTarget();
+        this.sweepTarget(event.getPlayer(), event.getVictim());
     }
 
     @EventHandler
@@ -119,7 +119,7 @@ public class SacredWings extends Spell implements DurationSpell, RadiusSpell, Sh
                     random.nextBoolean(),
                     random.nextBoolean(),
                     Particle.VILLAGER_ANGRY,
-                    0.16f
+                    0.2f
             );
         } else if (rayTraceResult.getHitEntity() != null) {
             LivingEntity livingEntity = (LivingEntity) rayTraceResult.getHitEntity();
@@ -128,7 +128,7 @@ public class SacredWings extends Spell implements DurationSpell, RadiusSpell, Sh
                     random.nextBoolean(),
                     random.nextBoolean(),
                     Particle.VILLAGER_ANGRY,
-                    0.16f
+                    0.2f
             );
             livingEntity.getWorld().playSound(livingEntity.getLocation(), Sound.ENTITY_PLAYER_HURT, 0.5f, 2.0f);
             Collection<Entity> targets = player.getWorld().getNearbyEntities
@@ -140,6 +140,7 @@ public class SacredWings extends Spell implements DurationSpell, RadiusSpell, Sh
                     player,
                     false,
                     false,
+                    false,
                     this
             ));
         }
@@ -147,9 +148,15 @@ public class SacredWings extends Spell implements DurationSpell, RadiusSpell, Sh
         player.setCooldown(material, cooldownTicks);
     }
 
-    private void sweepTarget() {
-        // knockback, then heal nearby
-        Bukkit.broadcastMessage("sweep effect here");
+    private void sweepTarget(Player player, LivingEntity victim) {
+        // Knock enemies away
+        victim.getWorld().spawnParticle(Particle.CLOUD, victim.getLocation(), 25, 0.75f, 1.0f, 0.75f, 0);
+        KnockbackUtil.knockBackCustom(player, victim, knockback);
+        // Shield nearby allies (ignore caster)
+        for (Entity entity : victim.getWorld().getNearbyEntities(victim.getLocation(), radius, radius, radius, target -> isValidAlly(player, target))) {
+            if (entity.equals(player)) continue;
+            this.shieldPlayer(player, (Player) entity, shield, this);
+        }
     }
 
     @Override

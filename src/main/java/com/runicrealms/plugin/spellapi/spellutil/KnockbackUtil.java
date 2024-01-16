@@ -3,6 +3,7 @@ package com.runicrealms.plugin.spellapi.spellutil;
 import io.lumine.mythic.bukkit.MythicBukkit;
 import io.lumine.mythic.core.mobs.ActiveMob;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
@@ -84,6 +85,27 @@ public class KnockbackUtil {
         }
         double knockbackStrength = isRanged ? RANGED_STRENGTH : MELEE_STRENGTH;
         applyKnockback(damager, entity, knockbackStrength);
+    }
+
+    public static void knockBackCustom(Player player, LivingEntity victim, double strength) {
+        // No boss knockback!
+        if (MythicBukkit.inst().getMobManager().getActiveMob(victim.getUniqueId()).isPresent()) {
+            ActiveMob am = MythicBukkit.inst().getMobManager().getActiveMob(victim.getUniqueId()).get();
+            if (am.hasFaction() && am.getFaction().equalsIgnoreCase("boss")) {
+                return;
+            }
+        }
+
+        // Calculate knockback direction
+        Vector attackerPos = player.getLocation().toVector();
+        Vector victimPos = victim.getLocation().toVector();
+        Vector knockbackDirection = victimPos.subtract(attackerPos).normalize();
+
+        // Apply multiplier and vertical boost
+        knockbackDirection.multiply(strength);
+
+        // Apply the knockback
+        victim.setVelocity(knockbackDirection);
     }
 }
 
