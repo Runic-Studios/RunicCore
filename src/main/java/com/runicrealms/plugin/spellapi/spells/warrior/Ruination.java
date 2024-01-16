@@ -45,7 +45,7 @@ public class Ruination extends Spell implements DurationSpell, MagicDamageSpell,
     public Ruination() {
         super("Ruination", CharacterClass.WARRIOR);
         this.setIsPassive(true);
-        this.setDescription("After claiming " + requiredSouls + " &f&osouls&7, " +
+        this.setDescription("After claiming " + requiredSouls + " &3souls&7, " +
                 "your next spell unleashes the spirits of your victims! " +
                 "For the next " + duration + "s, the souls stream out of your body, " +
                 "dealing (" + damage + " + &f" + damagePerLevel
