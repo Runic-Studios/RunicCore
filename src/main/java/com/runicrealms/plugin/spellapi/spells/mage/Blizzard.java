@@ -2,7 +2,10 @@ package com.runicrealms.plugin.spellapi.spells.mage;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.common.CharacterClass;
+import com.runicrealms.plugin.spellapi.effect.ChilledEffect;
 import com.runicrealms.plugin.spellapi.effect.RunicStatusEffect;
+import com.runicrealms.plugin.spellapi.effect.SpellEffect;
+import com.runicrealms.plugin.spellapi.effect.SpellEffectType;
 import com.runicrealms.plugin.spellapi.spelltypes.DistanceSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
@@ -31,6 +34,7 @@ import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
 
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 public class Blizzard extends Spell implements DistanceSpell, DurationSpell, MagicDamageSpell, RadiusSpell, WarmupSpell {
@@ -53,7 +57,8 @@ public class Blizzard extends Spell implements DistanceSpell, DurationSpell, Mag
                 "enemy or location within " + distance + " blocks! " +
                 "After " + warmup + "s, you rain down snowballs for " + duration + "s, " +
                 "dealing (" + damage + " + &f" + damagePerLevel
-                + "x&7 lvl) magicʔ damage to enemies in the area and slowing them!");
+                + "x&7 lvl) magicʔ damage to enemies in the area and slowing them! " +
+                "Each tick of this spell applies &bchilled&7.");
     }
 
     private void blizzardDamage(Player player, Location location) {
@@ -61,6 +66,15 @@ public class Blizzard extends Spell implements DistanceSpell, DurationSpell, Mag
             player.getWorld().playSound(entity.getLocation(), Sound.BLOCK_GLASS_BREAK, 0.25F, 1.0F);
             DamageUtil.damageEntitySpell(damage, (LivingEntity) entity, player, this);
             addStatusEffect((LivingEntity) entity, RunicStatusEffect.SLOW_III, SLOW_DURATION, false);
+            // Refresh or add chilled effect
+            Optional<SpellEffect> spellEffectOpt = this.getSpellEffect(player.getUniqueId(), entity.getUniqueId(), SpellEffectType.CHILLED);
+            if (spellEffectOpt.isPresent()) {
+                ChilledEffect chilledEffect = (ChilledEffect) spellEffectOpt.get();
+                chilledEffect.refresh();
+            } else {
+                ChilledEffect chilledEffect = new ChilledEffect(player, (LivingEntity) entity, this.duration);
+                chilledEffect.initialize();
+            }
         }
     }
 

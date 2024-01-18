@@ -45,7 +45,7 @@ public class Cleave extends Spell implements DistanceSpell, DurationSpell, Physi
                 " + &f" + this.damagePerLevel + "x&7 lvl) physical⚔ damage every " +
                 this.tick + "s for " + this.duration + "s! " +
                 "The final slash causes enemies to &cbleed&7!" +
-                "\n\n&2&lEFFECT &aBleed" +
+                "\n\n&2&lEFFECT &cBleed" +
                 "\n&cBleeding &7enemies take 3% max health physical⚔ damage every 2.0s for 6.0s. " +
                 "(Capped at " + BleedEffect.DAMAGE_CAP + " damage). " +
                 "During this time, enemy players receive " + (BleedEffect.HEALING_REDUCTION * 100) + "% less healing.");
@@ -64,9 +64,10 @@ public class Cleave extends Spell implements DistanceSpell, DurationSpell, Physi
             if (dot < maxAngleCos) continue;
             DamageUtil.damageEntityPhysical(this.damage, (LivingEntity) entity, player, false, false, this);
             if (count >= this.duration - 1) {
-                Optional<SpellEffect> bleedEffect = this.getSpellEffect(player.getUniqueId(), entity.getUniqueId(), SpellEffectType.BLEED);
-                if (bleedEffect.isEmpty()) {
-                    new BleedEffect(player, (LivingEntity) entity).initialize();
+                Optional<SpellEffect> spellEffectOpt = this.getSpellEffect(player.getUniqueId(), entity.getUniqueId(), SpellEffectType.BLEED);
+                if (spellEffectOpt.isEmpty()) {
+                    BleedEffect bleedEffect = new BleedEffect(player, (LivingEntity) entity);
+                    bleedEffect.initialize();
                 }
             }
         }

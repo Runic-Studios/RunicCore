@@ -49,7 +49,8 @@ public class RadiantFire extends Spell implements AttributeSpell, DurationSpell 
         Location hologramLocation = event.getVictim().getEyeLocation();
         Optional<SpellEffect> spellEffectOpt = this.getSpellEffect(player.getUniqueId(), player.getUniqueId(), SpellEffectType.RADIANT_FIRE);
         if (spellEffectOpt.isEmpty()) {
-            new RadiantFireEffect(player, (int) this.maxStacks, (int) this.stackDuration, 1, hologramLocation).initialize();
+            RadiantFireEffect radiantFireEffect = new RadiantFireEffect(player, (int) this.maxStacks, (int) this.stackDuration, 1, hologramLocation);
+            radiantFireEffect.initialize();
         } else {
             RadiantFireEffect radiantFireEffect = (RadiantFireEffect) spellEffectOpt.get();
             radiantFireEffect.increment(hologramLocation, 1);

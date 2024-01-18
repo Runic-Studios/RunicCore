@@ -119,7 +119,8 @@ public class Incendiary extends Spell implements MagicDamageSpell, DistanceSpell
             IncendiaryEffect incendiaryEffect = (IncendiaryEffect) spellEffectOpt.get();
             incendiaryEffect.refresh();
         } else {
-            new IncendiaryEffect(event.getPlayer(), this.duration).initialize();
+            IncendiaryEffect incendiaryEffect = new IncendiaryEffect(event.getPlayer(), this.duration);
+            incendiaryEffect.initialize();
         }
     }
 

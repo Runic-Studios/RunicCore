@@ -13,8 +13,6 @@ import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
-import com.runicrealms.plugin.spellapi.spellutil.EntityUtil;
-import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
@@ -57,11 +55,11 @@ public class Battlecry extends Spell implements AttributeSpell, DurationSpell, M
     public void executeSpell(Player player, SpellItemType type) {
         this.removeExtraDuration(player);
 
-        for (Entity entity : EntityUtil.getEnemiesInCone(player, this.attackRadius, DEGREES, entity -> !player.equals(entity) && this.isValidEnemy(player, entity))) {
-            LivingEntity target = (LivingEntity) entity;
-            player.getWorld().spawnParticle(Particle.VILLAGER_ANGRY, target.getLocation(), 5, Math.random() * 2, Math.random(), Math.random() * 2);
-            DamageUtil.damageEntitySpell(this.damage, target, player, this);
-        }
+//        for (Entity entity : EntityUtil.getEnemiesInCone(player, this.attackRadius, DEGREES, entity -> !player.equals(entity) && this.isValidEnemy(player, entity))) {
+//            LivingEntity target = (LivingEntity) entity;
+//            player.getWorld().spawnParticle(Particle.VILLAGER_ANGRY, target.getLocation(), 5, Math.random() * 2, Math.random(), Math.random() * 2);
+//            DamageUtil.damageEntitySpell(this.damage, target, player, this);
+//        }
 
         int stat = RunicCore.getStatAPI().getStat(player.getUniqueId(), STAT.getIdentifier());
         long now = System.currentTimeMillis();

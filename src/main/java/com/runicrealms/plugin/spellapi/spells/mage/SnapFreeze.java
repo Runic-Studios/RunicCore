@@ -3,15 +3,20 @@ package com.runicrealms.plugin.spellapi.spells.mage;
 import com.google.common.util.concurrent.AtomicDouble;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.common.CharacterClass;
+import com.runicrealms.plugin.spellapi.effect.ChilledEffect;
 import com.runicrealms.plugin.spellapi.effect.RunicStatusEffect;
+import com.runicrealms.plugin.spellapi.effect.SpellEffect;
+import com.runicrealms.plugin.spellapi.effect.SpellEffectType;
 import com.runicrealms.plugin.spellapi.spelltypes.DistanceSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
+import com.runicrealms.plugin.spellapi.spellutil.particles.Cone;
 import com.runicrealms.plugin.spellapi.spellutil.particles.HorizontalCircleFrame;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.Bukkit;
+import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
@@ -22,24 +27,34 @@ import org.bukkit.entity.Player;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
 public class SnapFreeze extends Spell implements DistanceSpell, DurationSpell, MagicDamageSpell {
     private static final double PERIOD = 0.5;
     private static final int BEAM_RADIUS = 1;
-    private final Map<UUID, Set<UUID>> damageMap = new HashMap<>();
-    private double distance;
+    private final Map<UUID, Set<UUID>> damageMap = new HashMap<>(); // Prevents concussive hits
     private double damage;
     private double damagePerLevel;
+    private double distance;
     private double duration;
+    private double stunDuration;
 
     public SnapFreeze() {
         super("Snap Freeze", CharacterClass.MAGE);
         this.setDescription("You cast a wave of frost in a forward line, up to " + distance + " blocks away. " +
                 "Enemies hit by the spell take (" + damage + " + &f" + damagePerLevel
                 + "x&7 lvl) magicʔ damage and are rooted for " + duration + "s! " +
-                "If an enemy is already slowed when hit by this ability, slow them for an additional " + this.duration * 3 + "s.");
+                "If an enemy is &bchilled &7when hit by this spell, " +
+                "consume &bchilled &7and stun them for " + stunDuration + "s instead!");
+    }
+
+    @Override
+    public void loadSpellSpecificData(Map<String, Object> spellData) {
+        super.loadSpellSpecificData(spellData);
+        Number stunDuration = (Number) spellData.getOrDefault("stun-duration", 1.5);
+        setStunDuration(stunDuration.doubleValue());
     }
 
     @Override
@@ -68,26 +83,18 @@ public class SnapFreeze extends Spell implements DistanceSpell, DurationSpell, M
         for (Entity entity : player.getWorld().getNearbyEntities(location, BEAM_RADIUS, BEAM_RADIUS, BEAM_RADIUS, target -> isValidEnemy(player, target))) {
             if (damageMap.get(player.getUniqueId()).contains(entity.getUniqueId())) continue;
             DamageUtil.damageEntitySpell(damage, (LivingEntity) entity, player, this);
-            addStatusEffect((LivingEntity) entity, RunicStatusEffect.ROOT, duration, true);
+
+
+            Optional<SpellEffect> spellEffectOpt = this.getSpellEffect(player.getUniqueId(), entity.getUniqueId(), SpellEffectType.CHILLED);
+            if (spellEffectOpt.isPresent()) {
+                ChilledEffect chilledEffect = (ChilledEffect) spellEffectOpt.get();
+                chilledEffect.cancel();
+                Cone.coneEffect((LivingEntity) entity, Particle.SNOWBALL, stunDuration, 0, 20, Color.AQUA);
+                addStatusEffect((LivingEntity) entity, RunicStatusEffect.STUN, stunDuration, true);
+            } else {
+                addStatusEffect((LivingEntity) entity, RunicStatusEffect.ROOT, duration, true);
+            }
             damageMap.get(player.getUniqueId()).add(entity.getUniqueId());
-
-            if (this.hasStatusEffect(entity.getUniqueId(), RunicStatusEffect.SLOW_I)) {
-                double current = RunicCore.getStatusEffectAPI().getStatusEffectDuration(entity.getUniqueId(), RunicStatusEffect.SLOW_I);
-                this.removeStatusEffect(entity, RunicStatusEffect.SLOW_I);
-                this.addStatusEffect((LivingEntity) entity, RunicStatusEffect.SLOW_I, current + (this.duration * 3), false);
-            }
-
-            if (this.hasStatusEffect(entity.getUniqueId(), RunicStatusEffect.SLOW_II)) {
-                double current = RunicCore.getStatusEffectAPI().getStatusEffectDuration(entity.getUniqueId(), RunicStatusEffect.SLOW_II);
-                this.removeStatusEffect(entity, RunicStatusEffect.SLOW_II);
-                this.addStatusEffect((LivingEntity) entity, RunicStatusEffect.SLOW_II, current + (this.duration * 3), false);
-            }
-
-            if (this.hasStatusEffect(entity.getUniqueId(), RunicStatusEffect.SLOW_III)) {
-                double current = RunicCore.getStatusEffectAPI().getStatusEffectDuration(entity.getUniqueId(), RunicStatusEffect.SLOW_III);
-                this.removeStatusEffect(entity, RunicStatusEffect.SLOW_III);
-                this.addStatusEffect((LivingEntity) entity, RunicStatusEffect.SLOW_III, current + (this.duration * 3), false);
-            }
         }
     }
 
@@ -129,6 +136,10 @@ public class SnapFreeze extends Spell implements DistanceSpell, DurationSpell, M
     @Override
     public void setMagicDamagePerLevel(double magicDamagePerLevel) {
         this.damagePerLevel = magicDamagePerLevel;
+    }
+
+    public void setStunDuration(double stunDuration) {
+        this.stunDuration = stunDuration;
     }
 }
 

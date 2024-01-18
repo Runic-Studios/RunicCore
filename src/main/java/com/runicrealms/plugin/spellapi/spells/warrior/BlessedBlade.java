@@ -144,13 +144,14 @@ public class BlessedBlade extends Spell implements DurationSpell, HealingSpell, 
         UUID uuid = event.getCaster().getUniqueId();
         Optional<SpellEffect> spellEffectOpt = this.getSpellEffect(uuid, uuid, SpellEffectType.BLESSED_BLADE);
         if (spellEffectOpt.isEmpty()) {
-            new BlessedBladeEffect(
+            BlessedBladeEffect blessedBladeEffect = new BlessedBladeEffect(
                     event.getCaster(),
                     this.maxCharges,
                     (int) this.duration,
                     this.maxCharges,
                     event.getCaster().getEyeLocation()
-            ).initialize();
+            );
+            blessedBladeEffect.initialize();
         } else {
             BlessedBladeEffect blessedBladeEffect = (BlessedBladeEffect) spellEffectOpt.get();
             SpellEffectManager spellEffectManager = (SpellEffectManager) RunicCore.getSpellEffectAPI();

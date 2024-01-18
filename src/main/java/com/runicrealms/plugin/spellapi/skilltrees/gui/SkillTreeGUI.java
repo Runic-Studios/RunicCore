@@ -104,6 +104,7 @@ public class SkillTreeGUI implements InventoryHolder {
                     (ChatUtils.formattedText("\n" + ChatColor.GOLD + "" + ChatColor.BOLD +
                             spellType + ChatColor.GRAY + spell.getDescription()));
             if (!spell.isPassive()) {
+                lore.add("");
                 lore.add(ChatColor.DARK_AQUA + "Costs " + spell.getManaCost() + "✸");
                 lore.add(ChatColor.RED + "Cooldown " + ChatColor.YELLOW + (int) spell.getCooldown() + "s");
             }

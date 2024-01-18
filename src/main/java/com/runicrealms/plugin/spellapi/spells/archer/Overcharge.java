@@ -110,7 +110,8 @@ public class Overcharge extends Spell implements DurationSpell {
             staticEffect.refresh();
             return;
         }
-        new StaticEffect(player, event.getVictim(), (int) this.markedDuration).initialize();
+        StaticEffect staticEffect = new StaticEffect(player, event.getVictim(), (int) this.markedDuration);
+        staticEffect.initialize();
     }
 
     /**

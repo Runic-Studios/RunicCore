@@ -29,6 +29,9 @@ import org.jetbrains.annotations.Nullable;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static org.bukkit.Sound.ENTITY_ZOMBIE_ATTACK_IRON_DOOR;
+import static org.bukkit.Sound.ENTITY_ZOMBIE_BREAK_WOODEN_DOOR;
+
 /**
  * A manager and a container for the custom runic status effects impacting a given player
  */
@@ -246,8 +249,8 @@ public class StatusEffectManager implements Listener, StatusEffectAPI {
         }
 
         if (runicStatusEffect == RunicStatusEffect.ROOT || runicStatusEffect == RunicStatusEffect.STUN) {
-            livingEntity.getWorld().playSound(livingEntity.getLocation(),
-                    Sound.ENTITY_ZOMBIE_BREAK_WOODEN_DOOR, 0.75f, 1.0f);
+            Sound sound = runicStatusEffect == RunicStatusEffect.STUN ? ENTITY_ZOMBIE_ATTACK_IRON_DOOR : ENTITY_ZOMBIE_BREAK_WOODEN_DOOR;
+            livingEntity.getWorld().playSound(livingEntity.getLocation(), sound, 0.75f, 0.5f);
             // Since there's no entity move event, we handle root & stun the old-fashioned way for mobs
             if (livingEntity instanceof Player) {
                 return;

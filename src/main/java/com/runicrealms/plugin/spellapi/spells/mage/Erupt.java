@@ -105,7 +105,8 @@ public class Erupt extends Spell implements DurationSpell, MagicDamageSpell, Rad
         for (Entity entity : player.getWorld().getNearbyEntities(blastLocation, radius, radius, radius, target -> isValidEnemy(player, target))) {
             LivingEntity livingEntity = (LivingEntity) entity;
             DamageUtil.damageEntitySpell(damage, livingEntity, player, this);
-            new IgniteEffect(player, livingEntity, duration).initialize();
+            IgniteEffect igniteEffect = new IgniteEffect(player, livingEntity, duration);
+            igniteEffect.initialize();
             entity.getWorld().spawnParticle(Particle.FLAME, livingEntity.getEyeLocation(), 15, 0.5f, 0.5f, 0.5f, 0);
             entity.setVelocity(new Vector(0, 1, 0).normalize().multiply(knockupMultiplier));
         }

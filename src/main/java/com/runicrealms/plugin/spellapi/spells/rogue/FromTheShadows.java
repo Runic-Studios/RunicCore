@@ -16,19 +16,21 @@ import org.bukkit.Particle;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
 public class FromTheShadows extends Spell {
-    private final Set<UUID> buffedPlayers = new HashSet<>();
+    private final Map<UUID, Integer> buffedPlayersMap = new HashMap<>(); // used so both Twin Fangs get buff
     private final Set<UUID> debuffed;
     private double speedDuration;
     private double cocoonDamageIncreaseDuration;
     private double percent;
     private double percentPerDex;
 
+    // TODO: Honestly needs a logic re-write for the empowered spells. This is clunky and hard to read
     public FromTheShadows() {
         super("From The Shadows", CharacterClass.ROGUE);
         this.setIsPassive(true);
@@ -80,30 +82,44 @@ public class FromTheShadows extends Spell {
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onEmpoweredSpell(PhysicalDamageEvent event) {
+        // Check if the player has the relevant passive ability
         if (!hasPassive(event.getPlayer().getUniqueId(), this.getName())) return;
 
+        // Get the Cocoon spell and check if it is properly registered
         Cocoon cocoon = (Cocoon) RunicCore.getSpellAPI().getSpell("Cocoon");
         if (cocoon == null) {
             throw new IllegalStateException("Expected spell was not registered in the SpellManager");
         }
 
-        boolean isDebuffed = cocoon.isCocooned(event.getVictim().getUniqueId(), this.cocoonDamageIncreaseDuration);
-        UUID caster = cocoon.getCaster(event.getVictim().getUniqueId());
+        // Verify it is a relevant spell and is not null
+//        if (event.getSpell() == null || (not a b or c)) return;
 
-        if (isDebuffed && caster != null && this.hasPassive(caster, this.getName())) {
-            event.setAmount(this.cocoonDamageCalculation(event.getAmount(), caster));
-            Cone.coneEffect(event.getVictim(), Particle.REDSTONE, 1, 0, 20, Color.LIME);
-        }
-
-        if (event.getSpell() == null || !this.buffedPlayers.contains(event.getPlayer().getUniqueId())) {
+        // Check if the player is not buffed
+        if (!this.buffedPlayersMap.containsKey(event.getPlayer().getUniqueId())) {
             return;
         }
 
-        buffedPlayers.remove(event.getPlayer().getUniqueId());
+        // Check if the victim is debuffed with Cocoon and get the caster of the cocoon
+        boolean isDebuffed = cocoon.isCocooned(event.getVictim().getUniqueId(), this.cocoonDamageIncreaseDuration);
+        UUID casterId = cocoon.getCaster(event.getVictim().getUniqueId());
 
+        // Apply damage calculation and visual effects if the victim is debuffed
+        if (isDebuffed && casterId != null && this.hasPassive(casterId, this.getName())) {
+            event.setAmount(this.cocoonDamageCalculation(event.getAmount(), casterId));
+            Cone.coneEffect(event.getVictim(), Particle.REDSTONE, 1, 0, 20, Color.LIME);
+        }
+
+        // If the spell is Twin Fangs, mark the event as critical and only reduce 1 stack (so that both fangs get buff)
         if (event.getSpell() instanceof TwinFangs) {
-            // TODO: needs to work for both strikes
+            buffedPlayersMap.put(casterId, buffedPlayersMap.get(casterId) - 1);
             event.setCritical(true);
+        } else { // Must be Cocoon or Dash
+            buffedPlayersMap.put(casterId, buffedPlayersMap.get(casterId) - 2);
+        }
+
+        // Reduce a buff stack (or remove buff) for the player.
+        if (buffedPlayersMap.get(casterId) == 0) {
+            buffedPlayersMap.remove(casterId);
         }
     }
 
@@ -132,21 +148,21 @@ public class FromTheShadows extends Spell {
         }
         // Apply buff
         if (event.getSpell() instanceof Unseen unseen) {
-            buffedPlayers.add(event.getCaster().getUniqueId());
+            buffedPlayersMap.put(event.getCaster().getUniqueId(), 2);
             Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(),
-                    () -> buffedPlayers.remove(event.getCaster().getUniqueId()), (long) (unseen.getCooldown() * 20));
+                    () -> buffedPlayersMap.remove(event.getCaster().getUniqueId()), (long) (unseen.getCooldown() * 20));
             return;
         }
 
         // Remove potential buff
-        if (!buffedPlayers.contains(event.getCaster().getUniqueId())) return;
+        if (!buffedPlayersMap.containsKey(event.getCaster().getUniqueId())) return;
 
         if (event.getSpell() instanceof Dash) {
             this.addStatusEffect(event.getCaster(), RunicStatusEffect.SPEED_III, 4, true);
         } else if (event.getSpell() instanceof TwinFangs) {
-            buffedPlayers.add(event.getCaster().getUniqueId());
+            buffedPlayersMap.put(event.getCaster().getUniqueId(), 2);
         } else if (event.getSpell() instanceof Cocoon cocoon) {
-            buffedPlayers.add(event.getCaster().getUniqueId());
+            buffedPlayersMap.put(event.getCaster().getUniqueId(), 2);
             UUID target = cocoon.getTarget(event.getCaster().getUniqueId());
             if (target != null) {
                 this.debuffed.add(target);

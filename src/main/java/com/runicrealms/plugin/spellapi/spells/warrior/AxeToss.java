@@ -71,11 +71,13 @@ public class AxeToss extends Spell implements DurationSpell, PhysicalDamageSpell
                 hasBeenHit.put(player.getUniqueId(), entity.getUniqueId()); // prevent concussive hits
 
 
-                Optional<SpellEffect> bleedEffect = this.getSpellEffect(player.getUniqueId(), entity.getUniqueId(), SpellEffectType.BLEED);
-                if (bleedEffect.isEmpty()) {
-                    new BleedEffect(player, (LivingEntity) entity).initialize();
+                Optional<SpellEffect> spellEffectOpt = this.getSpellEffect(player.getUniqueId(), entity.getUniqueId(), SpellEffectType.BLEED);
+                if (spellEffectOpt.isEmpty()) {
+                    BleedEffect bleedEffect = new BleedEffect(player, (LivingEntity) entity);
+                    bleedEffect.initialize();
                 } else {
-                    ((BleedEffect) bleedEffect.get()).refreshStacks();
+                    BleedEffect bleedEffect = (BleedEffect) spellEffectOpt.get();
+                    bleedEffect.refreshStacks();
                     addStatusEffect((LivingEntity) entity, RunicStatusEffect.SLOW_III, slowDuration, true);
                     entity.getWorld().spawnParticle
                             (Particle.VILLAGER_ANGRY, entity.getLocation(), 5, 0.5F, 0.5F, 0.5F, 0);

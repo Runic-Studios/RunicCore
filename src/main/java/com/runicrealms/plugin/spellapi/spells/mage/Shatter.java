@@ -3,7 +3,9 @@ package com.runicrealms.plugin.spellapi.spells.mage;
 import com.runicrealms.plugin.common.CharacterClass;
 import com.runicrealms.plugin.events.PhysicalDamageEvent;
 import com.runicrealms.plugin.rdb.event.CharacterQuitEvent;
+import com.runicrealms.plugin.runicitems.Stat;
 import com.runicrealms.plugin.spellapi.effect.RunicStatusEffect;
+import com.runicrealms.plugin.spellapi.spelltypes.AttributeSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.ShieldingSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
@@ -21,19 +23,42 @@ import java.util.UUID;
  *
  * @author BoBoBalloon
  */
-public class Shatter extends Spell implements MagicDamageSpell, ShieldingSpell {
+public class Shatter extends Spell implements AttributeSpell, MagicDamageSpell, ShieldingSpell {
     private final Map<UUID, Long> cooldown;
+    private double baseValue;
     private double damage;
     private double damagePerLevel;
+    private double maxStacks;
+    private double multiplier;
     private double shield;
     private double shieldPerLevel;
+    private double stackDuration;
+    private String statName;
 
     public Shatter() {
         super("Shatter", CharacterClass.MAGE);
         this.cooldown = new HashMap<>();
         this.setIsPassive(true);
-        this.setDescription("When you land a basic attack on an enemy that has been rooted or stunned, shatter their ice " +
-                "dealing (" + this.damage + " + &f" + this.damagePerLevel + "x&7 lvl) magicʔ damage granting you a (" + this.shield + " + &f" + this.shieldPerLevel + "x&7 lvl) health✦ shield.");
+        Stat stat = Stat.getFromName(statName);
+        String prefix = stat == null ? "" : stat.getPrefix();
+        this.setDescription("When you land a basic attack on an enemy that " +
+                "is &bchilled&7, you shatter their ice, removing &bchilled " +
+                "&7and dealing (" + this.damage + " + &f" + this.damagePerLevel + "x&7 lvl) magicʔ damage! " +
+                "You also gain a stack of &fice barrier&7. " +
+                "\n&2&lEFFECT &fIce Barrier" +
+                "\n&fIce Barrier &7stacks reduce mob and physical damage taken by " +
+                "(" + baseValue + " + &f" + multiplier + "x &e" + prefix + "&7)%! " +
+                "Max " + maxStacks + " stacks. " +
+                "Stacks expire after " + stackDuration + "s.");
+    }
+
+    @Override
+    public void loadSpellSpecificData(Map<String, Object> spellData) {
+        super.loadSpellSpecificData(spellData);
+        Number maxStacks = (Number) spellData.getOrDefault("max-stacks", 3);
+        setMaxStacks(maxStacks.doubleValue());
+        Number stackDuration = (Number) spellData.getOrDefault("stack-duration", 20);
+        setStackDuration(stackDuration.doubleValue());
     }
 
     @Override
@@ -104,6 +129,44 @@ public class Shatter extends Spell implements MagicDamageSpell, ShieldingSpell {
     @EventHandler
     private void onCharacterQuit(CharacterQuitEvent event) {
         this.cooldown.remove(event.getPlayer().getUniqueId());
+    }
+
+    @Override
+    public double getBaseValue() {
+        return baseValue;
+    }
+
+    @Override
+    public void setBaseValue(double baseValue) {
+        this.baseValue = baseValue;
+    }
+
+    @Override
+    public double getMultiplier() {
+        return multiplier;
+    }
+
+    @Override
+    public void setMultiplier(double multiplier) {
+        this.multiplier = multiplier;
+    }
+
+    @Override
+    public String getStatName() {
+        return statName;
+    }
+
+    @Override
+    public void setStatName(String statName) {
+        this.statName = statName;
+    }
+
+    public void setMaxStacks(double maxStacks) {
+        this.maxStacks = maxStacks;
+    }
+
+    public void setStackDuration(double stackDuration) {
+        this.stackDuration = stackDuration;
     }
 }
 

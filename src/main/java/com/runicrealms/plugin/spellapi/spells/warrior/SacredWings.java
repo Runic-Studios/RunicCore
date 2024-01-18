@@ -66,7 +66,8 @@ public class SacredWings extends Spell implements DurationSpell, RadiusSpell, Sh
         player.getWorld().spigot().strikeLightningEffect(player.getLocation(), true);
         this.addStatusEffect(player, RunicStatusEffect.SPEED_I, this.duration, false);
         this.shieldPlayer(player, player, this.shield, this);
-        new HolyFervorEffect(player, this.duration).initialize();
+        HolyFervorEffect holyFervorEffect = new HolyFervorEffect(player, this.duration);
+        holyFervorEffect.initialize();
     }
 
     @EventHandler
