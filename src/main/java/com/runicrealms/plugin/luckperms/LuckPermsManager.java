@@ -9,7 +9,6 @@ import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.cacheddata.CachedMetaData;
 import net.luckperms.api.context.ContextSet;
 import net.luckperms.api.context.ImmutableContextSet;
-import net.luckperms.api.context.MutableContextSet;
 import net.luckperms.api.node.NodeType;
 import net.luckperms.api.node.types.MetaNode;
 import net.luckperms.api.query.QueryOptions;
@@ -20,7 +19,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -176,7 +174,7 @@ public class LuckPermsManager implements LuckPermsAPI, Listener {
                 LuckPermsProvider.get().getUserManager().loadUser(owner).thenAccept(user -> {
                     try {
                         // Clear the metadata keys that we are overwriting
-                        user.data().clear(serverContextSet.get(), NodeType.META.predicate(metaNode -> data.containsKey(metaNode.getKey())));
+                        user.data().clear(serverContextSet.get(), NodeType.META.predicate(metaNode -> data.containsKey(metaNode.getMetaKey())));
 
                         // Write each metadata key
                         for (String key : data.getKeys()) {
