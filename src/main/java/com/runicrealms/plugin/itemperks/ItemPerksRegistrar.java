@@ -6,6 +6,7 @@ public class ItemPerksRegistrar {
 
     public ItemPerksRegistrar() {
         RunicItemsAPI.getItemPerkManager().registerItemPerk(new GaleblessedPerk());
+        RunicItemsAPI.getItemPerkManager().registerItemPerk(new UndyingPerk());
     }
 
 }

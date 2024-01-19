@@ -162,11 +162,7 @@ public class RunicItemShopHelper {
 
     public Set<RunicShopGeneric> getCavernGatekeepers() {
         Set<RunicShopGeneric> gateKeepers = new HashSet<>();
-        List<Pair<String, Integer>> requiredItems = new ArrayList<>();
-        requiredItems.add(Pair.pair(SILVER_KEY, 1));
-        requiredItems.add(Pair.pair(ETHEREAL_KEY, 1));
-        requiredItems.add(Pair.pair(GOLD_KEY, 1));
-        Gatekeeper first = new Gatekeeper(517, requiredItems, DungeonLocation.CRYSTAL_CAVERN, 1);
+        Gatekeeper first = new Gatekeeper(517, ETHEREAL_KEY_ITEM, DungeonLocation.CRYSTAL_CAVERN, 1);
         gateKeepers.add(first);
         return gateKeepers;
     }
