@@ -10,6 +10,11 @@ public class ItemPerksRegistrar {
         RunicItemsAPI.getItemPerkManager().registerItemPerk(new RavenousPerk());
         RunicItemsAPI.getItemPerkManager().registerItemPerk(new FrenzyPerk());
         RunicItemsAPI.getItemPerkManager().registerItemPerk(new StoneSkinPerk());
+        RunicItemsAPI.getItemPerkManager().registerItemPerk(new AegisPerk());
+        RunicItemsAPI.getItemPerkManager().registerItemPerk(new GluttonyPerk());
+        RunicItemsAPI.getItemPerkManager().registerItemPerk(new MagicNullificationPerk());
+        RunicItemsAPI.getItemPerkManager().registerItemPerk(new TacticianPerk());
+        RunicItemsAPI.getItemPerkManager().registerItemPerk(new FortitudePerk());
     }
 
 }

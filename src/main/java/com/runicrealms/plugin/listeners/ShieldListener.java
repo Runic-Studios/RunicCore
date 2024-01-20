@@ -22,8 +22,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
@@ -31,6 +33,8 @@ public class ShieldListener implements Listener {
     private static final int HALF_HEART_AMOUNT = 50; // how much health is 1/2 heart?
     private static final int SHIELD_EXPIRE_TIME = 5; // Seconds
     private static final double CAP_MULTIPLIER = 0.33;
+
+    private static final Map<UUID, Double> BONUS_CAP = new HashMap<>();
 
     /**
      * Running async task to expire shields after expire time
@@ -141,8 +145,8 @@ public class ShieldListener implements Listener {
         if (shieldedPlayers.containsKey(recipient.getUniqueId())) {
             Shield oldShield = shieldedPlayers.get(recipient.getUniqueId()).shield();
             double newAmount = amount + oldShield.getAmount();
-            if (newAmount > recipient.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue() * CAP_MULTIPLIER)
-                newAmount = recipient.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue() * CAP_MULTIPLIER;
+            if (newAmount > recipient.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue() * (CAP_MULTIPLIER + (BONUS_CAP.containsKey(recipient.getUniqueId()) ? BONUS_CAP.get(recipient.getUniqueId()) : 0)))
+                newAmount = recipient.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue() * (CAP_MULTIPLIER + (BONUS_CAP.containsKey(recipient.getUniqueId()) ? BONUS_CAP.get(recipient.getUniqueId()) : 0));
             shieldedPlayers.get(recipient.getUniqueId()).shield().setAmount(newAmount);
             shieldedPlayers.get(recipient.getUniqueId()).shield().setStartTime(System.currentTimeMillis());
             shieldedPlayers.get(recipient.getUniqueId()).shield().addSource(caster.getUniqueId());
@@ -167,4 +171,8 @@ public class ShieldListener implements Listener {
         player.playSound(player.getLocation(), Sound.ITEM_SHIELD_BREAK, 1.0f, 0.5f);
     }
 
+    @NotNull
+    public static Map<UUID, Double> getBonusCap() {
+        return BONUS_CAP;
+    }
 }
