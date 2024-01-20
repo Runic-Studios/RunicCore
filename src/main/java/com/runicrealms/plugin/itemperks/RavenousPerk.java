@@ -7,14 +7,13 @@ import com.runicrealms.plugin.runicitems.item.perk.DynamicItemPerkPercentStatPla
 import com.runicrealms.plugin.runicitems.item.perk.ItemPerkHandler;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
 
 /**
  * A class that models the ravenous item perk
  *
  * @author BoBoBalloon
  */
-public class RavenousPerk extends ItemPerkHandler implements Listener {
+public class RavenousPerk extends ItemPerkHandler {
     private final double healthCutoff;
     private final double healthPercentRestored;
 

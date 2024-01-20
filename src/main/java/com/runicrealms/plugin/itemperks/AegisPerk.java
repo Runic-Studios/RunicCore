@@ -12,7 +12,6 @@ import com.runicrealms.plugin.runicitems.item.perk.ItemPerkHandler;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
@@ -24,7 +23,7 @@ import java.util.UUID;
  *
  * @author BoBoBalloon
  */
-public class AegisPerk extends ItemPerkHandler implements Listener {
+public class AegisPerk extends ItemPerkHandler {
     private final Map<UUID, Long> lastTimeUsed;
     private final double shieldPercent;
     private final long cooldown;

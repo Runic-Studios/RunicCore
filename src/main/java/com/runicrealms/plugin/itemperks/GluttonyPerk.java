@@ -5,14 +5,13 @@ import com.runicrealms.plugin.events.PhysicalDamageEvent;
 import com.runicrealms.plugin.runicitems.item.perk.ItemPerkHandler;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
 
 /**
  * A class that models the gluttony item perk
  *
  * @author BoBoBalloon
  */
-public class GluttonyPerk extends ItemPerkHandler implements Listener {
+public class GluttonyPerk extends ItemPerkHandler {
     private final double manaRegenPercent;
     private final double manaRegenCutoff;
     private final int extraDamagePerMissingHealth;

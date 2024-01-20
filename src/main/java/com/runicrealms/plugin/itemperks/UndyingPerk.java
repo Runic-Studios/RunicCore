@@ -10,7 +10,6 @@ import org.bukkit.SoundCategory;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -21,7 +20,7 @@ import java.util.UUID;
  *
  * @author BoBoBalloon
  */
-public class UndyingPerk extends ItemPerkHandler implements Listener {
+public class UndyingPerk extends ItemPerkHandler {
     private final Map<UUID, Long> lastTimeUsed; // do not remove the player from the cooldown map on quit as that could be an exploit in the making (we already know our players love to leave and rejoin quickly)
     private final double healthRestored;
     private final long cooldown;

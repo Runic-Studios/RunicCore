@@ -13,7 +13,6 @@ import com.runicrealms.plugin.spellapi.effect.RunicStatusEffect;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
@@ -23,7 +22,7 @@ import java.util.Objects;
  *
  * @author BoBoBalloon
  */
-public class StoneSkinPerk extends ItemPerkHandler implements Listener {
+public class StoneSkinPerk extends ItemPerkHandler {
     private final double damagePercentReduction;
 
     public StoneSkinPerk() {

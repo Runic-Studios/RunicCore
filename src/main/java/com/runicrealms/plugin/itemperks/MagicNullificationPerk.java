@@ -5,14 +5,13 @@ import com.runicrealms.plugin.runicitems.item.perk.ItemPerkHandler;
 import com.runicrealms.plugin.spellapi.effect.RunicStatusEffect;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
 
 /**
  * A class that models the magicnullification item perk
  *
  * @author BoBoBalloon
  */
-public class MagicNullificationPerk extends ItemPerkHandler implements Listener {
+public class MagicNullificationPerk extends ItemPerkHandler {
     public MagicNullificationPerk() {
         super("magicnullification");
     }

@@ -12,7 +12,6 @@ import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
@@ -24,7 +23,7 @@ import java.util.UUID;
  *
  * @author BoBoBalloon
  */
-public class TacticianPerk extends ItemPerkHandler implements Listener {
+public class TacticianPerk extends ItemPerkHandler {
     private final Map<UUID, AttributeModifier> buffed;
     private final double speedPercentIncrease;
     private final double damageTakenPercentIncrease;
