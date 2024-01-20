@@ -103,7 +103,7 @@ public class GrandSymphony extends Spell implements RadiusSpell, MagicDamageSpel
             return;
         }
 
-        event.setCooldownTicks((int) (event.getCooldownTicks() * (1 + this.debuffRatio)));
+        event.setCooldownTicks(event.getUnroundedCooldownTicks() * (1 + this.debuffRatio));
     }
 
     /**

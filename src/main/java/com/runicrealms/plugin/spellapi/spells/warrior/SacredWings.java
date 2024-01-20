@@ -94,7 +94,7 @@ public class SacredWings extends Spell implements DurationSpell, RadiusSpell, Sh
     public void onBasicAttack(BasicAttackEvent event) {
         if (!this.hasSpellEffect(event.getPlayer().getUniqueId(), SpellEffectType.HOLY_FERVOR)) return;
         event.setCancelled(true);
-        sweepEffect(event.getPlayer(), event.getMaterial(), event.getDamage(), event.getMaxDamage(), event.getCooldownTicks());
+        sweepEffect(event.getPlayer(), event.getMaterial(), event.getDamage(), event.getMaxDamage(), event.getRoundedCooldownTicks());
     }
 
     private void sweepEffect(Player player, Material material, int minDamage, int maxDamage, int cooldownTicks) {

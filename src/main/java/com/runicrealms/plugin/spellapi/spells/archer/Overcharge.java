@@ -154,14 +154,14 @@ public class Overcharge extends Spell implements DurationSpell {
             return;
         }
 
-        int ticksToReduce = calculateCooldownTicksToReduce(event.getOriginalCooldownTicks(), (ChargedEffect) chargedOpt.get());
+        double ticksToReduce = calculateCooldownTicksToReduce(event.getOriginalCooldownTicks(), (ChargedEffect) chargedOpt.get());
         // Cooldown cannot drop beneath a certain value
-        event.setCooldownTicks(Math.max(event.getCooldownTicks() - ticksToReduce, BasicAttackEvent.MINIMUM_COOLDOWN_TICKS)); //apply reduction to current cooldown time
+        event.setCooldownTicks(Math.max(event.getUnroundedCooldownTicks() - ticksToReduce, BasicAttackEvent.MINIMUM_COOLDOWN_TICKS)); //apply reduction to current cooldown time
     }
 
-    private int calculateCooldownTicksToReduce(int originalCooldownTicks, ChargedEffect chargedEffect) {
+    private double calculateCooldownTicksToReduce(int originalCooldownTicks, ChargedEffect chargedEffect) {
         int stacks = chargedEffect.getStacks().get();
-        int ticksToReduce = (int) (originalCooldownTicks * this.percent); //reduce the cooldown based on the total cooldown time
+        double ticksToReduce = originalCooldownTicks * this.percent; //reduce the cooldown based on the total cooldown time
         ticksToReduce *= stacks;
         return ticksToReduce;
     }
