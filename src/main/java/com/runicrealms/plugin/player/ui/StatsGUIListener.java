@@ -1,5 +1,6 @@
 package com.runicrealms.plugin.player.ui;
 
+import com.runicrealms.plugin.common.RunicCommon;
 import com.runicrealms.plugin.common.util.GUIUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -7,8 +8,10 @@ import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.ItemStack;
 
@@ -45,5 +48,14 @@ public class StatsGUIListener implements Listener {
         event.setCancelled(true);
         if (material == GUIUtil.CLOSE_BUTTON.getType())
             player.closeInventory();
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    private void onInventoryOpen(InventoryOpenEvent event) {
+        if (!(event.getInventory().getHolder() instanceof StatsGUI)) {
+            return;
+        }
+
+        RunicCommon.getQuestsAPI().triggerQuest(false, (Player) event.getPlayer(), "stats-menu", null);
     }
 }
