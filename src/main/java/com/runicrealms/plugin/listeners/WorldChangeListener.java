@@ -18,6 +18,6 @@ public class WorldChangeListener implements Listener {
             return;
         }
 
-        RunicItemShopHelper.clearDungeonKeys(event.getPlayer());
+        RunicItemShopHelper.clearDungeonItems(event.getPlayer());
     }
 }
