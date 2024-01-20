@@ -13,6 +13,7 @@ public class ItemPerksRegistrar {
         RunicItemsAPI.getItemPerkManager().registerItemPerk(new AegisPerk());
         RunicItemsAPI.getItemPerkManager().registerItemPerk(new GluttonyPerk());
         RunicItemsAPI.getItemPerkManager().registerItemPerk(new MagicNullificationPerk());
+        RunicItemsAPI.getItemPerkManager().registerItemPerk(new TacticianPerk());
     }
 
 }
