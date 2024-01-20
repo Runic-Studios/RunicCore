@@ -13,7 +13,6 @@ import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
@@ -23,7 +22,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class GaleblessedPerk extends ItemPerkHandler implements Listener {
+public class GaleblessedPerk extends ItemPerkHandler {
 
     private final float PERCENT_SPEED_PER_STACK;
     private final long SPEED_DURATION_TICKS;
@@ -61,7 +60,7 @@ public class GaleblessedPerk extends ItemPerkHandler implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    public void onCombatEnter(EnterCombatEvent event) {
+    private void onCombatEnter(EnterCombatEvent event) {
         if (event.isCancelled()) return;
         AttributeModifier modifier = activeGaleblessed.get(event.getPlayer().getUniqueId());
         if (modifier != null && !deactivationTasks.containsKey(event.getPlayer().getUniqueId())) { // we have a modifier and are not already active
@@ -86,13 +85,13 @@ public class GaleblessedPerk extends ItemPerkHandler implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    public void onCombatLeave(LeaveCombatEvent event) {
+    private void onCombatLeave(LeaveCombatEvent event) {
         if (event.isCancelled()) return;
         tryDeactivateGaleblessed(event.getPlayer(), true);
     }
 
     @EventHandler
-    public void onQuit(PlayerQuitEvent event) {
+    private void onQuit(PlayerQuitEvent event) {
         tryDeactivateGaleblessed(event.getPlayer(), true);
         if (cooldownTasks.containsKey(event.getPlayer().getUniqueId())) {
             cooldownTasks.get(event.getPlayer().getUniqueId()).cancel();
@@ -101,7 +100,7 @@ public class GaleblessedPerk extends ItemPerkHandler implements Listener {
     }
 
     @EventHandler
-    public void onPreShutdown(PreShutdownEvent event) {
+    private void onPreShutdown(PreShutdownEvent event) {
         for (BukkitTask task : deactivationTasks.values()) {
             task.cancel();
         }
