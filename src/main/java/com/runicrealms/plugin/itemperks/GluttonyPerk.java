@@ -8,7 +8,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
 /**
- * A class that models the aegis item perk
+ * A class that models the gluttony item perk
  *
  * @author BoBoBalloon
  */
