@@ -134,7 +134,7 @@ public class StatusEffectManager implements Listener, StatusEffectAPI {
         if (hasStatusEffect(event.getVictim().getUniqueId(), RunicStatusEffect.ROOT)) {
             removeStatusEffect(event.getVictim().getUniqueId(), RunicStatusEffect.ROOT);
         }
-        UUID mobUuid = event.getEntity().getUniqueId();
+        UUID mobUuid = event.getMob().getUniqueId();
         if (hasStatusEffect(mobUuid, RunicStatusEffect.SILENCE) ||
                 hasStatusEffect(mobUuid, RunicStatusEffect.STUN) ||
                 hasStatusEffect(mobUuid, RunicStatusEffect.DISARM) ||
