@@ -39,7 +39,7 @@ public class UndyingPerk extends ItemPerkHandler implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true) //death logic has a prioity of highest
     private void onRunicDeath(RunicDeathEvent event) {
-        if (!isActive(event.getVictim())) {
+        if (!this.isActive(event.getVictim())) {
             return;
         }
 

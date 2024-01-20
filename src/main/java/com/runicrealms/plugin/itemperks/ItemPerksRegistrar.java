@@ -10,6 +10,7 @@ public class ItemPerksRegistrar {
         RunicItemsAPI.getItemPerkManager().registerItemPerk(new RavenousPerk());
         RunicItemsAPI.getItemPerkManager().registerItemPerk(new FrenzyPerk());
         RunicItemsAPI.getItemPerkManager().registerItemPerk(new StoneSkinPerk());
+        RunicItemsAPI.getItemPerkManager().registerItemPerk(new AegisPerk());
     }
 
 }
