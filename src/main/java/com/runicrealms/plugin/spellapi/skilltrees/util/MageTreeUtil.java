@@ -31,7 +31,7 @@ public class MageTreeUtil {
         perks.add(new PerkBaseStat(80, 1, 0, 5, Stat.VITALITY));
         perks.add(new PerkSpell(81, 1, 0, 1, "Blizzard"));
         perks.add(new PerkBaseStat(82, 1, 0, 3, Stat.INTELLIGENCE));
-        perks.add(new PerkSpell(83, 1, 0, 1, "Winter's Grasp"));
+        perks.add(new PerkSpell(83, 1, 0, 1, "Glacier"));
         return perks;
     }
 

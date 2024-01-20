@@ -14,10 +14,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class IceBarrierEffect implements StackEffect {
     private static final int PERIOD = 20;
     private final Player caster;
-    private final int maxStacks;
     private final int stackDuration;
     private final AtomicInteger stacks;
     private final StackHologram stackHologram;
+    private int maxStacks;
     private Location hologramLocation;
     private int nextTickCounter;
 
@@ -44,6 +44,10 @@ public class IceBarrierEffect implements StackEffect {
 
     public int getMaxStacks() {
         return maxStacks;
+    }
+
+    public void setMaxStacks(int maxStacks) {
+        this.maxStacks = maxStacks;
     }
 
     public int getStackDuration() {

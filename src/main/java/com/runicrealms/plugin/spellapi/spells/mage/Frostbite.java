@@ -44,7 +44,7 @@ public class Frostbite extends Spell implements DistanceSpell, DurationSpell, Ma
                 "magicʔ damage in a cone " +
                 "in front of you and apply &bchilled &7to enemies hit for " + duration + "s. " +
                 "If enemies are already &bchilled&7, remove the effect, " +
-                "this spell instead deals (" + this.empoweredDamage + " + &f" + this.empoweredDamagePerLevel +
+                "then this spell instead deals (" + this.empoweredDamage + " + &f" + this.empoweredDamagePerLevel +
                 "x&7 lvl) magicʔ damage and slows them for " + slowDuration + "s! " +
                 "\n\n&2&lEFFECT &bChilled" +
                 "\n&bChilled &7enemies are fraught with cold! " +

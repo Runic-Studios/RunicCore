@@ -89,7 +89,7 @@ public class SnapFreeze extends Spell implements DistanceSpell, DurationSpell, M
             if (spellEffectOpt.isPresent()) {
                 ChilledEffect chilledEffect = (ChilledEffect) spellEffectOpt.get();
                 chilledEffect.cancel();
-                Cone.coneEffect((LivingEntity) entity, Particle.SNOWBALL, stunDuration, 0, 20, Color.AQUA);
+                Cone.coneEffect((LivingEntity) entity, Particle.BLOCK_CRACK, stunDuration, 0, 20, Color.AQUA);
                 addStatusEffect((LivingEntity) entity, RunicStatusEffect.STUN, stunDuration, true);
             } else {
                 addStatusEffect((LivingEntity) entity, RunicStatusEffect.ROOT, duration, true);

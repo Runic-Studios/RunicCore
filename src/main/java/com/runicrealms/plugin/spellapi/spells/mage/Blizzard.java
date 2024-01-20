@@ -182,6 +182,7 @@ public class Blizzard extends Spell implements DistanceSpell, DurationSpell, Mag
     private void spawnBlizzard(Player player, Location location) {
         Vector launchPath = new Vector(0, -1.0, 0).multiply(SNOWBALL_SPEED);
         Location cloudLoc = location.clone().add(0, HEIGHT, 0);
+        Blizzard blizzard = this;
 
         new BukkitRunnable() {
             int count = 1;
@@ -195,9 +196,11 @@ public class Blizzard extends Spell implements DistanceSpell, DurationSpell, Mag
                     new HorizontalCircleFrame((float) radius, false).playParticle(player, Particle.REDSTONE, location, Color.WHITE);
                     new HorizontalCircleFrame((float) radius, false).playParticle(player, Particle.SNOWBALL, location, Color.WHITE);
                     // Sounds, reduced volume due to quantity of snowballs
-                    player.getWorld().playSound(cloudLoc, Sound.ENTITY_ENDER_DRAGON_FLAP, 0.25f, 1.0f);
+                    player.getWorld().playSound(location, Sound.ENTITY_ENDER_DRAGON_FLAP, 0.75f, 0.5f);
+                    player.getWorld().playSound(location, Sound.WEATHER_RAIN_ABOVE, 0.75f, 0.75f);
+                    player.getWorld().playSound(location, Sound.AMBIENT_CAVE, 0.75f, 1.0f);
                     player.getWorld().spawnParticle(Particle.REDSTONE, cloudLoc,
-                            25, 1.5f, 0.75f, 0.75f, new Particle.DustOptions(Color.WHITE, 20));
+                            25, blizzard.getRadius() / 2, 0.75f, blizzard.getRadius() / 2, new Particle.DustOptions(Color.WHITE, 20));
                     // Visual effect
                     spawnSnowballs(player, cloudLoc, launchPath);
                     // Damage
