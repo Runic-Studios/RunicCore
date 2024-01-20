@@ -9,7 +9,6 @@ import com.runicrealms.plugin.runicitems.item.perk.ItemPerkHandler;
 import com.runicrealms.plugin.runicitems.item.template.RunicItemTemplate;
 import com.runicrealms.plugin.runicrestart.event.PreShutdownEvent;
 import de.tr7zw.nbtapi.NBTItem;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
@@ -42,7 +41,6 @@ public class GaleblessedPerk extends ItemPerkHandler implements Listener {
         COOLDOWN_TICKS = (long) (((Number) this.config.get("cooldown")).floatValue() * 20);
         PERCENT_SPEED_PER_STACK = ((Number) this.config.get("speed-per-stack")).floatValue();
 
-        Bukkit.getPluginManager().registerEvents(this, RunicCore.getInstance());
         RunicItemsAPI.getDynamicItemHandler().registerTextPlaceholder(new DynamicItemPerkTextPlaceholder("galeblessed-percent") { // This is used in the configured lore
             @Override
             public String generateReplacement(Player viewer, ItemStack item, NBTItem itemNBT, RunicItemTemplate template) {

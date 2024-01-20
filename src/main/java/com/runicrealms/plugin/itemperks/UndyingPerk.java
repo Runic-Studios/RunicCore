@@ -1,15 +1,10 @@
 package com.runicrealms.plugin.itemperks;
 
-import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.events.RunicDeathEvent;
 import com.runicrealms.plugin.rdb.event.CharacterQuitEvent;
 import com.runicrealms.plugin.runicitems.RunicItemsAPI;
-import com.runicrealms.plugin.runicitems.item.perk.DynamicItemPerkTextPlaceholder;
+import com.runicrealms.plugin.runicitems.item.perk.DynamicItemPerkPercentStatPlaceholder;
 import com.runicrealms.plugin.runicitems.item.perk.ItemPerkHandler;
-import com.runicrealms.plugin.runicitems.item.template.RunicItemTemplate;
-import de.tr7zw.nbtapi.NBTItem;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
@@ -18,7 +13,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.inventory.ItemStack;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -46,26 +40,7 @@ public class UndyingPerk extends ItemPerkHandler implements Listener {
         this.healthRestored = ((Number) this.config.get("health-percent-per-stack")).doubleValue();
         this.cooldown = ((Number) this.config.get("cooldown")).longValue() * 1000; //convert seconds to milliseconds
 
-        Bukkit.getPluginManager().registerEvents(this, RunicCore.getInstance());
-        RunicItemsAPI.getDynamicItemHandler().registerTextPlaceholder(new DynamicItemPerkTextPlaceholder("undying-health-restored") {
-            @Override
-            public String generateReplacement(Player viewer, ItemStack item, NBTItem itemNBT, RunicItemTemplate template) {
-                int basePercentage = (int) (healthRestored * 100);
-
-                int percentage;
-                if (this.getEquippedSlot(viewer, item, template) != null) { // Item is equipped
-                    percentage = getCurrentStacks(viewer) * basePercentage;
-                } else {
-                    percentage = itemNBT.getInteger("perks-" + getType().getIdentifier()) * basePercentage;
-                }
-
-                if (percentage != basePercentage) {
-                    return ChatColor.GRAY.toString() + ChatColor.STRIKETHROUGH + basePercentage + "%" + ChatColor.YELLOW + " " + percentage + "%";
-                } else {
-                    return ChatColor.YELLOW.toString() + basePercentage + "%";
-                }
-            }
-        });  //This is used in the configured lore
+        RunicItemsAPI.getDynamicItemHandler().registerTextPlaceholder(new DynamicItemPerkPercentStatPlaceholder("undying-health-restored", this, () -> this.healthRestored));  //This is used in the configured lore
     }
 
     @Override
