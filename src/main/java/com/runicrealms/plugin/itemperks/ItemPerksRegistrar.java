@@ -11,6 +11,7 @@ public class ItemPerksRegistrar {
         RunicItemsAPI.getItemPerkManager().registerItemPerk(new FrenzyPerk());
         RunicItemsAPI.getItemPerkManager().registerItemPerk(new StoneSkinPerk());
         RunicItemsAPI.getItemPerkManager().registerItemPerk(new AegisPerk());
+        RunicItemsAPI.getItemPerkManager().registerItemPerk(new GluttonyPerk());
     }
 
 }
