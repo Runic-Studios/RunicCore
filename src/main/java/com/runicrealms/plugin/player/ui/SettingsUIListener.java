@@ -1,6 +1,7 @@
 package com.runicrealms.plugin.player.ui;
 
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.common.RunicCommon;
 import com.runicrealms.plugin.common.util.ColorUtil;
 import com.runicrealms.plugin.common.util.GUIUtil;
 import com.runicrealms.plugin.model.SettingsData;
@@ -13,6 +14,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.inventory.ItemStack;
@@ -108,5 +110,14 @@ public class SettingsUIListener implements Listener {
                 event.getPlayer().openInventory(new SettingsUI(event.getPlayer(), data).getInventory());
             });
         }
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    private void onInventoryOpen(InventoryOpenEvent event) {
+        if (!(event.getInventory().getHolder() instanceof SettingsUI)) {
+            return;
+        }
+
+        RunicCommon.getQuestsAPI().triggerQuest(false, (Player) event.getPlayer(), "settings-menu", null);
     }
 }
