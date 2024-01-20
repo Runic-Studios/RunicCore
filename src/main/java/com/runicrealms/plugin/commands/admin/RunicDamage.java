@@ -36,7 +36,7 @@ public class RunicDamage implements CommandExecutor {
             MobDamageEvent mobDamageEvent = new MobDamageEvent(amount, caster, player, false);
             Bukkit.getPluginManager().callEvent(mobDamageEvent);
             if (!mobDamageEvent.isCancelled()) {
-                DamageUtil.damageEntityMob(mobDamageEvent.getAmount(), mobDamageEvent.getVictim(), mobDamageEvent.getEntity(), mobDamageEvent.shouldApplyMechanics());
+                DamageUtil.damageEntityMob(mobDamageEvent.getAmount(), mobDamageEvent.getVictim(), mobDamageEvent.getMob(), mobDamageEvent.shouldApplyMechanics());
             }
             return true;
 

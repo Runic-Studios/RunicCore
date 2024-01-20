@@ -79,7 +79,7 @@ public class Cripple extends Spell implements PhysicalDamageSpell {
 
     @EventHandler
     public void onMobDamage(MobDamageEvent event) {
-        if (!crippledEntities.contains(event.getEntity().getUniqueId())) return;
+        if (!crippledEntities.contains(event.getMob().getUniqueId())) return;
         double percent = PERCENT / 100;
         double reduced = event.getAmount() * percent;
         event.setAmount((int) (event.getAmount() - reduced));

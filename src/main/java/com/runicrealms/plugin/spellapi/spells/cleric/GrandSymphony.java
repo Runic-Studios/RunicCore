@@ -125,7 +125,7 @@ public class GrandSymphony extends Spell implements RadiusSpell, MagicDamageSpel
      */
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     private void onMobDamage(MobDamageEvent event) {
-        Long lastUsed = this.debuffed.get(event.getEntity().getUniqueId());
+        Long lastUsed = this.debuffed.get(event.getMob().getUniqueId());
 
         if (lastUsed == null || System.currentTimeMillis() > lastUsed + (this.debuffDuration * 1000)) {
             return;

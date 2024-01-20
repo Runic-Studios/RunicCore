@@ -86,7 +86,7 @@ public class Devour extends Spell implements DurationSpell, MagicDamageSpell, Ra
     public void onMobDamage(MobDamageEvent event) {
         if (debuffedEntities.isEmpty()) return;
         if (event.isCancelled()) return;
-        if (!debuffedEntities.contains(event.getEntity().getUniqueId())) return;
+        if (!debuffedEntities.contains(event.getMob().getUniqueId())) return;
         double reducedAmount = event.getAmount() * percent;
         event.setAmount((int) (event.getAmount() - reducedAmount));
     }
