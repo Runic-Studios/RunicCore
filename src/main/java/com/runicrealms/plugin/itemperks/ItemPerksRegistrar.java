@@ -17,6 +17,7 @@ public class ItemPerksRegistrar {
         RunicItemsAPI.getItemPerkManager().registerItemPerk(new TacticianPerk());
         RunicItemsAPI.getItemPerkManager().registerItemPerk(new FortitudePerk());
         RunicItemsAPI.getItemPerkManager().registerItemPerk(new InfernalPerk());
+        RunicItemsAPI.getItemPerkManager().registerItemPerk(new WintersEdge2023Perk());
     }
 
     private void registerIgnarothPerks() {

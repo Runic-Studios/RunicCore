@@ -69,5 +69,4 @@ public class StoneSkinPerk extends ItemPerkHandler {
     private void onMobDamage(MobDamageEvent event) {
         this.onDamage(event);
     }
-
 }
