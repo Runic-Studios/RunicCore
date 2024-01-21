@@ -1,11 +1,12 @@
 package com.runicrealms.plugin.spellapi.spells.mage;
 
+import com.runicrealms.plugin.api.event.BasicAttackEvent;
 import com.runicrealms.plugin.common.CharacterClass;
+import com.runicrealms.plugin.events.MobDamageEvent;
 import com.runicrealms.plugin.spellapi.effect.IceBarrierEffect;
 import com.runicrealms.plugin.spellapi.effect.event.SpellEffectEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
-import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 
@@ -37,6 +38,7 @@ public class Glacier extends Spell implements DurationSpell {
 
     @Override
     public void loadSpellSpecificData(Map<String, Object> spellData) {
+        super.loadSpellSpecificData(spellData);
         Number maxStacks = (Number) spellData.getOrDefault("max-stacks", 5);
         setMaxStacks(maxStacks.doubleValue());
     }
@@ -46,8 +48,25 @@ public class Glacier extends Spell implements DurationSpell {
         UUID uuid = event.getSpellEffect().getCaster().getUniqueId();
         if (!hasPassive(uuid, this.getName())) return;
         if (!(event.getSpellEffect() instanceof IceBarrierEffect iceBarrierEffect)) return;
-        Bukkit.broadcastMessage("sanity ice barrier found");
         iceBarrierEffect.setMaxStacks((int) this.maxStacks);
+    }
+
+    @EventHandler
+    public void onBasicAttack(BasicAttackEvent event) {
+        UUID uuid = event.getPlayer().getUniqueId();
+        if (!hasPassive(uuid, this.getName())) return;
+        // todo: if doesnt have effect return
+        // todo: if doesnt have max stacks return
+        // todo: if max stacks, slow
+    }
+
+    @EventHandler
+    public void onMobDamage(MobDamageEvent event) {
+        UUID uuid = event.getVictim().getUniqueId();
+        if (!hasPassive(uuid, this.getName())) return;
+        // todo: if doesnt have effect return
+        // todo: if doesnt have max stacks return
+        // todo: if max stacks, slow
     }
 
     public void setMaxStacks(double maxStacks) {
