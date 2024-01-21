@@ -274,7 +274,11 @@ public class StatusEffectManager implements Listener, StatusEffectAPI {
             statusEffectMap.put(uuid, new ConcurrentHashMap<>());
         }
         statusEffectMap.get(uuid).put(runicStatusEffect, Pair.pair(System.currentTimeMillis(), durationInSecs));
-        livingEntity.getWorld().playSound(livingEntity.getLocation(), runicStatusEffect.getSound(), 0.25f, 1.0f);
+
+        if (event.willPlaySound()) {
+            livingEntity.getWorld().playSound(livingEntity.getLocation(), runicStatusEffect.getSound(), 0.25f, 1.0f);
+        }
+
         if (livingEntity instanceof Player && event.willDisplayMessage()) {
             livingEntity.sendMessage(runicStatusEffect.getMessage());
         }

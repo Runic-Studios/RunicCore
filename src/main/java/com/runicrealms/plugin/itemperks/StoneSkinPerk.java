@@ -1,6 +1,7 @@
 package com.runicrealms.plugin.itemperks;
 
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.api.event.StatusEffectEvent;
 import com.runicrealms.plugin.events.EnvironmentDamageEvent;
 import com.runicrealms.plugin.events.MagicDamageEvent;
 import com.runicrealms.plugin.events.MobDamageEvent;
@@ -68,5 +69,14 @@ public class StoneSkinPerk extends ItemPerkHandler {
     @EventHandler(ignoreCancelled = true)
     private void onMobDamage(MobDamageEvent event) {
         this.onDamage(event);
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    private void onStatusEffect(StatusEffectEvent event) {
+        if (event.getRunicStatusEffect() != RunicStatusEffect.SLOW_II || !(event.getLivingEntity() instanceof Player player) || !this.isActive(player)) {
+            return;
+        }
+
+        event.setPlaySound(false);
     }
 }

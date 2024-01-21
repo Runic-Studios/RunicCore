@@ -19,6 +19,7 @@ public class StatusEffectEvent extends Event implements Cancellable {
     private final boolean displayMessage;
     private final LivingEntity applier;
     private boolean isCancelled;
+    private boolean playSound;
 
     /**
      * @param livingEntity      entity who gained the status effect
@@ -32,6 +33,7 @@ public class StatusEffectEvent extends Event implements Cancellable {
         this.durationInSeconds = durationInSeconds;
         this.displayMessage = displayMessage;
         this.applier = applier;
+        this.playSound = true;
     }
 
     public static HandlerList getHandlerList() {
@@ -64,6 +66,14 @@ public class StatusEffectEvent extends Event implements Cancellable {
 
     public boolean willDisplayMessage() {
         return displayMessage;
+    }
+
+    public boolean willPlaySound() {
+        return this.playSound;
+    }
+
+    public void setPlaySound(boolean playSound) {
+        this.playSound = playSound;
     }
 
     @Nullable
