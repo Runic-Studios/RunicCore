@@ -1,20 +1,26 @@
 package com.runicrealms.plugin.itemperks;
 
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.dynamicitem.DynamicItemManager;
 import com.runicrealms.plugin.runicitems.Stat;
+import com.runicrealms.plugin.runicitems.dynamic.DynamicItemTextPlaceholder;
 import com.runicrealms.plugin.runicitems.item.perk.ItemPerkHandler;
+import com.runicrealms.plugin.runicitems.item.template.RunicItemTemplate;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
+import de.tr7zw.nbtapi.NBTItem;
 import net.raidstone.wgevents.events.RegionEnteredEvent;
 import net.raidstone.wgevents.events.RegionLeftEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -41,7 +47,7 @@ public class IgnarothPerk extends ItemPerkHandler {
 
     @Override
     public void onChange(Player player, int stacks) {
-        boolean inside = this.isInRegion(player); //can this be done async? xD
+        boolean inside = isInRegion(player); //can this be done async? xD
 
         if (stacks > 0 && inside && !this.alreadyActive.contains(player.getUniqueId())) {
             RunicCore.getStatAPI().getPlayerStatContainer(player.getUniqueId()).increaseStat(this.stat, amount);
@@ -81,7 +87,7 @@ public class IgnarothPerk extends ItemPerkHandler {
         Bukkit.getScheduler().runTaskAsynchronously(RunicCore.getInstance(), () -> this.onChange(player, 0));
     }
 
-    private boolean isInRegion(@NotNull Player player) {
+    public static boolean isInRegion(@NotNull Player player) {
         World world = BukkitAdapter.adapt(player.getWorld());
         RegionManager regionManager = WorldGuard.getInstance().getPlatform().getRegionContainer().get(world);
 
@@ -98,5 +104,17 @@ public class IgnarothPerk extends ItemPerkHandler {
         }
 
         return false;
+    }
+
+    public static class InsideLairTextPlaceholder extends DynamicItemTextPlaceholder {
+        public InsideLairTextPlaceholder() {
+            super("inside-ignaroths-lair");
+        }
+
+        @Nullable
+        @Override
+        public String generateReplacement(Player viewer, ItemStack item, NBTItem itemNBT, RunicItemTemplate template) {
+            return isInRegion(viewer) ? DynamicItemManager.CHECKMARK : DynamicItemManager.X;
+        }
     }
 }
