@@ -1,8 +1,11 @@
 package com.runicrealms.plugin.spellapi.spellutil.particles;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.Particle;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
@@ -54,6 +57,9 @@ public class HelixParticleFrame implements ParticleFormat {
             if (particle == Particle.REDSTONE) {
                 player.getWorld().spawnParticle(particle, location.add(vector).add(constantIncrement),
                         1, 0, 0, 0, 0, new Particle.DustOptions(color[0], 1));
+            } else if (particle == Particle.BLOCK_CRACK) {
+                BlockData blockData = Bukkit.createBlockData(Material.PACKED_ICE);
+                player.getWorld().spawnParticle(particle, location.add(vector).add(constantIncrement), 1, 0, 0, 0, 0, blockData);
             } else {
                 player.getWorld().spawnParticle(particle, location.add(vector).add(constantIncrement), 1, 0, 0, 0, 0);
             }

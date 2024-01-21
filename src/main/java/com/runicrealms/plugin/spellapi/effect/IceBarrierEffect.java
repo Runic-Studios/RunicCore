@@ -95,15 +95,15 @@ public class IceBarrierEffect implements StackEffect {
 
     @Override
     public void tick(int globalCounter) {
+        if (globalCounter % 40 == 0) { // Show particle effect once per two seconds
+            new HelixParticleFrame(1.0F, 30, 20.0F).playParticle(caster, Particle.BLOCK_CRACK, caster.getLocation());
+        }
         if (globalCounter < nextTickCounter) {
             return;
         }
         if (caster.isDead()) {
             cancel();
             return;
-        }
-        if (globalCounter % 20 == 0) { // Show particle effect once per second
-            new HelixParticleFrame(1.0F, 30, 20.0F).playParticle(caster, Particle.SNOWBALL, caster.getLocation());
         }
         // Decrement one stack every stackDuration seconds
         if (stacks.get() > 0) {

@@ -1,8 +1,10 @@
 package com.runicrealms.plugin.spellapi.spells.mage;
 
+import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.common.CharacterClass;
+import com.runicrealms.plugin.events.LeaveCombatEvent;
+import com.runicrealms.plugin.events.MobDamageEvent;
 import com.runicrealms.plugin.events.PhysicalDamageEvent;
-import com.runicrealms.plugin.rdb.event.CharacterQuitEvent;
 import com.runicrealms.plugin.runicitems.Stat;
 import com.runicrealms.plugin.spellapi.effect.ChilledEffect;
 import com.runicrealms.plugin.spellapi.effect.IceBarrierEffect;
@@ -16,7 +18,6 @@ import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -24,10 +25,9 @@ import java.util.UUID;
 /**
  * First passive for Cryomancer
  *
- * @author BoBoBalloon
+ * @author BoBoBalloon, Skyfallin
  */
 public class Shatter extends Spell implements AttributeSpell, MagicDamageSpell, ShieldingSpell {
-    private final Map<UUID, Long> cooldown;
     private double baseValue;
     private double damage;
     private double damagePerLevel;
@@ -40,7 +40,6 @@ public class Shatter extends Spell implements AttributeSpell, MagicDamageSpell, 
 
     public Shatter() {
         super("Shatter", CharacterClass.MAGE);
-        this.cooldown = new HashMap<>();
         this.setIsPassive(true);
         Stat stat = Stat.getFromName(statName);
         String prefix = stat == null ? "" : stat.getPrefix();
@@ -52,7 +51,8 @@ public class Shatter extends Spell implements AttributeSpell, MagicDamageSpell, 
                 "\n&fIce Barrier &7stacks reduce mob and physical damage taken by " +
                 "(" + baseValue + " + &f" + multiplier + "x &e" + prefix + "&7)%! " +
                 "Max " + maxStacks + " stacks. " +
-                "Stacks expire after " + stackDuration + "s.");
+                "Stacks expire after " + stackDuration + "s. " +
+                "Lose all stacks on exit combat.");
     }
 
     @Override
@@ -106,6 +106,19 @@ public class Shatter extends Spell implements AttributeSpell, MagicDamageSpell, 
 
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     private void onPhysicalDamage(PhysicalDamageEvent event) {
+        if (!event.isBasicAttack()) return;
+
+        // Handle case of victim with ice barrier stacks reducing damage
+        UUID victimId = event.getVictim().getUniqueId();
+        Optional<SpellEffect> iceBarrierOptVictim = this.getSpellEffect(victimId, victimId, SpellEffectType.ICE_BARRIER);
+        if (iceBarrierOptVictim.isPresent()) {
+            double statValue = RunicCore.getStatAPI().getStat(victimId, statName);
+            double multiplierPercent = (multiplier * statValue);
+            double damageToReduce = ((baseValue + multiplierPercent) / 100) * event.getAmount();
+            event.setAmount((int) (event.getAmount() - damageToReduce));
+        }
+
+        // Handle case of attacker getting ice barrier stack
         if (!this.hasPassive(event.getPlayer().getUniqueId(), this.getName())) {
             return;
         }
@@ -119,9 +132,9 @@ public class Shatter extends Spell implements AttributeSpell, MagicDamageSpell, 
 
         DamageUtil.damageEntitySpell(damage, event.getVictim(), event.getPlayer(), this);
 
-        Optional<SpellEffect> iceBarrierOpt = this.getSpellEffect(uuid, uuid, SpellEffectType.ICE_BARRIER);
-        if (iceBarrierOpt.isPresent()) {
-            IceBarrierEffect iceBarrierEffect = (IceBarrierEffect) iceBarrierOpt.get();
+        Optional<SpellEffect> iceBarrierOptAttacker = this.getSpellEffect(uuid, uuid, SpellEffectType.ICE_BARRIER);
+        if (iceBarrierOptAttacker.isPresent()) {
+            IceBarrierEffect iceBarrierEffect = (IceBarrierEffect) iceBarrierOptAttacker.get();
             iceBarrierEffect.increment(event.getVictim().getEyeLocation(), 1);
         } else {
             IceBarrierEffect iceBarrierEffect = new IceBarrierEffect(
@@ -135,9 +148,27 @@ public class Shatter extends Spell implements AttributeSpell, MagicDamageSpell, 
         }
     }
 
-    @EventHandler
-    private void onCharacterQuit(CharacterQuitEvent event) {
-        this.cooldown.remove(event.getPlayer().getUniqueId());
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    public void onMobDamage(MobDamageEvent event) {
+        // Handle case of victim with ice barrier stacks reducing damage
+        UUID victimId = event.getVictim().getUniqueId();
+        Optional<SpellEffect> iceBarrierOptVictim = this.getSpellEffect(victimId, victimId, SpellEffectType.ICE_BARRIER);
+        if (iceBarrierOptVictim.isPresent()) {
+            double statValue = RunicCore.getStatAPI().getStat(victimId, statName);
+            double multiplierPercent = (multiplier * statValue);
+            double damageToReduce = ((baseValue + multiplierPercent) / 100) * event.getAmount();
+            event.setAmount((int) (event.getAmount() - damageToReduce));
+        }
+    }
+
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    public void onLeaveCombat(LeaveCombatEvent event) {
+        UUID uuid = event.getPlayer().getUniqueId();
+        Optional<SpellEffect> spellEffectOpt = this.getSpellEffect(uuid, uuid, SpellEffectType.ICE_BARRIER);
+        if (spellEffectOpt.isPresent()) {
+            IceBarrierEffect iceBarrierEffect = (IceBarrierEffect) spellEffectOpt.get();
+            iceBarrierEffect.cancel();
+        }
     }
 
     @Override

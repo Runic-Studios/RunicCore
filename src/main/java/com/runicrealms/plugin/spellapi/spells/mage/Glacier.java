@@ -1,9 +1,12 @@
 package com.runicrealms.plugin.spellapi.spells.mage;
 
-import com.runicrealms.plugin.api.event.BasicAttackEvent;
 import com.runicrealms.plugin.common.CharacterClass;
 import com.runicrealms.plugin.events.MobDamageEvent;
+import com.runicrealms.plugin.events.PhysicalDamageEvent;
 import com.runicrealms.plugin.spellapi.effect.IceBarrierEffect;
+import com.runicrealms.plugin.spellapi.effect.RunicStatusEffect;
+import com.runicrealms.plugin.spellapi.effect.SpellEffect;
+import com.runicrealms.plugin.spellapi.effect.SpellEffectType;
 import com.runicrealms.plugin.spellapi.effect.event.SpellEffectEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
@@ -11,6 +14,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 
@@ -52,21 +56,30 @@ public class Glacier extends Spell implements DurationSpell {
     }
 
     @EventHandler
-    public void onBasicAttack(BasicAttackEvent event) {
-        UUID uuid = event.getPlayer().getUniqueId();
-        if (!hasPassive(uuid, this.getName())) return;
-        // todo: if doesnt have effect return
-        // todo: if doesnt have max stacks return
-        // todo: if max stacks, slow
+    public void onBasicAttack(PhysicalDamageEvent event) {
+        if (!event.isBasicAttack()) return;
+        UUID victimId = event.getVictim().getUniqueId();
+        if (!hasPassive(victimId, this.getName())) return;
+        if (!hasMaxIceBarrierStacks(victimId)) return;
+        this.addStatusEffect(event.getPlayer(), RunicStatusEffect.SLOW_II, this.duration, false, event.getPlayer());
     }
 
     @EventHandler
     public void onMobDamage(MobDamageEvent event) {
         UUID uuid = event.getVictim().getUniqueId();
         if (!hasPassive(uuid, this.getName())) return;
-        // todo: if doesnt have effect return
-        // todo: if doesnt have max stacks return
-        // todo: if max stacks, slow
+        if (!hasMaxIceBarrierStacks(uuid)) return;
+        this.addStatusEffect(event.getVictim(), RunicStatusEffect.SLOW_II, this.duration, false);
+    }
+
+    private boolean hasMaxIceBarrierStacks(UUID uuid) {
+        Optional<SpellEffect> spellEffectOpt = this.getSpellEffect(uuid, uuid, SpellEffectType.ICE_BARRIER);
+        if (spellEffectOpt.isEmpty()) {
+            return false;
+        } else {
+            IceBarrierEffect iceBarrierEffect = (IceBarrierEffect) spellEffectOpt.get();
+            return iceBarrierEffect.getStacks().get() == this.maxStacks;
+        }
     }
 
     public void setMaxStacks(double maxStacks) {
