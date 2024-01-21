@@ -9,7 +9,7 @@ import org.bukkit.event.server.ServerListPingEvent;
 import org.jetbrains.annotations.NotNull;
 
 public class ServerListPingListener implements Listener {
-    private static final String PREFIX = ColorUtil.format("                &d&lRunic Realms &r" + RunicCore.VERSION_NUMBER + "&r\n              ");
+    private static final String PREFIX = ColorUtil.format("                &d&lRunic Realms &r" + RunicCore.VERSION_NUMBER + "&r\n                 ");
     private static String SERVER_MOTD;
 
     /**
