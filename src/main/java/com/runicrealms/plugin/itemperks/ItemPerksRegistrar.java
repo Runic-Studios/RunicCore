@@ -25,6 +25,8 @@ public class ItemPerksRegistrar {
      * A method that handles the 25 item perks for the offhand items in ignaroth's lair
      */
     private void registerIgnarothPerks() {
+        RunicItemsAPI.getDynamicItemHandler().registerTextPlaceholder(new IgnarothPerk.InsideLairTextPlaceholder());
+
         int[] amount = {20, 30, 40, 55, 80};
         for (Stat stat : Stat.values()) {
             for (int i = 1; i <= amount.length; i++) {
