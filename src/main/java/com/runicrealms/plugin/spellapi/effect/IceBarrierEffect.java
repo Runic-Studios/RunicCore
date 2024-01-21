@@ -1,7 +1,6 @@
 package com.runicrealms.plugin.spellapi.effect;
 
-import com.runicrealms.plugin.spellapi.spellutil.particles.Cone;
-import org.bukkit.Color;
+import com.runicrealms.plugin.spellapi.spellutil.particles.HelixParticleFrame;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
@@ -42,29 +41,13 @@ public class IceBarrierEffect implements StackEffect {
         executeSpellEffect();
     }
 
-    public int getMaxStacks() {
-        return maxStacks;
-    }
-
     public void setMaxStacks(int maxStacks) {
         this.maxStacks = maxStacks;
-    }
-
-    public int getStackDuration() {
-        return stackDuration;
-    }
-
-    public int getNextTickCounter() {
-        return nextTickCounter;
     }
 
     @Override
     public void setNextTickCounter(int nextTickCounter) {
         this.nextTickCounter = nextTickCounter;
-    }
-
-    public Location getHologramLocation() {
-        return hologramLocation;
     }
 
     public void setHologramLocation(Location hologramLocation) {
@@ -119,6 +102,9 @@ public class IceBarrierEffect implements StackEffect {
             cancel();
             return;
         }
+        if (globalCounter % 20 == 0) { // Show particle effect once per second
+            new HelixParticleFrame(1.0F, 30, 20.0F).playParticle(caster, Particle.SNOWBALL, caster.getLocation());
+        }
         // Decrement one stack every stackDuration seconds
         if (stacks.get() > 0) {
             stacks.getAndDecrement();
@@ -131,11 +117,7 @@ public class IceBarrierEffect implements StackEffect {
 
     @Override
     public void executeSpellEffect() {
-        int stacks = this.stacks.get();
         stackHologram.showHologram(this.hologramLocation, this.stacks.get());
-        if (stacks == this.maxStacks) {
-            Cone.coneEffect(caster, Particle.CRIT_MAGIC, stackDuration, 0, 20, Color.BLUE);
-        }
     }
 
     @Override

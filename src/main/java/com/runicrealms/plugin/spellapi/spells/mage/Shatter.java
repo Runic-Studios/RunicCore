@@ -4,18 +4,21 @@ import com.runicrealms.plugin.common.CharacterClass;
 import com.runicrealms.plugin.events.PhysicalDamageEvent;
 import com.runicrealms.plugin.rdb.event.CharacterQuitEvent;
 import com.runicrealms.plugin.runicitems.Stat;
-import com.runicrealms.plugin.spellapi.effect.RunicStatusEffect;
+import com.runicrealms.plugin.spellapi.effect.ChilledEffect;
+import com.runicrealms.plugin.spellapi.effect.IceBarrierEffect;
+import com.runicrealms.plugin.spellapi.effect.SpellEffect;
+import com.runicrealms.plugin.spellapi.effect.SpellEffectType;
 import com.runicrealms.plugin.spellapi.spelltypes.AttributeSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.ShieldingSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.utilities.DamageUtil;
-import org.bukkit.Sound;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -103,27 +106,33 @@ public class Shatter extends Spell implements AttributeSpell, MagicDamageSpell, 
 
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     private void onPhysicalDamage(PhysicalDamageEvent event) {
-        if (!this.hasPassive(event.getPlayer().getUniqueId(), this.getName()) ||
-                (!this.hasStatusEffect(event.getVictim().getUniqueId(), RunicStatusEffect.ROOT) && !this.hasStatusEffect(event.getVictim().getUniqueId(), RunicStatusEffect.STUN))) {
+        if (!this.hasPassive(event.getPlayer().getUniqueId(), this.getName())) {
             return;
         }
 
-        Long cooldown = this.cooldown.get(event.getPlayer().getUniqueId());
-        long now = System.currentTimeMillis();
+        UUID uuid = event.getPlayer().getUniqueId();
+        Optional<SpellEffect> spellEffectOpt = this.getSpellEffect(uuid, event.getVictim().getUniqueId(), SpellEffectType.CHILLED);
+        if (spellEffectOpt.isEmpty()) return;
 
-        if (cooldown != null && cooldown + (this.getCooldown() * 1000) > now) { //multiply by 1000 to convert seconds to milliseconds
-            return;
+        ChilledEffect chilledEffect = (ChilledEffect) spellEffectOpt.get();
+        chilledEffect.cancel();
+
+        DamageUtil.damageEntitySpell(damage, event.getVictim(), event.getPlayer(), this);
+
+        Optional<SpellEffect> iceBarrierOpt = this.getSpellEffect(uuid, uuid, SpellEffectType.ICE_BARRIER);
+        if (iceBarrierOpt.isPresent()) {
+            IceBarrierEffect iceBarrierEffect = (IceBarrierEffect) iceBarrierOpt.get();
+            iceBarrierEffect.increment(event.getVictim().getEyeLocation(), 1);
+        } else {
+            IceBarrierEffect iceBarrierEffect = new IceBarrierEffect(
+                    event.getPlayer(),
+                    (int) this.maxStacks,
+                    (int) this.stackDuration,
+                    1,
+                    event.getVictim().getEyeLocation()
+            );
+            iceBarrierEffect.initialize();
         }
-
-        this.cooldown.put(event.getPlayer().getUniqueId(), now);
-
-        this.removeStatusEffect(event.getVictim(), RunicStatusEffect.ROOT);
-        this.removeStatusEffect(event.getVictim(), RunicStatusEffect.STUN);
-
-        event.getPlayer().getWorld().playSound(event.getVictim().getLocation(), Sound.BLOCK_GLASS_BREAK, 0.5F, 1);
-
-        DamageUtil.damageEntitySpell(this.damage, event.getVictim(), event.getPlayer(), false, this);
-        this.shieldPlayer(event.getPlayer(), event.getPlayer(), this.shield, this);
     }
 
     @EventHandler
