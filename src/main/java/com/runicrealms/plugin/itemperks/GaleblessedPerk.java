@@ -63,7 +63,9 @@ public class GaleblessedPerk extends ItemPerkHandler {
     private void onCombatEnter(EnterCombatEvent event) {
         if (event.isCancelled()) return;
         AttributeModifier modifier = activeGaleblessed.get(event.getPlayer().getUniqueId());
-        if (modifier != null && !deactivationTasks.containsKey(event.getPlayer().getUniqueId())) { // we have a modifier and are not already active
+        if (modifier != null
+                && !deactivationTasks.containsKey(event.getPlayer().getUniqueId())
+                && !cooldownTasks.containsKey(event.getPlayer().getUniqueId())) { // we have a modifier and are not already active
             event.getPlayer().getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).addModifier(modifier);
             event.getPlayer().sendMessage(
                     ChatColor.AQUA + "" + ChatColor.ITALIC + "Galeblessed: +"
