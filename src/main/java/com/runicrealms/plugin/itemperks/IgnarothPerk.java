@@ -2,10 +2,13 @@ package com.runicrealms.plugin.itemperks;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.dynamicitem.DynamicItemManager;
+import com.runicrealms.plugin.runicitems.RunicItemsAPI;
 import com.runicrealms.plugin.runicitems.Stat;
 import com.runicrealms.plugin.runicitems.dynamic.DynamicItemTextPlaceholder;
 import com.runicrealms.plugin.runicitems.item.perk.ItemPerkHandler;
 import com.runicrealms.plugin.runicitems.item.template.RunicItemTemplate;
+import com.runicrealms.plugin.runicitems.player.FlatStatsModifier;
+import com.runicrealms.plugin.runicitems.player.PlayerEquipmentCache;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldguard.WorldGuard;
@@ -23,6 +26,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -33,34 +37,38 @@ import java.util.UUID;
  */
 public class IgnarothPerk extends ItemPerkHandler {
     private final Set<UUID> alreadyActive; //this is necessary because the built-in set is updated before onChange is called
-    private final Stat stat;
-    private final int amount;
+    private final FlatStatsModifier modifier;
 
     private static final String REGION = "ignaroth_lair";
 
     public IgnarothPerk(@NotNull String identifier, @NotNull Stat stat, int amount) {
         super(identifier);
         this.alreadyActive = new HashSet<>();
-        this.stat = stat;
-        this.amount = amount;
+        this.modifier = new FlatStatsModifier(Map.of(stat, amount), null, 0);
     }
 
     @Override
     public void onChange(Player player, int stacks) {
         boolean inside = isInRegion(player); //can this be done async? xD
 
+        PlayerEquipmentCache cache = RunicItemsAPI.getCachedPlayerItems(player.getUniqueId());
+
+        if (cache == null) {
+            return;
+        }
+
         if (stacks > 0 && inside && !this.alreadyActive.contains(player.getUniqueId())) {
-            RunicCore.getStatAPI().getPlayerStatContainer(player.getUniqueId()).increaseStat(this.stat, amount);
+            cache.addModifier(this.modifier);
             this.alreadyActive.add(player.getUniqueId());
         }
 
-        if (stacks <= 0 && inside && this.alreadyActive.contains(player.getUniqueId())) { //NOT UNNECESSARY
-            //remove buff
+        if (stacks <= 0 && inside && this.alreadyActive.contains(player.getUniqueId())) {
+            cache.removeModifier(this.modifier);
             this.alreadyActive.remove(player.getUniqueId());
         }
 
-        if (!inside && this.alreadyActive.contains(player.getUniqueId())) { //NOT UNNECESSARY
-            //remove buff
+        if (!inside && this.alreadyActive.contains(player.getUniqueId())) {
+            cache.removeModifier(this.modifier);
             this.alreadyActive.remove(player.getUniqueId());
         }
     }
