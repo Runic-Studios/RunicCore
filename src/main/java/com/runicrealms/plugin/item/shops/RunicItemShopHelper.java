@@ -8,7 +8,6 @@ import com.runicrealms.plugin.common.util.ChatUtils;
 import com.runicrealms.plugin.common.util.ColorUtil;
 import com.runicrealms.plugin.common.util.Pair;
 import com.runicrealms.plugin.runicitems.RunicItemsAPI;
-import com.runicrealms.plugin.runicitems.item.stats.RunicItemTag;
 import com.runicrealms.plugin.runicitems.item.template.RunicItemTemplate;
 import com.runicrealms.plugin.runicitems.util.CurrencyUtil;
 import org.bukkit.Bukkit;
@@ -338,7 +337,7 @@ public class RunicItemShopHelper {
 
             RunicItemTemplate template = RunicItemsAPI.getItemStackTemplate(item);
 
-            if (template != null && (RunicItemShopHelper.isDungeonKey(template.getId()) || template.getTags().contains(RunicItemTag.DUNGEON_ITEM))) {
+            if (template != null && (RunicItemShopHelper.isDungeonKey(template.getId()))) { //|| template.getTags().contains(RunicItemTag.DUNGEON_ITEM)
                 item.setAmount(0);
                 removedItem = true;
             }
