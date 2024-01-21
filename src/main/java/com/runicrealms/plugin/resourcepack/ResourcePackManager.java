@@ -14,7 +14,7 @@ import java.util.Map;
 import java.util.UUID;
 
 public class ResourcePackManager implements Listener {
-    private static final String URL = "https://www.dropbox.com/scl/fi/rwmumim85if4d3gd5d4qw/RR-Resourcepack-12.29.23.zip?rlkey=spvzo2azwoy68qjyclc12gjsr&dl=1";
+    private static final String URL = "https://www.dropbox.com/scl/fi/li37h7klt2ejwqmnz9w14/RR-Resourcepack-01.21.24.zip?rlkey=cpp6bbapf9690nnmf5pa6vbr3&dl=1";
     private static final Map<UUID, PlayerResourcePackStatusEvent.Status> STATUS = new HashMap<>();
 
     public static void openPackForPlayer(@NotNull Player player) {
