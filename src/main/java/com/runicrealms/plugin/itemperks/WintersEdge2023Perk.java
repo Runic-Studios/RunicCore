@@ -1,6 +1,6 @@
 package com.runicrealms.plugin.itemperks;
 
-import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import com.runicrealms.plugin.events.MagicDamageEvent;
 import com.runicrealms.plugin.events.PhysicalDamageEvent;
 import com.runicrealms.plugin.events.RunicDamageEvent;
@@ -14,14 +14,14 @@ import org.bukkit.event.EventHandler;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * A class that models the gluttony item perk
+ * A class that models the winter's edge item perk
  *
  * @author BoBoBalloon
  */
 public class WintersEdge2023Perk extends ItemPerkHandler {
     private final double damagePercent;
 
-    private static final ImmutableList<String> MOB_IDS = ImmutableList.copyOf(new String[]{"winter-2023-elite-20", "winter-2023-elite-40", "winter-2023-elite-60", "winter-2023-world-boss"});
+    private static final ImmutableSet<String> MOB_IDS = ImmutableSet.of("winter-2023-elite-20", "winter-2023-elite-40", "winter-2023-elite-60", "winter-2023-world-boss");
 
     public WintersEdge2023Perk() {
         super("wintersedge2023");

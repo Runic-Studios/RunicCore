@@ -18,8 +18,12 @@ public class ItemPerksRegistrar {
         RunicItemsAPI.getItemPerkManager().registerItemPerk(new FortitudePerk());
         RunicItemsAPI.getItemPerkManager().registerItemPerk(new InfernalPerk());
         RunicItemsAPI.getItemPerkManager().registerItemPerk(new WintersEdge2023Perk());
+        RunicItemsAPI.getItemPerkManager().registerItemPerk(new PurityPerk());
     }
 
+    /**
+     * A method that handles the 25 item perks for the offhand items in ignaroth's lair
+     */
     private void registerIgnarothPerks() {
         int[] amount = {20, 30, 40, 55, 80};
         for (Stat stat : Stat.values()) {
