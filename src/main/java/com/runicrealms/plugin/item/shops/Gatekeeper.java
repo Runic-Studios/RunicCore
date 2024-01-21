@@ -70,7 +70,7 @@ public class Gatekeeper extends RunicShopGeneric {
 
                 member.getWorld().playSound(member.getLocation(), Sound.ENTITY_ENDERMAN_TELEPORT, 0.5f, 1.2f);
                 member.getWorld().playSound(member.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 1.0f);
-                RunicItemShopHelper.clearDungeonItems(member);
+                //RunicItemShopHelper.clearDungeonItems(member);
             }
         };
     }
