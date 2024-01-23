@@ -23,7 +23,7 @@ dependencies {
     compileOnly(commonLibs.paper)
     compileOnly(commonLibs.protocollib)
     compileOnly(commonLibs.worldguardcore)
-    compileOnly(commonLibs.worldguardlegacy)
+    compileOnly(commonLibs.worldguardbukkit)
     compileOnly(commonLibs.viaversion)
     compileOnly(commonLibs.acf)
     compileOnly(commonLibs.luckperms)
