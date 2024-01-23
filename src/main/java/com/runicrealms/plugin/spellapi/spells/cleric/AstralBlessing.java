@@ -35,7 +35,7 @@ public class AstralBlessing extends Spell implements DurationSpell, ShieldingSpe
         this.setDescription("Enemies hit by &aStarlight &7are marked for the next " + duration + "s. " +
                 "Basic attacking a marked player consumes the " +
                 "mark and applies a (" + shield + " + &f" + shieldPerLevel +
-                "x&7 lvl) health shield to the " +
+                "x&7 lvl) health &eshield &7to the " +
                 "ally who struck the marked player.");
     }
 

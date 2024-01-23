@@ -32,7 +32,7 @@ public class SnareTrap extends Spell implements DurationSpell, RadiusSpell, Warm
     private double trapDuration;
     private double warmup;
     private double radius;
-    private double stunDuration;
+    private double rootDuration;
     private double baseDamage;
     private double damagePerLevel;
 
@@ -42,8 +42,9 @@ public class SnareTrap extends Spell implements DurationSpell, RadiusSpell, Warm
                 "s and lasts for " + this.trapDuration + "s. " +
                 "The first enemy to step over the trap triggers it, " +
                 "causing all enemies within " + this.radius + " " +
-                "blocks to take (" + this.baseDamage + " + &f" + this.damagePerLevel + "x&7 " + " lvl) physical⚔ damage " +
-                "while being rooted for " + this.stunDuration + "s!");
+                "blocks to take (" + this.baseDamage + " + &f" +
+                this.damagePerLevel + "x&7 " + " lvl) physical⚔ damage, " +
+                "then become rooted for " + this.rootDuration + "s!");
     }
 
     @Override
@@ -86,19 +87,19 @@ public class SnareTrap extends Spell implements DurationSpell, RadiusSpell, Warm
 
     @Override
     public double getDuration() {
-        return stunDuration;
+        return rootDuration;
     }
 
     @Override
     public void setDuration(double duration) {
-        this.stunDuration = duration;
+        this.rootDuration = duration;
     }
 
     @Override
     public void loadDurationData(Map<String, Object> spellData) {
         Number stunDuration = (Number) spellData.getOrDefault("stun-duration", 0);
         Number trapDuration = (Number) spellData.getOrDefault("trap-duration", 0);
-        this.stunDuration = stunDuration.doubleValue();
+        this.rootDuration = stunDuration.doubleValue();
         this.trapDuration = trapDuration.doubleValue();
     }
 
@@ -145,13 +146,13 @@ public class SnareTrap extends Spell implements DurationSpell, RadiusSpell, Warm
     private void springTrap(@NotNull LivingEntity target, @NotNull Player caster) {
         Location location = target.getLocation().clone();
         target.getWorld().spawnParticle(Particle.CRIT, location, 15, 0.25f, 0.25f, 0.25f, 0);
-        addStatusEffect(target, RunicStatusEffect.ROOT, stunDuration, true);
         DamageUtil.damageEntityPhysical(this.baseDamage, target, caster, false, true, false, this);
+        addStatusEffect(target, RunicStatusEffect.ROOT, rootDuration, true);
         if (!(target instanceof Player)) {
             // Mobs don't have a PlayerMoveEvent, so we keep teleporting them
             BukkitTask mobTeleportTask = Bukkit.getScheduler().runTaskTimer(RunicCore.getInstance(),
                     () -> target.teleport(location), 0, 10L);
-            Bukkit.getScheduler().runTaskLaterAsynchronously(RunicCore.getInstance(), mobTeleportTask::cancel, (int) stunDuration * 20L);
+            Bukkit.getScheduler().runTaskLaterAsynchronously(RunicCore.getInstance(), mobTeleportTask::cancel, (int) rootDuration * 20L);
         }
     }
 }

@@ -30,13 +30,11 @@ import org.bukkit.util.Vector;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class Meteor extends Spell implements MagicDamageSpell, RadiusSpell {
-    private static final int AMOUNT = 4;
     private static final int HEIGHT = 8;
     private static final int MAX_DIST = 12;
-    private static final double FIREBALL_SPEED = 1.25D;
+    private static final double METEOR_SPEED = 0.75D;
     private static final double RAY_SIZE = 1.0D;
     private final Set<UUID> meteorCasterSet = new HashSet<>();
     private double damage;
@@ -45,9 +43,8 @@ public class Meteor extends Spell implements MagicDamageSpell, RadiusSpell {
 
     public Meteor() {
         super("Meteor", CharacterClass.MAGE);
-        this.setDescription("You mark an area at your target " +
-                "enemy or location within " + MAX_DIST + " blocks! " +
-                "Four projectile meteors rain from the shower that deal " +
+        this.setDescription("You instantly drop a powerful meteor at your target " +
+                "enemy or location within " + MAX_DIST + " blocks, dealing " +
                 "(" + damage + " + &f" + damagePerLevel
                 + "x&7 lvl) magicʔ damage to enemies within " + radius + " blocks on impact!");
     }
@@ -77,7 +74,7 @@ public class Meteor extends Spell implements MagicDamageSpell, RadiusSpell {
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_TNT_PRIMED, 0.5f, 1.0f);
         final Location[] trailLoc = {location.clone().add(0, HEIGHT, 0)};
         VectorUtil.drawLine(player, Particle.FLAME, Color.WHITE, trailLoc[0], location.clone().subtract(0, 20, 0), 2.5D, 5);
-        summonMeteorShower(player, location);
+        summonMeteor(player, location);
     }
 
     /**
@@ -86,8 +83,10 @@ public class Meteor extends Spell implements MagicDamageSpell, RadiusSpell {
      */
     private void explode(Player player, Location location) {
         new HorizontalCircleFrame((float) radius, false).playParticle(player, Particle.FLAME, location, Color.RED);
+        player.getWorld().playSound(location, Sound.ENTITY_GENERIC_EXPLODE, 0.5F, 0.5F);
         player.getWorld().playSound(location, Sound.ENTITY_GENERIC_EXPLODE, 0.5F, 1.0F);
-        player.getWorld().spawnParticle(Particle.EXPLOSION_LARGE, location, 10, 0.25f, 0, 0.25f, 0);
+        player.getWorld().playSound(location, Sound.ENTITY_DRAGON_FIREBALL_EXPLODE, 0.5F, 0.5F);
+        player.getWorld().spawnParticle(Particle.EXPLOSION_LARGE, location, 20, 0.5f, 0.5, 0.5f, 0);
         for (Entity entity : player.getWorld().getNearbyEntities(location, radius, radius, radius, target -> isValidEnemy(player, target))) {
             DamageUtil.damageEntitySpell(damage, (LivingEntity) entity, player, this);
             player.getWorld().playSound(location, Sound.ENTITY_PLAYER_HURT, 0.5f, 1);
@@ -147,35 +146,28 @@ public class Meteor extends Spell implements MagicDamageSpell, RadiusSpell {
      * @param player   who cast the spell
      * @param location to spawn the meteor
      */
-    private void summonMeteorShower(Player player, Location location) {
+    private void summonMeteor(Player player, Location location) {
         meteorCasterSet.add(player.getUniqueId());
         final Location[] meteorLocation = {location.clone().add(0, HEIGHT, 0)};
-        AtomicInteger count = new AtomicInteger(0);
 
-        Bukkit.getScheduler().runTaskTimer(RunicCore.getInstance(), task -> {
-            if (count.get() >= AMOUNT) {
-                task.cancel();
-                meteorCasterSet.remove(player.getUniqueId());
+        Vector velocity = new Vector(0, -1, 0).multiply(METEOR_SPEED);
+        LargeFireball meteor = (LargeFireball) player.getWorld().spawnEntity(meteorLocation[0].setDirection(velocity), EntityType.FIREBALL);
+        EntityTrail.entityTrail(meteor, Particle.FLAME);
+        meteor.setInvulnerable(true);
+        meteor.setIsIncendiary(false);
+        meteor.setYield(0F);
+        meteor.setShooter(player);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 0.5f, 0.01f);
+
+        // Repeatedly set velocity to prevent players redirecting meteor
+        Bukkit.getScheduler().runTaskTimer(RunicCore.getInstance(), velocityTask -> {
+            if (!meteor.isDead()) {
+                meteor.setVelocity(velocity);
             } else {
-                count.set(count.get() + 1);
-                Vector velocity = new Vector(0, -1, 0).multiply(FIREBALL_SPEED);
-                LargeFireball meteor = (LargeFireball) player.getWorld().spawnEntity(meteorLocation[0].setDirection(velocity), EntityType.FIREBALL);
-                EntityTrail.entityTrail(meteor, Particle.FLAME);
-                meteor.setInvulnerable(true);
-                meteor.setIsIncendiary(false);
-                meteor.setYield(0F);
-                meteor.setShooter(player);
-                player.getWorld().playSound(player.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 0.5f, 0.2f);
-                // Repeatedly set velocity to prevent players redirecting meteor
-                Bukkit.getScheduler().runTaskTimer(RunicCore.getInstance(), velocityTask -> {
-                    if (!meteor.isDead()) {
-                        meteor.setVelocity(velocity);
-                    } else {
-                        velocityTask.cancel();
-                    }
-                }, 0, 2); //Every 2 ticks (1/10th of a second)
+                velocityTask.cancel();
+                meteorCasterSet.remove(player.getUniqueId());
             }
-        }, 0, 20);
+        }, 0, 2); //Every 2 ticks (1/10th of a second)
     }
 }
 

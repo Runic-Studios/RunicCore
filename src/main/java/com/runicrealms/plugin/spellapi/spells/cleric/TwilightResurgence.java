@@ -36,11 +36,11 @@ public class TwilightResurgence extends Spell implements DurationSpell, MagicDam
     public TwilightResurgence() {
         super("Twilight Resurgence", CharacterClass.CLERIC);
         this.setIsPassive(true);
-        this.setDescription("Each time a shield you apply is broken by damage, " +
+        this.setDescription("Each time a &eshield &7you apply is broken by damage, " +
                 "reduce the cooldown of your &aCosmic Prism &7by " + duration + "s. " +
                 "This effect has a " + effectCooldown + "s cooldown. " +
                 "Additionally, release a pulse around the " +
-                "player with the broken shield that " +
+                "player with the broken &eshield &7that " +
                 "deals (" + damage + " + &f" + damagePerLevel
                 + "x&7 lvl) magicʔ damage " +
                 "in a " + radius + " block radius and blinds " +

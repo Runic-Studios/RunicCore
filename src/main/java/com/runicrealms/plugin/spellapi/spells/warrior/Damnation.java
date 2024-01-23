@@ -36,11 +36,11 @@ public class Damnation extends Spell implements DurationSpell, MagicDamageSpell,
     public Damnation() {
         super("Damnation", CharacterClass.WARRIOR);
         this.setDescription("You prime yourself with unholy magic, slowing yourself for " + warmup + "s. " +
-                "Then, you consume all of your &f&osouls &7to get an aura around you " +
+                "Then, you consume all of your &3souls &7to get an aura around you " +
                 "that lasts " + duration + "s! The aura’s radius is equal to " +
                 "(" + radius + " + &f" + radiusPerSouls
-                + "x&7 &f&osouls&7) and its magicʔ damage is (" + damage + " + &f" + damagePerSouls
-                + "x&7 &f&osouls&7)! " +
+                + "x&7 &3souls&7) and its magicʔ damage is (" + damage + " + &f" + damagePerSouls
+                + "x&7 &3souls&7)! " +
                 "Enemies within the aura are slowed and pulled " +
                 "towards you each second while the aura persists!");
     }

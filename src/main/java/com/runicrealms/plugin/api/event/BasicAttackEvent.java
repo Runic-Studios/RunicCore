@@ -18,25 +18,42 @@ public class BasicAttackEvent extends Event implements Cancellable {
     private final int originalCooldownTicks; // Used as a reference to the original value
     private final Player player;
     private final Material material;
-    private int cooldownTicks;
+    private final int damage;
+    private final int maxDamage;
+    private double cooldownTicks; // This is a double so that we don't have round each time we modify it, but we round at the end
     private boolean isCancelled;
 
-    public BasicAttackEvent(Player player, Material material, int originalCooldownTicks, int cooldownTicks) {
+    public BasicAttackEvent(Player player, Material material, int originalCooldownTicks, int cooldownTicks, int damage, int maxDamage) {
         this.player = player;
         this.material = material;
         this.originalCooldownTicks = originalCooldownTicks;
         this.cooldownTicks = cooldownTicks;
+        this.damage = damage;
+        this.maxDamage = maxDamage;
     }
 
     public static HandlerList getHandlerList() {
         return handlers;
     }
 
-    public int getCooldownTicks() {
+    public int getDamage() {
+        return damage;
+    }
+
+    public int getMaxDamage() {
+        return maxDamage;
+    }
+
+    // This is used so that we can stack cooldown modifiers without having to round between each time we stack
+    public double getUnroundedCooldownTicks() {
         return cooldownTicks;
     }
 
-    public void setCooldownTicks(int cooldownTicks) {
+    public int getRoundedCooldownTicks() {
+        return (int) Math.round(cooldownTicks);
+    }
+
+    public void setCooldownTicks(double cooldownTicks) {
         this.cooldownTicks = cooldownTicks;
     }
 

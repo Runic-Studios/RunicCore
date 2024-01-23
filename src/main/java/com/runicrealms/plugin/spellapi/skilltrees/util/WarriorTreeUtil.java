@@ -58,7 +58,7 @@ public class WarriorTreeUtil {
         perks.add(new PerkBaseStat(174, 1, 0, 3, Stat.WISDOM));
         perks.add(new PerkBaseStat(175, 1, 0, 3, Stat.VITALITY));
         perks.add(new PerkBaseStat(177, 1, 0, 5, Stat.WISDOM));
-        perks.add(new PerkSpell(176, 1, 0, 1, "Judgment"));
+        perks.add(new PerkSpell(176, 1, 0, 1, "Sacred Wings"));
         perks.add(new PerkBaseStat(178, 1, 0, 3, Stat.VITALITY));
         perks.add(new PerkSpell(179, 1, 0, 1, "Blessed Blade"));
         return perks;

@@ -72,9 +72,9 @@ public class RapidFire extends Spell implements DurationSpell {
 
         double reducedTicks = event.getOriginalCooldownTicks();
         reducedTicks /= percent;
-        int roundedCooldownTicks = (int) (event.getOriginalCooldownTicks() - reducedTicks);
+        double cooldownTicks = event.getOriginalCooldownTicks() - reducedTicks;
         // Cooldown cannot drop beneath a certain value
-        event.setCooldownTicks(Math.max(event.getCooldownTicks() - roundedCooldownTicks, BasicAttackEvent.MINIMUM_COOLDOWN_TICKS));
+        event.setCooldownTicks(Math.max(event.getUnroundedCooldownTicks() - cooldownTicks, BasicAttackEvent.MINIMUM_COOLDOWN_TICKS));
     }
 
     @EventHandler

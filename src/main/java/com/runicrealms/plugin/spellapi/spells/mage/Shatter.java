@@ -1,39 +1,67 @@
 package com.runicrealms.plugin.spellapi.spells.mage;
 
+import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.common.CharacterClass;
+import com.runicrealms.plugin.events.LeaveCombatEvent;
+import com.runicrealms.plugin.events.MobDamageEvent;
 import com.runicrealms.plugin.events.PhysicalDamageEvent;
-import com.runicrealms.plugin.rdb.event.CharacterQuitEvent;
-import com.runicrealms.plugin.spellapi.effect.RunicStatusEffect;
+import com.runicrealms.plugin.runicitems.Stat;
+import com.runicrealms.plugin.spellapi.effect.ChilledEffect;
+import com.runicrealms.plugin.spellapi.effect.IceBarrierEffect;
+import com.runicrealms.plugin.spellapi.effect.SpellEffect;
+import com.runicrealms.plugin.spellapi.effect.SpellEffectType;
+import com.runicrealms.plugin.spellapi.spelltypes.AttributeSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.ShieldingSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.utilities.DamageUtil;
-import org.bukkit.Sound;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 /**
  * First passive for Cryomancer
  *
- * @author BoBoBalloon
+ * @author BoBoBalloon, Skyfallin
  */
-public class Shatter extends Spell implements MagicDamageSpell, ShieldingSpell {
-    private final Map<UUID, Long> cooldown;
+public class Shatter extends Spell implements AttributeSpell, MagicDamageSpell, ShieldingSpell {
+    private double baseValue;
     private double damage;
     private double damagePerLevel;
+    private double maxStacks;
+    private double multiplier;
     private double shield;
     private double shieldPerLevel;
+    private double stackDuration;
+    private String statName;
 
     public Shatter() {
         super("Shatter", CharacterClass.MAGE);
-        this.cooldown = new HashMap<>();
         this.setIsPassive(true);
-        this.setDescription("When you land a basic attack on an enemy that has been rooted or stunned, shatter their ice " +
-                "dealing (" + this.damage + " + &f" + this.damagePerLevel + "x&7 lvl) magicʔ damage granting you a (" + this.shield + " + &f" + this.shieldPerLevel + "x&7 lvl) health✦ shield.");
+        Stat stat = Stat.getFromName(statName);
+        String prefix = stat == null ? "" : stat.getPrefix();
+        this.setDescription("When you land a basic attack on an enemy that " +
+                "is &bchilled&7, you shatter their ice, removing &bchilled " +
+                "&7and dealing (" + this.damage + " + &f" + this.damagePerLevel + "x&7 lvl) magicʔ damage! " +
+                "You also gain a stack of &fice barrier&7. " +
+                "\n&2&lEFFECT &fIce Barrier" +
+                "\n&fIce Barrier &7stacks reduce mob and physical damage taken by " +
+                "(" + baseValue + " + &f" + multiplier + "x &e" + prefix + "&7)%! " +
+                "Max " + maxStacks + " stacks. " +
+                "Stacks expire after " + stackDuration + "s. " +
+                "Lose all stacks on exit combat.");
+    }
+
+    @Override
+    public void loadSpellSpecificData(Map<String, Object> spellData) {
+        super.loadSpellSpecificData(spellData);
+        Number maxStacks = (Number) spellData.getOrDefault("max-stacks", 3);
+        setMaxStacks(maxStacks.doubleValue());
+        Number stackDuration = (Number) spellData.getOrDefault("stack-duration", 20);
+        setStackDuration(stackDuration.doubleValue());
     }
 
     @Override
@@ -78,32 +106,107 @@ public class Shatter extends Spell implements MagicDamageSpell, ShieldingSpell {
 
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     private void onPhysicalDamage(PhysicalDamageEvent event) {
-        if (!this.hasPassive(event.getPlayer().getUniqueId(), this.getName()) ||
-                (!this.hasStatusEffect(event.getVictim().getUniqueId(), RunicStatusEffect.ROOT) && !this.hasStatusEffect(event.getVictim().getUniqueId(), RunicStatusEffect.STUN))) {
+        if (!event.isBasicAttack()) return;
+
+        // Handle case of victim with ice barrier stacks reducing damage
+        UUID victimId = event.getVictim().getUniqueId();
+        Optional<SpellEffect> iceBarrierOptVictim = this.getSpellEffect(victimId, victimId, SpellEffectType.ICE_BARRIER);
+        if (iceBarrierOptVictim.isPresent()) {
+            double statValue = RunicCore.getStatAPI().getStat(victimId, statName);
+            double multiplierPercent = (multiplier * statValue);
+            double damageToReduce = ((baseValue + multiplierPercent) / 100) * event.getAmount();
+            event.setAmount((int) (event.getAmount() - damageToReduce));
+        }
+
+        // Handle case of attacker getting ice barrier stack
+        if (!this.hasPassive(event.getPlayer().getUniqueId(), this.getName())) {
             return;
         }
 
-        Long cooldown = this.cooldown.get(event.getPlayer().getUniqueId());
-        long now = System.currentTimeMillis();
+        UUID uuid = event.getPlayer().getUniqueId();
+        Optional<SpellEffect> spellEffectOpt = this.getSpellEffect(uuid, event.getVictim().getUniqueId(), SpellEffectType.CHILLED);
+        if (spellEffectOpt.isEmpty()) return;
 
-        if (cooldown != null && cooldown + (this.getCooldown() * 1000) > now) { //multiply by 1000 to convert seconds to milliseconds
-            return;
+        ChilledEffect chilledEffect = (ChilledEffect) spellEffectOpt.get();
+        chilledEffect.cancel();
+
+        DamageUtil.damageEntitySpell(damage, event.getVictim(), event.getPlayer(), this);
+
+        Optional<SpellEffect> iceBarrierOptAttacker = this.getSpellEffect(uuid, uuid, SpellEffectType.ICE_BARRIER);
+        if (iceBarrierOptAttacker.isPresent()) {
+            IceBarrierEffect iceBarrierEffect = (IceBarrierEffect) iceBarrierOptAttacker.get();
+            iceBarrierEffect.increment(event.getVictim().getEyeLocation(), 1);
+        } else {
+            IceBarrierEffect iceBarrierEffect = new IceBarrierEffect(
+                    event.getPlayer(),
+                    (int) this.maxStacks,
+                    (int) this.stackDuration,
+                    1,
+                    event.getVictim().getEyeLocation()
+            );
+            iceBarrierEffect.initialize();
         }
-
-        this.cooldown.put(event.getPlayer().getUniqueId(), now);
-
-        this.removeStatusEffect(event.getVictim(), RunicStatusEffect.ROOT);
-        this.removeStatusEffect(event.getVictim(), RunicStatusEffect.STUN);
-
-        event.getPlayer().getWorld().playSound(event.getVictim().getLocation(), Sound.BLOCK_GLASS_BREAK, 0.5F, 1);
-
-        DamageUtil.damageEntitySpell(this.damage, event.getVictim(), event.getPlayer(), false, this);
-        this.shieldPlayer(event.getPlayer(), event.getPlayer(), this.shield, this);
     }
 
-    @EventHandler
-    private void onCharacterQuit(CharacterQuitEvent event) {
-        this.cooldown.remove(event.getPlayer().getUniqueId());
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    public void onMobDamage(MobDamageEvent event) {
+        // Handle case of victim with ice barrier stacks reducing damage
+        UUID victimId = event.getVictim().getUniqueId();
+        Optional<SpellEffect> iceBarrierOptVictim = this.getSpellEffect(victimId, victimId, SpellEffectType.ICE_BARRIER);
+        if (iceBarrierOptVictim.isPresent()) {
+            double statValue = RunicCore.getStatAPI().getStat(victimId, statName);
+            double multiplierPercent = (multiplier * statValue);
+            double damageToReduce = ((baseValue + multiplierPercent) / 100) * event.getAmount();
+            event.setAmount((int) (event.getAmount() - damageToReduce));
+        }
+    }
+
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    public void onLeaveCombat(LeaveCombatEvent event) {
+        UUID uuid = event.getPlayer().getUniqueId();
+        Optional<SpellEffect> spellEffectOpt = this.getSpellEffect(uuid, uuid, SpellEffectType.ICE_BARRIER);
+        if (spellEffectOpt.isPresent()) {
+            IceBarrierEffect iceBarrierEffect = (IceBarrierEffect) spellEffectOpt.get();
+            iceBarrierEffect.cancel();
+        }
+    }
+
+    @Override
+    public double getBaseValue() {
+        return baseValue;
+    }
+
+    @Override
+    public void setBaseValue(double baseValue) {
+        this.baseValue = baseValue;
+    }
+
+    @Override
+    public double getMultiplier() {
+        return multiplier;
+    }
+
+    @Override
+    public void setMultiplier(double multiplier) {
+        this.multiplier = multiplier;
+    }
+
+    @Override
+    public String getStatName() {
+        return statName;
+    }
+
+    @Override
+    public void setStatName(String statName) {
+        this.statName = statName;
+    }
+
+    public void setMaxStacks(double maxStacks) {
+        this.maxStacks = maxStacks;
+    }
+
+    public void setStackDuration(double stackDuration) {
+        this.stackDuration = stackDuration;
     }
 }
 

@@ -31,7 +31,7 @@ public class MageTreeUtil {
         perks.add(new PerkBaseStat(80, 1, 0, 5, Stat.VITALITY));
         perks.add(new PerkSpell(81, 1, 0, 1, "Blizzard"));
         perks.add(new PerkBaseStat(82, 1, 0, 3, Stat.INTELLIGENCE));
-        perks.add(new PerkSpell(83, 1, 0, 1, "Winter's Grasp"));
+        perks.add(new PerkSpell(83, 1, 0, 1, "Glacier"));
         return perks;
     }
 
@@ -39,7 +39,7 @@ public class MageTreeUtil {
         List<Perk> perks = new ArrayList<>();
         perks.add(new PerkSpell(84, 1, 0, 1, "Dragon's Breath"));
         perks.add(new PerkBaseStat(85, 1, 0, 5, Stat.INTELLIGENCE));
-        perks.add(new PerkSpell(86, 1, 0, 1, "Cindered Touch"));
+        perks.add(new PerkSpell(86, 1, 0, 1, "Incendiary"));
         perks.add(new PerkBaseStat(87, 1, 0, 3, Stat.DEXTERITY));
         perks.add(new PerkBaseStat(88, 1, 0, 3, Stat.INTELLIGENCE));
         perks.add(new PerkSpell(89, 1, 0, 1, "Erupt"));
@@ -48,7 +48,7 @@ public class MageTreeUtil {
         perks.add(new PerkBaseStat(92, 1, 0, 5, Stat.DEXTERITY));
         perks.add(new PerkSpell(93, 1, 0, 1, "Meteor"));
         perks.add(new PerkBaseStat(94, 1, 0, 3, Stat.INTELLIGENCE));
-        perks.add(new PerkSpell(95, 1, 0, 1, "Inferno"));
+        perks.add(new PerkSpell(95, 1, 0, 1, "Wildfire"));
         return perks;
     }
 

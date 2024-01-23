@@ -1,10 +1,10 @@
 package com.runicrealms.plugin.spellapi.spells.cleric;
 
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.common.CharacterClass;
 import com.runicrealms.plugin.events.MagicDamageEvent;
 import com.runicrealms.plugin.events.PhysicalDamageEvent;
 import com.runicrealms.plugin.events.RunicDeathEvent;
-import com.runicrealms.plugin.common.CharacterClass;
 import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.RadiusSpell;
@@ -45,9 +45,10 @@ public class Sear extends Spell implements DurationSpell, MagicDamageSpell, Radi
         this.setDescription("You fire a beam of light, " +
                 "dealing (" + damage + " + &f" + damagePerLevel
                 + "x&7 lvl) magicʔ damage to the first enemy hit " +
-                "and applying &oAtone &7for " + duration + "s. " +
-                "If the atoning enemy suffers damage from any source other than Sear, " +
-                "&7&oAtone &7detonates, dealing this spell's damage " +
+                "and applying &eatone &7for " + duration + "s!" +
+                "\n\n&2&lEFFECT &eAtone" +
+                "\n&7If an atoning enemy suffers damage from any source other than &aSear&7, " +
+                "they detonate, dealing &aSear&7's damage " +
                 "again in a " + radius + " block radius around the enemy!");
     }
 

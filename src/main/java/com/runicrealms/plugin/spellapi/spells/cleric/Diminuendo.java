@@ -132,7 +132,7 @@ public class Diminuendo extends Spell implements DurationSpell, RadiusSpell {
         });
         if (!affected.get()) return;
         double addedTicks = event.getOriginalCooldownTicks() * attackSpeedReduction;
-        event.setCooldownTicks((int) (event.getCooldownTicks() + addedTicks));
+        event.setCooldownTicks(event.getUnroundedCooldownTicks() + addedTicks);
     }
 
     @EventHandler
@@ -140,7 +140,7 @@ public class Diminuendo extends Spell implements DurationSpell, RadiusSpell {
         if (affectedEnemiesMap.isEmpty()) return;
         AtomicBoolean affected = new AtomicBoolean(false);
         affectedEnemiesMap.forEach((uuid, uuids) -> {
-            if (uuids.contains(event.getEntity().getUniqueId()))
+            if (uuids.contains(event.getMob().getUniqueId()))
                 affected.set(true);
         });
         if (!affected.get()) return;

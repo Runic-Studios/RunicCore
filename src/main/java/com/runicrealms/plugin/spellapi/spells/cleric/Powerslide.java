@@ -8,7 +8,6 @@ import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.PhysicalDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
-import com.runicrealms.plugin.spellapi.spellutil.EntityUtil;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -17,6 +16,7 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -55,7 +55,8 @@ public class Powerslide extends Spell implements DistanceSpell, PhysicalDamageSp
             }
         }, 0, 1);
 
-        List<Entity> targets = EntityUtil.getEnemiesInCone(player, (float) this.distance, DEGREES, entity -> this.isValidEnemy(player, entity));
+        List<Entity> targets = new ArrayList<>();
+//        List<Entity> targets = EntityUtil.getEnemiesInCone(player, (float) this.distance, DEGREES, entity -> this.isValidEnemy(player, entity));
 
         if (targets.isEmpty()) {
             return;

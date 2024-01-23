@@ -1,5 +1,6 @@
 package com.runicrealms.plugin.spellapi.spells.rogue;
 
+import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.common.CharacterClass;
 import com.runicrealms.plugin.spellapi.spelltypes.DistanceSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.PhysicalDamageSpell;
@@ -7,6 +8,7 @@ import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.spellapi.spellutil.particles.SlashEffect;
 import com.runicrealms.plugin.utilities.DamageUtil;
+import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Particle;
@@ -34,8 +36,13 @@ public class TwinFangs extends Spell implements DistanceSpell, PhysicalDamageSpe
 
     @Override
     public void executeSpell(Player player, SpellItemType type) {
-        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 0.5f, 1.0f);
-        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_SPIDER_DEATH, 0.5f, 1.2f);
+        traceEnemies(player, 0.75f);
+        Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), () -> traceEnemies(player, 1.5f), 10L);
+    }
+
+    private void traceEnemies(Player player, float pitch) {
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 0.5f, pitch);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_SPIDER_DEATH, 0.5f, pitch);
         RayTraceResult rayTraceResult = player.getWorld().rayTraceEntities
                 (
                         player.getLocation(),

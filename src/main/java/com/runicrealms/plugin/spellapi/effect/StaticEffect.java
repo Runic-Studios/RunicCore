@@ -24,8 +24,14 @@ public class StaticEffect implements SpellEffect {
         this.startTime = System.currentTimeMillis();
     }
 
+    @Override
     public void cancel() {
         startTime = (long) (System.currentTimeMillis() - (duration * 1000)); // Immediately end effect
+    }
+
+    @Override
+    public double getDuration() {
+        return duration;
     }
 
     public void refresh() {
@@ -35,11 +41,6 @@ public class StaticEffect implements SpellEffect {
     @Override
     public SpellEffectType getEffectType() {
         return SpellEffectType.STATIC;
-    }
-
-    @Override
-    public boolean isActive() {
-        return (System.currentTimeMillis() - startTime) <= (duration * 1000);
     }
 
     @Override
@@ -73,4 +74,10 @@ public class StaticEffect implements SpellEffect {
         caster.playSound(recipient.getLocation(), Sound.ENTITY_TNT_PRIMED, 0.25f, 1.0f);
         caster.spawnParticle(Particle.BLOCK_CRACK, recipient.getEyeLocation(), 10, Math.random() * 1.5, Math.random() / 2, Math.random() * 1.5, Material.LAPIS_BLOCK.createBlockData());
     }
+
+    @Override
+    public long getStartTime() {
+        return startTime;
+    }
+
 }

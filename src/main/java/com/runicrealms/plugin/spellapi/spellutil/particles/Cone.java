@@ -4,7 +4,9 @@ import com.runicrealms.plugin.RunicCore;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.Particle;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
@@ -29,35 +31,37 @@ public class Cone {
 
         BukkitTask bukkitTask = new BukkitRunnable() {
 
-            //            int count = 1;
             double phi = 0;
 
             public void run() {
 
-                if (livingEntity.isDead()) { // count > DURATION ||
+                if (livingEntity.isDead()) {
                     this.cancel();
                 } else {
 
-//                    count += 1;
                     phi = phi + Math.PI / 8;
                     double x, y, z;
 
-                    Location playerLoc = livingEntity.getLocation();
+                    Location location = livingEntity.getLocation();
                     for (double t = 0; t <= 2 * Math.PI; t = t + Math.PI / 16) {
                         for (double i = 0; i <= 1; i = i + 1) {
                             x = 0.4 * (2 * Math.PI - t) * 0.5 * cos(t + phi + i * Math.PI);
                             y = 0.5 * t;
                             z = 0.4 * (2 * Math.PI - t) * 0.5 * sin(t + phi + i * Math.PI);
-                            playerLoc.add(x, y, z);
+                            location.add(x, y, z);
                             if (particle == Particle.REDSTONE) {
-                                livingEntity.getWorld().spawnParticle(Particle.REDSTONE, playerLoc,
+                                livingEntity.getWorld().spawnParticle(Particle.REDSTONE, location,
                                         1, 0, 0, 0, 0, new Particle.DustOptions(color, 1));
                             } else if (particle == Particle.NOTE) {
-                                playerLoc.getWorld().spawnParticle(Particle.NOTE, playerLoc, 0, 1d, 0.0d, 0.0d, 0.1d);
+                                livingEntity.getWorld().spawnParticle(Particle.NOTE, location, 0, 1d, 0.0d, 0.0d, 0.1d);
+                            } else if (particle == Particle.BLOCK_CRACK) {
+                                BlockData blockData = Bukkit.createBlockData(Material.BLUE_ICE);
+                                livingEntity.getWorld().spawnParticle(Particle.BLOCK_CRACK, location, 1, 0, 0, 0, 0.1d, blockData);
+
                             } else {
-                                playerLoc.getWorld().spawnParticle(particle, playerLoc, 1, 0, 0, 0, 0);
+                                livingEntity.getWorld().spawnParticle(particle, location, 1, 0, 0, 0, 0);
                             }
-                            playerLoc.subtract(x, y, z);
+                            location.subtract(x, y, z);
                         }
 
                     }

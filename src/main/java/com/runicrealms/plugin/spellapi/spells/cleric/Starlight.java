@@ -29,7 +29,7 @@ import java.util.UUID;
 public class Starlight extends Spell implements DistanceSpell, DurationSpell, MagicDamageSpell, RadiusSpell {
     private static final double PERIOD = 0.5;
     private static final int BEAM_RADIUS = 1;
-    private final Map<UUID, Set<UUID>> damageMap = new HashMap<>();
+    private final Map<UUID, Set<UUID>> damageMap = new HashMap<>(); // Prevents repeat hits on same target
     private double distance;
     private double damage;
     private double damagePerLevel;
@@ -41,9 +41,11 @@ public class Starlight extends Spell implements DistanceSpell, DurationSpell, Ma
         this.setDescription("You release a crescent wave of starlight in front of you! " +
                 "Enemies suffer (" + damage + " + &f" + damagePerLevel
                 + "x&7 lvl) magicʔ damage " +
-                "and are silenced for " + duration + "s! When Starlight hits an enemy, " +
+                "and are silenced for " + duration + "s! When &aStarlight &7hits an enemy, " +
                 "all allies within " + radius + " blocks of you have the " +
-                "duration of their shields refreshed.");
+                "duration of their &eshields &7refreshed." +
+                "\n\n&2&lEFFECT &eShield" +
+                "\n&7Shields absorb damage and appear as yellow hearts!");
     }
 
     @Override

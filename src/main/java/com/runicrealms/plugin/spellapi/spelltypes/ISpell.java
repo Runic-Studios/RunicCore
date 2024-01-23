@@ -15,8 +15,6 @@ import java.util.UUID;
 
 public interface ISpell {
 
-    void addSpellEffectToManager(SpellEffect spellEffect);
-
     boolean hasSpellEffect(UUID uuid, SpellEffectType identifier);
 
     Optional<SpellEffect> getSpellEffect(UUID casterUuid, UUID recipientUuid, SpellEffectType identifier);

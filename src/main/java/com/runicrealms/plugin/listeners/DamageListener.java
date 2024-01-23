@@ -1,13 +1,23 @@
 package com.runicrealms.plugin.listeners;
 
+import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.events.ListenerPriority;
+import com.comphenix.protocol.events.PacketAdapter;
+import com.comphenix.protocol.events.PacketContainer;
+import com.comphenix.protocol.events.PacketEvent;
+import com.comphenix.protocol.wrappers.EnumWrappers;
+import com.comphenix.protocol.wrappers.WrappedEnumEntityUseAction;
+import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.WeaponType;
 import com.runicrealms.plugin.api.event.BasicAttackEvent;
 import com.runicrealms.plugin.events.MobDamageEvent;
 import com.runicrealms.plugin.events.RunicDeathEvent;
 import com.runicrealms.plugin.rdb.RunicDatabase;
-import com.runicrealms.plugin.utilities.DamageUtil;
 import com.runicrealms.plugin.runicitems.RunicItemsAPI;
 import com.runicrealms.plugin.runicitems.item.RunicItemWeapon;
+import com.runicrealms.plugin.utilities.DamageUtil;
+import com.ticxo.modelengine.api.ModelEngineAPI;
 import io.lumine.mythic.bukkit.MythicBukkit;
 import io.lumine.mythic.core.mobs.ActiveMob;
 import org.bukkit.Bukkit;
@@ -26,8 +36,12 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -36,6 +50,208 @@ import java.util.concurrent.ThreadLocalRandom;
  * @author Skyfallin_
  */
 public class DamageListener implements Listener {
+    private static final long DELAY = 1; //delay in event being received to event fired
+    private final Map<UUID, Long> lastDamaged;
+
+    public DamageListener() {
+        this.lastDamaged = new HashMap<>();
+        ProtocolLibrary.getProtocolManager().getAsynchronousManager().registerAsyncHandler(new PacketAdapter(RunicCore.getInstance(), ListenerPriority.HIGHEST, PacketType.Play.Client.USE_ENTITY) {
+            @Override
+            public void onPacketReceiving(PacketEvent event) {
+                onPacket(event);
+            }
+        }).start();
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onDamage(EntityDamageByEntityEvent e) {
+        if (e.getCause() == EntityDamageByEntityEvent.DamageCause.CUSTOM) return;
+        if (e.getDamager() instanceof SmallFireball) return;
+        if (e.getDamager() instanceof Arrow) return;
+        if (e.getDamage() <= 0) return;
+
+        Entity damager = e.getDamager();
+        if (damager instanceof Arrow && damager.getCustomName() == null) return;
+        if (damager instanceof Arrow && ((Arrow) damager).getShooter() != null) {
+            damager = (Entity) ((Arrow) damager).getShooter();
+        }
+
+        Entity entity = e.getEntity();
+
+        // bugfix for armor stands
+        if (e.getEntity() instanceof ArmorStand && e.getEntity().getVehicle() != null) {
+            entity = e.getEntity().getVehicle();
+        }
+
+        // only listen for damageable entities
+        if (!(entity instanceof LivingEntity victim)) return;
+
+        // Fix for fireworks
+        if (damager instanceof Firework) {
+            e.setCancelled(true);
+            return;
+        }
+
+        // mobs
+        if (!(damager instanceof Player)) {
+            if (damager instanceof Arrow) {
+                damager = (Entity) ((Arrow) damager).getShooter();
+            }
+            e.setCancelled(true);
+            double dmgAmt = e.getDamage();
+            if (MythicBukkit.inst().getMobManager().isActiveMob(Objects.requireNonNull(damager).getUniqueId())) {
+                ActiveMob mm = MythicBukkit.inst().getAPIHelper().getMythicMobInstance(damager);
+                dmgAmt = mm.getDamage();
+            }
+            MobDamageEvent event = new MobDamageEvent((int) Math.ceil(dmgAmt), e.getDamager(), victim, false);
+            Bukkit.getPluginManager().callEvent(event);
+            if (!event.isCancelled())
+                DamageUtil.damageEntityMob(Math.ceil(event.getAmount()), event.getVictim(), e.getDamager(), event.shouldApplyMechanics());
+        }
+
+        this.lastDamaged.put(e.getEntity().getUniqueId(), System.currentTimeMillis());
+
+        // only listen for when a player swings or fires an arrow
+        if (damager instanceof Player player) {
+
+            ItemStack artifact = ((Player) damager).getInventory().getItemInMainHand();
+            WeaponType artifactType = WeaponType.matchType(artifact);
+            int damage;
+            int maxDamage;
+            int reqLv;
+            try {
+                RunicItemWeapon runicItemWeapon = (RunicItemWeapon) RunicItemsAPI.getRunicItemFromItemStack(artifact);
+                damage = runicItemWeapon.getWeaponDamage().getMin();
+                maxDamage = runicItemWeapon.getWeaponDamage().getMax();
+                reqLv = runicItemWeapon.getLevel();
+            } catch (Exception ex) {
+                damage = 1;
+                maxDamage = 1;
+                reqLv = 0;
+            }
+
+            // --------------------
+            // for punching 'n stuff
+            if (damage == 0)
+                damage = 1;
+            if (maxDamage == 0)
+                maxDamage = 1;
+            // -------------------
+
+            if (reqLv > player.getLevel()) {
+                player.playSound(player.getLocation(), Sound.BLOCK_FIRE_EXTINGUISH, 0.5f, 1.0f);
+                player.sendMessage(ChatColor.RED + "Your level is too low to wield this!");
+                e.setCancelled(true);
+                return;
+            }
+
+            // check for cooldown
+            if (artifactType.equals(WeaponType.NONE)
+                    //|| artifactType.equals(WeaponEnum.STAFF)
+                    || artifactType.equals(WeaponType.BOW)) {
+                damage = 1;
+                maxDamage = 1;
+            }
+
+            if (((Player) damager).getCooldown(artifact.getType()) <= 0) {
+                e.setCancelled(true);
+                int randomNum = ThreadLocalRandom.current().nextInt(damage, maxDamage + 1);
+
+                // outlaw check
+                if (victim.hasMetadata("NPC"))
+                    return;
+
+                // ensure correct class/weapon combo (archers and bows, etc)
+                if (!matchClass(player, true))
+                    return;
+
+                // ---------------------------
+                // successful damage
+                if (((Player) damager).getCooldown(artifact.getType()) != 0)
+                    return;
+                BasicAttackEvent basicAttackEvent = new BasicAttackEvent(
+                        player,
+                        artifact.getType(),
+                        BasicAttackEvent.BASE_MELEE_COOLDOWN,
+                        BasicAttackEvent.BASE_MELEE_COOLDOWN,
+                        damage,
+                        maxDamage);
+                Bukkit.getPluginManager().callEvent(basicAttackEvent);
+                if (!basicAttackEvent.isCancelled()) {
+                    DamageUtil.damageEntityPhysical(randomNum, victim, (Player) damager, true, false);
+
+                }
+                // ---------------------------
+
+            } else {
+                e.setCancelled(true);
+                return;
+            }
+        }
+
+        // only listen if a player is the entity receiving damage, to check for death mechanics
+        if (!(victim instanceof Player)) return;
+
+        // only listen for if the player were to "die"
+        if (!((victim.getHealth() - e.getFinalDamage() <= 0))) return;
+
+        applySlainMechanics(e.getDamager(), ((Player) victim));
+    }
+
+    @EventHandler(priority = EventPriority.NORMAL)
+    public void onDamage(EntityDamageEvent event) {
+        if (event.getCause() == EntityDamageEvent.DamageCause.CUSTOM) return;
+        if (event.getDamage() <= 0) return;
+
+        // This event likes to get confused with the event above, so let's just fix that.
+        if (event instanceof EntityDamageByEntityEvent) return;
+
+        // Only listen if a player is the entity receiving damage AND that player "dies" (hp < 0)
+        if (!(event.getEntity() instanceof Player victim)) return;
+        if (!(victim.getHealth() - event.getDamage() <= 0)) return;
+
+        // Cancel the event
+        event.setCancelled(true);
+
+        // Call custom death event
+        Bukkit.getPluginManager().callEvent(new RunicDeathEvent(victim, victim.getLocation()));
+    }
+
+    /**
+     * A band-aid fix to custom models not registering hits (no bukkit events even fired). RIGHT-CLICKS WORK FINE
+     *
+     * @author BoBoBalloon
+     */
+    private void onPacket(@NotNull PacketEvent event) {
+        if (event.getPacketType() != PacketType.Play.Client.USE_ENTITY) {
+            return;
+        }
+
+        PacketContainer packet = event.getPacket();
+        WrappedEnumEntityUseAction useAction = packet.getEnumEntityUseActions().readSafely(0);
+        EnumWrappers.EntityUseAction action = useAction.getAction();
+
+        if (action != EnumWrappers.EntityUseAction.ATTACK) {
+            return;
+        }
+
+        int entityID = packet.getIntegers().read(0);
+        UUID uuid = ModelEngineAPI.getInteractionTicker().getModelRelay(entityID);
+
+        if (uuid == null) {
+            return;
+        }
+
+        event.setCancelled(true);
+        Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), () -> {
+            Long lastTime = lastDamaged.remove(uuid);
+            if ((lastTime != null && System.currentTimeMillis() - lastTime < DELAY) || !(Bukkit.getEntity(uuid) instanceof LivingEntity entity)) {
+                return;
+            }
+
+            entity.damage(1, event.getPlayer()); //damage number does not matter since we re-calculate anyway
+        }, DELAY);
+    }
 
     public static boolean matchClass(Player player, boolean sendMessage) {
         ItemStack mainHand = player.getInventory().getItemInMainHand();
@@ -119,147 +335,5 @@ public class DamageListener implements Listener {
         // Call custom death event
         RunicDeathEvent event = new RunicDeathEvent(victim, victim.getLocation(), damager);
         Bukkit.getPluginManager().callEvent(event);
-    }
-
-    @EventHandler(priority = EventPriority.LOWEST)
-    public void onDamage(EntityDamageByEntityEvent e) {
-        if (e.getCause() == EntityDamageByEntityEvent.DamageCause.CUSTOM) return;
-        if (e.getDamager() instanceof SmallFireball) return;
-        if (e.getDamager() instanceof Arrow) return;
-        if (e.getDamage() <= 0) return;
-
-        Entity damager = e.getDamager();
-        if (damager instanceof Arrow && damager.getCustomName() == null) return;
-        if (damager instanceof Arrow && ((Arrow) damager).getShooter() != null) {
-            damager = (Entity) ((Arrow) damager).getShooter();
-        }
-
-        Entity entity = e.getEntity();
-
-        // bugfix for armor stands
-        if (e.getEntity() instanceof ArmorStand && e.getEntity().getVehicle() != null) {
-            entity = e.getEntity().getVehicle();
-        }
-
-        // only listen for damageable entities
-        if (!(entity instanceof LivingEntity victim)) return;
-
-        // Fix for fireworks
-        if (damager instanceof Firework) {
-            e.setCancelled(true);
-            return;
-        }
-
-        // mobs
-        if (!(damager instanceof Player)) {
-            if (damager instanceof Arrow) {
-                damager = (Entity) ((Arrow) damager).getShooter();
-            }
-            e.setCancelled(true);
-            double dmgAmt = e.getDamage();
-            if (MythicBukkit.inst().getMobManager().isActiveMob(Objects.requireNonNull(damager).getUniqueId())) {
-                ActiveMob mm = MythicBukkit.inst().getAPIHelper().getMythicMobInstance(damager);
-                dmgAmt = mm.getDamage();
-            }
-            MobDamageEvent event = new MobDamageEvent((int) Math.ceil(dmgAmt), e.getDamager(), victim, false);
-            Bukkit.getPluginManager().callEvent(event);
-            if (!event.isCancelled())
-                DamageUtil.damageEntityMob(Math.ceil(event.getAmount()), event.getVictim(), e.getDamager(), event.shouldApplyMechanics());
-        }
-
-        // only listen for when a player swings or fires an arrow
-        if (damager instanceof Player player) {
-
-            ItemStack artifact = ((Player) damager).getInventory().getItemInMainHand();
-            WeaponType artifactType = WeaponType.matchType(artifact);
-            int damage;
-            int maxDamage;
-            int reqLv;
-            try {
-                RunicItemWeapon runicItemWeapon = (RunicItemWeapon) RunicItemsAPI.getRunicItemFromItemStack(artifact);
-                damage = runicItemWeapon.getWeaponDamage().getMin();
-                maxDamage = runicItemWeapon.getWeaponDamage().getMax();
-                reqLv = runicItemWeapon.getLevel();
-            } catch (Exception ex) {
-                damage = 1;
-                maxDamage = 1;
-                reqLv = 0;
-            }
-
-            // --------------------
-            // for punching 'n stuff
-            if (damage == 0)
-                damage = 1;
-            if (maxDamage == 0)
-                maxDamage = 1;
-            // -------------------
-
-            if (reqLv > player.getLevel()) {
-                player.playSound(player.getLocation(), Sound.BLOCK_FIRE_EXTINGUISH, 0.5f, 1.0f);
-                player.sendMessage(ChatColor.RED + "Your level is too low to wield this!");
-                e.setCancelled(true);
-                return;
-            }
-
-            // check for cooldown
-            if (artifactType.equals(WeaponType.NONE)
-                    //|| artifactType.equals(WeaponEnum.STAFF)
-                    || artifactType.equals(WeaponType.BOW)) {
-                damage = 1;
-                maxDamage = 1;
-            }
-
-            if (((Player) damager).getCooldown(artifact.getType()) <= 0) {
-                e.setCancelled(true);
-                int randomNum = ThreadLocalRandom.current().nextInt(damage, maxDamage + 1);
-
-                // outlaw check
-                if (victim.hasMetadata("NPC"))
-                    return;
-
-                // ensure correct class/weapon combo (archers and bows, etc)
-                if (!matchClass(player, true))
-                    return;
-
-                // ---------------------------
-                // successful damage
-                if (((Player) damager).getCooldown(artifact.getType()) != 0)
-                    return;
-                DamageUtil.damageEntityPhysical(randomNum, victim, (Player) damager, true, false);
-                Bukkit.getPluginManager().callEvent(new BasicAttackEvent(player, artifact.getType(), BasicAttackEvent.BASE_MELEE_COOLDOWN, BasicAttackEvent.BASE_MELEE_COOLDOWN));
-                // ---------------------------
-
-            } else {
-                e.setCancelled(true);
-                return;
-            }
-        }
-
-        // only listen if a player is the entity receiving damage, to check for death mechanics
-        if (!(victim instanceof Player)) return;
-
-        // only listen for if the player were to "die"
-        if (!((victim.getHealth() - e.getFinalDamage() <= 0))) return;
-
-        applySlainMechanics(e.getDamager(), ((Player) victim));
-    }
-
-    @EventHandler(priority = EventPriority.NORMAL)
-    public void onDamage(EntityDamageEvent event) {
-        if (event.getCause() == EntityDamageEvent.DamageCause.CUSTOM) return;
-        if (event.getDamage() <= 0) return;
-
-        // This event likes to get confused with the event above, so let's just fix that.
-        if (event instanceof EntityDamageByEntityEvent) return;
-
-        // Only listen if a player is the entity receiving damage AND that player "dies" (hp < 0)
-        if (!(event.getEntity() instanceof Player victim)) return;
-        if (!(victim.getHealth() - event.getDamage() <= 0)) return;
-
-        // Cancel the event
-        event.setCancelled(true);
-
-        // Call custom death event
-        Bukkit.getPluginManager().callEvent(new RunicDeathEvent(victim, victim.getLocation()));
     }
 }

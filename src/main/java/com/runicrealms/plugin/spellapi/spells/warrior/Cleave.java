@@ -3,6 +3,8 @@ package com.runicrealms.plugin.spellapi.spells.warrior;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.common.CharacterClass;
 import com.runicrealms.plugin.spellapi.effect.BleedEffect;
+import com.runicrealms.plugin.spellapi.effect.SpellEffect;
+import com.runicrealms.plugin.spellapi.effect.SpellEffectType;
 import com.runicrealms.plugin.spellapi.spelltypes.DistanceSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.PhysicalDamageSpell;
@@ -20,6 +22,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -42,7 +45,7 @@ public class Cleave extends Spell implements DistanceSpell, DurationSpell, Physi
                 " + &f" + this.damagePerLevel + "x&7 lvl) physical⚔ damage every " +
                 this.tick + "s for " + this.duration + "s! " +
                 "The final slash causes enemies to &cbleed&7!" +
-                "\n\n&2&lEFFECT &aBleed" +
+                "\n\n&2&lEFFECT &cBleed" +
                 "\n&cBleeding &7enemies take 3% max health physical⚔ damage every 2.0s for 6.0s. " +
                 "(Capped at " + BleedEffect.DAMAGE_CAP + " damage). " +
                 "During this time, enemy players receive " + (BleedEffect.HEALING_REDUCTION * 100) + "% less healing.");
@@ -61,7 +64,11 @@ public class Cleave extends Spell implements DistanceSpell, DurationSpell, Physi
             if (dot < maxAngleCos) continue;
             DamageUtil.damageEntityPhysical(this.damage, (LivingEntity) entity, player, false, false, this);
             if (count >= this.duration - 1) {
-                new BleedEffect(player, (LivingEntity) entity, this).initialize();
+                Optional<SpellEffect> spellEffectOpt = this.getSpellEffect(player.getUniqueId(), entity.getUniqueId(), SpellEffectType.BLEED);
+                if (spellEffectOpt.isEmpty()) {
+                    BleedEffect bleedEffect = new BleedEffect(player, (LivingEntity) entity);
+                    bleedEffect.initialize();
+                }
             }
         }
     }

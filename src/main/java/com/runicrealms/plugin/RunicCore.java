@@ -186,8 +186,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public class RunicCore extends JavaPlugin implements Listener {
 
-    public static final String VERSION_NUMBER = ColorUtil.format("&av2.0.6");
-    public static final String VERSION_TITLE = ColorUtil.format("&e&lRiders of the Outlands");
+    public static final String VERSION_NUMBER = ColorUtil.format("&av2.1.1");
+    public static final String VERSION_TITLE = ColorUtil.format("&c&lEmbers of &b&lFrost");
     private static final int BASE_OUTLAW_RATING = 1500;
     private static RunicCore instance;
     private static TaskChainFactory taskChainFactory;

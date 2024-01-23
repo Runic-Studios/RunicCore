@@ -33,8 +33,9 @@ public class SoulReaper extends Spell implements DurationSpell {
         super("Soul Reaper", CharacterClass.WARRIOR);
         this.setIsPassive(true);
         this.setDescription("Landing your &aDevour &7or &aUmbral Grasp &7spell " +
-                "on enemies builds up &f&osouls&7. " +
-                "For each stack of souls you have, " +
+                "on enemies builds up &3souls&7." +
+                "\n\n&2&lEFFECT &3Souls" +
+                "\n&7For each stack of &3souls &7you have, " +
                 "you take " + (percent * 100) + "% less damage! " +
                 "Your souls last " + duration + "s and have their duration reset when stacked. " +
                 "Max " + maxStacks + " souls.");
@@ -48,10 +49,6 @@ public class SoulReaper extends Spell implements DurationSpell {
     public static void cleanupTask(Player player, String text) {
         REAPER_TASK_MAP.remove(player);
         player.sendMessage(ChatColor.GRAY + text);
-    }
-
-    public double getMaxStacks() {
-        return maxStacks;
     }
 
     public void setMaxStacks(double maxStacks) {

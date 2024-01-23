@@ -123,8 +123,8 @@ public class NameTagColorHandler extends PacketAdapter implements Listener {
                 PacketContainer clone = event.getPacket().deepClone();
                 Object cloneHandle = clone.getHandle();
                 Optional<?> cloneParamsOpt = (Optional<?>) paramsField.get(cloneHandle);
-                if (cloneParamsOpt.isEmpty())
-                    throw new IllegalStateException("Scoreboard Team packet cloned params are empty but we deep cloned???");
+                if (cloneParamsOpt.isEmpty()) return;
+//                    throw new IllegalStateException("Scoreboard Team packet cloned params are empty but we deep cloned???");
                 Object cloneParams = cloneParamsOpt.get();
 
                 if (similarMemberParty) {

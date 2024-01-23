@@ -29,6 +29,9 @@ import org.jetbrains.annotations.Nullable;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static org.bukkit.Sound.ENTITY_ZOMBIE_ATTACK_IRON_DOOR;
+import static org.bukkit.Sound.ENTITY_ZOMBIE_BREAK_WOODEN_DOOR;
+
 /**
  * A manager and a container for the custom runic status effects impacting a given player
  */
@@ -131,7 +134,7 @@ public class StatusEffectManager implements Listener, StatusEffectAPI {
         if (hasStatusEffect(event.getVictim().getUniqueId(), RunicStatusEffect.ROOT)) {
             removeStatusEffect(event.getVictim().getUniqueId(), RunicStatusEffect.ROOT);
         }
-        UUID mobUuid = event.getEntity().getUniqueId();
+        UUID mobUuid = event.getMob().getUniqueId();
         if (hasStatusEffect(mobUuid, RunicStatusEffect.SILENCE) ||
                 hasStatusEffect(mobUuid, RunicStatusEffect.STUN) ||
                 hasStatusEffect(mobUuid, RunicStatusEffect.DISARM) ||
@@ -246,8 +249,8 @@ public class StatusEffectManager implements Listener, StatusEffectAPI {
         }
 
         if (runicStatusEffect == RunicStatusEffect.ROOT || runicStatusEffect == RunicStatusEffect.STUN) {
-            livingEntity.getWorld().playSound(livingEntity.getLocation(),
-                    Sound.ENTITY_ZOMBIE_BREAK_WOODEN_DOOR, 0.75f, 1.0f);
+            Sound sound = runicStatusEffect == RunicStatusEffect.STUN ? ENTITY_ZOMBIE_ATTACK_IRON_DOOR : ENTITY_ZOMBIE_BREAK_WOODEN_DOOR;
+            livingEntity.getWorld().playSound(livingEntity.getLocation(), sound, 0.75f, 0.5f);
             // Since there's no entity move event, we handle root & stun the old-fashioned way for mobs
             if (livingEntity instanceof Player) {
                 return;
@@ -271,7 +274,11 @@ public class StatusEffectManager implements Listener, StatusEffectAPI {
             statusEffectMap.put(uuid, new ConcurrentHashMap<>());
         }
         statusEffectMap.get(uuid).put(runicStatusEffect, Pair.pair(System.currentTimeMillis(), durationInSecs));
-        livingEntity.getWorld().playSound(livingEntity.getLocation(), runicStatusEffect.getSound(), 0.25f, 1.0f);
+
+        if (event.willPlaySound()) {
+            livingEntity.getWorld().playSound(livingEntity.getLocation(), runicStatusEffect.getSound(), 0.25f, 1.0f);
+        }
+
         if (livingEntity instanceof Player && event.willDisplayMessage()) {
             livingEntity.sendMessage(runicStatusEffect.getMessage());
         }

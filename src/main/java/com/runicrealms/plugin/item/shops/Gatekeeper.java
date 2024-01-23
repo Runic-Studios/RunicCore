@@ -52,7 +52,7 @@ public class Gatekeeper extends RunicShopGeneric {
         return player -> {
             Location location = dungeonLocation.getCheckpoints().get(checkpoint);
             player.teleport(location);
-            RunicItemShopHelper.clearDungeonKeys(player);
+            RunicItemShopHelper.clearDungeonItems(player);
             player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDERMAN_TELEPORT, 0.5f, 1.2f);
             player.getWorld().playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 1.0f);
 
@@ -70,7 +70,7 @@ public class Gatekeeper extends RunicShopGeneric {
 
                 member.getWorld().playSound(member.getLocation(), Sound.ENTITY_ENDERMAN_TELEPORT, 0.5f, 1.2f);
                 member.getWorld().playSound(member.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 1.0f);
-                RunicItemShopHelper.clearDungeonKeys(member);
+                //RunicItemShopHelper.clearDungeonItems(member);
             }
         };
     }

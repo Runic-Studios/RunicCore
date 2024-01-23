@@ -162,11 +162,7 @@ public class RunicItemShopHelper {
 
     public Set<RunicShopGeneric> getCavernGatekeepers() {
         Set<RunicShopGeneric> gateKeepers = new HashSet<>();
-        List<Pair<String, Integer>> requiredItems = new ArrayList<>();
-        requiredItems.add(Pair.pair(SILVER_KEY, 1));
-        requiredItems.add(Pair.pair(ETHEREAL_KEY, 1));
-        requiredItems.add(Pair.pair(GOLD_KEY, 1));
-        Gatekeeper first = new Gatekeeper(517, requiredItems, DungeonLocation.CRYSTAL_CAVERN, 1);
+        Gatekeeper first = new Gatekeeper(517, ETHEREAL_KEY_ITEM, DungeonLocation.CRYSTAL_CAVERN, 1);
         gateKeepers.add(first);
         return gateKeepers;
     }
@@ -332,7 +328,7 @@ public class RunicItemShopHelper {
      *
      * @param player the player
      */
-    public static void clearDungeonKeys(@NotNull Player player) {
+    public static void clearDungeonItems(@NotNull Player player) {
         boolean removedItem = false;
         for (ItemStack item : player.getInventory().getContents()) {
             if (item == null || item.getAmount() <= 0 || item.getType() == Material.AIR) {
@@ -341,14 +337,14 @@ public class RunicItemShopHelper {
 
             RunicItemTemplate template = RunicItemsAPI.getItemStackTemplate(item);
 
-            if (template != null && RunicItemShopHelper.isDungeonKey(template.getId())) {
+            if (template != null && (RunicItemShopHelper.isDungeonKey(template.getId()))) { //|| template.getTags().contains(RunicItemTag.DUNGEON_ITEM)
                 item.setAmount(0);
                 removedItem = true;
             }
         }
 
         if (removedItem) {
-            player.sendMessage(ChatColor.GRAY + "Your dungeon keys have been removed.");
+            player.sendMessage(ChatColor.GRAY + "Your dungeon items have been removed.");
         }
     }
 }

@@ -1,6 +1,5 @@
 package com.runicrealms.plugin.spellapi.effect;
 
-import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.Material;
 import org.bukkit.Particle;
@@ -19,30 +18,23 @@ public class BleedEffect implements StackEffect {
     private static final double MAX_HEALTH_PERCENT = .03;
     private final Player caster;
     private final LivingEntity recipient;
-    private final Spell spellSource;
     private final StackHologram stackHologram;
     private int nextTickCounter;
     private int stacksRemaining;
 
     /**
-     * @param caster      player who caused the bleed
-     * @param recipient   entity who is bleeding
-     * @param spellSource the spell which caused the bleed (for scaling)
+     * @param caster    player who caused the bleed
+     * @param recipient entity who is bleeding
      */
-    public BleedEffect(Player caster, LivingEntity recipient, Spell spellSource) {
+    public BleedEffect(Player caster, LivingEntity recipient) {
         this.caster = caster;
         this.recipient = recipient;
-        this.spellSource = spellSource;
         this.stacksRemaining = DEFAULT_STACKS;
         this.stackHologram = new StackHologram(
                 SpellEffectType.BLEED,
                 caster.getLocation(),
                 Set.of(caster)
         );
-    }
-
-    public Spell getSpellSource() {
-        return spellSource;
     }
 
     public void refreshStacks() {
@@ -80,7 +72,7 @@ public class BleedEffect implements StackEffect {
             return;
         }
         if (recipient.isDead()) {
-            stacksRemaining = 0;
+            cancel();
             return;
         }
         if (stacksRemaining > 0) {
@@ -97,7 +89,12 @@ public class BleedEffect implements StackEffect {
         recipient.getWorld().spawnParticle(Particle.BLOCK_CRACK, recipient.getEyeLocation(), 10, Math.random() * 1.5, Math.random() / 2, Math.random() * 1.5, Material.REDSTONE_BLOCK.createBlockData());
         double percentMaxHealthAmount = recipient.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue() * MAX_HEALTH_PERCENT;
         DamageUtil.damageEntityPhysical(Math.min(percentMaxHealthAmount, 100), recipient, caster, false, false, false);
-        this.stackHologram.showHologram(this.recipient.getLocation(), this.stacksRemaining);
+        this.stackHologram.showHologram(this.recipient.getEyeLocation().add(0, 1.5f, 0), this.stacksRemaining);
+    }
+
+    @Override
+    public void cancel() {
+        stacksRemaining = 0;
     }
 
     @Override

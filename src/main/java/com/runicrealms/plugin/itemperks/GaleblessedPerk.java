@@ -4,21 +4,16 @@ import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.events.EnterCombatEvent;
 import com.runicrealms.plugin.events.LeaveCombatEvent;
 import com.runicrealms.plugin.runicitems.RunicItemsAPI;
-import com.runicrealms.plugin.runicitems.item.perk.DynamicItemPerkTextPlaceholder;
+import com.runicrealms.plugin.runicitems.item.perk.DynamicItemPerkPercentStatPlaceholder;
 import com.runicrealms.plugin.runicitems.item.perk.ItemPerkHandler;
-import com.runicrealms.plugin.runicitems.item.template.RunicItemTemplate;
 import com.runicrealms.plugin.runicrestart.event.PreShutdownEvent;
-import de.tr7zw.nbtapi.NBTItem;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -27,7 +22,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class GaleblessedPerk extends ItemPerkHandler implements Listener {
+public class GaleblessedPerk extends ItemPerkHandler {
 
     private final float PERCENT_SPEED_PER_STACK;
     private final long SPEED_DURATION_TICKS;
@@ -42,26 +37,7 @@ public class GaleblessedPerk extends ItemPerkHandler implements Listener {
         COOLDOWN_TICKS = (long) (((Number) this.config.get("cooldown")).floatValue() * 20);
         PERCENT_SPEED_PER_STACK = ((Number) this.config.get("speed-per-stack")).floatValue();
 
-        Bukkit.getPluginManager().registerEvents(this, RunicCore.getInstance());
-        RunicItemsAPI.getDynamicItemHandler().registerTextPlaceholder(new DynamicItemPerkTextPlaceholder("galeblessed-percent") { // This is used in the configured lore
-            @Override
-            public String generateReplacement(Player viewer, ItemStack item, NBTItem itemNBT, RunicItemTemplate template) {
-                int basePercentage = (int) (PERCENT_SPEED_PER_STACK * 100);
-
-                int percentage;
-                if (getEquippedSlot(viewer, item, template) != null) { // Item is equipped
-                    percentage = getDisplayedPercentSpeedChange(viewer);
-                } else {
-                    percentage = itemNBT.getInteger("perks-" + GaleblessedPerk.this.getType().getIdentifier()) * basePercentage;
-                }
-
-                if (percentage != basePercentage) {
-                    return ChatColor.GRAY.toString() + ChatColor.STRIKETHROUGH + basePercentage + "%" + ChatColor.YELLOW + " " + percentage + "%";
-                } else {
-                    return ChatColor.YELLOW.toString() + basePercentage + "%";
-                }
-            }
-        });
+        RunicItemsAPI.getDynamicItemHandler().registerTextPlaceholder(new DynamicItemPerkPercentStatPlaceholder("galeblessed-speed", this, () -> PERCENT_SPEED_PER_STACK));
     }
 
     @Override
@@ -84,12 +60,13 @@ public class GaleblessedPerk extends ItemPerkHandler implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    public void onCombatEnter(EnterCombatEvent event) {
+    private void onCombatEnter(EnterCombatEvent event) {
         if (event.isCancelled()) return;
         AttributeModifier modifier = activeGaleblessed.get(event.getPlayer().getUniqueId());
-        if (modifier != null && !deactivationTasks.containsKey(event.getPlayer().getUniqueId())) { // we have a modifier and are not already active
+        if (modifier != null
+                && !deactivationTasks.containsKey(event.getPlayer().getUniqueId())
+                && !cooldownTasks.containsKey(event.getPlayer().getUniqueId())) { // we have a modifier and are not already active
             event.getPlayer().getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).addModifier(modifier);
-            int percentage = (int) (modifier.getAmount() * 100);
             event.getPlayer().sendMessage(
                     ChatColor.AQUA + "" + ChatColor.ITALIC + "Galeblessed: +"
                             + ChatColor.YELLOW + ChatColor.ITALIC + getDisplayedPercentSpeedChange(event.getPlayer()) + "% "
@@ -110,13 +87,13 @@ public class GaleblessedPerk extends ItemPerkHandler implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    public void onCombatLeave(LeaveCombatEvent event) {
+    private void onCombatLeave(LeaveCombatEvent event) {
         if (event.isCancelled()) return;
         tryDeactivateGaleblessed(event.getPlayer(), true);
     }
 
     @EventHandler
-    public void onQuit(PlayerQuitEvent event) {
+    private void onQuit(PlayerQuitEvent event) {
         tryDeactivateGaleblessed(event.getPlayer(), true);
         if (cooldownTasks.containsKey(event.getPlayer().getUniqueId())) {
             cooldownTasks.get(event.getPlayer().getUniqueId()).cancel();
@@ -125,7 +102,7 @@ public class GaleblessedPerk extends ItemPerkHandler implements Listener {
     }
 
     @EventHandler
-    public void onPreShutdown(PreShutdownEvent event) {
+    private void onPreShutdown(PreShutdownEvent event) {
         for (BukkitTask task : deactivationTasks.values()) {
             task.cancel();
         }

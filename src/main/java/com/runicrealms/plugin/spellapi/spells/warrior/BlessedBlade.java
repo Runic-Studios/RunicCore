@@ -4,28 +4,28 @@ import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.common.CharacterClass;
 import com.runicrealms.plugin.events.PhysicalDamageEvent;
 import com.runicrealms.plugin.events.SpellCastEvent;
+import com.runicrealms.plugin.spellapi.effect.BlessedBladeEffect;
+import com.runicrealms.plugin.spellapi.effect.SpellEffect;
+import com.runicrealms.plugin.spellapi.effect.SpellEffectManager;
+import com.runicrealms.plugin.spellapi.effect.SpellEffectType;
+import com.runicrealms.plugin.spellapi.spells.Combat;
+import com.runicrealms.plugin.spellapi.spells.Potion;
 import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.HealingSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.RadiusSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
-import com.runicrealms.plugin.spellapi.spelltypes.StackTask;
 import com.runicrealms.plugin.utilities.DamageUtil;
-import org.bukkit.Bukkit;
-import org.bukkit.Sound;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-import org.bukkit.scheduler.BukkitTask;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class BlessedBlade extends Spell implements DurationSpell, HealingSpell, MagicDamageSpell, RadiusSpell {
-    private final Map<UUID, StackTask> blessedBladeMap = new HashMap<>();
     private double duration;
     private double heal;
     private double healingPerLevel;
@@ -116,9 +116,12 @@ public class BlessedBlade extends Spell implements DurationSpell, HealingSpell, 
         if (event.isCancelled()) return;
         if (!event.isBasicAttack()) return;
         if (!hasPassive(event.getPlayer().getUniqueId(), this.getName())) return;
-        if (!this.blessedBladeMap.containsKey(event.getPlayer().getUniqueId())) return;
         Player player = event.getPlayer();
-        this.blessedBladeMap.get(player.getUniqueId()).getStacks().getAndDecrement();
+        UUID uuid = player.getUniqueId();
+        Optional<SpellEffect> spellEffectOpt = this.getSpellEffect(uuid, uuid, SpellEffectType.BLESSED_BLADE);
+        if (spellEffectOpt.isEmpty()) return;
+        BlessedBladeEffect blessedBladeEffect = (BlessedBladeEffect) spellEffectOpt.get();
+        blessedBladeEffect.decrement(event.getVictim().getEyeLocation(), 1);
         // Additional damage
         DamageUtil.damageEntitySpell(magicDamage, event.getVictim(), player, this);
         // Heal caster and allies
@@ -131,36 +134,29 @@ public class BlessedBlade extends Spell implements DurationSpell, HealingSpell, 
             if (alliesHealed >= maxTargets)
                 break;
         }
-        // Remove player if needed
-        if (this.blessedBladeMap.get(player.getUniqueId()).getStacks().get() <= 0) {
-            cleanupTask(player);
-        }
     }
 
     @EventHandler
     public void onSpellCast(SpellCastEvent event) {
         if (event.isCancelled()) return;
+        if (event.getSpell() instanceof Combat || event.getSpell() instanceof Potion) return;
         if (!hasPassive(event.getCaster().getUniqueId(), this.getName())) return;
-        if (!blessedBladeMap.containsKey(event.getCaster().getUniqueId())) {
-            BukkitTask bukkitTask = Bukkit.getScheduler().runTaskLaterAsynchronously(RunicCore.getInstance(),
-                    () -> cleanupTask(event.getCaster()), (long) duration * 20L);
-            blessedBladeMap.put(event.getCaster().getUniqueId(), new StackTask(event.getCaster(), this, new AtomicInteger(maxCharges), bukkitTask));
+        UUID uuid = event.getCaster().getUniqueId();
+        Optional<SpellEffect> spellEffectOpt = this.getSpellEffect(uuid, uuid, SpellEffectType.BLESSED_BLADE);
+        if (spellEffectOpt.isEmpty()) {
+            BlessedBladeEffect blessedBladeEffect = new BlessedBladeEffect(
+                    event.getCaster(),
+                    this.maxCharges,
+                    (int) this.duration,
+                    this.maxCharges,
+                    event.getCaster().getEyeLocation()
+            );
+            blessedBladeEffect.initialize();
         } else {
-            blessedBladeMap.get(event.getCaster().getUniqueId()).reset((long) duration, () -> reset(event.getCaster()));
+            BlessedBladeEffect blessedBladeEffect = (BlessedBladeEffect) spellEffectOpt.get();
+            SpellEffectManager spellEffectManager = (SpellEffectManager) RunicCore.getSpellEffectAPI();
+            blessedBladeEffect.refresh(event.getCaster().getEyeLocation(), spellEffectManager.getGlobalCounter());
         }
-    }
-
-    public void reset(Player player) {
-        blessedBladeMap.get(player.getUniqueId()).reset((long) duration, () -> cleanupTask(player));
-        blessedBladeMap.get(player.getUniqueId()).getStacks().getAndSet(maxCharges);
-    }
-
-    /**
-     * @param player whose charges have expired
-     */
-    private void cleanupTask(Player player) {
-        blessedBladeMap.remove(player.getUniqueId());
-        player.playSound(player.getLocation(), Sound.BLOCK_BEACON_DEACTIVATE, 0.25f, 1.5f);
     }
 
     public void setMaxTargets(double maxTargets) {
@@ -176,5 +172,4 @@ public class BlessedBlade extends Spell implements DurationSpell, HealingSpell, 
     public void setDuration(double duration) {
         this.duration = duration;
     }
-
 }
