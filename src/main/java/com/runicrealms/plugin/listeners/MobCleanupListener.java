@@ -1,6 +1,6 @@
 package com.runicrealms.plugin.listeners;
 
-import com.runicrealms.plugin.runicrestart.event.ServerShutdownEvent;
+import com.runicrealms.plugin.runicrestart.event.PreShutdownEvent;
 import io.lumine.mythic.bukkit.MythicBukkit;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
@@ -18,17 +18,10 @@ import org.bukkit.event.Listener;
  */
 public class MobCleanupListener implements Listener {
 
-    private static final String world = "Alterra";
-
     @EventHandler(priority = EventPriority.LOWEST)
-    public void onShutdown(ServerShutdownEvent e) {
-        if (Bukkit.getWorld(world) == null) return;
-        for (Entity en : Bukkit.getWorld(world).getEntities()) {
-            if (!(en instanceof LivingEntity)) continue;
-            if (en instanceof Player) continue;
-            if (!MythicBukkit.inst().getMobManager().isActiveMob(en.getUniqueId())) {
-                en.remove();
-            }
-        }
+    public void onShutdown(PreShutdownEvent e) {
+        // Clear all mobs
+        MythicBukkit.inst().getMobManager().despawnAllMobs();
     }
+
 }

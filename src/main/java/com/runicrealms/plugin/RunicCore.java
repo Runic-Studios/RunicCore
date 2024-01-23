@@ -150,7 +150,6 @@ import com.runicrealms.plugin.rdb.api.CharacterAPI;
 import com.runicrealms.plugin.rdb.api.ConverterAPI;
 import com.runicrealms.plugin.rdb.api.DataAPI;
 import com.runicrealms.plugin.rdb.api.RedisAPI;
-import com.runicrealms.plugin.rdb.event.MongoSaveEvent;
 import com.runicrealms.plugin.redis.RedisManager;
 import com.runicrealms.plugin.region.RegionEventListener;
 import com.runicrealms.plugin.resourcepack.ResourcePackManager;

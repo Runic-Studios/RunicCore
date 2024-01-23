@@ -18,9 +18,10 @@ import com.runicrealms.plugin.rdb.api.WriteCallback;
 import com.runicrealms.plugin.rdb.event.CharacterHasQuitEvent;
 import com.runicrealms.plugin.rdb.event.CharacterLoadedEvent;
 import com.runicrealms.plugin.rdb.event.CharacterQuitEvent;
-import com.runicrealms.plugin.rdb.event.MongoSaveEvent;
 import com.runicrealms.plugin.rdb.model.CharacterField;
 import com.runicrealms.plugin.runicrestart.RunicRestart;
+import com.runicrealms.plugin.runicrestart.event.PluginLoadedEvent;
+import com.runicrealms.plugin.runicrestart.event.PluginsReadyEvent;
 import com.runicrealms.plugin.taskchain.TaskChainUtil;
 import org.bson.types.ObjectId;
 import org.bukkit.Bukkit;
@@ -81,7 +82,7 @@ public class DatabaseManager implements CharacterAPI, DataAPI, PlayerDataAPI, Li
          */
         new BukkitRunnable() {
             @Override
-            public void run() {
+            public void run() { // TODO get rid of this monstrosity
                 if (RunicRestart.getAPI().getPluginsToLoad().size() > 1)
                     return; // Other plugins confirming startup (leave 1 for core)
                 this.cancel();
