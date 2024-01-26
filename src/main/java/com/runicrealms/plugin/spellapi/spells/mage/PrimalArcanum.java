@@ -59,8 +59,8 @@ public class PrimalArcanum extends Spell implements DurationSpell, RadiusSpell, 
 
     @Override
     public void executeSpell(Player player, SpellItemType type) {
-        player.getWorld().playSound(player.getLocation(), Sound.BLOCK_ANVIL_USE, 1.0f, 2.0f);
-        player.getWorld().playSound(player.getLocation(), Sound.BLOCK_PORTAL_TRAVEL, 1.0f, 1.0f);
+        player.getWorld().playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1.0f, 2.0f);
+        player.getWorld().playSound(player.getLocation(), Sound.BLOCK_CONDUIT_ACTIVATE, 1.0f, 1.0f);
         new HelixParticleFrame(3.0f, 30, 12.0F).playParticle(player, Particle.SPELL_WITCH, player.getLocation());
         shieldPlayer(player, player, shield, this);
 
