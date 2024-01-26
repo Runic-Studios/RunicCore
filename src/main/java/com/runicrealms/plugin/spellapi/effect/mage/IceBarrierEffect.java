@@ -1,5 +1,8 @@
-package com.runicrealms.plugin.spellapi.effect;
+package com.runicrealms.plugin.spellapi.effect.mage;
 
+import com.runicrealms.plugin.spellapi.effect.SpellEffectType;
+import com.runicrealms.plugin.spellapi.effect.StackEffect;
+import com.runicrealms.plugin.spellapi.effect.StackHologram;
 import com.runicrealms.plugin.spellapi.spellutil.particles.HelixParticleFrame;
 import org.bukkit.Location;
 import org.bukkit.Particle;

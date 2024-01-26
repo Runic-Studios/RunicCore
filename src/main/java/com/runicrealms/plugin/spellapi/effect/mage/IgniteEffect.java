@@ -1,5 +1,7 @@
-package com.runicrealms.plugin.spellapi.effect;
+package com.runicrealms.plugin.spellapi.effect.mage;
 
+import com.runicrealms.plugin.spellapi.effect.SpellEffect;
+import com.runicrealms.plugin.spellapi.effect.SpellEffectType;
 import com.runicrealms.plugin.spellapi.spellutil.particles.Cone;
 import org.bukkit.Color;
 import org.bukkit.Particle;

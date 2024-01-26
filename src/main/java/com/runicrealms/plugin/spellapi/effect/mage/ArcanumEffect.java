@@ -1,20 +1,22 @@
-package com.runicrealms.plugin.spellapi.effect;
+package com.runicrealms.plugin.spellapi.effect.mage;
 
+import com.runicrealms.plugin.spellapi.effect.SpellEffect;
+import com.runicrealms.plugin.spellapi.effect.SpellEffectType;
 import com.runicrealms.plugin.spellapi.spellutil.particles.HelixParticleFrame;
 import org.bukkit.Particle;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
-public class IncendiaryEffect implements SpellEffect {
+public class ArcanumEffect implements SpellEffect {
     private final Player caster;
     private final double duration;
     private long startTime;
 
     /**
-     * @param caster   player who is incendiary
+     * @param caster   player who has effect
      * @param duration (in seconds) before the effect expires
      */
-    public IncendiaryEffect(Player caster, double duration) {
+    public ArcanumEffect(Player caster, double duration) {
         this.caster = caster;
         this.duration = duration;
         this.startTime = System.currentTimeMillis();
@@ -36,7 +38,7 @@ public class IncendiaryEffect implements SpellEffect {
 
     @Override
     public SpellEffectType getEffectType() {
-        return SpellEffectType.INCENDIARY;
+        return SpellEffectType.ARCANUM;
     }
 
     @Override
@@ -67,7 +69,7 @@ public class IncendiaryEffect implements SpellEffect {
 
     @Override
     public void executeSpellEffect() {
-        new HelixParticleFrame(1.0F, 30, 20.0F).playParticle(caster, Particle.FLAME, caster.getLocation());
+        new HelixParticleFrame(1.0F, 30, 20.0F).playParticle(caster, Particle.SPELL_WITCH, caster.getLocation());
     }
 
     @Override

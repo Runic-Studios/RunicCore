@@ -1,8 +1,9 @@
-package com.runicrealms.plugin.spellapi.effect;
+package com.runicrealms.plugin.spellapi.effect.warrior;
 
-import com.runicrealms.plugin.spellapi.spellutil.particles.HelixParticleFrame;
+import com.runicrealms.plugin.spellapi.effect.SpellEffectType;
+import com.runicrealms.plugin.spellapi.effect.StackEffect;
+import com.runicrealms.plugin.spellapi.effect.StackHologram;
 import org.bukkit.Location;
-import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -10,7 +11,7 @@ import org.bukkit.entity.Player;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class RadiantFireEffect implements StackEffect {
+public class BlessedBladeEffect implements StackEffect {
     private static final int PERIOD = 20;
     private final Player caster;
     private final int maxStacks;
@@ -27,27 +28,29 @@ public class RadiantFireEffect implements StackEffect {
      * @param initialStacks    how many stacks to start with
      * @param hologramLocation initial location to spawn the hologram
      */
-    public RadiantFireEffect(Player caster, int maxStacks, int stackDuration, int initialStacks, Location hologramLocation) {
+    public BlessedBladeEffect(Player caster, int maxStacks, int stackDuration, int initialStacks, Location hologramLocation) {
         this.caster = caster;
         this.maxStacks = maxStacks;
         this.stackDuration = stackDuration;
         this.stacks = new AtomicInteger(initialStacks);
         this.hologramLocation = hologramLocation;
         this.stackHologram = new StackHologram(
-                SpellEffectType.RADIANT_FIRE,
+                SpellEffectType.BLESSED_BLADE,
                 hologramLocation,
                 Set.of(caster)
         );
         executeSpellEffect();
     }
 
-    public int getMaxStacks() {
-        return maxStacks;
-    }
-
     @Override
     public void setNextTickCounter(int nextTickCounter) {
         this.nextTickCounter = nextTickCounter;
+    }
+
+    public void refresh(Location hologramLocation, int globalCounter) {
+        this.setHologramLocation(hologramLocation.add(0, 1.5f, 0));
+        this.stacks.set(this.maxStacks);
+        this.nextTickCounter = globalCounter + getTickInterval();
     }
 
     public void setHologramLocation(Location hologramLocation) {
@@ -58,19 +61,19 @@ public class RadiantFireEffect implements StackEffect {
         return stacks;
     }
 
-    public void increment(Location hologramLocation, int amountToIncrement) {
+    public void decrement(Location hologramLocation, int amountToDecrement) {
         this.setHologramLocation(hologramLocation.add(0, 1.5f, 0));
         int currentStacks = this.stacks.get();
-        if (currentStacks >= this.maxStacks) {
+        if (currentStacks == 0) {
             return;
         }
-        this.stacks.set(Math.min(currentStacks + amountToIncrement, this.maxStacks));
+        this.stacks.set(Math.max(currentStacks - amountToDecrement, 0));
         executeSpellEffect();
     }
 
     @Override
     public SpellEffectType getEffectType() {
-        return SpellEffectType.RADIANT_FIRE;
+        return SpellEffectType.BLESSED_BLADE;
     }
 
     @Override
@@ -95,9 +98,6 @@ public class RadiantFireEffect implements StackEffect {
 
     @Override
     public void tick(int globalCounter) {
-        if (globalCounter % 60 == 0) { // Show particle effect once per two three
-            executeSpellEffect();
-        }
         if (globalCounter < nextTickCounter) {
             return;
         }
@@ -105,22 +105,18 @@ public class RadiantFireEffect implements StackEffect {
             cancel();
             return;
         }
-        // Decrement one stack every stackDuration seconds
+        // Cancels stacks every stackDuration seconds
         if (stacks.get() > 0) {
-            stacks.getAndDecrement();
-            caster.playSound(caster.getLocation(), Sound.BLOCK_CONDUIT_DEACTIVATE, 0.25f, 3.0f);
+            this.cancel();
         }
+        executeSpellEffect();
         // Set the next tick
         nextTickCounter += getTickInterval();
     }
 
     @Override
     public void executeSpellEffect() {
-        int stacks = this.stacks.get();
         stackHologram.showHologram(this.hologramLocation, this.stacks.get());
-        if (stacks == this.maxStacks) {
-            new HelixParticleFrame(1.0F, 30, 10.0F).playParticle(caster, Particle.FIREWORKS_SPARK, caster.getLocation());
-        }
     }
 
     @Override

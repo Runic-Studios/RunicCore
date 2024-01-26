@@ -1,5 +1,8 @@
-package com.runicrealms.plugin.spellapi.effect;
+package com.runicrealms.plugin.spellapi.effect.warrior;
 
+import com.runicrealms.plugin.spellapi.effect.SpellEffectType;
+import com.runicrealms.plugin.spellapi.effect.StackEffect;
+import com.runicrealms.plugin.spellapi.effect.StackHologram;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.Material;
 import org.bukkit.Particle;

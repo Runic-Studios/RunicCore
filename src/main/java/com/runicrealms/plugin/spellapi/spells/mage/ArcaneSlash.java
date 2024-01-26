@@ -32,8 +32,10 @@ public class ArcaneSlash extends Spell implements DistanceSpell, MagicDamageSpel
                 "dealing (" + damage + " + &f" + damagePerLevel +
                 "x&7 lvl) magicʔ damage to all enemies. " +
                 "If you hit at least one enemy, gain a " +
-                "shield equal to (" + shield + " + &f" + shieldPerLevel +
-                "x&7 lvl) health!");
+                "&eshield &7equal to (" + shield + " + &f" + shieldPerLevel +
+                "x&7 lvl) health!" +
+                "\n\n&2&lEFFECT &eShield" +
+                "\n&7Shields absorb damage and appear as yellow hearts!");
 
     }
 

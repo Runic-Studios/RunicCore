@@ -3,6 +3,7 @@ package com.runicrealms.plugin.spellapi.effect;
 import org.bukkit.ChatColor;
 
 public enum SpellEffectType {
+    ARCANUM(ChatColor.LIGHT_PURPLE, "Arcanum", ""),
     BLEED(ChatColor.DARK_RED, "Bleed", "☠"),
     BLESSED_BLADE(ChatColor.GREEN, "Blessed Blade", "⚔"),
     CHARGED(ChatColor.BLUE, "Charged", "➹"),
