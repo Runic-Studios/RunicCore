@@ -9,6 +9,7 @@ import com.runicrealms.plugin.spellapi.spelltypes.PhysicalDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.utilities.DamageUtil;
+import com.runicrealms.plugin.utilities.MobUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Location;
@@ -41,6 +42,13 @@ public class Harpoon extends Spell implements DurationSpell, PhysicalDamageSpell
                 "the trident deals (" + damage + " + &f" + damagePerLevel +
                 "x&7 lvl) physical⚔ damage and pulls its target towards you, slowing them for " + duration + "s! " +
                 "If an ally is hit, you are instead teleported to their location.");
+    }
+
+    @Override
+    public void loadSpellSpecificData(Map<String, Object> spellData) {
+        super.loadSpellSpecificData(spellData);
+        Number tridentSpeed = (Number) spellData.getOrDefault("trident-speed", 0);
+        setTridentSpeed(tridentSpeed.doubleValue());
     }
 
     @Override
@@ -98,16 +106,6 @@ public class Harpoon extends Spell implements DurationSpell, PhysicalDamageSpell
         this.damagePerLevel = (int) physicalDamagePerLevel;
     }
 
-    @Override
-    public void loadPhysicalData(Map<String, Object> spellData) {
-        Number physicalDamage = (Number) spellData.getOrDefault("physical-damage", 0);
-        setPhysicalDamage(physicalDamage.doubleValue());
-        Number physicalDamagePerLevel = (Number) spellData.getOrDefault("physical-damage-per-level", 0);
-        setPhysicalDamagePerLevel(physicalDamagePerLevel.doubleValue());
-        Number tridentSpeed = (Number) spellData.getOrDefault("trident-speed", 0);
-        setTridentSpeed(tridentSpeed.doubleValue());
-    }
-
     @EventHandler
     public void onTridentDamage(ProjectileCollideEvent event) {
         if (tridentMap.isEmpty()) return;
@@ -142,15 +140,17 @@ public class Harpoon extends Spell implements DurationSpell, PhysicalDamageSpell
             DamageUtil.damageEntityPhysical(damage, victim, player, false, true, this);
             addStatusEffect(victim, RunicStatusEffect.SLOW_III, duration, false);
 
-            new BukkitRunnable() {
-                @Override
-                public void run() {
-                    Vector pushVector = new Vector(xDir, 0.0D, zDir).normalize().multiply(2).setY(0.4D);
-                    victim.setVelocity(pushVector);
-                    victim.getWorld().playSound(victim.getLocation(), Sound.ENTITY_PLAYER_HURT, 0.5f, 1);
-                    victim.getWorld().spawnParticle(Particle.CRIT, victim.getEyeLocation(), 5, 0.5F, 0.5F, 0.5F, 0);
-                }
-            }.runTaskLater(RunicCore.getInstance(), 4L);
+            if (!MobUtil.isBoss(victim.getUniqueId())) {
+                new BukkitRunnable() {
+                    @Override
+                    public void run() {
+                        Vector pushVector = new Vector(xDir, 0.0D, zDir).normalize().multiply(2).setY(0.4D);
+                        victim.setVelocity(pushVector);
+                        victim.getWorld().playSound(victim.getLocation(), Sound.ENTITY_PLAYER_HURT, 0.5f, 1);
+                        victim.getWorld().spawnParticle(Particle.CRIT, victim.getEyeLocation(), 5, 0.5F, 0.5F, 0.5F, 0);
+                    }
+                }.runTaskLater(RunicCore.getInstance(), 4L);
+            }
 
             Bukkit.getPluginManager().callEvent(new HarpoonHitEvent(player, victim));
         }

@@ -14,6 +14,7 @@ import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.spellapi.spellutil.VectorUtil;
 import com.runicrealms.plugin.spellapi.spellutil.particles.HorizontalCircleFrame;
 import com.runicrealms.plugin.utilities.DamageUtil;
+import com.runicrealms.plugin.utilities.MobUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Location;
@@ -113,12 +114,14 @@ public class Whirlpool extends Spell implements DistanceSpell, DurationSpell, Ma
                     DamageUtil.damageEntitySpell(magicDamage, (LivingEntity) entity, caster, this);
                 }
 
-                // Pull to middle
-                Vector directionToMiddle = castLocation.clone().subtract(entity.getLocation()).toVector();
-                if (directionToMiddle.lengthSquared() > 0) { // Check if the vector is not zero
-                    directionToMiddle.setY(0);
-                    directionToMiddle.normalize().multiply(multiplier); // Adjust this value to change the strength of the pull
-                    entity.setVelocity(directionToMiddle);
+                // Pull to middle (ignore bosses)
+                if (!MobUtil.isBoss(entity.getUniqueId())) {
+                    Vector directionToMiddle = castLocation.clone().subtract(entity.getLocation()).toVector();
+                    if (directionToMiddle.lengthSquared() > 0) { // Check if the vector is not zero
+                        directionToMiddle.setY(0);
+                        directionToMiddle.normalize().multiply(multiplier); // Adjust this value to change the strength of the pull
+                        entity.setVelocity(directionToMiddle);
+                    }
                 }
 
                 addStatusEffect((LivingEntity) entity, RunicStatusEffect.SLOW_II, 1, false);
