@@ -41,8 +41,17 @@ public class CallOfTheDeep extends Spell implements WarmupSpell, PhysicalDamageS
                 "a creature from the depths to their location after a " +
                 this.warmup + "s delay! This deals (" + this.damage + " + &f" +
                 this.damagePerLevel + "x&7 lvl) physical⚔ damage and " +
-                "stuns the affected enem(ies) for " + this.duration + "s."); // TODO: not just players
+                "stuns the affected enem(ies) for " + this.duration + "s!");
         this.harpooned = new HashMap<>();
+    }
+
+    @Override
+    protected void loadSpellSpecificData(Map<String, Object> spellData) {
+        super.loadSpellSpecificData(spellData);
+        Number dashBuff = (Number) spellData.getOrDefault("dash-buff", 0.5);
+        this.dashBuff = dashBuff.doubleValue();
+        Number dashBuffDuration = (Number) spellData.getOrDefault("dash-buff-duration", 3.0);
+        this.dashBuffDuration = dashBuffDuration.doubleValue();
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
@@ -107,15 +116,6 @@ public class CallOfTheDeep extends Spell implements WarmupSpell, PhysicalDamageS
     @EventHandler
     private void onCharacterQuit(CharacterQuitEvent event) {
         this.harpooned.remove(event.getPlayer().getUniqueId());
-    }
-
-    @Override
-    protected void loadSpellSpecificData(Map<String, Object> spellData) {
-        super.loadSpellSpecificData(spellData);
-        Number dashBuff = (Number) spellData.getOrDefault("dash-buff", 0.5);
-        this.dashBuff = dashBuff.doubleValue();
-        Number dashBuffDuration = (Number) spellData.getOrDefault("dash-buff-duration", 3.0);
-        this.dashBuffDuration = dashBuffDuration.doubleValue();
     }
 
     @Override
