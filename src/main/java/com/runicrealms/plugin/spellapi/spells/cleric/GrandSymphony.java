@@ -34,7 +34,7 @@ import java.util.stream.IntStream;
  *
  * @author BoBoBalloon
  */
-public class GrandSymphony extends Spell implements RadiusSpell, MagicDamageSpell, DurationSpell, Tempo.Influenced {
+public class GrandSymphony extends Spell implements DurationSpell, MagicDamageSpell, RadiusSpell, Tempo.Influenced {
     private static final int PARTICLES_PER_RING = 15;
     private double[] ranges;
     private double damage;
@@ -42,21 +42,31 @@ public class GrandSymphony extends Spell implements RadiusSpell, MagicDamageSpel
     private double duration;
     private double debuffDuration;
     private double debuffRatio;
-    private double period;
     private double radius;
 
-    // todo: SpellEffect but debuff
     public GrandSymphony() {
         super("Grand Symphony", CharacterClass.CLERIC);
-        this.setDescription("You pulse waves of resonating magic every " + period +
-                "s for " + this.duration + "s in a " + this.radius + " block radius, " +
+        this.setDescription("You pulse waves of resonant magic each second " +
+                "for " + this.duration + "s in a " + this.radius + " block radius, " +
                 "dealing (" + this.damage + " + &f" + this.damagePerLevel + "x&7 lvl) " +
-                "magicʔ damage, reducing enemy attack speed by " +
-                (this.debuffRatio * 100) + "% and reducing enemy player magicʔ damage by " +
-                (this.debuffRatio * 50) + "% for " + this.debuffDuration + "s. " +
-                "Reduce monster damage by " + (this.debuffRatio * 100) + "% instead. " +
-                "If this spell pulses 6 times, the pulse also stuns enemies hit for " +
-                this.debuffDuration + "s!");
+                "magicʔ damage and applying &eballad of binding &7to enemies hit for " + this.debuffDuration + "s! " +
+                "If this spell pulses 6 times, the pulse also stuns for " +
+                this.debuffDuration + "s!" +
+                "\n\n&2&lEFFECT &eBallad of Binding" +
+                "\n&7Enemy players affected by &eballad of binding " +
+                "&7have their attack speed reduced by " +
+                (this.debuffRatio * 100) + "% and their magicʔ damage by " +
+                (this.debuffRatio * 50) + "%. " +
+                "Monsters instead have their damage reduced by " + (this.debuffRatio * 100) + "%!");
+    }
+
+    @Override
+    protected void loadSpellSpecificData(Map<String, Object> spellData) {
+        super.loadSpellSpecificData(spellData);
+        Number debuffDuration = (Number) spellData.getOrDefault("debuff-duration", 2);
+        this.debuffDuration = debuffDuration.doubleValue();
+        Number debuffRatio = (Number) spellData.getOrDefault("debuff-ratio", 0.5);
+        this.debuffRatio = debuffRatio.doubleValue();
     }
 
     @Override
@@ -100,11 +110,11 @@ public class GrandSymphony extends Spell implements RadiusSpell, MagicDamageSpel
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     private void onBasicAttack(BasicAttackEvent event) {
 
-        if (lastUsed == null || System.currentTimeMillis() > lastUsed + (this.debuffDuration * 1000)) {
-            return;
-        }
-
-        event.setCooldownTicks(event.getUnroundedCooldownTicks() * (1 + this.debuffRatio));
+//        if (lastUsed == null || System.currentTimeMillis() > lastUsed + (this.debuffDuration * 1000)) {
+//            return;
+//        }
+//
+//        event.setCooldownTicks(event.getUnroundedCooldownTicks() * (1 + this.debuffRatio));
     }
 
     /**
@@ -112,13 +122,13 @@ public class GrandSymphony extends Spell implements RadiusSpell, MagicDamageSpel
      */
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     private void onMagicDamage(MagicDamageEvent event) {
-        Long lastUsed = this.debuffed.get(event.getPlayer().getUniqueId());
-
-        if (lastUsed == null || System.currentTimeMillis() > lastUsed + (this.debuffDuration * 1000)) {
-            return;
-        }
-
-        event.setAmount((int) (event.getAmount() * (1 - (this.debuffRatio / 2))));
+//        Long lastUsed = this.debuffed.get(event.getPlayer().getUniqueId());
+//
+//        if (lastUsed == null || System.currentTimeMillis() > lastUsed + (this.debuffDuration * 1000)) {
+//            return;
+//        }
+//
+//        event.setAmount((int) (event.getAmount() * (1 - (this.debuffRatio / 2))));
     }
 
     /**
@@ -126,18 +136,18 @@ public class GrandSymphony extends Spell implements RadiusSpell, MagicDamageSpel
      */
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     private void onMobDamage(MobDamageEvent event) {
-        Long lastUsed = this.debuffed.get(event.getMob().getUniqueId());
-
-        if (lastUsed == null || System.currentTimeMillis() > lastUsed + (this.debuffDuration * 1000)) {
-            return;
-        }
-
-        event.setAmount((int) (event.getAmount() * (1 - this.debuffRatio)));
+//        Long lastUsed = this.debuffed.get(event.getMob().getUniqueId());
+//
+//        if (lastUsed == null || System.currentTimeMillis() > lastUsed + (this.debuffDuration * 1000)) {
+//            return;
+//        }
+//
+//        event.setAmount((int) (event.getAmount() * (1 - this.debuffRatio)));
     }
 
     @EventHandler
     private void onCharacterQuit(CharacterQuitEvent event) {
-        this.debuffed.remove(event.getPlayer().getUniqueId());
+//        this.debuffed.remove(event.getPlayer().getUniqueId());
     }
 
     private void particleWave(@NotNull Player player, @NotNull Particle.DustOptions option) {
@@ -165,15 +175,6 @@ public class GrandSymphony extends Spell implements RadiusSpell, MagicDamageSpel
 
             player.spawnParticle(Particle.REDSTONE, x, player.getLocation().getY(), z, 1, option);
         }
-    }
-
-    @Override
-    protected void loadSpellSpecificData(Map<String, Object> spellData) {
-        super.loadSpellSpecificData(spellData);
-        Number debuffDuration = (Number) spellData.getOrDefault("debuff-duration", 2);
-        this.debuffDuration = debuffDuration.doubleValue();
-        Number debuffRatio = (Number) spellData.getOrDefault("debuff-ratio", 0.5);
-        this.debuffRatio = debuffRatio.doubleValue();
     }
 
     @Override

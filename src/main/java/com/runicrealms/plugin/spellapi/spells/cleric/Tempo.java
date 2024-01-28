@@ -38,8 +38,10 @@ public class Tempo extends Spell implements RadiusSpell, DurationSpell {
     public Tempo() {
         super("Tempo", CharacterClass.CLERIC);
         this.setIsPassive(true);
-        this.setDescription("Whenever you cast a spell, your next basic attack restores " + this.restore + " mana to yourself and allies within " + this.radius + " blocks.\n" +
-                "Additionally, this enhanced basic attack increases the duration of your active &aAccelerando&7, &aBattlecry&7 and &aGrand Symphony&7 by " + this.duration + "s each.");
+        this.setDescription("Whenever you cast a spell, your next basic attack restores " +
+                this.restore + " mana to yourself and allies within " + this.radius + " blocks. " +
+                "Additionally, this enhanced basic attack increases the duration of your active " +
+                "&aAccelerando&7, &aBattlecry&7 and &aGrand Symphony&7 by " + this.duration + "s each.");
         this.specialAttacks = new HashSet<>();
     }
 
@@ -86,6 +88,33 @@ public class Tempo extends Spell implements RadiusSpell, DurationSpell {
     private void onCharacterQuit(CharacterQuitEvent event) {
         EXTENSIONS.remove(event.getPlayer().getUniqueId());
         this.specialAttacks.remove(event.getPlayer().getUniqueId());
+    }
+
+    @Override
+    protected void loadSpellSpecificData(Map<String, Object> spellData) {
+        super.loadSpellSpecificData(spellData);
+        Number restore = (Number) spellData.getOrDefault("restore", 10);
+        this.restore = restore.intValue();
+    }
+
+    @Override
+    public double getRadius() {
+        return this.radius;
+    }
+
+    @Override
+    public void setRadius(double radius) {
+        this.radius = radius;
+    }
+
+    @Override
+    public double getDuration() {
+        return this.duration;
+    }
+
+    @Override
+    public void setDuration(double duration) {
+        this.duration = duration;
     }
 
     /**
@@ -150,32 +179,5 @@ public class Tempo extends Spell implements RadiusSpell, DurationSpell {
         default double getMaxExtraDuration() {
             return Double.MAX_VALUE;
         }
-    }
-
-    @Override
-    protected void loadSpellSpecificData(Map<String, Object> spellData) {
-        super.loadSpellSpecificData(spellData);
-        Number restore = (Number) spellData.getOrDefault("restore", 10);
-        this.restore = restore.intValue();
-    }
-
-    @Override
-    public double getRadius() {
-        return this.radius;
-    }
-
-    @Override
-    public void setRadius(double radius) {
-        this.radius = radius;
-    }
-
-    @Override
-    public double getDuration() {
-        return this.duration;
-    }
-
-    @Override
-    public void setDuration(double duration) {
-        this.duration = duration;
     }
 }

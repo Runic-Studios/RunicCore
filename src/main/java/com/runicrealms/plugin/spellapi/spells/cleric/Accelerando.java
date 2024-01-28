@@ -104,7 +104,8 @@ public class Accelerando extends Spell implements DurationSpell, RadiusSpell, At
     private void onEnvironmentDamage(EnvironmentDamageEvent event) {
         this.reduceDamage(event);
     }
-    
+
+    @EventHandler
     private void onMobDamage(MobDamageEvent event) {
 
     }

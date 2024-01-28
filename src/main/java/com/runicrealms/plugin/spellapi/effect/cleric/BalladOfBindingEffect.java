@@ -7,15 +7,18 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
 public class BalladOfBindingEffect implements SpellEffect {
-    private final Player recipient;
+    private final Player caster;
+    private final LivingEntity recipient;
     private final double duration;
     private long startTime;
 
     /**
-     * @param recipient player who is receiving the effect
+     * @param caster    player who caused the effect
+     * @param recipient living entity who is receiving the effect
      * @param duration  (in seconds) before the effect expires
      */
-    public BalladOfBindingEffect(Player caster, Player recipient, double duration) {
+    public BalladOfBindingEffect(Player caster, LivingEntity recipient, double duration) {
+        this.caster = caster;
         this.recipient = recipient;
         this.duration = duration;
         this.startTime = System.currentTimeMillis();
@@ -37,17 +40,17 @@ public class BalladOfBindingEffect implements SpellEffect {
 
     @Override
     public SpellEffectType getEffectType() {
-        return SpellEffectType.ARIA_OF_ARMOR;
+        return SpellEffectType.BALLAD_OF_BINDING;
     }
 
     @Override
     public boolean isBuff() {
-        return true;
+        return false;
     }
 
     @Override
     public Player getCaster() {
-        return recipient;
+        return caster;
     }
 
     @Override
