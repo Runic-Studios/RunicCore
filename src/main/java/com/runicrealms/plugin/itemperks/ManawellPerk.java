@@ -24,7 +24,6 @@ public class ManawellPerk extends ItemPerkHandler {
         this.perMissingManaPercent = ((Number) this.config.get("per-missing-mana-percent")).doubleValue();
 
         RunicItemsAPI.getDynamicItemHandler().registerTextPlaceholder(new DynamicItemPerkPercentStatPlaceholder("manawell-spell-damage-per-missing-mana-percent", this, () -> this.spellDamageIncreasePercent));
-        RunicItemsAPI.getDynamicItemHandler().registerTextPlaceholder(new DynamicItemPerkPercentStatPlaceholder("manawell-per-missing-mana-percent", this, () -> this.perMissingManaPercent));
     }
 
     @EventHandler(ignoreCancelled = true)
