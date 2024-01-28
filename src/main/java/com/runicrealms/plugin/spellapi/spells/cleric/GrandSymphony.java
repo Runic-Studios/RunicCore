@@ -25,7 +25,9 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.IntStream;
 
@@ -34,39 +36,24 @@ import java.util.stream.IntStream;
  *
  * @author BoBoBalloon
  */
-public class GrandSymphony extends Spell implements DurationSpell, MagicDamageSpell, RadiusSpell, Tempo.Influenced {
+public class GrandSymphony extends Spell implements RadiusSpell, MagicDamageSpell, DurationSpell, Tempo.Influenced {
     private static final int PARTICLES_PER_RING = 15;
+    private final Map<UUID, Long> debuffed;
     private double[] ranges;
+    private double radius;
     private double damage;
     private double damagePerLevel;
     private double duration;
     private double debuffDuration;
     private double debuffRatio;
-    private double radius;
 
     public GrandSymphony() {
         super("Grand Symphony", CharacterClass.CLERIC);
-        this.setDescription("You pulse waves of resonant magic each second " +
-                "for " + this.duration + "s in a " + this.radius + " block radius, " +
-                "dealing (" + this.damage + " + &f" + this.damagePerLevel + "x&7 lvl) " +
-                "magicʔ damage and applying &eballad of binding &7to enemies hit for " + this.debuffDuration + "s! " +
-                "If this spell pulses 6 times, the pulse also stuns for " +
-                this.debuffDuration + "s!" +
-                "\n\n&2&lEFFECT &eBallad of Binding" +
-                "\n&7Enemy players affected by &eballad of binding " +
-                "&7have their attack speed reduced by " +
-                (this.debuffRatio * 100) + "% and their magicʔ damage by " +
-                (this.debuffRatio * 50) + "%. " +
-                "Monsters instead have their damage reduced by " + (this.debuffRatio * 100) + "%!");
-    }
-
-    @Override
-    protected void loadSpellSpecificData(Map<String, Object> spellData) {
-        super.loadSpellSpecificData(spellData);
-        Number debuffDuration = (Number) spellData.getOrDefault("debuff-duration", 2);
-        this.debuffDuration = debuffDuration.doubleValue();
-        Number debuffRatio = (Number) spellData.getOrDefault("debuff-ratio", 0.5);
-        this.debuffRatio = debuffRatio.doubleValue();
+        this.setDescription("You pulse waves of resonating magic every 1s for " + this.duration + "s in a " + this.radius + " block radius,\n" +
+                "dealing (" + this.damage + " + &f" + this.damagePerLevel + "x&7 lvl) magicʔ damage and reducing enemy attack speed by " + (this.debuffRatio * 100) + "% and spell damage by " + (this.debuffRatio * 50) + "% for " + this.debuffDuration + "s.\n" +
+                "Against mobs, this reduces their damage by " + (this.debuffRatio * 100) + "% instead.\n" +
+                "If this spell pulses 6 times, the pulse also stuns enemies hit for " + this.debuffDuration + "s.");
+        this.debuffed = new HashMap<>();
     }
 
     @Override
@@ -93,6 +80,7 @@ public class GrandSymphony extends Spell implements DurationSpell, MagicDamageSp
                 }
 
                 DamageUtil.damageEntitySpell(this.damage, target, player, false, this);
+                this.debuffed.put(target.getUniqueId(), now);
 
                 if (count.get() >= this.getMaxExtraDuration()) {
                     this.addStatusEffect(target, RunicStatusEffect.STUN, this.debuffDuration, true);
@@ -109,12 +97,13 @@ public class GrandSymphony extends Spell implements DurationSpell, MagicDamageSp
      */
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     private void onBasicAttack(BasicAttackEvent event) {
+        Long lastUsed = this.debuffed.get(event.getPlayer().getUniqueId());
 
-//        if (lastUsed == null || System.currentTimeMillis() > lastUsed + (this.debuffDuration * 1000)) {
-//            return;
-//        }
-//
-//        event.setCooldownTicks(event.getUnroundedCooldownTicks() * (1 + this.debuffRatio));
+        if (lastUsed == null || System.currentTimeMillis() > lastUsed + (this.debuffDuration * 1000)) {
+            return;
+        }
+
+        event.setCooldownTicks(event.getUnroundedCooldownTicks() * (1 + this.debuffRatio));
     }
 
     /**
@@ -122,13 +111,13 @@ public class GrandSymphony extends Spell implements DurationSpell, MagicDamageSp
      */
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     private void onMagicDamage(MagicDamageEvent event) {
-//        Long lastUsed = this.debuffed.get(event.getPlayer().getUniqueId());
-//
-//        if (lastUsed == null || System.currentTimeMillis() > lastUsed + (this.debuffDuration * 1000)) {
-//            return;
-//        }
-//
-//        event.setAmount((int) (event.getAmount() * (1 - (this.debuffRatio / 2))));
+        Long lastUsed = this.debuffed.get(event.getPlayer().getUniqueId());
+
+        if (lastUsed == null || System.currentTimeMillis() > lastUsed + (this.debuffDuration * 1000)) {
+            return;
+        }
+
+        event.setAmount((int) (event.getAmount() * (1 - (this.debuffRatio / 2))));
     }
 
     /**
@@ -136,18 +125,18 @@ public class GrandSymphony extends Spell implements DurationSpell, MagicDamageSp
      */
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     private void onMobDamage(MobDamageEvent event) {
-//        Long lastUsed = this.debuffed.get(event.getMob().getUniqueId());
-//
-//        if (lastUsed == null || System.currentTimeMillis() > lastUsed + (this.debuffDuration * 1000)) {
-//            return;
-//        }
-//
-//        event.setAmount((int) (event.getAmount() * (1 - this.debuffRatio)));
+        Long lastUsed = this.debuffed.get(event.getMob().getUniqueId());
+
+        if (lastUsed == null || System.currentTimeMillis() > lastUsed + (this.debuffDuration * 1000)) {
+            return;
+        }
+
+        event.setAmount((int) (event.getAmount() * (1 - this.debuffRatio)));
     }
 
     @EventHandler
     private void onCharacterQuit(CharacterQuitEvent event) {
-//        this.debuffed.remove(event.getPlayer().getUniqueId());
+        this.debuffed.remove(event.getPlayer().getUniqueId());
     }
 
     private void particleWave(@NotNull Player player, @NotNull Particle.DustOptions option) {
@@ -175,6 +164,15 @@ public class GrandSymphony extends Spell implements DurationSpell, MagicDamageSp
 
             player.spawnParticle(Particle.REDSTONE, x, player.getLocation().getY(), z, 1, option);
         }
+    }
+
+    @Override
+    protected void loadSpellSpecificData(Map<String, Object> spellData) {
+        super.loadSpellSpecificData(spellData);
+        Number debuffDuration = (Number) spellData.getOrDefault("debuff-duration", 2);
+        this.debuffDuration = debuffDuration.doubleValue();
+        Number debuffRatio = (Number) spellData.getOrDefault("debuff-ratio", 0.5);
+        this.debuffRatio = debuffRatio.doubleValue();
     }
 
     @Override

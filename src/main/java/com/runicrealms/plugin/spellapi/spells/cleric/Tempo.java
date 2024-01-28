@@ -38,10 +38,8 @@ public class Tempo extends Spell implements RadiusSpell, DurationSpell {
     public Tempo() {
         super("Tempo", CharacterClass.CLERIC);
         this.setIsPassive(true);
-        this.setDescription("Whenever you cast a spell, your next basic attack restores " +
-                this.restore + " mana to yourself and allies within " + this.radius + " blocks. " +
-                "Additionally, this enhanced basic attack increases the duration of your active " +
-                "&aAccelerando&7, &aBattlecry&7 and &aGrand Symphony&7 by " + this.duration + "s each.");
+        this.setDescription("Whenever you cast a spell, your next basic attack restores " + this.restore + " mana to yourself and allies within " + this.radius + " blocks.\n" +
+                "Additionally, this enhanced basic attack increases the duration of your active &aAccelerando&7, &aBattlecry&7 and &aGrand Symphony&7 by " + this.duration + "s each.");
         this.specialAttacks = new HashSet<>();
     }
 
