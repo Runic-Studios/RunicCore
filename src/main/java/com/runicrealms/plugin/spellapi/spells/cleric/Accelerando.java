@@ -1,16 +1,17 @@
 package com.runicrealms.plugin.spellapi.spells.cleric;
 
-import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.common.CharacterClass;
-import com.runicrealms.plugin.common.util.Pair;
 import com.runicrealms.plugin.events.EnvironmentDamageEvent;
 import com.runicrealms.plugin.events.MagicDamageEvent;
+import com.runicrealms.plugin.events.MobDamageEvent;
 import com.runicrealms.plugin.events.PhysicalDamageEvent;
 import com.runicrealms.plugin.events.RunicDamageEvent;
 import com.runicrealms.plugin.events.SpellCastEvent;
-import com.runicrealms.plugin.rdb.event.CharacterQuitEvent;
 import com.runicrealms.plugin.runicitems.Stat;
 import com.runicrealms.plugin.spellapi.effect.RunicStatusEffect;
+import com.runicrealms.plugin.spellapi.effect.SpellEffect;
+import com.runicrealms.plugin.spellapi.effect.SpellEffectType;
+import com.runicrealms.plugin.spellapi.effect.cleric.AriaOfArmorEffect;
 import com.runicrealms.plugin.spellapi.spelltypes.AttributeSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.RadiusSpell;
@@ -25,29 +26,29 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.Optional;
 
 /**
  * the first passive for bard
  *
- * @author BoBoBalloon
+ * @author BoBoBalloon, Skyfallin
  */
 public class Accelerando extends Spell implements DurationSpell, RadiusSpell, AttributeSpell, Tempo.Influenced {
     private static final Stat STAT = Stat.INTELLIGENCE;
-    private final Map<UUID, Pair<Integer, Long>> damageReduction;
-    private double duration;
-    private double radius;
     private double base;
+    private double duration;
     private double multiplier;
+    private double radius;
 
     public Accelerando() {
         super("Accelerando", CharacterClass.CLERIC);
         this.setIsPassive(true);
-        this.setDescription("Whenever you cast a &6Bard&7 spell, you and all allies within a " + this.radius + " block radius gain\n" +
-                "Speed II and (" + this.base + " + &f" + this.multiplier + "x&e " + STAT.getPrefix() + "&7)% damage reduction for " + this.duration + "s.");
-        this.damageReduction = new HashMap<>();
+        this.setDescription("Whenever you cast a &6Bard&7 spell, " +
+                "you and all allies within " + this.radius + " blocks gain " +
+                "Speed II and &faria of armor &7for " + this.duration + "s!" +
+                "\n\n&2&lEFFECT &fAria of Armor" +
+                "\n&7Allies affected by &faria of armor &7gain (" + this.base + " + &f" + this.multiplier + "x&e " +
+                STAT.getPrefix() + "&7)% damage reduction!");
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -56,26 +57,37 @@ public class Accelerando extends Spell implements DurationSpell, RadiusSpell, At
             return;
         }
 
-        if (!(event.getSpell() instanceof Battlecry || event.getSpell() instanceof Powerslide || event.getSpell() instanceof GrandSymphony)) {
+        if (!(event.getSpell() instanceof Battlecry
+                || event.getSpell() instanceof Powerslide
+                || event.getSpell() instanceof GrandSymphony)) {
             return;
         }
 
-        int stat = RunicCore.getStatAPI().getStat(event.getCaster().getUniqueId(), STAT.getIdentifier());
-        long now = System.currentTimeMillis();
-
+        Player player = event.getCaster();
         for (Entity entity : event.getCaster().getNearbyEntities(this.radius, this.radius, this.radius)) {
             if (!(entity instanceof Player ally) || !this.isValidAlly(event.getCaster(), ally)) {
                 continue;
             }
-
             this.removeExtraDuration(ally);
-            this.applySpeed(event.getCaster(), ally);
-            this.damageReduction.put(ally.getUniqueId(), Pair.pair(stat, now));
+            this.applySpeed(player, ally);
+            applyAriaOfArmor(player, ally);
         }
 
         this.removeExtraDuration(event.getCaster());
-        this.applySpeed(event.getCaster(), event.getCaster());
-        this.damageReduction.put(event.getCaster().getUniqueId(), Pair.pair(stat, now));
+        this.applySpeed(player, player);
+        applyAriaOfArmor(player, player); // Apply song of war to caster, since we're not using .getWorld() for entity check
+    }
+
+    private void applyAriaOfArmor(Player player, Player recipient) {
+        player.getWorld().spawnParticle(Particle.VILLAGER_ANGRY, recipient.getEyeLocation(), 8, Math.random() * 2, Math.random(), Math.random() * 2);
+        Optional<SpellEffect> spellEffectOpt = this.getSpellEffect(player.getUniqueId(), recipient.getUniqueId(), SpellEffectType.ARIA_OF_ARMOR);
+        if (spellEffectOpt.isPresent()) {
+            AriaOfArmorEffect ariaOfArmorEffect = (AriaOfArmorEffect) spellEffectOpt.get();
+            ariaOfArmorEffect.refresh();
+        } else {
+            AriaOfArmorEffect ariaOfArmorEffect = new AriaOfArmorEffect(recipient, this.duration);
+            ariaOfArmorEffect.initialize();
+        }
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
@@ -92,10 +104,9 @@ public class Accelerando extends Spell implements DurationSpell, RadiusSpell, At
     private void onEnvironmentDamage(EnvironmentDamageEvent event) {
         this.reduceDamage(event);
     }
+    
+    private void onMobDamage(MobDamageEvent event) {
 
-    @EventHandler
-    private void onCharacterQuit(CharacterQuitEvent event) {
-        this.damageReduction.remove(event.getPlayer().getUniqueId());
     }
 
     /**
@@ -104,20 +115,21 @@ public class Accelerando extends Spell implements DurationSpell, RadiusSpell, At
      * @param event the event
      */
     private void reduceDamage(@NotNull RunicDamageEvent event) {
-        if (!(event.getVictim() instanceof Player player)) {
-            return;
-        }
-
-        Pair<Integer, Long> data = this.damageReduction.get(event.getVictim().getUniqueId());
-
-        if (data == null || System.currentTimeMillis() > data.second + (this.getDuration(player) * 1000)) {
-            this.removeExtraDuration(player);
-            return; //if not in map or they are in map but the duration is already over
-        }
-
-        double percent = (this.base + (data.first * this.multiplier)) / 100;
-        int amount = (int) (event.getAmount() * percent);
-        event.setAmount(event.getAmount() - amount);
+//        if (!(event.getVictim() instanceof Player player)) {
+//            return;
+//        }
+//
+//        Pair<Integer, Long> data = this.damageReduction.get(event.getVictim().getUniqueId());
+//
+//        if (data == null || System.currentTimeMillis() > data.second + (this.getDuration(player) * 1000)) {
+//            this.removeExtraDuration(player);
+//            return; //if not in map or they are in map but the duration is already over
+//        }
+//
+//        double percent = (this.base + (data.first * this.multiplier)) / 100;
+//        Bukkit.broadcastMessage("percent is " + percent);
+//        int amount = (int) (event.getAmount() * percent);
+//        event.setAmount(event.getAmount() - amount);
     }
 
     /**
@@ -133,16 +145,16 @@ public class Accelerando extends Spell implements DurationSpell, RadiusSpell, At
                 25, 0.5f, 0.5f, 0.5f, 0, new Particle.DustOptions(Color.WHITE, 20));
     }
 
-    @Override
-    public void increaseExtraDuration(@NotNull Player player, double seconds) {
-        Tempo.Influenced.super.increaseExtraDuration(player, seconds);
-
-        double duration = RunicCore.getStatusEffectAPI().getStatusEffectDuration(player.getUniqueId(), RunicStatusEffect.SPEED_II);
-
-        if (duration > 0) {
-            this.addStatusEffect(player, RunicStatusEffect.SPEED_II, duration + seconds, false);
-        }
-    }
+//    @Override
+//    public void increaseExtraDuration(@NotNull Player player, double seconds) {
+//        Tempo.Influenced.super.increaseExtraDuration(player, seconds);
+//
+//        double duration = RunicCore.getStatusEffectAPI().getStatusEffectDuration(player.getUniqueId(), RunicStatusEffect.SPEED_II);
+//
+//        if (duration > 0) {
+//            this.addStatusEffect(player, RunicStatusEffect.SPEED_II, duration + seconds, false);
+//        }
+//    }
 
     @Override
     public double getDuration() {

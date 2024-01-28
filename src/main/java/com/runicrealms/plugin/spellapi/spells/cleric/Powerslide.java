@@ -23,10 +23,9 @@ import java.util.Map;
 /**
  * New spell 2 for bard
  *
- * @author BoBoBalloon
+ * @author BoBoBalloon, Skyfallin
  */
 public class Powerslide extends Spell implements DistanceSpell, PhysicalDamageSpell, DurationSpell {
-    private static final double DEGREES = Math.PI / 6;
     private double distance;
     private double damage;
     private double damagePerLevel;
@@ -35,9 +34,12 @@ public class Powerslide extends Spell implements DistanceSpell, PhysicalDamageSp
 
     public Powerslide() {
         super("Powerslide", CharacterClass.CLERIC);
-        this.setDescription("You slide forward " + this.distance + " blocks. Enemies hit are pushed out of the way,\n" +
-                "taking (" + this.damage + " + &f" + this.damagePerLevel + "x&7 lvl) physical⚔ damage and are silenced for " + this.debuffDuration + "s.\n" +
-                "If you hit at least one enemy with this spell, lower its cooldown by " + this.cooldownReduction + "s.");
+        this.setDescription("You slide forward " + this.distance + " blocks! " +
+                "Enemies hit are pushed out of the way, taking (" +
+                this.damage + " + &f" + this.damagePerLevel + "x&7 lvl) " +
+                "physical⚔ damage and becoming silenced for " + this.debuffDuration + "s! " +
+                "If you hit at least one enemy with &aPowerslide&7, " +
+                "lower its cooldown by " + this.cooldownReduction + "s.");
     }
 
     @Override
