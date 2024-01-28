@@ -25,9 +25,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.IntStream;
 
@@ -38,22 +36,27 @@ import java.util.stream.IntStream;
  */
 public class GrandSymphony extends Spell implements RadiusSpell, MagicDamageSpell, DurationSpell, Tempo.Influenced {
     private static final int PARTICLES_PER_RING = 15;
-    private final Map<UUID, Long> debuffed;
     private double[] ranges;
-    private double radius;
     private double damage;
     private double damagePerLevel;
     private double duration;
     private double debuffDuration;
     private double debuffRatio;
+    private double period;
+    private double radius;
 
+    // todo: SpellEffect but debuff
     public GrandSymphony() {
         super("Grand Symphony", CharacterClass.CLERIC);
-        this.setDescription("You pulse waves of resonating magic every 1s for " + this.duration + "s in a " + this.radius + " block radius,\n" +
-                "dealing (" + this.damage + " + &f" + this.damagePerLevel + "x&7 lvl) magicʔ damage and reducing enemy attack speed by " + (this.debuffRatio * 100) + "% and spell damage by " + (this.debuffRatio * 50) + "% for " + this.debuffDuration + "s.\n" +
-                "Against mobs, this reduces their damage by " + (this.debuffRatio * 100) + "% instead.\n" +
-                "If this spell pulses 6 times, the pulse also stuns enemies hit for " + this.debuffDuration + "s.");
-        this.debuffed = new HashMap<>();
+        this.setDescription("You pulse waves of resonating magic every " + period +
+                "s for " + this.duration + "s in a " + this.radius + " block radius, " +
+                "dealing (" + this.damage + " + &f" + this.damagePerLevel + "x&7 lvl) " +
+                "magicʔ damage, reducing enemy attack speed by " +
+                (this.debuffRatio * 100) + "% and reducing enemy player magicʔ damage by " +
+                (this.debuffRatio * 50) + "% for " + this.debuffDuration + "s. " +
+                "Reduce monster damage by " + (this.debuffRatio * 100) + "% instead. " +
+                "If this spell pulses 6 times, the pulse also stuns enemies hit for " +
+                this.debuffDuration + "s!");
     }
 
     @Override
@@ -80,7 +83,6 @@ public class GrandSymphony extends Spell implements RadiusSpell, MagicDamageSpel
                 }
 
                 DamageUtil.damageEntitySpell(this.damage, target, player, false, this);
-                this.debuffed.put(target.getUniqueId(), now);
 
                 if (count.get() >= this.getMaxExtraDuration()) {
                     this.addStatusEffect(target, RunicStatusEffect.STUN, this.debuffDuration, true);
@@ -97,7 +99,6 @@ public class GrandSymphony extends Spell implements RadiusSpell, MagicDamageSpel
      */
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     private void onBasicAttack(BasicAttackEvent event) {
-        Long lastUsed = this.debuffed.get(event.getPlayer().getUniqueId());
 
         if (lastUsed == null || System.currentTimeMillis() > lastUsed + (this.debuffDuration * 1000)) {
             return;

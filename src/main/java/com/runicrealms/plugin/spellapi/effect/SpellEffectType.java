@@ -4,6 +4,7 @@ import org.bukkit.ChatColor;
 
 public enum SpellEffectType {
     ARCANUM(ChatColor.LIGHT_PURPLE, "Arcanum", ""),
+    ARIA_OF_ARMOR(ChatColor.WHITE, "Aria of Armor", ""),
     BLEED(ChatColor.DARK_RED, "Bleed", "☠"),
     BLESSED_BLADE(ChatColor.GREEN, "Blessed Blade", "⚔"),
     CHARGED(ChatColor.BLUE, "Charged", "➹"),
