@@ -32,7 +32,7 @@ public class ItemPerksRegistrar {
     private void registerIgnarothPerks() {
         RunicItemsAPI.getDynamicItemHandler().registerTextPlaceholder(new IgnarothPerk.InsideLairTextPlaceholder());
 
-        int[] amount = {20, 30, 40, 55, 80};
+        int[] amount = {20, 30, 40, 55};
         for (Stat stat : Stat.values()) {
             for (int i = 1; i <= amount.length; i++) {
                 RunicItemsAPI.getItemPerkManager().registerItemPerk(new IgnarothPerk("ignaroth-" + stat.getIdentifier() + "-" + i, stat, amount[i - 1]));
