@@ -12,7 +12,7 @@ public class ItemPerksRegistrar {
         RunicItemsAPI.getItemPerkManager().registerItemPerk(new FrenzyPerk());
         RunicItemsAPI.getItemPerkManager().registerItemPerk(new StoneSkinPerk());
         RunicItemsAPI.getItemPerkManager().registerItemPerk(new AegisPerk());
-        RunicItemsAPI.getItemPerkManager().registerItemPerk(new GluttonyPerk());
+        RunicItemsAPI.getItemPerkManager().registerItemPerk(new BloodlustPerk());
         RunicItemsAPI.getItemPerkManager().registerItemPerk(new MagicNullificationPerk());
         RunicItemsAPI.getItemPerkManager().registerItemPerk(new TacticianPerk());
         RunicItemsAPI.getItemPerkManager().registerItemPerk(new FortitudePerk());
@@ -21,6 +21,9 @@ public class ItemPerksRegistrar {
         RunicItemsAPI.getItemPerkManager().registerItemPerk(new PurityPerk());
         this.registerIgnarothPerks();
         RunicItemsAPI.getItemPerkManager().registerItemPerk(new MechanizationPerk());
+        RunicItemsAPI.getItemPerkManager().registerItemPerk(new SelflessPerk());
+        RunicItemsAPI.getItemPerkManager().registerItemPerk(new ManawellPerk());
+        RunicItemsAPI.getItemPerkManager().registerItemPerk(new FocusPerk());
     }
 
     /**
