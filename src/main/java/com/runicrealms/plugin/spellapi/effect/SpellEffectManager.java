@@ -3,7 +3,7 @@ package com.runicrealms.plugin.spellapi.effect;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.events.SpellHealEvent;
 import com.runicrealms.plugin.spellapi.api.SpellEffectAPI;
-import com.runicrealms.plugin.spellapi.effect.event.SpellEffectEvent;
+import com.runicrealms.plugin.spellapi.effect.warrior.BleedEffect;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;

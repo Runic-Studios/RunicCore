@@ -9,6 +9,7 @@ import com.runicrealms.plugin.spellapi.spelltypes.PhysicalDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.utilities.DamageUtil;
+import com.runicrealms.plugin.utilities.MobUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -33,7 +34,7 @@ public class Cannonfire extends Spell implements DurationSpell, PhysicalDamageSp
     private static final int TOTAL_PELLETS = 5;
     private static final Material MATERIAL = Material.FIREWORK_STAR;
     private final HashMap<UUID, Set<UUID>> hasBeenHit;
-    private double knockbackMultiplier; // -2.75
+    private double knockbackMultiplier;
     private double damage;
     private double duration;
     private double damagePerLevel;
@@ -45,6 +46,13 @@ public class Cannonfire extends Spell implements DurationSpell, PhysicalDamageSp
                 "On hit, each fragment deals " +
                 "(" + damage + " + &f" + damagePerLevel + "x&7 lvl) physical⚔ damage, " +
                 "slows the target for " + duration + "s, and launches them back!");
+    }
+
+    @Override
+    public void loadSpellSpecificData(Map<String, Object> spellData) {
+        super.loadSpellSpecificData(spellData);
+        Number knockback = (Number) spellData.getOrDefault("knockback-multiplier", 0);
+        setKnockbackMultiplier(-1 * knockback.doubleValue());
     }
 
     @Override
@@ -69,6 +77,7 @@ public class Cannonfire extends Spell implements DurationSpell, PhysicalDamageSp
         victim.getWorld().spawnParticle(Particle.EXPLOSION_LARGE, victim.getLocation(), 1, 0, 0, 0, 0);
         DamageUtil.damageEntityPhysical(damage, (LivingEntity) victim, shooter, false, false, spell);
         addStatusEffect((LivingEntity) victim, RunicStatusEffect.SLOW_II, duration, true);
+        if (MobUtil.isBoss(victim.getUniqueId())) return;
         Vector force = shooter.getLocation().toVector().subtract(victim.getLocation().toVector()).normalize().multiply(knockbackMultiplier);
         victim.setVelocity(force);
     }
@@ -138,16 +147,6 @@ public class Cannonfire extends Spell implements DurationSpell, PhysicalDamageSp
     @Override
     public void setPhysicalDamagePerLevel(double physicalDamagePerLevel) {
         this.damagePerLevel = physicalDamagePerLevel;
-    }
-
-    @Override
-    public void loadPhysicalData(Map<String, Object> spellData) {
-        Number knockback = (Number) spellData.getOrDefault("knockback-multiplier", 0);
-        setKnockbackMultiplier(-1 * knockback.doubleValue());
-        Number physicalDamage = (Number) spellData.getOrDefault("physical-damage", 0);
-        setPhysicalDamage(physicalDamage.doubleValue());
-        Number physicalDamagePerLevel = (Number) spellData.getOrDefault("physical-damage-per-level", 0);
-        setPhysicalDamagePerLevel(physicalDamagePerLevel.doubleValue());
     }
 
     public void setKnockbackMultiplier(double knockbackMultiplier) {

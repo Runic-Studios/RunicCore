@@ -25,7 +25,7 @@ public class RegenManager implements Listener {
     private static final int REGEN_PERIOD = 4; // seconds
 
     private static final int BASE_MANA = 150;
-    private static final int MANA_REGEN_AMT = 5;
+    private static final int BASE_MANA_REGEN_AMT = 5;
 
     private static final double ARCHER_MANA_LV = 1.75;
     private static final double CLERIC_MANA_LV = 2.25;
@@ -45,8 +45,14 @@ public class RegenManager implements Listener {
         return BASE_MANA;
     }
 
-    public static int getManaRegenAmt() {
-        return MANA_REGEN_AMT;
+    /**
+     * Mana regen increases each level
+     *
+     * @param level of the player
+     * @return the mana they should receive each tick
+     */
+    public static int calculateManaRegen(int level) {
+        return (int) Math.round(BASE_MANA_REGEN_AMT + ((double) level / 12));
     }
 
     /**
@@ -125,7 +131,7 @@ public class RegenManager implements Listener {
             int maxMana = ManaListener.calculateMaxMana(online);
             if (mana >= maxMana) continue;
 
-            int regenAmt = MANA_REGEN_AMT;
+            int regenAmt = calculateManaRegen(online.getLevel());
 
             // Add multiplier for players out of combat
             if (!RunicCore.getCombatAPI().isInCombat(online.getUniqueId()))

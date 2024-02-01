@@ -1,5 +1,7 @@
-package com.runicrealms.plugin.spellapi.effect;
+package com.runicrealms.plugin.spellapi.effect.warrior;
 
+import com.runicrealms.plugin.spellapi.effect.SpellEffect;
+import com.runicrealms.plugin.spellapi.effect.SpellEffectType;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.entity.LivingEntity;

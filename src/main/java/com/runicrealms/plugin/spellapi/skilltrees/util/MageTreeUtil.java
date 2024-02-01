@@ -63,7 +63,7 @@ public class MageTreeUtil {
         perks.add(new PerkBaseStat(102, 1, 0, 3, Stat.INTELLIGENCE));
         perks.add(new PerkBaseStat(103, 1, 0, 3, Stat.WISDOM));
         perks.add(new PerkBaseStat(104, 1, 0, 5, Stat.INTELLIGENCE));
-        perks.add(new PerkSpell(105, 1, 0, 1, "Manashield"));
+        perks.add(new PerkSpell(105, 1, 0, 1, "Primal Arcanum"));
         perks.add(new PerkBaseStat(106, 1, 0, 3, Stat.WISDOM));
         perks.add(new PerkSpell(107, 1, 0, 1, "Riftwalk"));
         return perks;

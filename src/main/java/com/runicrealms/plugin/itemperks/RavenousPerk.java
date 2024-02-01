@@ -6,6 +6,7 @@ import com.runicrealms.plugin.runicitems.RunicItemsAPI;
 import com.runicrealms.plugin.runicitems.item.perk.DynamicItemPerkPercentStatPlaceholder;
 import com.runicrealms.plugin.runicitems.item.perk.ItemPerkHandler;
 import org.bukkit.attribute.Attribute;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 
 /**
@@ -28,11 +29,14 @@ public class RavenousPerk extends ItemPerkHandler {
 
     @EventHandler(ignoreCancelled = true)
     private void onPhysicalDamage(PhysicalDamageEvent event) {
-        if (!event.isBasicAttack()) return;
-        if (!isActive(event.getPlayer())) return;
+        if (!event.isBasicAttack() || event.getVictim() instanceof Player || !this.isActive(event.getPlayer())) {
+            return;
+        }
 
         int stacks = getCurrentStacks(event.getPlayer());
-        if (stacks == 0) return;
+        if (stacks == 0) {
+            return;
+        }
 
         double maxHealth = event.getPlayer().getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
         if (event.getPlayer().getHealth() >= maxHealth * this.healthCutoff) {

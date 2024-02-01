@@ -33,8 +33,8 @@ public class Scurvy extends Spell implements DurationSpell, PhysicalDamageSpell 
         super("Scurvy", CharacterClass.ROGUE);
         this.setIsPassive(true);
         this.setDescription("Your first basic attack after casting &aDash &7is laden with disease! " +
-                "The target hit receives nausea for the next " + duration + "s. " +
-                "Against mobs this deals (" + this.damage + " +&f " + this.damagePerLevel + "x&7 lvl) extra physical⚔ damage!");
+                "Your target receives nausea for the next " + duration + "s. " +
+                "Against mobs, you deal (" + this.damage + " +&f " + this.damagePerLevel + "x&7 lvl) extra physical⚔ damage!");
         this.buffed = new HashSet<>();
     }
 
@@ -104,14 +104,18 @@ public class Scurvy extends Spell implements DurationSpell, PhysicalDamageSpell 
     }
 
     public static class DebuffEvent extends Event {
+        private static final HandlerList HANDLER_LIST = new HandlerList();
         private final Player caster;
         private final LivingEntity victim;
-
-        private static final HandlerList HANDLER_LIST = new HandlerList();
 
         public DebuffEvent(@NotNull Player caster, @NotNull LivingEntity victim) {
             this.caster = caster;
             this.victim = victim;
+        }
+
+        @NotNull
+        public static HandlerList getHandlerList() {
+            return HANDLER_LIST;
         }
 
         @NotNull
@@ -127,11 +131,6 @@ public class Scurvy extends Spell implements DurationSpell, PhysicalDamageSpell 
         @NotNull
         @Override
         public HandlerList getHandlers() {
-            return HANDLER_LIST;
-        }
-
-        @NotNull
-        public static HandlerList getHandlerList() {
             return HANDLER_LIST;
         }
     }

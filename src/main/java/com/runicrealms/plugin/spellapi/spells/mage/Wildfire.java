@@ -51,6 +51,9 @@ public class Wildfire extends Spell implements RadiusSpell, DurationSpell {
             return;
         }
 
+        // Initial reduction from first fireball
+        RunicCore.getSpellAPI().reduceCooldown(event.getPlayer(), "Meteor", this.duration);
+
         Player player = event.getPlayer();
         LivingEntity victim = event.getVictim();
 

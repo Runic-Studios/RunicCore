@@ -54,8 +54,8 @@ import com.runicrealms.plugin.spellapi.spells.mage.Fireball;
 import com.runicrealms.plugin.spellapi.spells.mage.Frostbite;
 import com.runicrealms.plugin.spellapi.spells.mage.Glacier;
 import com.runicrealms.plugin.spellapi.spells.mage.Incendiary;
-import com.runicrealms.plugin.spellapi.spells.mage.Manashield;
 import com.runicrealms.plugin.spellapi.spells.mage.Meteor;
+import com.runicrealms.plugin.spellapi.spells.mage.PrimalArcanum;
 import com.runicrealms.plugin.spellapi.spells.mage.Riftwalk;
 import com.runicrealms.plugin.spellapi.spells.mage.Shatter;
 import com.runicrealms.plugin.spellapi.spells.mage.SnapFreeze;
@@ -396,7 +396,7 @@ public class SpellManager implements Listener, SpellAPI {
         this.spellList.add(new DragonsBreath());
         this.spellList.add(new Riftwalk());
         this.spellList.add(new SpectralBlade());
-        this.spellList.add(new Manashield());
+        this.spellList.add(new PrimalArcanum());
         this.spellList.add(new Rupture());
         this.spellList.add(new RayOfLight());
         this.spellList.add(new Lightwell());

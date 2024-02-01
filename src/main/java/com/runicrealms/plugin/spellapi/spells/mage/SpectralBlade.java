@@ -30,7 +30,7 @@ public class SpectralBlade extends Spell {
     public SpectralBlade() {
         super("Spectral Blade", CharacterClass.MAGE);
         this.setIsPassive(true);
-        this.setDescription("While you are shielded, your basic attacks " +
+        this.setDescription("While you are &eshielded&7, your basic attacks " +
                 "have the same hitbox as &aArcane Slash &7and deal " +
                 "magic damage instead!");
     }

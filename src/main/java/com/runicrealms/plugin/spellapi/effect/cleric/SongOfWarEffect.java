@@ -1,21 +1,22 @@
-package com.runicrealms.plugin.spellapi.effect;
+package com.runicrealms.plugin.spellapi.effect.cleric;
 
-import com.runicrealms.plugin.spellapi.spellutil.particles.HelixParticleFrame;
+import com.runicrealms.plugin.spellapi.effect.SpellEffect;
+import com.runicrealms.plugin.spellapi.effect.SpellEffectType;
 import org.bukkit.Particle;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
-public class IncendiaryEffect implements SpellEffect {
-    private final Player caster;
+public class SongOfWarEffect implements SpellEffect {
+    private final Player recipient;
     private final double duration;
     private long startTime;
 
     /**
-     * @param caster   player who is incendiary
-     * @param duration (in seconds) before the effect expires
+     * @param recipient player who is receiving the effect
+     * @param duration  (in seconds) before the effect expires
      */
-    public IncendiaryEffect(Player caster, double duration) {
-        this.caster = caster;
+    public SongOfWarEffect(Player recipient, double duration) {
+        this.recipient = recipient;
         this.duration = duration;
         this.startTime = System.currentTimeMillis();
     }
@@ -36,7 +37,7 @@ public class IncendiaryEffect implements SpellEffect {
 
     @Override
     public SpellEffectType getEffectType() {
-        return SpellEffectType.INCENDIARY;
+        return SpellEffectType.SONG_OF_WAR;
     }
 
     @Override
@@ -46,17 +47,17 @@ public class IncendiaryEffect implements SpellEffect {
 
     @Override
     public Player getCaster() {
-        return caster;
+        return recipient;
     }
 
     @Override
     public LivingEntity getRecipient() {
-        return caster;
+        return recipient;
     }
 
     @Override
     public void tick(int globalCounter) {
-        if (caster.isDead()) {
+        if (recipient.isDead()) {
             this.cancel();
             return;
         }
@@ -67,7 +68,7 @@ public class IncendiaryEffect implements SpellEffect {
 
     @Override
     public void executeSpellEffect() {
-        new HelixParticleFrame(1.0F, 30, 20.0F).playParticle(caster, Particle.FLAME, caster.getLocation());
+        recipient.getWorld().spawnParticle(Particle.NOTE, recipient.getEyeLocation(), 8, Math.random() * 2, Math.random(), Math.random() * 2);
     }
 
     @Override

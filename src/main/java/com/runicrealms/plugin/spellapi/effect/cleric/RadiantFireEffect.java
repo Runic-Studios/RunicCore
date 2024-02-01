@@ -1,7 +1,9 @@
-package com.runicrealms.plugin.spellapi.effect;
+package com.runicrealms.plugin.spellapi.effect.cleric;
 
-import com.runicrealms.plugin.spellapi.spellutil.particles.Cone;
-import org.bukkit.Color;
+import com.runicrealms.plugin.spellapi.effect.SpellEffectType;
+import com.runicrealms.plugin.spellapi.effect.StackEffect;
+import com.runicrealms.plugin.spellapi.effect.StackHologram;
+import com.runicrealms.plugin.spellapi.spellutil.particles.HelixParticleFrame;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
@@ -11,7 +13,7 @@ import org.bukkit.entity.Player;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class ChargedEffect implements StackEffect {
+public class RadiantFireEffect implements StackEffect {
     private static final int PERIOD = 20;
     private final Player caster;
     private final int maxStacks;
@@ -28,14 +30,14 @@ public class ChargedEffect implements StackEffect {
      * @param initialStacks    how many stacks to start with
      * @param hologramLocation initial location to spawn the hologram
      */
-    public ChargedEffect(Player caster, int maxStacks, int stackDuration, int initialStacks, Location hologramLocation) {
+    public RadiantFireEffect(Player caster, int maxStacks, int stackDuration, int initialStacks, Location hologramLocation) {
         this.caster = caster;
         this.maxStacks = maxStacks;
         this.stackDuration = stackDuration;
         this.stacks = new AtomicInteger(initialStacks);
         this.hologramLocation = hologramLocation;
         this.stackHologram = new StackHologram(
-                SpellEffectType.CHARGED,
+                SpellEffectType.RADIANT_FIRE,
                 hologramLocation,
                 Set.of(caster)
         );
@@ -46,21 +48,9 @@ public class ChargedEffect implements StackEffect {
         return maxStacks;
     }
 
-    public int getStackDuration() {
-        return stackDuration;
-    }
-
-    public int getNextTickCounter() {
-        return nextTickCounter;
-    }
-
     @Override
     public void setNextTickCounter(int nextTickCounter) {
         this.nextTickCounter = nextTickCounter;
-    }
-
-    public Location getHologramLocation() {
-        return hologramLocation;
     }
 
     public void setHologramLocation(Location hologramLocation) {
@@ -83,7 +73,7 @@ public class ChargedEffect implements StackEffect {
 
     @Override
     public SpellEffectType getEffectType() {
-        return SpellEffectType.CHARGED;
+        return SpellEffectType.RADIANT_FIRE;
     }
 
     @Override
@@ -108,6 +98,9 @@ public class ChargedEffect implements StackEffect {
 
     @Override
     public void tick(int globalCounter) {
+        if (globalCounter % 60 == 0) { // Show particle effect once per two three
+            executeSpellEffect();
+        }
         if (globalCounter < nextTickCounter) {
             return;
         }
@@ -120,7 +113,6 @@ public class ChargedEffect implements StackEffect {
             stacks.getAndDecrement();
             caster.playSound(caster.getLocation(), Sound.BLOCK_CONDUIT_DEACTIVATE, 0.25f, 3.0f);
         }
-        executeSpellEffect();
         // Set the next tick
         nextTickCounter += getTickInterval();
     }
@@ -130,7 +122,7 @@ public class ChargedEffect implements StackEffect {
         int stacks = this.stacks.get();
         stackHologram.showHologram(this.hologramLocation, this.stacks.get());
         if (stacks == this.maxStacks) {
-            Cone.coneEffect(caster, Particle.CRIT_MAGIC, stackDuration, 0, 20, Color.BLUE);
+            new HelixParticleFrame(1.0F, 30, 10.0F).playParticle(caster, Particle.FIREWORKS_SPARK, caster.getLocation());
         }
     }
 

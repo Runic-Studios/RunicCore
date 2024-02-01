@@ -2,10 +2,10 @@ package com.runicrealms.plugin.spellapi.spells.mage;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.common.CharacterClass;
-import com.runicrealms.plugin.spellapi.effect.ChilledEffect;
 import com.runicrealms.plugin.spellapi.effect.RunicStatusEffect;
 import com.runicrealms.plugin.spellapi.effect.SpellEffect;
 import com.runicrealms.plugin.spellapi.effect.SpellEffectType;
+import com.runicrealms.plugin.spellapi.effect.mage.ChilledEffect;
 import com.runicrealms.plugin.spellapi.spelltypes.DistanceSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;

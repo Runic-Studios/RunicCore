@@ -88,6 +88,33 @@ public class Tempo extends Spell implements RadiusSpell, DurationSpell {
         this.specialAttacks.remove(event.getPlayer().getUniqueId());
     }
 
+    @Override
+    protected void loadSpellSpecificData(Map<String, Object> spellData) {
+        super.loadSpellSpecificData(spellData);
+        Number restore = (Number) spellData.getOrDefault("restore", 10);
+        this.restore = restore.intValue();
+    }
+
+    @Override
+    public double getRadius() {
+        return this.radius;
+    }
+
+    @Override
+    public void setRadius(double radius) {
+        this.radius = radius;
+    }
+
+    @Override
+    public double getDuration() {
+        return this.duration;
+    }
+
+    @Override
+    public void setDuration(double duration) {
+        this.duration = duration;
+    }
+
     /**
      * An interface used to determine if a spell is handled by {@link Tempo}
      */
@@ -150,32 +177,5 @@ public class Tempo extends Spell implements RadiusSpell, DurationSpell {
         default double getMaxExtraDuration() {
             return Double.MAX_VALUE;
         }
-    }
-
-    @Override
-    protected void loadSpellSpecificData(Map<String, Object> spellData) {
-        super.loadSpellSpecificData(spellData);
-        Number restore = (Number) spellData.getOrDefault("restore", 10);
-        this.restore = restore.intValue();
-    }
-
-    @Override
-    public double getRadius() {
-        return this.radius;
-    }
-
-    @Override
-    public void setRadius(double radius) {
-        this.radius = radius;
-    }
-
-    @Override
-    public double getDuration() {
-        return this.duration;
-    }
-
-    @Override
-    public void setDuration(double duration) {
-        this.duration = duration;
     }
 }

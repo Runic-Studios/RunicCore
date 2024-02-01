@@ -2,10 +2,10 @@ package com.runicrealms.plugin.spellapi.spells.warrior;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.common.CharacterClass;
-import com.runicrealms.plugin.spellapi.effect.BleedEffect;
 import com.runicrealms.plugin.spellapi.effect.RunicStatusEffect;
 import com.runicrealms.plugin.spellapi.effect.SpellEffect;
 import com.runicrealms.plugin.spellapi.effect.SpellEffectType;
+import com.runicrealms.plugin.spellapi.effect.warrior.BleedEffect;
 import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.PhysicalDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;

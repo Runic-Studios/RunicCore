@@ -1,8 +1,5 @@
 package com.runicrealms.plugin.itemperks;
 
-import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.api.event.StatusEffectEvent;
-import com.runicrealms.plugin.events.EnvironmentDamageEvent;
 import com.runicrealms.plugin.events.MagicDamageEvent;
 import com.runicrealms.plugin.events.MobDamageEvent;
 import com.runicrealms.plugin.events.PhysicalDamageEvent;
@@ -10,13 +7,9 @@ import com.runicrealms.plugin.events.RunicDamageEvent;
 import com.runicrealms.plugin.runicitems.RunicItemsAPI;
 import com.runicrealms.plugin.runicitems.item.perk.DynamicItemPerkPercentStatPlaceholder;
 import com.runicrealms.plugin.runicitems.item.perk.ItemPerkHandler;
-import com.runicrealms.plugin.spellapi.effect.RunicStatusEffect;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.Objects;
 
 /**
  * A class that models the ravenous item perk
@@ -24,59 +17,60 @@ import java.util.Objects;
  * @author BoBoBalloon
  */
 public class StoneSkinPerk extends ItemPerkHandler {
-    private final double damagePercentReduction;
+    private final double incomingDamagePercentReduction;
+    private final double outgoingDamagePercentReduction;
 
     public StoneSkinPerk() {
         super("stoneskin");
 
-        this.damagePercentReduction = ((Number) this.config.get("damage-percent-reduction")).doubleValue();
+        this.incomingDamagePercentReduction = ((Number) this.config.get("incoming-damage-percent-reduction")).doubleValue();
+        this.outgoingDamagePercentReduction = ((Number) this.config.get("outgoing-damage-percent-reduction")).doubleValue();
 
-        RunicItemsAPI.getDynamicItemHandler().registerTextPlaceholder(new DynamicItemPerkPercentStatPlaceholder("stoneskin-damage-percent-reduction", this, () -> this.damagePercentReduction));  //This is used in the configured lore
-
-        Bukkit.getScheduler().runTaskTimer(RunicCore.getInstance(), () -> this.getActive()
-                .stream()
-                .map(Bukkit::getPlayer)
-                .filter(Objects::nonNull)
-                .forEach(player -> RunicCore.getStatusEffectAPI().addStatusEffect(player, RunicStatusEffect.SLOW_II, 0.5, false)), 10, 0);
+        RunicItemsAPI.getDynamicItemHandler().registerTextPlaceholder(new DynamicItemPerkPercentStatPlaceholder("stoneskin-incoming-damage-percent-reduction", this, () -> this.incomingDamagePercentReduction));  //This is used in the configured lore
+        RunicItemsAPI.getDynamicItemHandler().registerTextPlaceholder(new DynamicItemPerkPercentStatPlaceholder("stoneskin-outgoing-damage-percent-reduction", this, () -> this.outgoingDamagePercentReduction));
     }
 
-    private void onDamage(@NotNull RunicDamageEvent event) {
-        if (!(event.getVictim() instanceof Player player)) return;
-        if (!isActive(player)) return;
+
+    private void reduce(@NotNull RunicDamageEvent event, @NotNull Player player, boolean incoming) {
+        if (!this.isActive(player)) {
+            return;
+        }
 
         int stacks = this.getCurrentStacks(player);
-        if (stacks == 0) return;
+        if (stacks == 0) {
+            return;
+        }
 
-        double damage = event.getAmount() * (1 - this.damagePercentReduction * stacks);
+        double ratio = incoming ? this.incomingDamagePercentReduction : this.outgoingDamagePercentReduction;
+
+        double damage = event.getAmount() * (1 - ratio * stacks);
         event.setAmount((int) damage);
     }
 
     @EventHandler(ignoreCancelled = true)
     private void onPhysicalDamage(PhysicalDamageEvent event) {
-        this.onDamage(event);
+        if (event.getVictim() instanceof Player) {
+            return;
+        }
+
+        this.reduce(event, event.getPlayer(), false);
     }
 
     @EventHandler(ignoreCancelled = true)
     private void onMagicDamage(MagicDamageEvent event) {
-        this.onDamage(event);
-    }
+        if (event.getVictim() instanceof Player) {
+            return;
+        }
 
-    @EventHandler(ignoreCancelled = true)
-    private void onEnvironmentDamage(EnvironmentDamageEvent event) {
-        this.onDamage(event);
+        this.reduce(event, event.getPlayer(), false);
     }
 
     @EventHandler(ignoreCancelled = true)
     private void onMobDamage(MobDamageEvent event) {
-        this.onDamage(event);
-    }
-
-    @EventHandler(ignoreCancelled = true)
-    private void onStatusEffect(StatusEffectEvent event) {
-        if (event.getRunicStatusEffect() != RunicStatusEffect.SLOW_II || !(event.getLivingEntity() instanceof Player player) || !this.isActive(player)) {
+        if (!(event.getVictim() instanceof Player player)) {
             return;
         }
 
-        event.setPlaySound(false);
+        this.reduce(event, player, true);
     }
 }

@@ -4,9 +4,9 @@ import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.api.event.StaffAttackEvent;
 import com.runicrealms.plugin.common.CharacterClass;
 import com.runicrealms.plugin.events.MagicDamageEvent;
-import com.runicrealms.plugin.spellapi.effect.IncendiaryEffect;
 import com.runicrealms.plugin.spellapi.effect.SpellEffect;
 import com.runicrealms.plugin.spellapi.effect.SpellEffectType;
+import com.runicrealms.plugin.spellapi.effect.mage.IncendiaryEffect;
 import com.runicrealms.plugin.spellapi.spelltypes.DistanceSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
@@ -92,7 +92,7 @@ public class Incendiary extends Spell implements MagicDamageSpell, DistanceSpell
         // Particles
         player.getWorld().spawnParticle(Particle.REDSTONE, location,
                 2, 0.5f, 0.5f, 0.5f, new Particle.DustOptions(Color.YELLOW, 1));
-        new HorizontalCircleFrame(BEAM_RADIUS, true).playParticle(player, Particle.FLAME, location);
+        new HorizontalCircleFrame(BEAM_RADIUS, true).playParticle(player, Particle.FLAME, location, 50.0f);
         player.getWorld().playSound(location, Sound.ITEM_FIRECHARGE_USE, 0.25f, 2.0f);
         for (Entity entity : player.getWorld().getNearbyEntities(location, BEAM_RADIUS, BEAM_RADIUS, BEAM_RADIUS, target -> isValidEnemy(player, target))) {
             if (damageMap.get(player.getUniqueId()).contains(entity.getUniqueId())) continue;
