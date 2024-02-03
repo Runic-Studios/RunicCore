@@ -19,19 +19,32 @@ import org.bukkit.entity.Player;
 import org.bukkit.util.RayTraceResult;
 
 import java.util.Collection;
+import java.util.Map;
 
 public class TwinFangs extends Spell implements DistanceSpell, PhysicalDamageSpell {
     public static final double BEAM_WIDTH = 2;
     private double damage;
     private double damagePerLevel;
     private double maxDistance;
+    private double percent;
 
     public TwinFangs() {
         super("Twin Fangs", CharacterClass.ROGUE);
-        this.setDescription("You lash out with two fangs, up to " + maxDistance + " blocks in front of you. " +
-                "Each fang deals (" + damage + " + &f" + damagePerLevel + "x&7 lvl) physical⚔ " +
-                "damage on-hit!");
+        this.setDescription("You lash out with two fangs, up to " + maxDistance + " " +
+                "blocks in front of you. Each fang deals (" + damage + " + &f" +
+                damagePerLevel + "x&7 lvl) physical⚔ damage on-hit, " +
+                "plus an additional " + (percent * 100) + "% &cexecute &7damage! " +
+                "\n\n&2&lEFFECT &cExecute" +
+                "\n&7Spells with &cexecute &7deal additional damage " +
+                "based on the target's missing health!");
 
+    }
+
+    @Override
+    protected void loadSpellSpecificData(Map<String, Object> spellData) {
+        super.loadSpellSpecificData(spellData);
+        Number percent = (Number) spellData.getOrDefault("percent", 0.15);
+        setPercent(percent.doubleValue());
     }
 
     @Override
@@ -62,7 +75,7 @@ public class TwinFangs extends Spell implements DistanceSpell, PhysicalDamageSpe
             livingEntity.getWorld().playSound(livingEntity.getLocation(), Sound.ENTITY_PLAYER_HURT, 0.5f, 2.0f);
             Collection<Entity> targets = player.getWorld().getNearbyEntities
                     (livingEntity.getLocation(), BEAM_WIDTH, BEAM_WIDTH, BEAM_WIDTH, target -> isValidEnemy(player, target));
-            targets.forEach(target -> DamageUtil.damageEntityPhysical(damage,
+            targets.forEach(target -> DamageUtil.damageEntityPhysical(damage + percentMissingHealth(target, percent),
                     (LivingEntity) target, player, false, false, this));
         }
     }
@@ -107,5 +120,8 @@ public class TwinFangs extends Spell implements DistanceSpell, PhysicalDamageSpe
         this.damagePerLevel = physicalDamagePerLevel;
     }
 
+    public void setPercent(double percent) {
+        this.percent = percent;
+    }
 }
 
