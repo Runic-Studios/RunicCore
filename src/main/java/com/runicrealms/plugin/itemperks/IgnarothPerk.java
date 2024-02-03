@@ -74,7 +74,7 @@ public class IgnarothPerk extends ItemPerkHandler {
     }
 
     @EventHandler(ignoreCancelled = true)
-    public void onRegionEntered(RegionEnteredEvent event) {
+    private void onRegionEntered(RegionEnteredEvent event) {
         Player player = event.getPlayer();
 
         if (player == null || !event.getRegionName().equals(REGION) || !this.isActive(player)) {
@@ -85,7 +85,7 @@ public class IgnarothPerk extends ItemPerkHandler {
     }
 
     @EventHandler(ignoreCancelled = true)
-    public void onRegionLeft(RegionLeftEvent event) {
+    private void onRegionLeft(RegionLeftEvent event) {
         Player player = event.getPlayer();
 
         if (player == null || !event.getRegionName().equals(REGION) || !this.isActive(player)) {
@@ -95,7 +95,7 @@ public class IgnarothPerk extends ItemPerkHandler {
         Bukkit.getScheduler().runTaskAsynchronously(RunicCore.getInstance(), () -> this.onChange(player, 0));
     }
 
-    public static boolean isInRegion(@NotNull Player player) {
+    private static boolean isInRegion(@NotNull Player player) {
         World world = BukkitAdapter.adapt(player.getWorld());
         RegionManager regionManager = WorldGuard.getInstance().getPlatform().getRegionContainer().get(world);
 
