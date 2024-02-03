@@ -175,8 +175,13 @@ public abstract class Spell implements ISpell, Listener {
     }
 
     @Override
-    public int percentMissingHealth(@NotNull Entity entity, double percent) {
-        if (!(entity instanceof LivingEntity livingEntity)) return 0;
+    public int percentMaxHealth(@NotNull LivingEntity livingEntity, double percent) {
+        double max = livingEntity.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
+        return (int) (max * percent);
+    }
+
+    @Override
+    public int percentMissingHealth(@NotNull LivingEntity livingEntity, double percent) {
         double max = livingEntity.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
         double missing = max - livingEntity.getHealth();
         return (int) (missing * percent);

@@ -1,5 +1,8 @@
 package com.runicrealms.plugin.spellapi.spelltypes;
 
+import com.runicrealms.plugin.RunicCore;
+import org.bukkit.entity.Player;
+
 import java.util.Map;
 
 public interface AttributeSpell {
@@ -40,5 +43,17 @@ public interface AttributeSpell {
         setBaseValue(baseValue.doubleValue());
         Number multiplier = (Number) spellData.getOrDefault("attribute-multiplier", 0);
         setMultiplier(multiplier.doubleValue());
+    }
+
+    /**
+     * Used for AttributeSpells that offer percent increases. Given a player, stat, base value, and multiplier,
+     * calculates the percent increase to be used in the spell effect
+     *
+     * @param player to check attributes for
+     * @return the final percent modifier
+     */
+    default double percentAttribute(Player player) {
+        double statValue = RunicCore.getStatAPI().getStat(player.getUniqueId(), this.getStatName());
+        return Math.max(0, this.getBaseValue() + (this.getMultiplier() * statValue)); // Cannot be a negative bonus!
     }
 }

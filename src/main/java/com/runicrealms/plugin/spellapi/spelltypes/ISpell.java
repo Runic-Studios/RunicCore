@@ -138,13 +138,22 @@ public interface ISpell {
     boolean isValidEnemy(@NotNull Player caster, @NotNull Entity victim); // check tons of things, like if target entity is NPC, party member, and outlaw checks
 
     /**
-     * Used for execute skills that rely on percent missing health.
+     * Used for spells that rely on percent max health
      *
-     * @param entity  mob/player to check hp for
-     * @param percent multiplier for missing health (.25 * missing health, etc.)
-     * @return the percent times missing health
+     * @param livingEntity mob/player to check hp for
+     * @param percent      multiplier for max health (.25 * max health)
+     * @return the percent multiplied by target's max health
      */
-    int percentMissingHealth(@NotNull Entity entity, double percent);
+    int percentMaxHealth(@NotNull LivingEntity livingEntity, double percent);
+
+    /**
+     * Used for spells that rely on percent missing health
+     *
+     * @param livingEntity mob/player to check hp for
+     * @param percent      multiplier for missing health (.25 * missing health)
+     * @return the percent multiplied by target's missing health
+     */
+    int percentMissingHealth(@NotNull LivingEntity livingEntity, double percent);
 
     /**
      * Used to end custom Runic Effects on the target early by calling their cancel task

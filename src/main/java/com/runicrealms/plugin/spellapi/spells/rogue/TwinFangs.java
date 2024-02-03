@@ -75,7 +75,7 @@ public class TwinFangs extends Spell implements DistanceSpell, PhysicalDamageSpe
             livingEntity.getWorld().playSound(livingEntity.getLocation(), Sound.ENTITY_PLAYER_HURT, 0.5f, 2.0f);
             Collection<Entity> targets = player.getWorld().getNearbyEntities
                     (livingEntity.getLocation(), BEAM_WIDTH, BEAM_WIDTH, BEAM_WIDTH, target -> isValidEnemy(player, target));
-            targets.forEach(target -> DamageUtil.damageEntityPhysical(damage + percentMissingHealth(target, percent),
+            targets.forEach(target -> DamageUtil.damageEntityPhysical(damage + percentMissingHealth((LivingEntity) target, percent),
                     (LivingEntity) target, player, false, false, this));
         }
     }
