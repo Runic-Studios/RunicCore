@@ -36,7 +36,7 @@ public enum DungeonLocation {
                     "Crypts of Dera"
             ),
     IGNAROTHS_LAIR(
-            "ignaroth",
+            "pyromancer_realm",
             "Ignaroth's Lair"
     ),
     FROZEN_FORTRESS
@@ -45,14 +45,18 @@ public enum DungeonLocation {
                     "Frozen Fortress"
             );
 
-    private final String identifier;
+    private final String regionIdentifier;
     private final String display;
     private final Location location;
     private final Map<Integer, Location> checkpoints;
 
-    DungeonLocation(String identifier, String display) {
+    /**
+     * @param regionIdentifier in WorldGuard
+     * @param display          for UI menus
+     */
+    DungeonLocation(String regionIdentifier, String display) {
         Location temp;
-        this.identifier = identifier;
+        this.regionIdentifier = regionIdentifier;
         this.display = display;
         temp = SafeZoneLocation.AZANA.getLocation(); // Default if something goes wrong
         this.checkpoints = new HashMap<>();
@@ -77,7 +81,7 @@ public enum DungeonLocation {
      */
     public static DungeonLocation getFromIdentifier(String identifier) {
         for (DungeonLocation dungeonLocation : DungeonLocation.values()) {
-            if (dungeonLocation.getIdentifier().equals(identifier))
+            if (dungeonLocation.getRegionIdentifier().equals(identifier))
                 return dungeonLocation;
         }
         return null;
@@ -91,7 +95,7 @@ public enum DungeonLocation {
      */
     public static Location getLocationFromIdentifier(String identifier) {
         for (DungeonLocation dungeonLocation : DungeonLocation.values()) {
-            if (dungeonLocation.identifier.equals(identifier))
+            if (dungeonLocation.regionIdentifier.equals(identifier))
                 return dungeonLocation.getLocation();
         }
         return null;
@@ -105,8 +109,8 @@ public enum DungeonLocation {
         return display;
     }
 
-    public String getIdentifier() {
-        return identifier;
+    public String getRegionIdentifier() {
+        return regionIdentifier;
     }
 
     public Location getLocation() {
@@ -114,10 +118,10 @@ public enum DungeonLocation {
     }
 
     private Map<Integer, Location> loadCheckpointsFromFile() throws InvalidConfigurationException {
-        ConfigurationSection dungeonSection = ConfigUtil.getDungeonConfigurationSection().getConfigurationSection(this.identifier);
+        ConfigurationSection dungeonSection = ConfigUtil.getDungeonConfigurationSection().getConfigurationSection(this.regionIdentifier);
 
         if (dungeonSection == null) {
-            String errorMessage = "Dungeon section for '" + this.identifier + "' is missing in the configuration.";
+            String errorMessage = "Dungeon section for '" + this.regionIdentifier + "' is missing in the configuration.";
             Bukkit.getLogger().severe(errorMessage);
             throw new InvalidConfigurationException(errorMessage);
         }
@@ -154,10 +158,10 @@ public enum DungeonLocation {
     }
 
     private Location loadLocationFromFile() throws InvalidConfigurationException {
-        ConfigurationSection dungeonSection = ConfigUtil.getDungeonConfigurationSection().getConfigurationSection(this.identifier);
+        ConfigurationSection dungeonSection = ConfigUtil.getDungeonConfigurationSection().getConfigurationSection(this.regionIdentifier);
 
         if (dungeonSection == null) {
-            String errorMessage = "Dungeon section for '" + this.identifier + "' is missing in the configuration.";
+            String errorMessage = "Dungeon section for '" + this.regionIdentifier + "' is missing in the configuration.";
             Bukkit.getLogger().severe(errorMessage);
             throw new InvalidConfigurationException(errorMessage);
         }

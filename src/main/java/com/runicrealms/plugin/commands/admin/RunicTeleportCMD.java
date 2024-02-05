@@ -33,7 +33,7 @@ public class RunicTeleportCMD extends BaseCommand {
                 locations.add(safeZoneLocation.getIdentifier());
             }
             for (DungeonLocation dungeonLocation : DungeonLocation.values()) {
-                locations.add(dungeonLocation.getIdentifier());
+                locations.add(dungeonLocation.getRegionIdentifier());
             }
             return locations;
         });

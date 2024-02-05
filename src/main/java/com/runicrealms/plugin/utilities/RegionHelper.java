@@ -40,7 +40,7 @@ public final class RegionHelper implements RegionAPI {
         if (regions == null) return null;
         for (ProtectedRegion region : regions) {
             for (DungeonLocation dungeonLocation : DungeonLocation.values()) {
-                if (region.getId().contains(dungeonLocation.getIdentifier()))
+                if (region.getId().contains(dungeonLocation.getRegionIdentifier()))
                     return dungeonLocation;
             }
         }

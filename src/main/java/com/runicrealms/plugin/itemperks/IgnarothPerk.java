@@ -1,5 +1,6 @@
 package com.runicrealms.plugin.itemperks;
 
+import com.runicrealms.plugin.DungeonLocation;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.dynamicitem.DynamicItemManager;
 import com.runicrealms.plugin.runicitems.RunicItemsAPI;
@@ -36,15 +37,33 @@ import java.util.UUID;
  * @author BoBoBalloon
  */
 public class IgnarothPerk extends ItemPerkHandler {
-    private final Set<UUID> alreadyActive; //this is necessary because the built-in set is updated before onChange is called
+    private static final String REGION = DungeonLocation.IGNAROTHS_LAIR.getRegionIdentifier();
+    private final Set<UUID> alreadyActive; // This is necessary because the built-in set is updated before onChange is called
     private final FlatStatsModifier modifier;
-
-    private static final String REGION = "ignaroth_lair";
 
     public IgnarothPerk(@NotNull String identifier, @NotNull Stat stat, int amount) {
         super(identifier);
         this.alreadyActive = new HashSet<>();
         this.modifier = new FlatStatsModifier(Map.of(stat, amount), null, 0);
+    }
+
+    private static boolean isInRegion(@NotNull Player player) {
+        World world = BukkitAdapter.adapt(player.getWorld());
+        RegionManager regionManager = WorldGuard.getInstance().getPlatform().getRegionContainer().get(world);
+
+        if (regionManager == null) {
+            return false;
+        }
+
+        ApplicableRegionSet set = regionManager.getApplicableRegions(BukkitAdapter.asBlockVector(player.getLocation()));
+
+        for (ProtectedRegion region : set) {
+            if (region.getId().equalsIgnoreCase(REGION)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     @Override
@@ -93,25 +112,6 @@ public class IgnarothPerk extends ItemPerkHandler {
         }
 
         Bukkit.getScheduler().runTaskAsynchronously(RunicCore.getInstance(), () -> this.onChange(player, 0));
-    }
-
-    private static boolean isInRegion(@NotNull Player player) {
-        World world = BukkitAdapter.adapt(player.getWorld());
-        RegionManager regionManager = WorldGuard.getInstance().getPlatform().getRegionContainer().get(world);
-
-        if (regionManager == null) {
-            return false;
-        }
-
-        ApplicableRegionSet set = regionManager.getApplicableRegions(BukkitAdapter.asBlockVector(player.getLocation()));
-
-        for (ProtectedRegion region : set) {
-            if (region.getId().equalsIgnoreCase(REGION)) {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     public static class InsideLairTextPlaceholder extends DynamicItemTextPlaceholder {
