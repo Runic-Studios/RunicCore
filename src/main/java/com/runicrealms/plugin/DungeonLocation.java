@@ -36,7 +36,7 @@ public enum DungeonLocation {
                     "Crypts of Dera"
             ),
     IGNAROTHS_LAIR(
-            "pyromancer_realm",
+            "ignaroths_lair",
             "Ignaroth's Lair"
     ),
     FROZEN_FORTRESS
