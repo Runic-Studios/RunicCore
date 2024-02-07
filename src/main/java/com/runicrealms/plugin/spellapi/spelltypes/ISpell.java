@@ -151,9 +151,10 @@ public interface ISpell {
      *
      * @param livingEntity mob/player to check hp for
      * @param percent      multiplier for missing health (.25 * missing health)
+     * @param cap          the maximum damage that can be returned
      * @return the percent multiplied by target's missing health
      */
-    int percentMissingHealth(@NotNull LivingEntity livingEntity, double percent);
+    int percentMissingHealth(@NotNull LivingEntity livingEntity, double percent, int cap);
 
     /**
      * Used to end custom Runic Effects on the target early by calling their cancel task

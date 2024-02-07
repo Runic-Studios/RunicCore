@@ -24,6 +24,7 @@ import java.util.Map;
 public class TwinFangs extends Spell implements DistanceSpell, PhysicalDamageSpell {
     public static final double BEAM_WIDTH = 2;
     private double damage;
+    private double damageCap;
     private double damagePerLevel;
     private double maxDistance;
     private double percent;
@@ -36,13 +37,16 @@ public class TwinFangs extends Spell implements DistanceSpell, PhysicalDamageSpe
                 "plus an additional " + (percent * 100) + "% &cexecute &7damage! " +
                 "\n\n&2&lEFFECT &cExecute" +
                 "\n&7Spells with &cexecute &7deal additional damage " +
-                "based on the target's missing health!");
+                "based on the target's missing health! " +
+                "Capped at " + damageCap + " damage against monsters.");
 
     }
 
     @Override
     protected void loadSpellSpecificData(Map<String, Object> spellData) {
         super.loadSpellSpecificData(spellData);
+        Number damageCap = (Number) spellData.getOrDefault("damage-cap", 500);
+        setDamageCap(damageCap.doubleValue());
         Number percent = (Number) spellData.getOrDefault("percent", 0.15);
         setPercent(percent.doubleValue());
     }
@@ -75,7 +79,7 @@ public class TwinFangs extends Spell implements DistanceSpell, PhysicalDamageSpe
             livingEntity.getWorld().playSound(livingEntity.getLocation(), Sound.ENTITY_PLAYER_HURT, 0.5f, 2.0f);
             Collection<Entity> targets = player.getWorld().getNearbyEntities
                     (livingEntity.getLocation(), BEAM_WIDTH, BEAM_WIDTH, BEAM_WIDTH, target -> isValidEnemy(player, target));
-            targets.forEach(target -> DamageUtil.damageEntityPhysical(damage + percentMissingHealth((LivingEntity) target, percent),
+            targets.forEach(target -> DamageUtil.damageEntityPhysical(damage + percentMissingHealth((LivingEntity) target, percent, (int) damageCap),
                     (LivingEntity) target, player, false, false, this));
         }
     }
@@ -118,6 +122,10 @@ public class TwinFangs extends Spell implements DistanceSpell, PhysicalDamageSpe
     @Override
     public void setPhysicalDamagePerLevel(double physicalDamagePerLevel) {
         this.damagePerLevel = physicalDamagePerLevel;
+    }
+
+    public void setDamageCap(double damageCap) {
+        this.damageCap = damageCap;
     }
 
     public void setPercent(double percent) {
