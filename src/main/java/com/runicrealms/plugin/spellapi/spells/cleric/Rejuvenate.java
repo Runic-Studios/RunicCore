@@ -1,8 +1,8 @@
 package com.runicrealms.plugin.spellapi.spells.cleric;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.events.SpellHealEvent;
 import com.runicrealms.plugin.common.CharacterClass;
+import com.runicrealms.plugin.events.SpellHealEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.HealingSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.RadiusSpell;
@@ -44,7 +44,7 @@ public class Rejuvenate extends Spell implements DurationSpell, HealingSpell, Ra
         hasBeenHit = new HashMap<>();
         affectedPlayers = new HashMap<>();
         this.setDescription("You launch a beam of healing magic, " +
-                "restoring✦ (" + heal + " + &f" + healingPerLevel +
+                "restoring✸ (" + heal + " + &f" + healingPerLevel +
                 "x&7 lvl) health to yourself and all allies it passes through! " +
                 "Affected allies receive an additional " + (int) PERCENT + "% health " +
                 "from your healing✦ spells for " + duration + "s!");

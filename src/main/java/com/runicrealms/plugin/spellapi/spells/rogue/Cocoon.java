@@ -39,8 +39,7 @@ public class Cocoon extends Spell implements DistanceSpell, DurationSpell, Physi
                 "then slows them and applies one stack of &usundered &7for " + duration + "s!" +
                 "\n\n&2&lEFFECT &uSundered" +
                 "\n&7&uSundered &7enemies suffer an additional " +
-                        "(5 + 0.04x DEX)% physical damage. Can stack up to 3 times. Each stack expires after 4s.
-");
+                "(5 + 0.04x DEX)% physical damage. Can stack up to 3 times. Each stack expires after 4s.");
         this.lastTimeCocooned = new HashMap<>();
     }
 
