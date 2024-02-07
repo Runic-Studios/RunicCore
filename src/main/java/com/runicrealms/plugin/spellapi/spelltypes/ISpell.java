@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -18,6 +19,10 @@ public interface ISpell {
     boolean hasSpellEffect(UUID uuid, SpellEffectType identifier);
 
     Optional<SpellEffect> getSpellEffect(UUID casterUuid, UUID recipientUuid, SpellEffectType identifier);
+
+    List<SpellEffect> getSpellEffects(UUID recipientId, SpellEffectType identifier);
+
+    int determineHighestStacks(UUID recipientId, SpellEffectType identifier);
 
     /**
      * Adds a custom status effect to an entity that interacts with runic systems, like silence preventing spells

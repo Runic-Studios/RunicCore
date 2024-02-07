@@ -12,6 +12,7 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class BleedEffect implements StackEffect {
     public static final int DAMAGE_CAP = 100;
@@ -23,7 +24,7 @@ public class BleedEffect implements StackEffect {
     private final LivingEntity recipient;
     private final StackHologram stackHologram;
     private int nextTickCounter;
-    private int stacksRemaining;
+    private AtomicInteger stacks;
 
     /**
      * @param caster    player who caused the bleed
@@ -32,7 +33,7 @@ public class BleedEffect implements StackEffect {
     public BleedEffect(Player caster, LivingEntity recipient) {
         this.caster = caster;
         this.recipient = recipient;
-        this.stacksRemaining = DEFAULT_STACKS;
+        this.stacks = new AtomicInteger(DEFAULT_STACKS);
         this.stackHologram = new StackHologram(
                 SpellEffectType.BLEED,
                 caster.getLocation(),
@@ -41,7 +42,7 @@ public class BleedEffect implements StackEffect {
     }
 
     public void refreshStacks() {
-        this.stacksRemaining = DEFAULT_STACKS;
+        this.stacks = new AtomicInteger(DEFAULT_STACKS);
     }
 
     @Override
@@ -51,7 +52,7 @@ public class BleedEffect implements StackEffect {
 
     @Override
     public boolean isActive() {
-        return stacksRemaining > 0;
+        return stacks.get() > 0;
     }
 
     @Override
@@ -78,9 +79,9 @@ public class BleedEffect implements StackEffect {
             cancel();
             return;
         }
-        if (stacksRemaining > 0) {
+        if (stacks.get() > 0) {
             executeSpellEffect();
-            stacksRemaining--;
+            stacks.getAndDecrement();
         }
         // Set the next tick
         nextTickCounter += getTickInterval();
@@ -92,17 +93,22 @@ public class BleedEffect implements StackEffect {
         recipient.getWorld().spawnParticle(Particle.BLOCK_CRACK, recipient.getEyeLocation(), 10, Math.random() * 1.5, Math.random() / 2, Math.random() * 1.5, Material.REDSTONE_BLOCK.createBlockData());
         double percentMaxHealthAmount = recipient.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue() * MAX_HEALTH_PERCENT;
         DamageUtil.damageEntityPhysical(Math.min(percentMaxHealthAmount, 100), recipient, caster, false, false, false);
-        this.stackHologram.showHologram(this.recipient.getEyeLocation().add(0, 1.5f, 0), this.stacksRemaining);
+        this.stackHologram.showHologram(this.recipient.getEyeLocation().add(0, 1.5f, 0), this.stacks.get());
     }
 
     @Override
     public void cancel() {
-        stacksRemaining = 0;
+        stacks.getAndSet(0);
     }
 
     @Override
     public void setNextTickCounter(int nextTickCounter) {
         this.nextTickCounter = nextTickCounter;
+    }
+
+    @Override
+    public AtomicInteger getStacks() {
+        return stacks;
     }
 
     @Override

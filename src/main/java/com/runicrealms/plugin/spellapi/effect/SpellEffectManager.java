@@ -10,9 +10,11 @@ import org.bukkit.event.Listener;
 
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class SpellEffectManager implements Listener, SpellEffectAPI {
     private static final long TICK_PERIOD = 5; // Game ticks between each effect update (1/4 second)
@@ -79,6 +81,37 @@ public class SpellEffectManager implements Listener, SpellEffectAPI {
                                 && spellEffect.getRecipient().getUniqueId().equals(recipientUuid)
                                 && spellEffect.getEffectType() == identifier
                 ).findFirst();
+    }
+
+    @Override
+    public List<SpellEffect> getSpellEffects(UUID uuid, SpellEffectType identifier) {
+        return activeSpellEffects.stream()
+                .filter(spellEffect -> spellEffect.getRecipient().getUniqueId().equals(uuid)
+                        && spellEffect.getEffectType() == identifier)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public int determineHighestStacks(UUID recipientId, SpellEffectType identifier) {
+        int result = 0; // Initialize result to 0
+
+        // Get all spell effects for the given recipient and identifier
+        List<SpellEffect> spellEffects = getSpellEffects(recipientId, identifier);
+
+        // Iterate through the spell effects
+        for (SpellEffect effect : spellEffects) {
+            // Check if the effect is an instance of StackEffect
+            if (effect instanceof StackEffect stackEffect) {
+                // Get the max stacks for the stack effect
+                int currentStacks = stackEffect.getStacks().get();
+                // Update result if stacks is greater than the current result
+                if (currentStacks > result) {
+                    result = currentStacks;
+                }
+            }
+        }
+
+        return result; // Return the highest stacks found
     }
 
     public int getGlobalCounter() {

@@ -47,7 +47,8 @@ public class Backstab extends Spell implements AttributeSpell, DurationSpell {
         // Logic for damage ramp
         Optional<SpellEffect> spellEffectOpt = this.getSpellEffect(uuid, victimId, SpellEffectType.BETRAYED);
         if (spellEffectOpt.isPresent()) {
-            event.setAmount((int) (event.getAmount() + this.percentAttribute(event.getPlayer())));
+            double bonusDamage = event.getAmount() * this.percentAttribute(event.getPlayer());
+            event.setAmount((int) (event.getAmount() + bonusDamage));
             event.getPlayer().getWorld().playSound(event.getPlayer().getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 0.25F, 0.25F);
             event.getVictim().getWorld().spawnParticle
                     (Particle.VILLAGER_ANGRY, event.getVictim().getEyeLocation(), 5, 1.0F, 0, 0, 0); // 0.3F

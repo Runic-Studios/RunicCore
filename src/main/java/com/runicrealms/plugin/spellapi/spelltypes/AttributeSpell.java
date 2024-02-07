@@ -54,6 +54,7 @@ public interface AttributeSpell {
      */
     default double percentAttribute(Player player) {
         double statValue = RunicCore.getStatAPI().getStat(player.getUniqueId(), this.getStatName());
-        return Math.max(0, this.getBaseValue() + (this.getMultiplier() * statValue)); // Cannot be a negative bonus!
+        double totalPercent = this.getBaseValue() + (this.getMultiplier() * statValue);
+        return Math.max(0, totalPercent / 100); // Cannot be a negative bonus!
     }
 }

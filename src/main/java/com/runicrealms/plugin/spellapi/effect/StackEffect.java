@@ -1,5 +1,7 @@
 package com.runicrealms.plugin.spellapi.effect;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 public interface StackEffect extends SpellEffect {
 
     /**
@@ -21,6 +23,11 @@ public interface StackEffect extends SpellEffect {
      * @param nextTickCounter The value of the next tick counter.
      */
     void setNextTickCounter(int nextTickCounter);
+
+    /**
+     * @return the current stacks of this effect
+     */
+    AtomicInteger getStacks();
 
     /**
      * @return the interval at which this specific effect should tick (in game ticks! e.g. 40 = 2 seconds)

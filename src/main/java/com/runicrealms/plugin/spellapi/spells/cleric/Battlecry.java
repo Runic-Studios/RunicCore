@@ -97,7 +97,8 @@ public class Battlecry extends Spell implements AttributeSpell, DurationSpell, M
         UUID uuid = event.getPlayer().getUniqueId();
         Optional<SpellEffect> spellEffectOpt = this.getSpellEffect(uuid, uuid, SpellEffectType.SONG_OF_WAR);
         if (spellEffectOpt.isEmpty()) return;
-        event.setAmount((int) (event.getAmount() + this.percentAttribute(event.getPlayer())));
+        double bonusDamage = event.getAmount() * this.percentAttribute(event.getPlayer());
+        event.setAmount((int) (event.getAmount() + bonusDamage));
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
@@ -105,7 +106,8 @@ public class Battlecry extends Spell implements AttributeSpell, DurationSpell, M
         UUID uuid = event.getPlayer().getUniqueId();
         Optional<SpellEffect> spellEffectOpt = this.getSpellEffect(uuid, uuid, SpellEffectType.SONG_OF_WAR);
         if (spellEffectOpt.isEmpty()) return;
-        event.setAmount((int) (event.getAmount() + percentAttribute(event.getPlayer())));
+        double bonusDamage = event.getAmount() * this.percentAttribute(event.getPlayer());
+        event.setAmount((int) (event.getAmount() + bonusDamage));
     }
 
     @Override

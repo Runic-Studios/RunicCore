@@ -1,48 +1,92 @@
 package com.runicrealms.plugin.spellapi.effect.rogue;
 
-import com.runicrealms.plugin.spellapi.effect.SpellEffect;
 import com.runicrealms.plugin.spellapi.effect.SpellEffectType;
-import org.bukkit.Material;
+import com.runicrealms.plugin.spellapi.effect.StackEffect;
+import com.runicrealms.plugin.spellapi.effect.StackHologram;
+import com.runicrealms.plugin.spellapi.spellutil.particles.Cone;
+import org.bukkit.Color;
+import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
-public class SunderedEffect implements SpellEffect {
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
+
+public class SunderedEffect implements StackEffect {
+    private static final int PERIOD = 20;
     private final Player caster;
     private final LivingEntity recipient;
-    private final double duration;
-    private long startTime;
+    private final int maxStacks;
+    private final int stackDuration;
+    private final AtomicInteger stacks;
+    private final StackHologram stackHologram;
+    private Location hologramLocation;
+    private int nextTickCounter;
 
     /**
-     * @param caster    player who caused the effect
-     * @param recipient entity who is affected
-     * @param duration  before the effect expires
+     * @param caster           uuid of the caster
+     * @param maxStacks        max stacks caster can earn
+     * @param stackDuration    how long before each stack falls off
+     * @param initialStacks    how many stacks to start with
+     * @param hologramLocation initial location to spawn the hologram
      */
-    public SunderedEffect(Player caster, LivingEntity recipient, double duration) {
+    public SunderedEffect(Player caster, LivingEntity recipient, int maxStacks, int stackDuration, int initialStacks, Location hologramLocation) {
         this.caster = caster;
         this.recipient = recipient;
-        this.duration = duration;
-        this.startTime = System.currentTimeMillis();
+        this.maxStacks = maxStacks;
+        this.stackDuration = stackDuration;
+        this.stacks = new AtomicInteger(initialStacks);
+        this.hologramLocation = hologramLocation;
+        this.stackHologram = new StackHologram(
+                SpellEffectType.SUNDERED,
+                hologramLocation,
+                Set.of(caster)
+        );
+        executeSpellEffect();
+    }
+
+    public int getMaxStacks() {
+        return maxStacks;
     }
 
     @Override
-    public void cancel() {
-        startTime = (long) (System.currentTimeMillis() - (duration * 1000)); // Immediately end effect
+    public void setNextTickCounter(int nextTickCounter) {
+        this.nextTickCounter = nextTickCounter;
+    }
+
+    public Location getHologramLocation() {
+        return hologramLocation;
+    }
+
+    public void setHologramLocation(Location hologramLocation) {
+        this.hologramLocation = hologramLocation;
     }
 
     @Override
-    public double getDuration() {
-        return duration;
+    public AtomicInteger getStacks() {
+        return stacks;
     }
 
-    public void refresh() {
-        this.startTime = System.currentTimeMillis();
+    public void increment(Location hologramLocation, int amountToIncrement) {
+        this.setHologramLocation(hologramLocation.add(0, 1.5f, 0));
+        int currentStacks = this.stacks.get();
+        if (currentStacks >= this.maxStacks) {
+            return;
+        }
+        this.stacks.set(Math.min(currentStacks + amountToIncrement, this.maxStacks));
+        executeSpellEffect();
     }
 
     @Override
     public SpellEffectType getEffectType() {
         return SpellEffectType.SUNDERED;
+    }
+
+    @Override
+    public boolean isActive() {
+        return stacks.get() > 0;
     }
 
     @Override
@@ -62,32 +106,45 @@ public class SunderedEffect implements SpellEffect {
 
     @Override
     public void tick(int globalCounter) {
-        if (recipient.isDead()) {
-            this.cancel();
+        if (globalCounter < nextTickCounter) {
             return;
         }
-        if (globalCounter % 20 == 0) { // Show particle effect once per second
-            executeSpellEffect();
+        if (caster.isDead()) {
+            cancel();
+            return;
         }
+        // Decrement one stack every stackDuration seconds
+        if (stacks.get() > 0) {
+            stacks.getAndDecrement();
+            caster.playSound(caster.getLocation(), Sound.BLOCK_CONDUIT_DEACTIVATE, 0.25f, 3.0f);
+        }
+        executeSpellEffect();
+        // Set the next tick
+        nextTickCounter += getTickInterval();
     }
 
     @Override
     public void executeSpellEffect() {
-        caster.playSound(recipient.getLocation(), Sound.BLOCK_GLASS_BREAK, 0.2f, 2.0f);
-        caster.spawnParticle(
-                Particle.BLOCK_CRACK,
-                recipient.getEyeLocation(),
-                15,
-                Math.random() * 1.5,
-                Math.random() / 2,
-                Math.random() * 1.5,
-                Material.PACKED_ICE.createBlockData()
-        );
+        int stacks = this.stacks.get();
+        stackHologram.showHologram(this.hologramLocation, this.stacks.get());
+        if (stacks == this.maxStacks) {
+            Cone.coneEffect(recipient, Particle.REDSTONE, stackDuration, 0, 20, Color.BLUE);
+        }
     }
 
     @Override
-    public long getStartTime() {
-        return startTime;
+    public void cancel() {
+        stacks.set(0);
+        caster.playSound(caster.getLocation(), Sound.BLOCK_CONDUIT_DEACTIVATE, 0.25f, 3.0f);
     }
 
+    @Override
+    public int getTickInterval() {
+        return PERIOD * stackDuration;
+    }
+
+    @Override
+    public StackHologram getStackHologram() {
+        return stackHologram;
+    }
 }

@@ -57,6 +57,7 @@ public class BlessedBladeEffect implements StackEffect {
         this.hologramLocation = hologramLocation;
     }
 
+    @Override
     public AtomicInteger getStacks() {
         return stacks;
     }
