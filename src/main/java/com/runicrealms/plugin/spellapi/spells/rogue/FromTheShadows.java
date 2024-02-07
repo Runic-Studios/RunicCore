@@ -5,14 +5,7 @@ import com.runicrealms.plugin.common.CharacterClass;
 import com.runicrealms.plugin.events.MagicDamageEvent;
 import com.runicrealms.plugin.events.PhysicalDamageEvent;
 import com.runicrealms.plugin.events.SpellCastEvent;
-import com.runicrealms.plugin.spellapi.effect.RunicStatusEffect;
-import com.runicrealms.plugin.spellapi.spells.Combat;
-import com.runicrealms.plugin.spellapi.spells.Potion;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
-import com.runicrealms.plugin.spellapi.spellutil.particles.Cone;
-import org.bukkit.Bukkit;
-import org.bukkit.Color;
-import org.bukkit.Particle;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 
@@ -82,92 +75,92 @@ public class FromTheShadows extends Spell {
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onEmpoweredSpell(PhysicalDamageEvent event) {
-        // Check if the player has the relevant passive ability
-        if (!hasPassive(event.getPlayer().getUniqueId(), this.getName())) return;
-
-        // Get the Cocoon spell and check if it is properly registered
-        Cocoon cocoon = (Cocoon) RunicCore.getSpellAPI().getSpell("Cocoon");
-        if (cocoon == null) {
-            throw new IllegalStateException("Expected spell was not registered in the SpellManager");
-        }
-
-        // Verify it is a relevant spell and is not null
-//        if (event.getSpell() == null || (not a b or c)) return;
-
-        // Check if the player is not buffed
-        if (!this.buffedPlayersMap.containsKey(event.getPlayer().getUniqueId())) {
-            return;
-        }
-
-        // Check if the victim is debuffed with Cocoon and get the caster of the cocoon
-        boolean isDebuffed = cocoon.isCocooned(event.getVictim().getUniqueId(), this.cocoonDamageIncreaseDuration);
-        UUID casterId = cocoon.getCaster(event.getVictim().getUniqueId());
-
-        // Apply damage calculation and visual effects if the victim is debuffed
-        if (isDebuffed && casterId != null && this.hasPassive(casterId, this.getName())) {
-            event.setAmount(this.cocoonDamageCalculation(event.getAmount(), casterId));
-            Cone.coneEffect(event.getVictim(), Particle.REDSTONE, 1, 0, 20, Color.LIME);
-        }
-
-        // If the spell is Twin Fangs, mark the event as critical and only reduce 1 stack (so that both fangs get buff)
-        if (event.getSpell() instanceof TwinFangs) {
-            buffedPlayersMap.put(casterId, buffedPlayersMap.get(casterId) - 1);
-            event.setCritical(true);
-        } else { // Must be Cocoon or Dash
-            buffedPlayersMap.put(casterId, buffedPlayersMap.get(casterId) - 2);
-        }
-
-        // Reduce a buff stack (or remove buff) for the player.
-        if (buffedPlayersMap.get(casterId) == 0) {
-            buffedPlayersMap.remove(casterId);
-        }
+//        // Check if the player has the relevant passive ability
+//        if (!hasPassive(event.getPlayer().getUniqueId(), this.getName())) return;
+//
+//        // Get the Cocoon spell and check if it is properly registered
+//        Cocoon cocoon = (Cocoon) RunicCore.getSpellAPI().getSpell("Cocoon");
+//        if (cocoon == null) {
+//            throw new IllegalStateException("Expected spell was not registered in the SpellManager");
+//        }
+//
+//        // Verify it is a relevant spell and is not null
+////        if (event.getSpell() == null || (not a b or c)) return;
+//
+//        // Check if the player is not buffed
+//        if (!this.buffedPlayersMap.containsKey(event.getPlayer().getUniqueId())) {
+//            return;
+//        }
+//
+//        // Check if the victim is debuffed with Cocoon and get the caster of the cocoon
+//        boolean isDebuffed = cocoon.isCocooned(event.getVictim().getUniqueId(), this.cocoonDamageIncreaseDuration);
+//        UUID casterId = cocoon.getCaster(event.getVictim().getUniqueId());
+//
+//        // Apply damage calculation and visual effects if the victim is debuffed
+//        if (isDebuffed && casterId != null && this.hasPassive(casterId, this.getName())) {
+//            event.setAmount(this.cocoonDamageCalculation(event.getAmount(), casterId));
+//            Cone.coneEffect(event.getVictim(), Particle.REDSTONE, 1, 0, 20, Color.LIME);
+//        }
+//
+//        // If the spell is Twin Fangs, mark the event as critical and only reduce 1 stack (so that both fangs get buff)
+//        if (event.getSpell() instanceof TwinFangs) {
+//            buffedPlayersMap.put(casterId, buffedPlayersMap.get(casterId) - 1);
+//            event.setCritical(true);
+//        } else { // Must be Cocoon or Dash
+//            buffedPlayersMap.put(casterId, buffedPlayersMap.get(casterId) - 2);
+//        }
+//
+//        // Reduce a buff stack (or remove buff) for the player.
+//        if (buffedPlayersMap.get(casterId) == 0) {
+//            buffedPlayersMap.remove(casterId);
+//        }
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     private void onMagicDamage(MagicDamageEvent event) {
-        Cocoon cocoon = (Cocoon) RunicCore.getSpellAPI().getSpell("Cocoon");
-        if (cocoon == null) {
-            throw new IllegalStateException("Expected spell was not registered in the SpellManager");
-        }
-
-        boolean isDebuffed = cocoon.isCocooned(event.getVictim().getUniqueId(), this.cocoonDamageIncreaseDuration);
-
-        if (isDebuffed && this.debuffed.contains(event.getVictim().getUniqueId())) {
-            event.setAmount(this.cocoonDamageCalculation(event.getAmount(), cocoon.getCaster(event.getVictim().getUniqueId())));
-            Cone.coneEffect(event.getVictim(), Particle.REDSTONE, 1, 0, 20, Color.LIME);
-        } else if (!isDebuffed) {
-            this.debuffed.remove(event.getVictim().getUniqueId());
-        }
+//        Cocoon cocoon = (Cocoon) RunicCore.getSpellAPI().getSpell("Cocoon");
+//        if (cocoon == null) {
+//            throw new IllegalStateException("Expected spell was not registered in the SpellManager");
+//        }
+//
+//        boolean isDebuffed = cocoon.isCocooned(event.getVictim().getUniqueId(), this.cocoonDamageIncreaseDuration);
+//
+//        if (isDebuffed && this.debuffed.contains(event.getVictim().getUniqueId())) {
+//            event.setAmount(this.cocoonDamageCalculation(event.getAmount(), cocoon.getCaster(event.getVictim().getUniqueId())));
+//            Cone.coneEffect(event.getVictim(), Particle.REDSTONE, 1, 0, 20, Color.LIME);
+//        } else if (!isDebuffed) {
+//            this.debuffed.remove(event.getVictim().getUniqueId());
+//        }
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onSpellCast(SpellCastEvent event) {
-        if (!hasPassive(event.getCaster().getUniqueId(), this.getName())) return;
-        if (event.getSpell() instanceof Combat || event.getSpell() instanceof Potion) {
-            return;
-        }
-        // Apply buff
-        if (event.getSpell() instanceof Unseen unseen) {
-            buffedPlayersMap.put(event.getCaster().getUniqueId(), 2);
-            Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(),
-                    () -> buffedPlayersMap.remove(event.getCaster().getUniqueId()), (long) (unseen.getCooldown() * 20));
-            return;
-        }
-
-        // Remove potential buff
-        if (!buffedPlayersMap.containsKey(event.getCaster().getUniqueId())) return;
-
-        if (event.getSpell() instanceof Dash) {
-            this.addStatusEffect(event.getCaster(), RunicStatusEffect.SPEED_III, 4, true);
-        } else if (event.getSpell() instanceof TwinFangs) {
-            buffedPlayersMap.put(event.getCaster().getUniqueId(), 2);
-        } else if (event.getSpell() instanceof Cocoon cocoon) {
-            buffedPlayersMap.put(event.getCaster().getUniqueId(), 2);
-            UUID target = cocoon.getTarget(event.getCaster().getUniqueId());
-            if (target != null) {
-                this.debuffed.add(target);
-            }
-        }
+//        if (!hasPassive(event.getCaster().getUniqueId(), this.getName())) return;
+//        if (event.getSpell() instanceof Combat || event.getSpell() instanceof Potion) {
+//            return;
+//        }
+//        // Apply buff
+//        if (event.getSpell() instanceof Unseen unseen) {
+//            buffedPlayersMap.put(event.getCaster().getUniqueId(), 2);
+//            Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(),
+//                    () -> buffedPlayersMap.remove(event.getCaster().getUniqueId()), (long) (unseen.getCooldown() * 20));
+//            return;
+//        }
+//
+//        // Remove potential buff
+//        if (!buffedPlayersMap.containsKey(event.getCaster().getUniqueId())) return;
+//
+//        if (event.getSpell() instanceof Dash) {
+//            this.addStatusEffect(event.getCaster(), RunicStatusEffect.SPEED_III, 4, true);
+//        } else if (event.getSpell() instanceof TwinFangs) {
+//            buffedPlayersMap.put(event.getCaster().getUniqueId(), 2);
+//        } else if (event.getSpell() instanceof Cocoon cocoon) {
+//            buffedPlayersMap.put(event.getCaster().getUniqueId(), 2);
+//            UUID target = cocoon.getTarget(event.getCaster().getUniqueId());
+//            if (target != null) {
+//                this.debuffed.add(target);
+//            }
+//        }
     }
 }
 

@@ -26,10 +26,10 @@ public class Unseen extends Spell implements DurationSpell {
     public Unseen() {
         super("Unseen", CharacterClass.ROGUE);
         this.setDescription("For " + duration + "s, you vanish completely, " +
-                "gaining &9shrouded&7! Dealing or taking damage from players " +
+                "gaining &8shrouded&7! Dealing or taking damage from players " +
                 "ends the effect early. " +
-                "\n\n&2&lEFFECT &9Shrouded" +
-                "\n&9Shrouded &7causes you to appear invisible to " +
+                "\n\n&2&lEFFECT &8Shrouded" +
+                "\n&8Shrouded &7causes you to appear invisible to " +
                 "players. During this time, you are " +
                 "immune to damage from monsters!");
     }

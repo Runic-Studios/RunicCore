@@ -16,10 +16,10 @@ public enum SpellEffectType {
     IGNITED(ChatColor.DARK_RED, "Ignited", ""),
     INCENDIARY(ChatColor.DARK_RED, "Incendiary", ""),
     RADIANT_FIRE(ChatColor.YELLOW, "Radiant Fire", "☀"),
-    SHROUDED(ChatColor.DARK_AQUA, "Shrouded", ""),
+    SHROUDED(ChatColor.DARK_GRAY, "Shrouded", ""),
     SONG_OF_WAR(ChatColor.RED, "Song of War", ""),
     STATIC(ChatColor.GRAY, "Static", ""),
-    SUNDERED(ChatColor.STRIKETHROUGH, "Sundered", "■");
+    SUNDERED(ChatColor.BLUE, "Sundered", "■");
 
     private final ChatColor chatColor;
     private final String display;
