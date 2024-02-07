@@ -8,7 +8,7 @@ import org.bukkit.Sound;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
-public class SunderEffect implements SpellEffect {
+public class SunderedEffect implements SpellEffect {
     private final Player caster;
     private final LivingEntity recipient;
     private final double duration;
@@ -19,7 +19,7 @@ public class SunderEffect implements SpellEffect {
      * @param recipient entity who is affected
      * @param duration  before the effect expires
      */
-    public SunderEffect(Player caster, LivingEntity recipient, double duration) {
+    public SunderedEffect(Player caster, LivingEntity recipient, double duration) {
         this.caster = caster;
         this.recipient = recipient;
         this.duration = duration;

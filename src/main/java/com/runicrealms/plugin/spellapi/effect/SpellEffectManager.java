@@ -41,6 +41,7 @@ public class SpellEffectManager implements Listener, SpellEffectAPI {
             if (effect.isActive()) {
                 effect.tick(counter);
             } else {
+                effect.onExpire();
                 iterator.remove();
                 // Cleanup holograms
                 if (effect instanceof StackEffect) {
