@@ -35,8 +35,12 @@ public class Cocoon extends Spell implements DistanceSpell, DurationSpell, Physi
         super("Cocoon", CharacterClass.ROGUE);
         this.setDescription("You launch a short-range string of web " +
                 "that deals (" + damage + " + &f" + damagePerLevel + "x&7 lvl) physical⚔ " +
-                "damage and slows the first enemy hit within " + distance + " blocks " +
-                "for " + duration + "s!");
+                "damage to the first enemy hit within " + distance + " blocks, " +
+                "then slows them and applies one stack of &usundered &7for " + duration + "s!" +
+                "\n\n&2&lEFFECT &uSundered" +
+                "\n&7&uSundered &7enemies suffer an additional " +
+                        "(5 + 0.04x DEX)% physical damage. Can stack up to 3 times. Each stack expires after 4s.
+");
         this.lastTimeCocooned = new HashMap<>();
     }
 

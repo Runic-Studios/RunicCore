@@ -16,7 +16,8 @@ public enum SpellEffectType {
     INCENDIARY(ChatColor.DARK_RED, "Incendiary", ""),
     RADIANT_FIRE(ChatColor.YELLOW, "Radiant Fire", "☀"),
     SONG_OF_WAR(ChatColor.RED, "Song of War", ""),
-    STATIC(ChatColor.GRAY, "Static", "");
+    STATIC(ChatColor.GRAY, "Static", ""),
+    SUNDERED(ChatColor.STRIKETHROUGH, "Sundered", "■");
 
     private final ChatColor chatColor;
     private final String display;
