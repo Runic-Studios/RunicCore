@@ -21,15 +21,14 @@ import java.util.UUID;
  * @author BoBoBalloon
  */
 public class InfernalPerk extends ItemPerkHandler {
+    private static final Stat ATTACK = Stat.STRENGTH;
+    private static final Stat SPELL = Stat.INTELLIGENCE;
     private final Map<UUID, Long> lastTimeUsed;
     private final double attackDamageConstant;
     private final double attackDamageMultiplier;
     private final double spellDamageConstant;
     private final double spellDamageMultiplier;
     private final long cooldown;
-
-    private static final Stat ATTACK = Stat.STRENGTH;
-    private static final Stat SPELL = Stat.INTELLIGENCE;
 
     public InfernalPerk() {
         super("infernal");
@@ -40,7 +39,7 @@ public class InfernalPerk extends ItemPerkHandler {
         this.attackDamageMultiplier = ((Number) this.config.get("attack-multiplier")).doubleValue();
         this.spellDamageConstant = ((Number) this.config.get("spell-constant")).doubleValue();
         this.spellDamageMultiplier = ((Number) this.config.get("spell-multiplier")).doubleValue();
-        this.cooldown = ((Number) this.config.get("cooldown")).longValue() * 1000; //convert seconds to milliseconds
+        this.cooldown = ((Number) this.config.get("cooldown")).longValue() * 1000; // Convert seconds to milliseconds
     }
 
     private void onDamage(@NotNull RunicDamageEvent event, Player player, boolean spell) {
@@ -64,7 +63,15 @@ public class InfernalPerk extends ItemPerkHandler {
         double multiplier = spell ? this.spellDamageMultiplier : this.attackDamageMultiplier;
 
         event.setAmount(event.getAmount() + (int) (amount * multiplier + constant));
-        player.getWorld().spawnParticle(Particle.FLAME, event.getVictim().getLocation(), 30, 2 * Math.random(), 2 * Math.random(), 2 * Math.random());
+        player.getWorld().spawnParticle(
+                Particle.LAVA,
+                event.getVictim().getLocation(),
+                15,
+                0.5f,
+                0.5f,
+                0.5f,
+                0
+        );
     }
 
     @EventHandler(ignoreCancelled = true)

@@ -9,6 +9,7 @@ import com.runicrealms.plugin.spellapi.effect.rogue.BetrayedEffect;
 import com.runicrealms.plugin.spellapi.spelltypes.AttributeSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
+import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.entity.LivingEntity;
@@ -67,28 +68,24 @@ public class Backstab extends Spell implements AttributeSpell, DurationSpell {
     }
 
     /**
-     * @return true if the target is behind the observer
+     * @return true if the attacker is behind the victim
      */
     private boolean isBehind(LivingEntity attacker, LivingEntity victim) {
         // Get the location vectors of both entities
-        Vector attackerLoc = attacker.getLocation().toVector();
-        Vector victimLoc = victim.getLocation().toVector();
+        Location attackerLocation = attacker.getLocation();
+        Location victimLocation = victim.getLocation();
 
-        // Get the direction vector of the attacker
-        Vector direction = attacker.getLocation().getDirection();
+        // Calculate the direction vector of the victim
+        Vector toAttacker = attackerLocation.toVector().subtract(victimLocation.toVector()).normalize();
 
-        // Calculate the vector from the attacker to the victim
-        Vector toVictim = victimLoc.subtract(attackerLoc);
+        // Get the direction vector the victim is facing
+        Vector victimDirection = victimLocation.getDirection().normalize();
 
-        // Normalize the vectors to unit vectors
-        direction.normalize();
-        toVictim.normalize();
+        // Calculate the dot product between the direction vector and the vector from victim to attacker
+        double dot = victimDirection.dot(toAttacker);
 
-        // Calculate the dot product between the attacker's direction vector and the vector to the victim
-        double dot = direction.dot(toVictim);
-
-        // If the dot product is less than the adjusted threshold, the player is considered behind the victim
-        return dot < BEHIND_THRESHOLD;
+        // If the dot product is negative, the attacker is behind the victim
+        return dot < 0;
     }
 
     @Override
