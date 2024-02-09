@@ -1,26 +1,33 @@
 package com.runicrealms.plugin.player.death;
 
+import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.events.ListenerPriority;
+import com.comphenix.protocol.events.PacketAdapter;
+import com.comphenix.protocol.events.PacketContainer;
+import com.comphenix.protocol.events.PacketEvent;
+import com.comphenix.protocol.wrappers.EnumWrappers;
+import com.comphenix.protocol.wrappers.WrappedEnumEntityUseAction;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.events.RunicDeathEvent;
+import com.runicrealms.plugin.npcs.RunicNpcs;
 import com.runicrealms.plugin.runicitems.RunicItemsAPI;
 import com.runicrealms.plugin.runicitems.item.RunicItem;
 import com.runicrealms.plugin.runicrestart.event.PreShutdownEvent;
 import me.filoghost.holographicdisplays.api.hologram.Hologram;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -29,7 +36,45 @@ public class GravestoneManager implements Listener {
 
     public GravestoneManager() {
         Bukkit.getPluginManager().registerEvents(this, RunicCore.getInstance());
+        // Listen async for USE_ENTITY packet (FallingBlock)
+        registerPacketListener();
         startGravestoneTask();
+    }
+
+    private void registerPacketListener() {
+        ProtocolLibrary.getProtocolManager().getAsynchronousManager().registerAsyncHandler(new PacketAdapter(RunicNpcs.getInstance(), ListenerPriority.NORMAL, PacketType.Play.Client.USE_ENTITY) {
+            @Override
+            public void onPacketReceiving(PacketEvent event) {
+                if (event.getPacketType() == PacketType.Play.Client.USE_ENTITY) {
+                    PacketContainer packet = event.getPacket();
+                    WrappedEnumEntityUseAction useAction = packet.getEnumEntityUseActions().readSafely(0);
+                    EnumWrappers.EntityUseAction action = useAction.getAction();
+
+                    if (action == EnumWrappers.EntityUseAction.ATTACK) return;
+                    if (action == EnumWrappers.EntityUseAction.INTERACT) return;
+                    if (action == EnumWrappers.EntityUseAction.INTERACT_AT) {
+                        if (useAction.getHand() == EnumWrappers.Hand.OFF_HAND) return;
+                        int entityID = packet.getIntegers().read(0);
+                        if (gravestoneMap.isEmpty()) return;
+                        Optional<Gravestone> gravestone = gravestoneMap.values().stream().filter(stone -> stone.getFallingBlock().getEntityId() == entityID).findFirst();
+                        gravestone.ifPresent(value -> attemptToOpenGravestone(event.getPlayer(), value));
+                    }
+                }
+            }
+        }).start();
+    }
+
+    private void attemptToOpenGravestone(Player player, Gravestone gravestone) {
+        if (canOpenGravestone(gravestone.getUuid(), player, gravestone)) {
+            // Open inventory sync
+            Bukkit.getScheduler().runTask(RunicCore.getInstance(), () -> {
+                player.playSound(player.getLocation(), Sound.BLOCK_SHULKER_BOX_OPEN, 0.5f, 1.0f);
+                player.openInventory(gravestone.getInventory());
+            });
+        } else {
+            player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1.0f);
+            player.sendMessage(ChatColor.RED + "Only slain player and their party can loot this chest until priority ends!");
+        }
     }
 
     private boolean canOpenGravestone(UUID uuid, Player whoOpened, Gravestone gravestone) {
@@ -43,31 +88,6 @@ public class GravestoneManager implements Listener {
 
     public Map<UUID, Gravestone> getGravestoneMap() {
         return gravestoneMap;
-    }
-
-    /**
-     * Prevents destruction of soil, interaction with tons of new blocks
-     */
-    @EventHandler(priority = EventPriority.LOW)
-    public void onInteract(PlayerInteractEvent event) {
-        if (event.getClickedBlock() == null) return;
-        if (event.getPlayer().getGameMode() == GameMode.CREATIVE) return;
-        if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-            if (event.getClickedBlock().getType().toString().toLowerCase().contains("shulker")) {
-                event.setCancelled(true);
-                gravestoneMap.forEach((uuid, gravestone) -> {
-                    if (gravestone.getShulkerBox().getBlock().equals(event.getClickedBlock())) {
-                        if (canOpenGravestone(uuid, event.getPlayer(), gravestone)) {
-                            event.getPlayer().playSound(event.getPlayer().getLocation(), Sound.BLOCK_SHULKER_BOX_OPEN, 0.5f, 1.0f);
-                            event.getPlayer().openInventory(gravestone.getInventory());
-                        } else {
-                            event.getPlayer().playSound(event.getPlayer().getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1.0f);
-                            event.getPlayer().sendMessage(ChatColor.RED + "Only slain player and their party can loot this chest until priority ends!");
-                        }
-                    }
-                });
-            }
-        }
     }
 
     @EventHandler
@@ -121,6 +141,9 @@ public class GravestoneManager implements Listener {
         Bukkit.getScheduler().runTaskTimer(RunicCore.getInstance(), () -> {
             for (UUID uuid : gravestoneMap.keySet()) {
                 Gravestone gravestone = gravestoneMap.get(uuid);
+
+                gravestone.getFallingBlock().setTicksLived(1); // Prevents gravestones from de-spawning
+
                 Hologram hologram = gravestone.getHologram();
 
                 long currentTime = System.currentTimeMillis();
@@ -163,6 +186,4 @@ public class GravestoneManager implements Listener {
             }
         }, 0, 20L);
     }
-
-
 }
