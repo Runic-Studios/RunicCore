@@ -73,4 +73,14 @@ public class VanishManager implements VanishAPI, Listener {
         for (Player online : Bukkit.getOnlinePlayers()) online.showPlayer(RunicCore.getInstance(), player);
         Bukkit.getPluginManager().callEvent(new PlayerVanishEvent(player));
     }
+
+//    @EventHandler  TODO change to use PLIB
+//    public void onServerListPing(ServerListPingEvent event) {
+//        while (event.iterator().hasNext()) {
+//            Player player = event.iterator().next();
+//            if (RunicCore.getVanishAPI().getVanishedPlayers().contains(player)) {
+//                event.iterator().remove();
+//            }
+//        }
+//    }
 }
