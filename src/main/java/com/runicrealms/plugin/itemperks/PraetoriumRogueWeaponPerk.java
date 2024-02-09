@@ -17,11 +17,11 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * A class that models the praetorium rouge item perk
+ * A class that models the praetorium rogue item perk
  *
  * @author BoBoBalloon
  */
-public class PraetoriumRougeWeaponPerk extends ItemPerkHandler {
+public class PraetoriumRogueWeaponPerk extends ItemPerkHandler {
     private final Map<UUID, Long> lastTimeUsed;
     private final Map<UUID, Long> affected;
     private final double attackDamageConstant;
@@ -29,8 +29,8 @@ public class PraetoriumRougeWeaponPerk extends ItemPerkHandler {
     private final double reducedHealingPercent;
     private final long cooldown;
 
-    public PraetoriumRougeWeaponPerk() {
-        super("praetorium-rouge-weapon");
+    public PraetoriumRogueWeaponPerk() {
+        super("praetorium-rogue-weapon");
 
         this.lastTimeUsed = new HashMap<>();
         this.affected = new ConcurrentHashMap<>();
