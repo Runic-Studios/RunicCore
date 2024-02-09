@@ -253,7 +253,7 @@ public class ClientLootManager implements Listener {
                     chest.lootChest.playOpenAnimation();
                     event.getPlayer().playSound(chest.lootChest.getPosition().getLocation(), Sound.BLOCK_CHEST_OPEN, .5F, 1);
                 })
-                .delay(20)
+                .delay(8)
                 .sync(() -> {
                     Map<Location, ClientLootChest> chests = loadedChests.get(event.getPlayer());
                     ClientLootChest client = chests.get(chest.lootChest.getPosition().getLocation());
