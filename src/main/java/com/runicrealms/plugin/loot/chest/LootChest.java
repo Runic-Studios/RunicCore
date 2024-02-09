@@ -32,10 +32,9 @@ public abstract class LootChest implements LootHolder {
     protected final String inventoryTitle;
 
     protected final ModeledEntity entity;
+    protected final BlockData blockData;
     private final String modelID;
     protected ActiveModel model;
-
-    protected final BlockData blockData;
 
     public LootChest(
             @NotNull LootChestPosition position,
@@ -138,7 +137,6 @@ public abstract class LootChest implements LootHolder {
         }
 
         this.generateInventory(player).open(player);
-        //Bukkit.broadcastMessage("open inventory"); //remove
     }
 
     public void playOpenAnimation() {
@@ -148,9 +146,6 @@ public abstract class LootChest implements LootHolder {
 
     public void showToPlayer(@NotNull Player player) {
         player.sendBlockChange(this.position.getLocation(), ResourcePackManager.isPackActive(player) ? BARRIER_BLOCK_DATA : this.blockData);
-        //player.sendBlockChange(this.position.getLocation(), this.blockData);
-        //Bukkit.broadcastMessage("show chest"); //remove
-
         this.setActiveModel();
 
         if (this.model == null || !ResourcePackManager.isPackActive(player)) {
@@ -166,7 +161,6 @@ public abstract class LootChest implements LootHolder {
             player.spawnParticle(Particle.REDSTONE, this.position.getLocation(),
                     25, 0.5f, 0.5f, 0.5f, 0, new Particle.DustOptions(Color.WHITE, 20));
         }
-        //Bukkit.broadcastMessage("hide chest"); //remove
 
         if (this.model == null || !ResourcePackManager.isPackActive(player)) {
             return;
