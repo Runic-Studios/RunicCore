@@ -30,6 +30,10 @@ public class ItemPerksRegistrar {
         RunicItemsAPI.getItemPerkManager().registerItemPerk(new PraetoriumWarriorWeaponPerk());
         RunicItemsAPI.getItemPerkManager().registerItemPerk(new PraetoriumClericWeaponPerk());
         RunicItemsAPI.getItemPerkManager().registerItemPerk(new PraetoriumArmorPerk());
+        RunicItemsAPI.getItemPerkManager().registerItemPerk(new BlackfrostRogueArmorPerk());
+        RunicItemsAPI.getItemPerkManager().registerItemPerk(new BlackfrostArcherArmorPerk());
+        RunicItemsAPI.getItemPerkManager().registerItemPerk(new BlackfrostMageArmorPerk());
+        RunicItemsAPI.getItemPerkManager().registerItemPerk(new BlackfrostClericArmorPerk());
     }
 
     /**
@@ -37,7 +41,7 @@ public class ItemPerksRegistrar {
      */
     private void registerIgnarothPerks() {
         RunicItemsAPI.getDynamicItemHandler().registerTextPlaceholder(new IgnarothPerk.InsideLairTextPlaceholder());
- 
+
         int[] amount = {20, 30, 40, 55};
         for (Stat stat : Stat.values()) {
             for (int i = 1; i <= amount.length; i++) {
