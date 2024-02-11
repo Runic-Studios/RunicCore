@@ -9,8 +9,6 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import com.runicrealms.plugin.api.CombatAPI;
 import com.runicrealms.plugin.api.CoreWriteOperation;
-import com.runicrealms.plugin.api.LootAPI;
-import com.runicrealms.plugin.api.LootTableAPI;
 import com.runicrealms.plugin.api.PartyAPI;
 import com.runicrealms.plugin.api.PlayerDataAPI;
 import com.runicrealms.plugin.api.RegionAPI;
@@ -50,7 +48,6 @@ import com.runicrealms.plugin.commands.player.SpawnCMD;
 import com.runicrealms.plugin.commands.player.WhoIsCMD;
 import com.runicrealms.plugin.common.RunicCommon;
 import com.runicrealms.plugin.common.util.ColorUtil;
-import com.runicrealms.plugin.config.ConfigManager;
 import com.runicrealms.plugin.converter.ConverterHandler;
 import com.runicrealms.plugin.database.DatabaseManager;
 import com.runicrealms.plugin.donor.DonorCommand;
@@ -63,7 +60,6 @@ import com.runicrealms.plugin.donor.boost.ui.BoostsUIListener;
 import com.runicrealms.plugin.donor.ui.DonorPerksUIListener;
 import com.runicrealms.plugin.donor.ui.DonorUIListener;
 import com.runicrealms.plugin.dynamicitem.DynamicItemManager;
-import com.runicrealms.plugin.item.lootchests.LootTableManager;
 import com.runicrealms.plugin.item.shops.RunicItemShopManager;
 import com.runicrealms.plugin.item.shops.RunicShopManager;
 import com.runicrealms.plugin.itemperks.ItemPerksRegistrar;
@@ -75,6 +71,7 @@ import com.runicrealms.plugin.listeners.BedEnterListener;
 import com.runicrealms.plugin.listeners.BlockBreakListener;
 import com.runicrealms.plugin.listeners.BlockInteractListener;
 import com.runicrealms.plugin.listeners.BlockPlaceListener;
+import com.runicrealms.plugin.listeners.BossTimedLootDamageListener;
 import com.runicrealms.plugin.listeners.BowListener;
 import com.runicrealms.plugin.listeners.CampfireListener;
 import com.runicrealms.plugin.listeners.CraftingListener;
@@ -111,8 +108,6 @@ import com.runicrealms.plugin.listeners.StaffListener;
 import com.runicrealms.plugin.listeners.SwapHandsListener;
 import com.runicrealms.plugin.listeners.WeaponSkinListener;
 import com.runicrealms.plugin.listeners.WorldChangeListener;
-import com.runicrealms.plugin.loot.LootChestCommand;
-import com.runicrealms.plugin.loot.LootManager;
 import com.runicrealms.plugin.luckperms.LuckPermsManager;
 import com.runicrealms.plugin.model.MongoTask;
 import com.runicrealms.plugin.model.SettingsManager;
@@ -153,7 +148,9 @@ import com.runicrealms.plugin.rdb.api.RedisAPI;
 import com.runicrealms.plugin.rdb.event.MongoSaveEvent;
 import com.runicrealms.plugin.redis.RedisManager;
 import com.runicrealms.plugin.region.RegionEventListener;
-import com.runicrealms.plugin.resourcepack.ResourcePackManager;
+import com.runicrealms.plugin.runicitems.loot.LootAPI;
+import com.runicrealms.plugin.runicitems.loot.LootChestCommand;
+import com.runicrealms.plugin.runicitems.loot.LootManager;
 import com.runicrealms.plugin.runicrestart.event.PreShutdownEvent;
 import com.runicrealms.plugin.scoreboard.ScoreboardHandler;
 import com.runicrealms.plugin.scoreboard.ScoreboardListener;
@@ -197,7 +194,6 @@ public class RunicCore extends JavaPlugin implements Listener {
     private static PartyAPI partyAPI;
     private static ScoreboardAPI scoreboardAPI;
     private static SpellAPI spellAPI;
-    private static LootTableAPI lootTableAPI;
     private static MobTagger mobTagger;
     private static ProtocolManager protocolManager;
     private static RegionAPI regionAPI;
@@ -246,10 +242,6 @@ public class RunicCore extends JavaPlugin implements Listener {
 
     public static SpellAPI getSpellAPI() {
         return spellAPI;
-    }
-
-    public static LootTableAPI getLootTableAPI() {
-        return lootTableAPI;
     }
 
     public static MobTagger getMobTagger() {
@@ -379,7 +371,6 @@ public class RunicCore extends JavaPlugin implements Listener {
         partyAPI = null;
         scoreboardAPI = null;
         spellAPI = null;
-        lootTableAPI = null;
         mobTagger = null;
         regionAPI = null;
         partyChannel = null;
@@ -415,7 +406,6 @@ public class RunicCore extends JavaPlugin implements Listener {
         instance = this;
 
         // Set database stuff first
-        RunicCommon.registerConfigAPI(new ConfigManager());
         RunicCommon.registerLuckPermsAPI(new LuckPermsManager());
 
         // Register command manager
@@ -456,7 +446,6 @@ public class RunicCore extends JavaPlugin implements Listener {
         partyAPI = new PartyManager();
         scoreboardAPI = new ScoreboardHandler();
         spellAPI = new SpellManager();
-        lootTableAPI = new LootTableManager();
         regionAPI = new RegionHelper();
         mobTagger = new MobTagger();
         protocolManager = ProtocolLibrary.getProtocolManager();
@@ -567,7 +556,6 @@ public class RunicCore extends JavaPlugin implements Listener {
         pm.registerEvents(new StaffListener(), this);
         pm.registerEvents(new BowListener(), this);
         pm.registerEvents(new DamageListener(), this);
-        pm.registerEvents(new ResourcePackManager(), this);
         pm.registerEvents(new PlayerQuitListener(), this);
         pm.registerEvents(new PartyDamageListener(), this);
         pm.registerEvents(new ExpListener(), this);
@@ -636,6 +624,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         pm.registerEvents(new TempbanListener(), this);
         pm.registerEvents(new AFKListener(), this);
         pm.registerEvents(new PlayerInteractCorrectionListener(), this);
+        pm.registerEvents(new BossTimedLootDamageListener(), this);
     }
 
     private void registerOldStyleCommands() {

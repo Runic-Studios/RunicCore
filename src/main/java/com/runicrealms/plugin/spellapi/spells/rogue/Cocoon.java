@@ -1,8 +1,12 @@
 package com.runicrealms.plugin.spellapi.spells.rogue;
 
 import com.runicrealms.plugin.common.CharacterClass;
-import com.runicrealms.plugin.common.util.Pair;
+import com.runicrealms.plugin.events.PhysicalDamageEvent;
 import com.runicrealms.plugin.spellapi.effect.RunicStatusEffect;
+import com.runicrealms.plugin.spellapi.effect.SpellEffect;
+import com.runicrealms.plugin.spellapi.effect.SpellEffectType;
+import com.runicrealms.plugin.spellapi.effect.rogue.SunderedEffect;
+import com.runicrealms.plugin.spellapi.spelltypes.AttributeSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.DistanceSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.PhysicalDamageSpell;
@@ -15,29 +19,48 @@ import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.util.RayTraceResult;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
+import java.util.Optional;
 
-public class Cocoon extends Spell implements DistanceSpell, DurationSpell, PhysicalDamageSpell {
+public class Cocoon extends Spell implements AttributeSpell, DistanceSpell, DurationSpell, PhysicalDamageSpell {
     private static final double BEAM_WIDTH = 1.0D;
-    private final Map<UUID, Pair<UUID, Long>> lastTimeCocooned;
+    private double baseValue;
     private double duration;
     private double damage;
+    private double damageCap;
     private double damagePerLevel;
     private double distance;
+    private double maxStacks;
+    private double multiplier;
+    private double stackDuration;
+    private String statName;
 
     public Cocoon() {
         super("Cocoon", CharacterClass.ROGUE);
         this.setDescription("You launch a short-range string of web " +
                 "that deals (" + damage + " + &f" + damagePerLevel + "x&7 lvl) physical⚔ " +
-                "damage and slows the first enemy hit within " + distance + " blocks " +
-                "for " + duration + "s!");
-        this.lastTimeCocooned = new HashMap<>();
+                "damage to the first enemy hit within " + distance + " blocks, " +
+                "then slows them and applies one stack of &9sundered &7for " + duration + "s!" +
+                "\n\n&2&lEFFECT &9Sundered" +
+                "\n&9Sundered &7enemies suffer an additional " +
+                "(" + baseValue + " + " + multiplier + "x DEX)% physical damage from all sources! " +
+                "Can stack up to " + maxStacks + " times. Each stack expires after " + stackDuration + "s. " +
+                "Bonus damage is capped at " + damageCap + " against monsters.");
+    }
+
+    @Override
+    public void loadSpellSpecificData(Map<String, Object> spellData) {
+        super.loadSpellSpecificData(spellData);
+        Number damageCap = (Number) spellData.getOrDefault("damage-cap", 500);
+        setDamageCap(damageCap.doubleValue());
+        Number maxStacks = (Number) spellData.getOrDefault("max-stacks", 3);
+        setMaxStacks(maxStacks.doubleValue());
+        Number stackDuration = (Number) spellData.getOrDefault("stack-duration", 20);
+        setStackDuration(stackDuration.doubleValue());
     }
 
     @Override
@@ -63,7 +86,35 @@ public class Cocoon extends Spell implements DistanceSpell, DurationSpell, Physi
             livingEntity.getWorld().playSound(livingEntity.getLocation(), Sound.ENTITY_ZOMBIE_ATTACK_WOODEN_DOOR, 0.25f, 2.0f);
             addStatusEffect(livingEntity, RunicStatusEffect.SLOW_III, duration, false);
             DamageUtil.damageEntityPhysical(damage, livingEntity, player, false, false, this);
-            this.lastTimeCocooned.put(livingEntity.getUniqueId(), Pair.pair(player.getUniqueId(), System.currentTimeMillis()));
+            applySundered(player, livingEntity);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    public void onPhysicalDamage(PhysicalDamageEvent event) {
+        if (!this.hasSpellEffect(event.getVictim().getUniqueId(), SpellEffectType.SUNDERED)) return;
+        double percentAttribute = this.percentAttribute(event.getPlayer());
+        int highestActiveStacks = this.determineHighestStacks(event.getVictim().getUniqueId(), SpellEffectType.SUNDERED);
+        double bonusDamage = event.getAmount() * (percentAttribute * highestActiveStacks);
+        event.setAmount((int) (event.getAmount() + bonusDamage));
+    }
+
+    public void applySundered(Player player, LivingEntity livingEntity) {
+        Optional<SpellEffect> spellEffectOpt = this.getSpellEffect(player.getUniqueId(), livingEntity.getUniqueId(), SpellEffectType.SUNDERED);
+
+        if (spellEffectOpt.isPresent()) {
+            SunderedEffect sunderedEffect = (SunderedEffect) spellEffectOpt.get();
+            sunderedEffect.increment(livingEntity.getEyeLocation(), 1);
+        } else {
+            SunderedEffect sunderedEffect = new SunderedEffect(
+                    player,
+                    livingEntity,
+                    (int) this.maxStacks,
+                    (int) this.stackDuration,
+                    1,
+                    livingEntity.getEyeLocation()
+            );
+            sunderedEffect.initialize();
         }
     }
 
@@ -107,65 +158,46 @@ public class Cocoon extends Spell implements DistanceSpell, DurationSpell, Physi
         this.damagePerLevel = physicalDamagePerLevel;
     }
 
-    /**
-     * A method used to check if an entity is still under the spells effect
-     *
-     * @param uuid     the uuid of the target entity
-     * @param duration how long since the cocoon was applied
-     * @return if an entity is still under the spells effect
-     */
-    public boolean isCocooned(@NotNull UUID uuid, double duration) {
-        Pair<UUID, Long> data = this.lastTimeCocooned.get(uuid);
-
-        if (data == null) {
-            return false;
-        }
-
-        return (duration * 1000) + data.second > System.currentTimeMillis();
+    public void setMaxStacks(double maxStacks) {
+        this.maxStacks = maxStacks;
     }
 
-    /**
-     * A method used to check if an entity is still under the spells effect
-     *
-     * @param uuid the uuid of the target entity
-     * @return if an entity is still under the spells effect
-     */
-    public boolean isCocooned(@NotNull UUID uuid) {
-        return this.isCocooned(uuid, this.duration);
+    public void setStackDuration(double stackDuration) {
+        this.stackDuration = stackDuration;
     }
 
-    /**
-     * A method used to get the uuid of who casted the Cocoon on the target
-     *
-     * @param target the target
-     * @return the uuid of who casted the Cocoon on the target
-     */
-    @Nullable
-    public UUID getCaster(@NotNull UUID target) {
-        Pair<UUID, Long> data = this.lastTimeCocooned.get(target);
-
-        if (data == null) {
-            return null;
-        }
-
-        return data.first;
+    @Override
+    public double getBaseValue() {
+        return baseValue;
     }
 
-    /**
-     * A method used to get the target of Cocoon from the caster
-     *
-     * @param caster the caster
-     * @return the target of Cocoon from the caster
-     */
-    @Nullable
-    public UUID getTarget(@NotNull UUID caster) {
-        for (Map.Entry<UUID, Pair<UUID, Long>> entry : this.lastTimeCocooned.entrySet()) {
-            if (entry.getValue().first.equals(caster)) {
-                return entry.getKey();
-            }
-        }
+    @Override
+    public void setBaseValue(double baseValue) {
+        this.baseValue = baseValue;
+    }
 
-        return null;
+    @Override
+    public double getMultiplier() {
+        return multiplier;
+    }
+
+    @Override
+    public void setMultiplier(double multiplier) {
+        this.multiplier = multiplier;
+    }
+
+    @Override
+    public String getStatName() {
+        return statName;
+    }
+
+    @Override
+    public void setStatName(String statName) {
+        this.statName = statName;
+    }
+
+    public void setDamageCap(double damageCap) {
+        this.damageCap = damageCap;
     }
 }
 

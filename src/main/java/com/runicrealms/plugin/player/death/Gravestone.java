@@ -1,8 +1,6 @@
 package com.runicrealms.plugin.player.death;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.utilities.BlocksUtil;
-import com.runicrealms.plugin.runicitems.RunicItemsAPI;
 import me.filoghost.holographicdisplays.api.HolographicDisplaysAPI;
 import me.filoghost.holographicdisplays.api.hologram.Hologram;
 import net.md_5.bungee.api.ChatColor;
@@ -11,8 +9,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
-import org.bukkit.block.BlockState;
-import org.bukkit.block.ShulkerBox;
+import org.bukkit.entity.FallingBlock;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -23,44 +20,29 @@ public class Gravestone {
     private final int priorityTime; // Seconds
     private final int duration; // Seconds
     private final UUID uuid;
-    private final Location location;
     private final Hologram hologram;
     private final long startTime;
     private final Inventory inventory;
-    private final ShulkerBox shulkerBox;
+    private final FallingBlock fallingBlock;
     private boolean priority; // False in PvP (anyone can loot)
 
     /**
      * Creates a Gravestone at the player's death location which holds their items.
      * The player who died has priority over the chest, unless they died in PvP
      *
-     * @param player    who died
-     * @param inventory containing the items they dropped
-     * @param priority  true if the player did not die in PvP
+     * @param player        who died
+     * @param deathLocation where the player died
+     * @param inventory     containing the items they dropped
+     * @param priority      whether the player has loot priority. true if they did not die in PvP
+     * @param priorityTime  how long the slain player has priority over their items
+     * @param duration      the total time before the gravestone de-spawns
      */
-    public Gravestone(Player player, Inventory inventory, boolean priority, int priorityTime, int duration) {
+    public Gravestone(Player player, Location deathLocation, Inventory inventory, boolean priority, int priorityTime, int duration) {
         this.uuid = player.getUniqueId();
-        this.location = player.getLocation();
         this.inventory = inventory;
         this.priority = priority;
         this.startTime = System.currentTimeMillis();
-        this.shulkerBox = spawnGravestone(player);
-        this.hologram = buildHologram(player);
-        this.priorityTime = priorityTime;
-        this.duration = duration;
-        RunicCore.getGravestoneManager().getGravestoneMap().put(uuid, this);
-    }
-
-    /**
-     * @param location specify exact location to spawn gravestone. useful if player combat logged
-     */
-    public Gravestone(Player player, Location location, Inventory inventory, boolean priority, int priorityTime, int duration) {
-        this.uuid = player.getUniqueId();
-        this.location = location;
-        this.inventory = inventory;
-        this.priority = priority;
-        this.startTime = System.currentTimeMillis();
-        this.shulkerBox = spawnGravestone(player);
+        this.fallingBlock = createFallingBlock(player, deathLocation);
         this.hologram = buildHologram(player);
         this.priorityTime = priorityTime;
         this.duration = duration;
@@ -69,7 +51,7 @@ public class Gravestone {
 
     private Hologram buildHologram(Player player) {
         // Spawn the hologram a few blocks above
-        Hologram hologram = HolographicDisplaysAPI.get(RunicCore.getInstance()).createHologram(shulkerBox.getLocation().add(0.5f, 2.5f, 0.5f));
+        Hologram hologram = HolographicDisplaysAPI.get(RunicCore.getInstance()).createHologram(this.fallingBlock.getLocation().add(0, 2.5f, 0));
         hologram.getLines().appendText(ChatColor.RED + player.getName() + "'s Gravestone");
         String priorityFormatted = String.format("%dm%ds", priorityTime / 60, 0);
         String durationFormatted = String.format("%dm%ds", duration / 60, 0);
@@ -79,17 +61,50 @@ public class Gravestone {
         return hologram;
     }
 
+    /**
+     * Remove the entity
+     *
+     * @param dropItems true if gravestone should drop its items
+     */
     public void collapse(boolean dropItems) {
         this.hologram.delete();
-        shulkerBox.getWorld().playSound(shulkerBox.getLocation(), Sound.ENTITY_SHULKER_SHOOT, 0.5f, 0.2f);
-        shulkerBox.getWorld().spawnParticle(Particle.CLOUD, shulkerBox.getLocation(), 25, 0.75f, 1.0f, 0.75f, 0);
-        shulkerBox.getLocation().getBlock().setType(Material.AIR);
-        if (dropItems) {
-            for (ItemStack itemStack : this.inventory.getContents()) {
-                if (itemStack == null) continue;
-                shulkerBox.getWorld().dropItem(this.location, itemStack);
+        try {
+            Location location = this.fallingBlock.getLocation();
+            location.getWorld().playSound(location, Sound.ENTITY_SHULKER_SHOOT, 0.5f, 0.2f);
+            location.getWorld().spawnParticle(Particle.CLOUD, location, 25, 0.75f, 1.0f, 0.75f, 0);
+            this.fallingBlock.remove();
+            // If the player dies while a gravestone is active, gravestone will collapse and drop their items
+            if (dropItems) {
+                for (ItemStack itemStack : this.inventory.getContents()) {
+                    if (itemStack == null) continue;
+                    location.getWorld().dropItem(location, itemStack);
+                }
             }
+        } catch (Exception exception) {
+            Bukkit.getLogger().severe("There was an error de-spawning a gravestone for player " + this.uuid);
         }
+    }
+
+    private FallingBlock createFallingBlock(Player player, Location deathLocation) {
+        Location gravestoneLocation = deathLocation;
+        // Verify the gravestone has a valid location to spawn
+        if (gravestoneLocation == null || gravestoneLocation.getWorld() == null) {
+            Bukkit.getLogger().severe("A gravestone could not be placed for " + player.getName() + "!");
+            player.sendMessage(ChatColor.RED + "Error: Your gravestone could not be placed. Please contact an admin.");
+            return null;
+        }
+
+        // Center gravestone location in the block
+        gravestoneLocation = gravestoneLocation.getBlock().getLocation().add(0.5f, 0, 0.5f);
+
+        // Spawn a FallingBlock that is stationary
+        FallingBlock fallingBlock = gravestoneLocation.getWorld().spawnFallingBlock(gravestoneLocation, Material.BASALT.createBlockData());
+        fallingBlock.setDropItem(false); // Prevent the block from dropping items
+        fallingBlock.setGravity(false); // Make it not affected by gravity if you want it to stay in place
+        fallingBlock.setHurtEntities(false); // Prevent the block from hurting entities
+        fallingBlock.setInvulnerable(true); // Prevent the entity from taking damage
+
+        return fallingBlock;
     }
 
     public Hologram getHologram() {
@@ -101,11 +116,11 @@ public class Gravestone {
     }
 
     public Location getLocation() {
-        return location;
+        return this.fallingBlock.getLocation();
     }
 
-    public ShulkerBox getShulkerBox() {
-        return shulkerBox;
+    public FallingBlock getFallingBlock() {
+        return fallingBlock;
     }
 
     public long getStartTime() {
@@ -124,32 +139,6 @@ public class Gravestone {
         this.priority = priority;
     }
 
-    private ShulkerBox spawnGravestone(Player player) {
-        // 1. Get the player's death location
-        Location gravestoneLocation = BlocksUtil.findNearestAir(this.location, 5);
-        if (gravestoneLocation == null) {
-            Bukkit.getLogger().severe("A gravestone could not be placed for " + player.getName() + "!");
-            player.sendMessage(ChatColor.RED + "Error: Your gravestone could not be placed. Please contact an admin.");
-            return null;
-        }
-        // 2. Set the block at the death location to a shulker box
-        gravestoneLocation.getBlock().setType(Material.LIGHT_GRAY_SHULKER_BOX);
-        BlockState blockState = gravestoneLocation.getBlock().getState();
-        // Ensure the blockState is of ShulkerBox
-        if (blockState instanceof ShulkerBox shulkerBox) {
-            // 3. Load the player's items into the shulker box
-            for (ItemStack item : inventory.getContents()) {
-                if (item != null) {
-                    RunicItemsAPI.addItem(shulkerBox.getInventory(), item);
-                }
-            }
-            // Update the block with the inventory
-            shulkerBox.update();
-            return shulkerBox;
-        }
-        return null;
-    }
-
     public int getPriorityTime() {
         return this.priorityTime;
     }
@@ -157,5 +146,4 @@ public class Gravestone {
     public int getDuration() {
         return this.duration;
     }
-
 }

@@ -70,6 +70,7 @@ public class ChargedEffect implements StackEffect {
         this.hologramLocation = hologramLocation;
     }
 
+    @Override
     public AtomicInteger getStacks() {
         return stacks;
     }

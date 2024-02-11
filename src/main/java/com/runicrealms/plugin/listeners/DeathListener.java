@@ -90,9 +90,8 @@ public class DeathListener implements Listener {
             world.playSound(event.getLocation(), Sound.ENTITY_WITHER_DEATH, 0.25f, 1);
             world.spawnParticle(Particle.REDSTONE, event.getLocation(), 25, 0.5f, 0.5f, 0.5f,
                     new Particle.DustOptions(Color.RED, 3));
-            // Teleport them to their hearthstone location, or the front of the dungeon
-            Inventory droppedItemsInventory = droppedItemsInventory(victim, world);
             // If the player should drop items, create their Gravestone
+            Inventory droppedItemsInventory = droppedItemsInventory(victim, world);
             if (droppedItemsInventory != null && !droppedItemsInventory.isEmpty()) {
                 boolean victimHasPriority = event.getKiller() == null || !(event.getKiller() instanceof Player);
                 DonorRank rank = DonorRank.getDonorRank(event.getVictim());

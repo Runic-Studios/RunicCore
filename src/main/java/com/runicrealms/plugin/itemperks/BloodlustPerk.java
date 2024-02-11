@@ -1,6 +1,9 @@
 package com.runicrealms.plugin.itemperks;
 
 import com.runicrealms.plugin.events.PhysicalDamageEvent;
+import com.runicrealms.plugin.runicitems.RunicItemsAPI;
+import com.runicrealms.plugin.runicitems.item.perk.DynamicItemPerkPercentStatPlaceholder;
+import com.runicrealms.plugin.runicitems.item.perk.DynamicItemPerkStatPlaceholder;
 import com.runicrealms.plugin.runicitems.item.perk.ItemPerkHandler;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.event.EventHandler;
@@ -23,6 +26,9 @@ public class BloodlustPerk extends ItemPerkHandler {
         this.perMissingHealthPercent = ((Number) this.config.get("per-missing-health-percent")).doubleValue();
         this.extraDamageIfLowHP = ((Number) this.config.get("extra-damage-low-hp")).intValue();
         this.lowHPCutoff = ((Number) this.config.get("low-hp-cutoff")).doubleValue();
+
+        RunicItemsAPI.getDynamicItemHandler().registerTextPlaceholder(new DynamicItemPerkPercentStatPlaceholder("bloodlust-damage-extra-damage-per-missing-health", this, () -> this.extraDamagePerMissingHealth));
+        RunicItemsAPI.getDynamicItemHandler().registerTextPlaceholder(new DynamicItemPerkStatPlaceholder("bloodlust-extra-damage-low-hp", this, () -> this.extraDamageIfLowHP));
     }
 
     @EventHandler(ignoreCancelled = true)
@@ -37,6 +43,8 @@ public class BloodlustPerk extends ItemPerkHandler {
 
         int bonus = current <= this.lowHPCutoff ? this.extraDamageIfLowHP : 0;
 
-        event.setAmount(event.getAmount() + (stacks * this.extraDamagePerMissingHealth) + bonus);
+        int perkStacks = this.getCurrentStacks(event.getPlayer());
+
+        event.setAmount(event.getAmount() + (stacks * this.extraDamagePerMissingHealth * perkStacks) + bonus * perkStacks);
     }
 }

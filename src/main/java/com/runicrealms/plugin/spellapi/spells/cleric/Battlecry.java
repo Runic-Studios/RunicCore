@@ -1,6 +1,5 @@
 package com.runicrealms.plugin.spellapi.spells.cleric;
 
-import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.common.CharacterClass;
 import com.runicrealms.plugin.events.MagicDamageEvent;
 import com.runicrealms.plugin.events.PhysicalDamageEvent;
@@ -35,7 +34,6 @@ import java.util.UUID;
  * @author BoBoBalloon, Skyfallin
  */
 public class Battlecry extends Spell implements AttributeSpell, DurationSpell, MagicDamageSpell, RadiusSpell, Tempo.Influenced {
-    private static final Stat STAT = Stat.INTELLIGENCE;
     private double duration;
     private double baseValue;
     private double damage;
@@ -43,16 +41,19 @@ public class Battlecry extends Spell implements AttributeSpell, DurationSpell, M
     private double knockback;
     private double multiplier;
     private double radius;
+    private String statName;
 
     public Battlecry() {
         super("Battlecry", CharacterClass.CLERIC);
+        Stat stat = Stat.getFromName(statName);
+        String prefix = stat == null ? "" : stat.getPrefix();
         this.setDescription("You shout in a " + this.radius + " block area around you, " +
                 "dealing (" + this.damage + " + &f" + this.damagePerLevel + "x&7 lvl) magicʔ damage " +
                 "and knocking enemies back! You and allies within the same radius " +
                 "gain &csong of war &7for " + this.duration + "s!" +
                 "\n\n&2&lEFFECT &cSong of War" +
                 "\n&7Allies affected by &csong of war &7deal (" + this.baseValue + " +&f " +
-                this.multiplier + "x&e " + STAT.getPrefix() + "&7)% " +
+                this.multiplier + "x&e " + prefix + "&7)% " +
                 "increased physical⚔ and magicʔ damage!");
     }
 
@@ -96,8 +97,8 @@ public class Battlecry extends Spell implements AttributeSpell, DurationSpell, M
         UUID uuid = event.getPlayer().getUniqueId();
         Optional<SpellEffect> spellEffectOpt = this.getSpellEffect(uuid, uuid, SpellEffectType.SONG_OF_WAR);
         if (spellEffectOpt.isEmpty()) return;
-        int bonusAmount = (int) (this.baseValue + (this.multiplier * RunicCore.getStatAPI().getStat(uuid, STAT.getName())));
-        event.setAmount(event.getAmount() + bonusAmount);
+        double bonusDamage = event.getAmount() * this.percentAttribute(event.getPlayer());
+        event.setAmount((int) (event.getAmount() + bonusDamage));
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
@@ -105,8 +106,8 @@ public class Battlecry extends Spell implements AttributeSpell, DurationSpell, M
         UUID uuid = event.getPlayer().getUniqueId();
         Optional<SpellEffect> spellEffectOpt = this.getSpellEffect(uuid, uuid, SpellEffectType.SONG_OF_WAR);
         if (spellEffectOpt.isEmpty()) return;
-        int bonusAmount = (int) (this.baseValue + (this.multiplier * RunicCore.getStatAPI().getStat(uuid, STAT.getName())));
-        event.setAmount(event.getAmount() + bonusAmount);
+        double bonusDamage = event.getAmount() * this.percentAttribute(event.getPlayer());
+        event.setAmount((int) (event.getAmount() + bonusDamage));
     }
 
     @Override
@@ -131,13 +132,13 @@ public class Battlecry extends Spell implements AttributeSpell, DurationSpell, M
 
     @Override
     public String getStatName() {
-        return STAT.getIdentifier();
+        return this.statName;
     }
 
     @Override
     @Deprecated
     public void setStatName(String statName) {
-
+        this.statName = statName;
     }
 
     @Override

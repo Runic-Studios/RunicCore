@@ -27,6 +27,7 @@ import org.yaml.snakeyaml.Yaml;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -62,8 +63,18 @@ public abstract class Spell implements ISpell, Listener {
     }
 
     @Override
+    public int determineHighestStacks(UUID recipientId, SpellEffectType identifier) {
+        return RunicCore.getSpellEffectAPI().determineHighestStacks(recipientId, identifier);
+    }
+
+    @Override
     public Optional<SpellEffect> getSpellEffect(UUID casterUuid, UUID recipientUuid, SpellEffectType identifier) {
         return RunicCore.getSpellEffectAPI().getSpellEffect(casterUuid, recipientUuid, identifier);
+    }
+
+    @Override
+    public List<SpellEffect> getSpellEffects(UUID recipientUuid, SpellEffectType identifier) {
+        return RunicCore.getSpellEffectAPI().getSpellEffects(recipientUuid, identifier);
     }
 
     @Override
@@ -175,11 +186,16 @@ public abstract class Spell implements ISpell, Listener {
     }
 
     @Override
-    public int percentMissingHealth(@NotNull Entity entity, double percent) {
-        if (!(entity instanceof LivingEntity livingEntity)) return 0;
+    public int percentMaxHealth(@NotNull LivingEntity livingEntity, double percent) {
+        double max = livingEntity.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
+        return (int) (max * percent);
+    }
+
+    @Override
+    public int percentMissingHealth(@NotNull LivingEntity livingEntity, double percent, int cap) {
         double max = livingEntity.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
         double missing = max - livingEntity.getHealth();
-        return (int) (missing * percent);
+        return Math.min(cap, (int) (missing * percent));
     }
 
     @Override

@@ -6,6 +6,7 @@ public enum SpellEffectType {
     ARCANUM(ChatColor.LIGHT_PURPLE, "Arcanum", ""),
     ARIA_OF_ARMOR(ChatColor.WHITE, "Aria of Armor", ""),
     BALLAD_OF_BINDING(ChatColor.YELLOW, "Ballad of Binding", ""),
+    BETRAYED(ChatColor.RED, "Betrayed", ""),
     BLEED(ChatColor.DARK_RED, "Bleed", "☠"),
     BLESSED_BLADE(ChatColor.GREEN, "Blessed Blade", "⚔"),
     CHARGED(ChatColor.BLUE, "Charged", "➹"),
@@ -15,8 +16,10 @@ public enum SpellEffectType {
     IGNITED(ChatColor.DARK_RED, "Ignited", ""),
     INCENDIARY(ChatColor.DARK_RED, "Incendiary", ""),
     RADIANT_FIRE(ChatColor.YELLOW, "Radiant Fire", "☀"),
+    SHROUDED(ChatColor.DARK_GRAY, "Shrouded", ""),
     SONG_OF_WAR(ChatColor.RED, "Song of War", ""),
-    STATIC(ChatColor.GRAY, "Static", "");
+    STATIC(ChatColor.GRAY, "Static", ""),
+    SUNDERED(ChatColor.BLUE, "Sundered", "■");
 
     private final ChatColor chatColor;
     private final String display;

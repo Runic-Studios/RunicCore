@@ -30,7 +30,6 @@ public class StoneSkinPerk extends ItemPerkHandler {
         RunicItemsAPI.getDynamicItemHandler().registerTextPlaceholder(new DynamicItemPerkPercentStatPlaceholder("stoneskin-outgoing-damage-percent-reduction", this, () -> this.outgoingDamagePercentReduction));
     }
 
-
     private void reduce(@NotNull RunicDamageEvent event, @NotNull Player player, boolean incoming) {
         if (!this.isActive(player)) {
             return;

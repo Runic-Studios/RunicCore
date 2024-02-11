@@ -36,7 +36,7 @@ public class Purify extends Spell implements HealingSpell, RadiusSpell {
         super("Purify", CharacterClass.CLERIC);
         this.hasBeenHit = new HashMap<>();
         this.setDescription("You launch a beam of healing magic, " +
-                "restoring✦ (" + healAmt + " + &f" + healingPerLevel +
+                "restoring✸ (" + healAmt + " + &f" + healingPerLevel +
                 "x&7 lvl) health to yourself and " +
                 "all allies it passes through and removing silences!");
     }

@@ -1,12 +1,13 @@
-package com.runicrealms.plugin.spellapi.effect;
+package com.runicrealms.plugin.spellapi.effect.rogue;
 
-import org.bukkit.Material;
+import com.runicrealms.plugin.spellapi.effect.SpellEffect;
+import com.runicrealms.plugin.spellapi.effect.SpellEffectType;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
-public class StaticEffect implements SpellEffect {
+public class BetrayedEffect implements SpellEffect {
     private final Player caster;
     private final LivingEntity recipient;
     private final double duration;
@@ -17,7 +18,7 @@ public class StaticEffect implements SpellEffect {
      * @param recipient entity who is bleeding
      * @param duration  before the effect expires
      */
-    public StaticEffect(Player caster, LivingEntity recipient, double duration) {
+    public BetrayedEffect(Player caster, LivingEntity recipient, double duration) {
         this.caster = caster;
         this.recipient = recipient;
         this.duration = duration;
@@ -40,7 +41,7 @@ public class StaticEffect implements SpellEffect {
 
     @Override
     public SpellEffectType getEffectType() {
-        return SpellEffectType.STATIC;
+        return SpellEffectType.BETRAYED;
     }
 
     @Override
@@ -64,15 +65,23 @@ public class StaticEffect implements SpellEffect {
             this.cancel();
             return;
         }
-        if (globalCounter % 10 == 0) { // Show particle effect twice per second
+        if (globalCounter % 20 == 0) { // Show particle effect once per second
             executeSpellEffect();
         }
     }
 
     @Override
     public void executeSpellEffect() {
-        caster.playSound(recipient.getLocation(), Sound.ENTITY_TNT_PRIMED, 0.25f, 1.0f);
-        caster.spawnParticle(Particle.BLOCK_CRACK, recipient.getEyeLocation(), 10, Math.random() * 1.5, Math.random() / 2, Math.random() * 1.5, Material.LAPIS_BLOCK.createBlockData());
+        caster.playSound(recipient.getLocation(), Sound.ITEM_FIRECHARGE_USE, 0.2f, 0.2f);
+        caster.spawnParticle(
+                Particle.VILLAGER_ANGRY,
+                recipient.getEyeLocation(),
+                5,
+                0.35f,
+                0.35f,
+                0.35f,
+                0
+        );
     }
 
     @Override

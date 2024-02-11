@@ -6,6 +6,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * This custom event is called when a player is healed by a spell.
@@ -20,13 +21,17 @@ public class SpellHealEvent extends Event implements Cancellable {
     private boolean isCritical;
     private boolean isCancelled;
 
-    public SpellHealEvent(int amount, Entity recipient, Player caster, Spell... spell) {
+    public SpellHealEvent(int amount, Entity recipient, Player caster, @Nullable Spell spell) {
         this.amount = amount;
         this.entity = recipient;
         this.player = caster;
-        this.spell = spell.length > 0 ? spell[0] : null;
+        this.spell = spell;
         this.isCritical = false;
         this.isCancelled = false;
+    }
+
+    public SpellHealEvent(int amount, Entity recipient, Player caster) {
+        this(amount, recipient, caster, null);
     }
 
     public int getAmount() {
@@ -45,6 +50,7 @@ public class SpellHealEvent extends Event implements Cancellable {
         return this.entity;
     }
 
+    @Nullable
     public Spell getSpell() {
         return this.spell;
     }
@@ -53,13 +59,13 @@ public class SpellHealEvent extends Event implements Cancellable {
         return this.isCritical;
     }
 
+    public void setCritical(boolean isCritical) {
+        this.isCritical = isCritical;
+    }
+
     @Override
     public boolean isCancelled() {
         return this.isCancelled;
-    }
-
-    public void setCritical(boolean isCritical) {
-        this.isCritical = isCritical;
     }
 
     @Override

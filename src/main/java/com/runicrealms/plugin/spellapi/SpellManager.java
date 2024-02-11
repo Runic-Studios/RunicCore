@@ -61,7 +61,7 @@ import com.runicrealms.plugin.spellapi.spells.mage.Shatter;
 import com.runicrealms.plugin.spellapi.spells.mage.SnapFreeze;
 import com.runicrealms.plugin.spellapi.spells.mage.SpectralBlade;
 import com.runicrealms.plugin.spellapi.spells.mage.Wildfire;
-import com.runicrealms.plugin.spellapi.spells.rogue.Agility;
+import com.runicrealms.plugin.spellapi.spells.rogue.Backstab;
 import com.runicrealms.plugin.spellapi.spells.rogue.CallOfTheDeep;
 import com.runicrealms.plugin.spellapi.spells.rogue.Cannonfire;
 import com.runicrealms.plugin.spellapi.spells.rogue.Castigate;
@@ -390,7 +390,7 @@ public class SpellManager implements Listener, SpellAPI {
         this.spellList.add(new Sear());
         this.spellList.add(new SacredSpring());
         this.spellList.add(new RadiantFire());
-        this.spellList.add(new Agility());
+        this.spellList.add(new Backstab());
         this.spellList.add(new Taunt());
         this.spellList.add(new Frostbite());
         this.spellList.add(new DragonsBreath());

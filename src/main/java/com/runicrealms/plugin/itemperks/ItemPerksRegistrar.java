@@ -24,6 +24,16 @@ public class ItemPerksRegistrar {
         RunicItemsAPI.getItemPerkManager().registerItemPerk(new SelflessPerk());
         RunicItemsAPI.getItemPerkManager().registerItemPerk(new ManawellPerk());
         RunicItemsAPI.getItemPerkManager().registerItemPerk(new FocusPerk());
+        RunicItemsAPI.getItemPerkManager().registerItemPerk(new PraetoriumRogueWeaponPerk());
+        RunicItemsAPI.getItemPerkManager().registerItemPerk(new PraetoriumArcherWeaponPerk());
+        RunicItemsAPI.getItemPerkManager().registerItemPerk(new PraetoriumMageWeaponPerk());
+        RunicItemsAPI.getItemPerkManager().registerItemPerk(new PraetoriumWarriorWeaponPerk());
+        RunicItemsAPI.getItemPerkManager().registerItemPerk(new PraetoriumClericWeaponPerk());
+        RunicItemsAPI.getItemPerkManager().registerItemPerk(new PraetoriumArmorPerk());
+        RunicItemsAPI.getItemPerkManager().registerItemPerk(new BlackfrostRogueArmorPerk());
+        RunicItemsAPI.getItemPerkManager().registerItemPerk(new BlackfrostArcherArmorPerk());
+        RunicItemsAPI.getItemPerkManager().registerItemPerk(new BlackfrostMageArmorPerk());
+        RunicItemsAPI.getItemPerkManager().registerItemPerk(new BlackfrostClericArmorPerk());
     }
 
     /**

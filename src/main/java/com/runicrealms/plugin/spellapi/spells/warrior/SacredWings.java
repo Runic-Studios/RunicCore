@@ -48,11 +48,12 @@ public class SacredWings extends Spell implements DurationSpell, RadiusSpell, Sh
     public SacredWings() {
         super("Sacred Wings", CharacterClass.WARRIOR);
         this.setDescription("For the next " + duration + "s, you conjure wings of light, " +
-                "empowering you with &6holy fervor&7, boosting your speed " +
-                "and granting a (" + shield + " + &f" + shieldPerLevel + "x&7 lvl) health shield!" +
+                "empowering you with &6holy fervor&7, boosting the speed of you and your " +
+                "allies within " + radius + " blocks " +
+                "and granting you a (" + shield + " + &f" + shieldPerLevel + "x&7 lvl) health shield!" +
                 "\n\n&2&lEFFECT &6Holy Fervor" +
                 "\n&7While &6holy fervor &7lasts, your basic attacks " +
-                "transform into radiant sweeps of holy might, launching enemies back and " +
+                "transform into radiant sweeps of light, launching enemies back and " +
                 "&eshielding &7other allies within " + radius + " blocks for " +
                 "(" + allyShield + " + &f" + allyShieldPerLevel + "x&7 lvl) health! " +
                 "Cannot sweep the same target more than once every " + sweepCooldown + "s.");
@@ -65,6 +66,9 @@ public class SacredWings extends Spell implements DurationSpell, RadiusSpell, Sh
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_LIGHTNING_BOLT_IMPACT, 0.5F, 1.0F);
         player.getWorld().spigot().strikeLightningEffect(player.getLocation(), true);
         this.addStatusEffect(player, RunicStatusEffect.SPEED_I, this.duration, false);
+        for (Entity entity : player.getWorld().getNearbyEntities(player.getLocation(), radius, radius, radius, target -> isValidAlly(player, target))) {
+            this.addStatusEffect((LivingEntity) entity, RunicStatusEffect.SPEED_I, this.duration, false);
+        }
         this.shieldPlayer(player, player, this.shield, this);
         HolyFervorEffect holyFervorEffect = new HolyFervorEffect(player, this.duration);
         holyFervorEffect.initialize();

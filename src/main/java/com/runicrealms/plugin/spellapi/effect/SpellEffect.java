@@ -65,6 +65,13 @@ public interface SpellEffect {
     }
 
     /**
+     * SpellEffects can run additional logic when they are set to expire
+     */
+    default void onExpire() {
+
+    }
+
+    /**
      * Cancels the spell effect early, regardless of duration or ticks remaining
      */
     void cancel();

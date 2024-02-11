@@ -1,6 +1,7 @@
 package com.runicrealms.plugin.player.ui;
 
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.common.util.ChatUtils;
 import com.runicrealms.plugin.common.util.ColorUtil;
 import com.runicrealms.plugin.common.util.GUIUtil;
 import com.runicrealms.plugin.player.utilities.PlayerLevelUtil;
@@ -18,6 +19,7 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
 import java.text.DecimalFormat;
+import java.util.List;
 
 public class StatsGUI implements InventoryHolder {
     private static final int[] STAT_ITEM_SLOTS = new int[]{20, 22, 24, 30, 32};
@@ -56,12 +58,19 @@ public class StatsGUI implements InventoryHolder {
     private ItemStack dexterityMenuItem() {
         double abilityHaste = (Stat.getAbilityHaste() * 100) * dexterity;
         String abilityHasteString = abilityHaste > 0 ? DECIMAL_FORMAT.format(abilityHaste) : "0";
-        return GUIUtil.dispItem(getStatMaterial(Stat.DEXTERITY), ChatColor.YELLOW + "Dexterity" + Stat.DEXTERITY.getIcon() + ": " + dexterity, new String[]
-                {
-                        "",
-                        ChatColor.GREEN + "" + ChatColor.BOLD + "Combat bonuses:",
-                        ChatColor.GRAY + "Spell Haste: " + statPrefix(dexterity) + abilityHasteString + "%",
-                });
+
+        List<String> description = ChatUtils.formattedText
+                (
+                        "\n&7Dexterity (DEX) grants &ospell haste&7, decreasing your spell cooldowns! " +
+                                "\n\n&2&lCombat Bonuses:" +
+                                "\n&7Spell Haste: " + statPrefix(dexterity) + abilityHasteString + "%"
+                );
+
+        return GUIUtil.dispItem(
+                getStatMaterial(Stat.DEXTERITY),
+                ChatColor.YELLOW + "Dexterity" + Stat.DEXTERITY.getIcon() + ": " + dexterity,
+                description.toArray(new String[0])
+        );
     }
 
     /**
@@ -98,13 +107,19 @@ public class StatsGUI implements InventoryHolder {
         double spellDamagePercent = (Stat.getMagicDmgMult() * 100) * intelligence;
         String manaRegenString = manaRegenPercent > 0 ? DECIMAL_FORMAT.format(manaRegenPercent) : "0";
         String spellDamageString = manaRegenPercent > 0 ? DECIMAL_FORMAT.format(spellDamagePercent) : "0";
-        return GUIUtil.dispItem(getStatMaterial(Stat.INTELLIGENCE), ChatColor.YELLOW + "Intelligence" + Stat.INTELLIGENCE.getIcon() + ": " + intelligence, new String[]
-                {
-                        "",
-                        ChatColor.GREEN + "" + ChatColor.BOLD + "Combat bonuses:",
-                        ChatColor.GRAY + "Mana Regen: " + statPrefix(intelligence) + manaRegenString + "%",
-                        ChatColor.GRAY + "Spell Damage: " + statPrefix(intelligence) + spellDamageString + "%"
-                });
+
+        List<String> description = ChatUtils.formattedText
+                (
+                        "\n&7Intelligence (INT) grants additional &3magicʔ damage &7and mana regeneration! " +
+                                "\n\n&2&lCombat Bonuses:" +
+                                "\n&7Magic Damage: " + statPrefix(intelligence) + spellDamageString + "%" +
+                                "\n&7Mana Regen: " + statPrefix(intelligence) + manaRegenString + "%"
+                );
+
+        return GUIUtil.dispItem(
+                getStatMaterial(Stat.INTELLIGENCE),
+                ChatColor.YELLOW + "Intelligence" + Stat.INTELLIGENCE.getIcon() + ": " + intelligence,
+                description.toArray(new String[0]));
     }
 
     /**
@@ -156,12 +171,19 @@ public class StatsGUI implements InventoryHolder {
     private ItemStack strengthMenuItem() {
         double physicalDamagePercent = (Stat.getPhysicalDmgMult() * 100) * strength;
         String physicalDamageString = physicalDamagePercent > 0 ? DECIMAL_FORMAT.format(physicalDamagePercent) : "0";
-        return GUIUtil.dispItem(getStatMaterial(Stat.STRENGTH), ChatColor.YELLOW + "Strength" + Stat.STRENGTH.getIcon() + ": " + strength, new String[]
-                {
-                        "",
-                        ChatColor.GREEN + "" + ChatColor.BOLD + "Combat bonuses:",
-                        ChatColor.GRAY + "Physical Damage: " + statPrefix(strength) + physicalDamageString + "%"
-                });
+
+        List<String> description = ChatUtils.formattedText
+                (
+                        "\n&7Strength (STR) grants additional &cphysical⚔ damage&7! " +
+                                "\n&2&lCombat Bonuses:" +
+                                "\n&7Physical Damage: " + statPrefix(strength) + physicalDamageString + "%"
+                );
+
+        return GUIUtil.dispItem(
+                getStatMaterial(Stat.STRENGTH),
+                ChatColor.YELLOW + "Strength" + Stat.STRENGTH.getIcon() + ": " + strength,
+                description.toArray(new String[0])
+        );
     }
 
     private ItemStack vitalityMenuItem() {
@@ -171,13 +193,23 @@ public class StatsGUI implements InventoryHolder {
         double healthRegenPercent = (Stat.getHealthRegenMult() * 100) * vitality;
         String defenseString = defensePercent > 0 ? DECIMAL_FORMAT.format(defensePercent) : "0";
         String healthRegenString = healthRegenPercent > 0 ? DECIMAL_FORMAT.format(healthRegenPercent) : "0";
-        return GUIUtil.dispItem(getStatMaterial(Stat.VITALITY), ChatColor.YELLOW + "Vitality" + Stat.VITALITY.getIcon() + ": " + vitality, new String[]
-                {
-                        "",
-                        ChatColor.GREEN + "" + ChatColor.BOLD + "Combat bonuses:",
-                        ChatColor.GRAY + "Defense: " + statPrefix(vitality) + defenseString + "%" + (defensePercent >= Stat.getDamageReductionCap() ? " (Cap Reached)" : ""),
-                        ChatColor.GRAY + "Health Regen: " + statPrefix(vitality) + healthRegenString + "%"
-                });
+
+        List<String> description = ChatUtils.formattedText
+                (
+                        "\n&7Vitality (VIT) grants additional &odefense&7, " +
+                                "reducing damage taken from players and monsters, " +
+                                "as well as additional health regeneration! " +
+                                "\n\n&9Defense is capped at " + Stat.getDamageReductionCap() + "%" +
+                                "\n\n&2&lCombat Bonuses:" +
+                                "\n&7Defense: " + statPrefix(vitality) + defenseString + "%" + (defensePercent >= Stat.getDamageReductionCap() ? " (Cap Reached)" : "") +
+                                "\n&7Health Regen: " + statPrefix(vitality) + healthRegenString + "%"
+                );
+
+        return GUIUtil.dispItem(
+                getStatMaterial(Stat.VITALITY),
+                ChatColor.YELLOW + "Vitality" + Stat.VITALITY.getIcon() + ": " + vitality,
+                description.toArray(new String[0])
+        );
     }
 
     private ItemStack wisdomMenuItem() {
@@ -187,13 +219,21 @@ public class StatsGUI implements InventoryHolder {
         String maxManaString = maxManaPercent > 0 ? DECIMAL_FORMAT.format(maxManaPercent) : "0";
         String spellHealingString = spellHealingPercent > 0 ? DECIMAL_FORMAT.format(spellHealingPercent) : "0";
         String spellShieldingString = spellShieldingPercent > 0 ? DECIMAL_FORMAT.format(spellShieldingPercent) : "0";
-        return GUIUtil.dispItem(getStatMaterial(Stat.WISDOM), ChatColor.YELLOW + "Wisdom" + Stat.WISDOM.getIcon() + ": " + wisdom, new String[]
-                {
-                        "",
-                        ChatColor.GREEN + "" + ChatColor.BOLD + "Combat bonuses:",
-                        ChatColor.GRAY + "Max Mana: " + statPrefix(wisdom) + maxManaString + "%",
-                        ChatColor.GRAY + "Spell Healing: " + statPrefix(wisdom) + spellHealingString + "%",
-                        ChatColor.GRAY + "Spell Shielding: " + statPrefix(wisdom) + spellShieldingString + "%"
-                });
+
+        List<String> description = ChatUtils.formattedText
+                (
+                        "\n&7Wisdom (WIS) grants additional mana, outgoing &aspell healing✸&7, " +
+                                "and outgoing &espell shielding&7! " +
+                                "\n\n&2&lCombat Bonuses:" +
+                                "\n&7Max Mana: " + statPrefix(wisdom) + maxManaString + "%" +
+                                "\n&7Spell Healing: " + statPrefix(wisdom) + spellHealingString + "%" +
+                                "\n&7Spell Shielding: " + statPrefix(wisdom) + spellShieldingString + "%"
+                );
+
+        return GUIUtil.dispItem(
+                getStatMaterial(Stat.WISDOM),
+                ChatColor.YELLOW + "Wisdom" + Stat.WISDOM.getIcon() + ": " + wisdom,
+                description.toArray(new String[0])
+        );
     }
 }

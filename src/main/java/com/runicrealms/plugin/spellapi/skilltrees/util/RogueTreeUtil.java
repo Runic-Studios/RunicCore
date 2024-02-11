@@ -41,7 +41,7 @@ public class RogueTreeUtil {
         List<Perk> perks = new ArrayList<>();
         perks.add(new PerkSpell(108, 1, 0, 1, "Twin Fangs"));
         perks.add(new PerkBaseStat(109, 1, 0, 5, Stat.STRENGTH));
-        perks.add(new PerkSpell(110, 1, 0, 1, "Agility"));
+        perks.add(new PerkSpell(110, 1, 0, 1, "Backstab"));
         perks.add(new PerkBaseStat(111, 1, 0, 3, Stat.DEXTERITY));
         perks.add(new PerkBaseStat(112, 1, 0, 3, Stat.STRENGTH));
         perks.add(new PerkSpell(113, 1, 0, 1, "Cocoon"));

@@ -57,6 +57,7 @@ public class IceBarrierEffect implements StackEffect {
         this.hologramLocation = hologramLocation;
     }
 
+    @Override
     public AtomicInteger getStacks() {
         return stacks;
     }

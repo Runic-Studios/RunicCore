@@ -57,15 +57,15 @@ public class RadiantNova extends Spell implements HealingSpell, RadiusSpell, War
     @Override
     public void executeSpell(Player player, SpellItemType type) {
         Optional<SpellEffect> spellEffectOpt = this.getSpellEffect(player.getUniqueId(), player.getUniqueId(), SpellEffectType.RADIANT_FIRE);
-        boolean reachedMaxStacks;
+        boolean reachedThreshold;
         if (spellEffectOpt.isPresent()) {
             RadiantFireEffect radiantFireEffect = (RadiantFireEffect) spellEffectOpt.get();
-            reachedMaxStacks = radiantFireEffect.getStacks().get() == radiantFireEffect.getMaxStacks();
+            reachedThreshold = radiantFireEffect.getStacks().get() >= radiantFireEffect.getStackThreshold();
         } else {
-            reachedMaxStacks = false;
+            reachedThreshold = false;
         }
 
-        if (!reachedMaxStacks) {
+        if (!reachedThreshold) {
             player.getWorld().playSound(player.getLocation(), Sound.BLOCK_CAMPFIRE_CRACKLE, 1.0f, 1.0f);
             player.getWorld().playSound(player.getLocation(), Sound.ENTITY_TNT_PRIMED, 1.0f, 2.0f);
             Cone.coneEffect(player, Particle.FIREWORKS_SPARK, 1, 0, 20, Color.WHITE);

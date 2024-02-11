@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -18,6 +19,10 @@ public interface ISpell {
     boolean hasSpellEffect(UUID uuid, SpellEffectType identifier);
 
     Optional<SpellEffect> getSpellEffect(UUID casterUuid, UUID recipientUuid, SpellEffectType identifier);
+
+    List<SpellEffect> getSpellEffects(UUID recipientId, SpellEffectType identifier);
+
+    int determineHighestStacks(UUID recipientId, SpellEffectType identifier);
 
     /**
      * Adds a custom status effect to an entity that interacts with runic systems, like silence preventing spells
@@ -138,13 +143,23 @@ public interface ISpell {
     boolean isValidEnemy(@NotNull Player caster, @NotNull Entity victim); // check tons of things, like if target entity is NPC, party member, and outlaw checks
 
     /**
-     * Used for execute skills that rely on percent missing health.
+     * Used for spells that rely on percent max health
      *
-     * @param entity  mob/player to check hp for
-     * @param percent multiplier for missing health (.25 * missing health, etc.)
-     * @return the percent times missing health
+     * @param livingEntity mob/player to check hp for
+     * @param percent      multiplier for max health (.25 * max health)
+     * @return the percent multiplied by target's max health
      */
-    int percentMissingHealth(@NotNull Entity entity, double percent);
+    int percentMaxHealth(@NotNull LivingEntity livingEntity, double percent);
+
+    /**
+     * Used for spells that rely on percent missing health
+     *
+     * @param livingEntity mob/player to check hp for
+     * @param percent      multiplier for missing health (.25 * missing health)
+     * @param cap          the maximum damage that can be returned
+     * @return the percent multiplied by target's missing health
+     */
+    int percentMissingHealth(@NotNull LivingEntity livingEntity, double percent, int cap);
 
     /**
      * Used to end custom Runic Effects on the target early by calling their cancel task

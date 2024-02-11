@@ -19,6 +19,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class VanishManager implements VanishAPI, Listener {
 
@@ -31,6 +32,11 @@ public class VanishManager implements VanishAPI, Listener {
             public void onPacketSending(PacketEvent event) {
                 WrappedServerPing ping = event.getPacket().getServerPings().read(0);
                 ping.setPlayersOnline(Bukkit.getOnlinePlayers().size() - RunicCore.getVanishAPI().getVanishedPlayers().size());
+                ping.setBukkitPlayers(Bukkit.getOnlinePlayers()
+                        .stream()
+                        .filter(player -> !RunicCore.getVanishAPI().getVanishedPlayers().contains(player))
+                        .collect(Collectors.toSet()));
+                event.getPacket().getServerPings().write(0, ping);
             }
         });
     }
@@ -73,4 +79,14 @@ public class VanishManager implements VanishAPI, Listener {
         for (Player online : Bukkit.getOnlinePlayers()) online.showPlayer(RunicCore.getInstance(), player);
         Bukkit.getPluginManager().callEvent(new PlayerVanishEvent(player));
     }
+
+//    @EventHandler  TODO change to use PLIB
+//    public void onServerListPing(ServerListPingEvent event) {
+//        while (event.iterator().hasNext()) {
+//            Player player = event.iterator().next();
+//            if (RunicCore.getVanishAPI().getVanishedPlayers().contains(player)) {
+//                event.iterator().remove();
+//            }
+//        }
+//    }
 }
