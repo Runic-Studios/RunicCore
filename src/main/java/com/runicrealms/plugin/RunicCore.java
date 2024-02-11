@@ -48,7 +48,6 @@ import com.runicrealms.plugin.commands.player.SpawnCMD;
 import com.runicrealms.plugin.commands.player.WhoIsCMD;
 import com.runicrealms.plugin.common.RunicCommon;
 import com.runicrealms.plugin.common.util.ColorUtil;
-import com.runicrealms.plugin.config.ConfigManager;
 import com.runicrealms.plugin.converter.ConverterHandler;
 import com.runicrealms.plugin.database.DatabaseManager;
 import com.runicrealms.plugin.donor.DonorCommand;
@@ -407,7 +406,6 @@ public class RunicCore extends JavaPlugin implements Listener {
         instance = this;
 
         // Set database stuff first
-        RunicCommon.registerConfigAPI(new ConfigManager());
         RunicCommon.registerLuckPermsAPI(new LuckPermsManager());
 
         // Register command manager
