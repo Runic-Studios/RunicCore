@@ -18,10 +18,12 @@ public class PartyManager implements Listener, PartyAPI {
 
     private final Set<Party> parties;
     private final Map<UUID, Party> playerParties;
+    private final PartyGlowManager glowManager;
 
     public PartyManager() {
         this.parties = new HashSet<>();
         this.playerParties = new HashMap<>();
+        this.glowManager = new PartyGlowManager();
         Bukkit.getPluginManager().registerEvents(this, RunicCore.getInstance());
     }
 
@@ -97,6 +99,10 @@ public class PartyManager implements Listener, PartyAPI {
                 party.getInvites().remove(invite);
             }
         }
+    }
+
+    public PartyGlowManager getGlowManager() {
+        return this.glowManager;
     }
 
 }

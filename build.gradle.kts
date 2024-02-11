@@ -28,4 +28,5 @@ dependencies {
     compileOnly(commonLibs.acf)
     compileOnly(commonLibs.luckperms)
     compileOnly(commonLibs.modelengine)
+    compileOnly(commonLibs.glowapi)
 }

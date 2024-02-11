@@ -22,6 +22,7 @@ depend:
   - ViaVersion
   - LuckPerms
   - ModelEngine
+  - GlowAPI
 commands:
   3d:
     usage: /<commands>

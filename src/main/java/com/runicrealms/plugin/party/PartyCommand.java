@@ -50,6 +50,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class PartyCommand extends BaseCommand {
     private static final int PARTY_TELEPORT_RADIUS = 1024;
     private static final String PREFIX = "&2[Party] &6»";
+    private Map<UUID, Long> lastCalledGlow = new HashMap<>(); // Needed for cooldown on glow since it calls luckperms
 
     public PartyCommand() {
         RunicCore.getCommandManager().getCommandCompletions().registerAsyncCompletion("party-invite", context -> {
@@ -118,6 +119,7 @@ public class PartyCommand extends BaseCommand {
         party.sendMessageInChannel("This party has been disbanded &7Reason: leader disbanded");
         for (Player member : party.getMembersWithLeader()) {
             RunicCore.getPartyAPI().updatePlayerParty(member.getUniqueId(), null);
+            party.kickMember(member, LeaveReason.DISBAND); // Runs party leave event
         }
         PartyLeaveEvent partyLeaveEvent = new PartyLeaveEvent(party, party.getLeader(), LeaveReason.DISBAND);
         Bukkit.getPluginManager().callEvent(partyLeaveEvent);
@@ -128,7 +130,7 @@ public class PartyCommand extends BaseCommand {
     @CatchUnknown
     @Subcommand("help|h")
     public void onCommandHelp(Player player) {
-        player.sendMessage(ChatColor.translateAlternateColorCodes('&', PREFIX + " &aAvailable commands: &ecreate, disband, help, invite, join, kick, leave, list, summon"));
+        player.sendMessage(ChatColor.translateAlternateColorCodes('&', PREFIX + " &aAvailable commands: &ecreate, disband, help, invite, join, kick, leave, list, summon, glow"));
     }
 
     @Subcommand("invite|add|i|a")
@@ -340,6 +342,23 @@ public class PartyCommand extends BaseCommand {
             target.sendMessage(ChatColor.translateAlternateColorCodes('&', "&aYou were teleported with your party!"));
         }
         player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&aTeleported nearby party members to your location!"));
+    }
+
+    @Subcommand("glow")
+    public void onCommandGlow(Player player) {
+        if (lastCalledGlow.containsKey(player.getUniqueId()) && lastCalledGlow.get(player.getUniqueId()) + 2000 >= System.currentTimeMillis()) {
+            player.sendMessage(ColorUtil.format(PREFIX + " &cPlease wait a bit before doing this!"));
+            return;
+        }
+        lastCalledGlow.put(player.getUniqueId(), System.currentTimeMillis());
+        PartyGlowManager glowManager = ((PartyManager) RunicCore.getPartyAPI()).getGlowManager(); // bad but idc
+        boolean canSeeGlowNow = !glowManager.canSeeGlow(player);
+        glowManager.toggleCanSeeGlow(player);
+        if (canSeeGlowNow) {
+            player.sendMessage(ColorUtil.format(PREFIX + " &aTurned on party member player glow!"));
+        } else {
+            player.sendMessage(ColorUtil.format(PREFIX + " &aTurned off party member player glow!"));
+        }
     }
 
     @Subcommand("summon")

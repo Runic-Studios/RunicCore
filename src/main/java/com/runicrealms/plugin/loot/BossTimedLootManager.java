@@ -1,6 +1,7 @@
 package com.runicrealms.plugin.loot;
 
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.classes.utilities.ClassUtil;
 import com.runicrealms.plugin.events.MagicDamageEvent;
 import com.runicrealms.plugin.events.PhysicalDamageEvent;
 import com.runicrealms.plugin.loot.chest.BossTimedLoot;
@@ -8,6 +9,7 @@ import io.lumine.mythic.bukkit.events.MythicMobDeathEvent;
 import io.lumine.mythic.bukkit.events.MythicMobSpawnEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -53,6 +55,7 @@ public class BossTimedLootManager implements Listener {
                 if (percent >= loot.getLootDamageThreshold()) {
                     RunicCore.getLootAPI().displayTimedLootChest(player, loot.getLootChest());
                     player.teleport(loot.getComplete(), PlayerTeleportEvent.TeleportCause.PLUGIN);
+                    ClassUtil.launchFirework(player, Color.GREEN);
                 } else {
                     player.sendMessage(ChatColor.RED + "You did not deal enough damage to the boss to qualify for boss loot!");
                 }
