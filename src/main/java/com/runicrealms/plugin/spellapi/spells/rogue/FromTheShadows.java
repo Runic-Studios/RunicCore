@@ -9,72 +9,48 @@ import com.runicrealms.plugin.spellapi.effect.RunicStatusEffect;
 import com.runicrealms.plugin.spellapi.effect.SpellEffectType;
 import com.runicrealms.plugin.spellapi.spells.Combat;
 import com.runicrealms.plugin.spellapi.spells.Potion;
+import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
-import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 
-public class FromTheShadows extends Spell {
+public class FromTheShadows extends Spell implements DurationSpell {
     private final Map<UUID, Integer> buffedPlayersMap = new HashMap<>(); // used so both Twin Fangs get buff
-    private final Set<UUID> debuffed;
-    private double speedDuration;
-    private double cocoonDamageIncreaseDuration;
-    private double percent;
-    private double percentPerDex;
+    private double duration;
 
-    // TODO: Honestly needs a logic re-write for the empowered spells. This is clunky and hard to read
     public FromTheShadows() {
         super("From The Shadows", CharacterClass.ROGUE);
         this.setIsPassive(true);
-        this.setDescription("The next spell you cast after you cast &aUnseen &7is empowered " +
-                "until you are able to cast &aUnseen&7 again. " +
-                "\n\n&aDash &7- You gain Speed III for " + this.speedDuration + "s!" +
+        this.setDescription("While you are &8shrouded&7, your first " +
+                "spell cast is empowered! " +
+                "\n\n&aDash &7- You cleanse all slows and gain Speed III for " + this.duration + "s!" +
                 "\n&aTwin Fangs &7- This spell will critically strike!" +
-                "\n&aCocoon &7- Increases all damage your target takes by (" +
-                this.percent + " + &f" + this.percentPerDex + "x &eDEX&7)% for the next " + this.cocoonDamageIncreaseDuration + "s!"
+                "\n&aCocoon &7- Successfully landing this spell will teleport you behind your opponent!"
         );
-        this.debuffed = new HashSet<>();
-    }
-
-    @Override
-    protected void loadSpellSpecificData(Map<String, Object> spellData) {
-        super.loadSpellSpecificData(spellData);
-        Number speedDuration = (Number) spellData.getOrDefault("speed-duration", 4);
-        this.speedDuration = speedDuration.doubleValue();
-        Number cocoonDamageIncreaseDuration = (Number) spellData.getOrDefault("cocoon-damage-increase-duration", 3);
-        this.cocoonDamageIncreaseDuration = cocoonDamageIncreaseDuration.doubleValue();
-        Number percent = (Number) spellData.getOrDefault("percent", .02);
-        this.percent = percent.doubleValue();
-        Number percentPerDex = (Number) spellData.getOrDefault("percent-per-dex", .1);
-        this.percentPerDex = percentPerDex.doubleValue();
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onEmpoweredSpell(PhysicalDamageEvent event) {
-//        // Check if the player has the relevant passive ability
-//        if (!hasPassive(event.getPlayer().getUniqueId(), this.getName())) return;
-//
-//        // If the spell is Twin Fangs, mark the event as critical and only reduce 1 stack (so that both fangs get buff)
-//        if (event.getSpell() instanceof TwinFangs) {
-//            buffedPlayersMap.put(casterId, buffedPlayersMap.get(casterId) - 1);
-//            event.setCritical(true);
-//        } else { // Must be Cocoon or Dash
-//            buffedPlayersMap.put(casterId, buffedPlayersMap.get(casterId) - 2);
-//        }
-//
-//        // Reduce a buff stack (or remove buff) for the player.
-//        if (buffedPlayersMap.get(casterId) == 0) {
-//            buffedPlayersMap.remove(casterId);
-//        }
+        // Check if the player has the relevant passive ability
+        UUID casterId = event.getPlayer().getUniqueId();
+        if (!hasPassive(casterId, this.getName())) return;
+
+        // If the spell is Twin Fangs, mark the event as critical and only reduce 1 stack (so that both fangs get buff)
+        if (event.getSpell() instanceof TwinFangs) {
+            buffedPlayersMap.put(casterId, buffedPlayersMap.get(casterId) - 1);
+            event.setCritical(true);
+        }
+        // Reduce a buff stack (or remove buff) for the player.
+        if (buffedPlayersMap.get(casterId) == 0) {
+            buffedPlayersMap.remove(casterId);
+        }
     }
 
-    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     private void onMagicDamage(MagicDamageEvent event) {
         Cocoon cocoon = (Cocoon) RunicCore.getSpellAPI().getSpell("Cocoon");
         if (cocoon == null) {
@@ -82,11 +58,11 @@ public class FromTheShadows extends Spell {
         }
 
         if (this.hasSpellEffect(event.getPlayer().getUniqueId(), SpellEffectType.SHROUDED)) {
-            Bukkit.broadcastMessage("buffed cocoon");
+            // TODO: fix this
         }
     }
 
-    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onSpellCast(SpellCastEvent event) {
         if (!hasPassive(event.getCaster().getUniqueId(), this.getName())) return;
         if (!hasSpellEffect(event.getCaster().getUniqueId(), SpellEffectType.SHROUDED)) return;
@@ -103,6 +79,16 @@ public class FromTheShadows extends Spell {
             // TODO: fix
             buffedPlayersMap.put(event.getCaster().getUniqueId(), 2);
         }
+    }
+
+    @Override
+    public double getDuration() {
+        return duration;
+    }
+
+    @Override
+    public void setDuration(double duration) {
+        this.duration = duration;
     }
 }
 

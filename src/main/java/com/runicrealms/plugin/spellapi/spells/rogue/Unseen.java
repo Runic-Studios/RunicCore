@@ -66,7 +66,7 @@ public class Unseen extends Spell implements DurationSpell {
         event.setCancelled(true);
     }
 
-    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onPhysicalDamage(PhysicalDamageEvent event) {
         UUID uuid = event.getPlayer().getUniqueId();
         UUID victimId = event.getVictim().getUniqueId();
@@ -82,7 +82,7 @@ public class Unseen extends Spell implements DurationSpell {
         }
     }
 
-    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onMagicDamage(MagicDamageEvent event) {
         UUID uuid = event.getPlayer().getUniqueId();
         UUID victimId = event.getVictim().getUniqueId();
