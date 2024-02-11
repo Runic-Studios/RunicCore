@@ -10,7 +10,6 @@ import com.comphenix.protocol.ProtocolManager;
 import com.runicrealms.plugin.api.CombatAPI;
 import com.runicrealms.plugin.api.CoreWriteOperation;
 import com.runicrealms.plugin.api.LootAPI;
-import com.runicrealms.plugin.api.LootTableAPI;
 import com.runicrealms.plugin.api.PartyAPI;
 import com.runicrealms.plugin.api.PlayerDataAPI;
 import com.runicrealms.plugin.api.RegionAPI;
@@ -63,7 +62,6 @@ import com.runicrealms.plugin.donor.boost.ui.BoostsUIListener;
 import com.runicrealms.plugin.donor.ui.DonorPerksUIListener;
 import com.runicrealms.plugin.donor.ui.DonorUIListener;
 import com.runicrealms.plugin.dynamicitem.DynamicItemManager;
-import com.runicrealms.plugin.item.lootchests.LootTableManager;
 import com.runicrealms.plugin.item.shops.RunicItemShopManager;
 import com.runicrealms.plugin.item.shops.RunicShopManager;
 import com.runicrealms.plugin.itemperks.ItemPerksRegistrar;
@@ -197,7 +195,6 @@ public class RunicCore extends JavaPlugin implements Listener {
     private static PartyAPI partyAPI;
     private static ScoreboardAPI scoreboardAPI;
     private static SpellAPI spellAPI;
-    private static LootTableAPI lootTableAPI;
     private static MobTagger mobTagger;
     private static ProtocolManager protocolManager;
     private static RegionAPI regionAPI;
@@ -246,10 +243,6 @@ public class RunicCore extends JavaPlugin implements Listener {
 
     public static SpellAPI getSpellAPI() {
         return spellAPI;
-    }
-
-    public static LootTableAPI getLootTableAPI() {
-        return lootTableAPI;
     }
 
     public static MobTagger getMobTagger() {
@@ -379,7 +372,6 @@ public class RunicCore extends JavaPlugin implements Listener {
         partyAPI = null;
         scoreboardAPI = null;
         spellAPI = null;
-        lootTableAPI = null;
         mobTagger = null;
         regionAPI = null;
         partyChannel = null;
@@ -456,7 +448,6 @@ public class RunicCore extends JavaPlugin implements Listener {
         partyAPI = new PartyManager();
         scoreboardAPI = new ScoreboardHandler();
         spellAPI = new SpellManager();
-        lootTableAPI = new LootTableManager();
         regionAPI = new RegionHelper();
         mobTagger = new MobTagger();
         protocolManager = ProtocolLibrary.getProtocolManager();
