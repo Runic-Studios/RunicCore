@@ -2,6 +2,7 @@ package com.runicrealms.plugin.player.listener;
 
 import co.aikar.taskchain.TaskChain;
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.common.resourcepack.ResourcePackManager;
 import com.runicrealms.plugin.model.CoreCharacterData;
 import com.runicrealms.plugin.model.CorePlayerData;
 import com.runicrealms.plugin.player.utilities.HealthUtils;
@@ -9,7 +10,6 @@ import com.runicrealms.plugin.player.utilities.PlayerLevelUtil;
 import com.runicrealms.plugin.rdb.RunicDatabase;
 import com.runicrealms.plugin.rdb.event.CharacterLoadedEvent;
 import com.runicrealms.plugin.rdb.event.CharacterSelectEvent;
-import com.runicrealms.plugin.resourcepack.ResourcePackManager;
 import com.runicrealms.plugin.taskchain.TaskChainUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;

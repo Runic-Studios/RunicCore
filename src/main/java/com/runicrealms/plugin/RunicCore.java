@@ -9,7 +9,6 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import com.runicrealms.plugin.api.CombatAPI;
 import com.runicrealms.plugin.api.CoreWriteOperation;
-import com.runicrealms.plugin.api.LootAPI;
 import com.runicrealms.plugin.api.PartyAPI;
 import com.runicrealms.plugin.api.PlayerDataAPI;
 import com.runicrealms.plugin.api.RegionAPI;
@@ -73,6 +72,7 @@ import com.runicrealms.plugin.listeners.BedEnterListener;
 import com.runicrealms.plugin.listeners.BlockBreakListener;
 import com.runicrealms.plugin.listeners.BlockInteractListener;
 import com.runicrealms.plugin.listeners.BlockPlaceListener;
+import com.runicrealms.plugin.listeners.BossTimedLootDamageListener;
 import com.runicrealms.plugin.listeners.BowListener;
 import com.runicrealms.plugin.listeners.CampfireListener;
 import com.runicrealms.plugin.listeners.CraftingListener;
@@ -109,8 +109,6 @@ import com.runicrealms.plugin.listeners.StaffListener;
 import com.runicrealms.plugin.listeners.SwapHandsListener;
 import com.runicrealms.plugin.listeners.WeaponSkinListener;
 import com.runicrealms.plugin.listeners.WorldChangeListener;
-import com.runicrealms.plugin.loot.LootChestCommand;
-import com.runicrealms.plugin.loot.LootManager;
 import com.runicrealms.plugin.luckperms.LuckPermsManager;
 import com.runicrealms.plugin.model.MongoTask;
 import com.runicrealms.plugin.model.SettingsManager;
@@ -151,7 +149,9 @@ import com.runicrealms.plugin.rdb.api.RedisAPI;
 import com.runicrealms.plugin.rdb.event.MongoSaveEvent;
 import com.runicrealms.plugin.redis.RedisManager;
 import com.runicrealms.plugin.region.RegionEventListener;
-import com.runicrealms.plugin.resourcepack.ResourcePackManager;
+import com.runicrealms.plugin.runicitems.loot.LootAPI;
+import com.runicrealms.plugin.runicitems.loot.LootChestCommand;
+import com.runicrealms.plugin.runicitems.loot.LootManager;
 import com.runicrealms.plugin.runicrestart.event.PreShutdownEvent;
 import com.runicrealms.plugin.scoreboard.ScoreboardHandler;
 import com.runicrealms.plugin.scoreboard.ScoreboardListener;
@@ -558,7 +558,6 @@ public class RunicCore extends JavaPlugin implements Listener {
         pm.registerEvents(new StaffListener(), this);
         pm.registerEvents(new BowListener(), this);
         pm.registerEvents(new DamageListener(), this);
-        pm.registerEvents(new ResourcePackManager(), this);
         pm.registerEvents(new PlayerQuitListener(), this);
         pm.registerEvents(new PartyDamageListener(), this);
         pm.registerEvents(new ExpListener(), this);
@@ -627,6 +626,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         pm.registerEvents(new TempbanListener(), this);
         pm.registerEvents(new AFKListener(), this);
         pm.registerEvents(new PlayerInteractCorrectionListener(), this);
+        pm.registerEvents(new BossTimedLootDamageListener(), this);
     }
 
     private void registerOldStyleCommands() {
