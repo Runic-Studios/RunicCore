@@ -17,6 +17,7 @@ public class RadiantFireEffect implements StackEffect {
     private static final int PERIOD = 20;
     private final Player caster;
     private final int maxStacks;
+    private final int stackThreshold;
     private final int stackDuration;
     private final AtomicInteger stacks;
     private final StackHologram stackHologram;
@@ -26,13 +27,15 @@ public class RadiantFireEffect implements StackEffect {
     /**
      * @param caster           uuid of the caster
      * @param maxStacks        max stacks caster can earn
+     * @param stackThreshold   stacks required for 'buffed' state
      * @param stackDuration    how long before each stack falls off
      * @param initialStacks    how many stacks to start with
      * @param hologramLocation initial location to spawn the hologram
      */
-    public RadiantFireEffect(Player caster, int maxStacks, int stackDuration, int initialStacks, Location hologramLocation) {
+    public RadiantFireEffect(Player caster, int maxStacks, int stackThreshold, int stackDuration, int initialStacks, Location hologramLocation) {
         this.caster = caster;
         this.maxStacks = maxStacks;
+        this.stackThreshold = stackThreshold;
         this.stackDuration = stackDuration;
         this.stacks = new AtomicInteger(initialStacks);
         this.hologramLocation = hologramLocation;
@@ -122,7 +125,7 @@ public class RadiantFireEffect implements StackEffect {
     public void executeSpellEffect() {
         int stacks = this.stacks.get();
         stackHologram.showHologram(this.hologramLocation, this.stacks.get());
-        if (stacks == this.maxStacks) {
+        if (stacks >= stackThreshold) {
             new HelixParticleFrame(1.0F, 30, 10.0F).playParticle(caster, Particle.FIREWORKS_SPARK, caster.getLocation());
         }
     }
@@ -141,5 +144,9 @@ public class RadiantFireEffect implements StackEffect {
     @Override
     public StackHologram getStackHologram() {
         return stackHologram;
+    }
+
+    public int getStackThreshold() {
+        return stackThreshold;
     }
 }

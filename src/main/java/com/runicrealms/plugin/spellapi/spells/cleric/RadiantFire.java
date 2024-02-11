@@ -25,6 +25,7 @@ public class RadiantFire extends Spell implements AttributeSpell, DurationSpell 
     private double multiplier;
     private double stackDuration;
     private String statName;
+    private double stackThreshold;
 
     public RadiantFire() {
         super("Radiant Fire", CharacterClass.CLERIC);
@@ -34,7 +35,7 @@ public class RadiantFire extends Spell implements AttributeSpell, DurationSpell 
                 "\n\n&2&lEFFECT &eRadiant Fire" +
                 "\n&7For each stack of &eradiant fire&7, you gain " + (multiplier * 100) +
                 "% of your total &eWisdom✸ &7as increased healing! " +
-                "While at max stacks, your &aRadiant Nova &7has no warmup and cleanses!" +
+                "While above " + stackThreshold + " stacks, your &aRadiant Nova &7has no warmup and cleanses!" +
                 "\nMax stacks: " + (int) maxStacks + "\nStacks expiry: " + stackDuration + "s");
     }
 
@@ -49,7 +50,13 @@ public class RadiantFire extends Spell implements AttributeSpell, DurationSpell 
         Location hologramLocation = event.getVictim().getEyeLocation();
         Optional<SpellEffect> spellEffectOpt = this.getSpellEffect(player.getUniqueId(), player.getUniqueId(), SpellEffectType.RADIANT_FIRE);
         if (spellEffectOpt.isEmpty()) {
-            RadiantFireEffect radiantFireEffect = new RadiantFireEffect(player, (int) this.maxStacks, (int) this.stackDuration, 1, hologramLocation);
+            RadiantFireEffect radiantFireEffect = new RadiantFireEffect(
+                    player,
+                    (int) this.maxStacks,
+                    (int) this.stackThreshold,
+                    (int) this.stackDuration,
+                    1,
+                    hologramLocation);
             radiantFireEffect.initialize();
         } else {
             RadiantFireEffect radiantFireEffect = (RadiantFireEffect) spellEffectOpt.get();
@@ -99,14 +106,20 @@ public class RadiantFire extends Spell implements AttributeSpell, DurationSpell 
 
     @Override
     public void loadDurationData(Map<String, Object> spellData) {
-        Number duration = (Number) spellData.getOrDefault("stack-duration", 0);
+        Number duration = (Number) spellData.getOrDefault("stack-duration", 12);
         setDuration(duration.doubleValue());
-        Number stacks = (Number) spellData.getOrDefault("max-stacks", 0);
+        Number stacks = (Number) spellData.getOrDefault("max-stacks", 5);
         setMaxStacks(stacks.doubleValue());
+        Number threshold = (Number) spellData.getOrDefault("stack-threshold", 4);
+        setStackThreshold(threshold.doubleValue());
     }
 
     public void setMaxStacks(double maxStacks) {
         this.maxStacks = maxStacks;
+    }
+
+    public void setStackThreshold(double stackThreshold) {
+        this.stackThreshold = stackThreshold;
     }
 
     @EventHandler
