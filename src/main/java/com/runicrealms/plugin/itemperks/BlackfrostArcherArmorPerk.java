@@ -30,11 +30,13 @@ public class BlackfrostArcherArmorPerk extends ItemPerkHandler {
 
     private void onRunicDamage(RunicDamageEvent event, Player damager) {
         LivingEntity entity = event.getVictim();
-        if (!this.isActive(damager) || entity.isOnGround() || !(RunicCore.getStatusEffectAPI().hasStatusEffect(entity.getUniqueId(), RunicStatusEffect.ROOT) || RunicCore.getStatusEffectAPI().hasStatusEffect(entity.getUniqueId(), RunicStatusEffect.STUN))) {
+        if (!this.isActive(damager)) {
             return;
         }
 
-        event.setAmount((int) (event.getAmount() * (1 + this.damagePercent * this.getCurrentStacks(damager))));
+        if (!entity.isOnGround() || RunicCore.getStatusEffectAPI().hasStatusEffect(entity.getUniqueId(), RunicStatusEffect.ROOT) || RunicCore.getStatusEffectAPI().hasStatusEffect(entity.getUniqueId(), RunicStatusEffect.STUN)) {
+            event.setAmount((int) (event.getAmount() * (1 + this.damagePercent * this.getCurrentStacks(damager))));
+        }
     }
 
     @EventHandler(ignoreCancelled = true)
