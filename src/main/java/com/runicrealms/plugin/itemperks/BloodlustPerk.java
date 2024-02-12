@@ -27,7 +27,7 @@ public class BloodlustPerk extends ItemPerkHandler {
         this.extraDamageIfLowHP = ((Number) this.config.get("extra-damage-low-hp")).intValue();
         this.lowHPCutoff = ((Number) this.config.get("low-hp-cutoff")).doubleValue();
 
-        RunicItemsAPI.getDynamicItemHandler().registerTextPlaceholder(new DynamicItemPerkPercentStatPlaceholder("bloodlust-damage-extra-damage-per-missing-health", this, () -> this.extraDamagePerMissingHealth));
+        RunicItemsAPI.getDynamicItemHandler().registerTextPlaceholder(new DynamicItemPerkPercentStatPlaceholder("bloodlust-extra-damage-per-missing-health", this, () -> this.extraDamagePerMissingHealth));
         RunicItemsAPI.getDynamicItemHandler().registerTextPlaceholder(new DynamicItemPerkStatPlaceholder("bloodlust-extra-damage-low-hp", this, () -> this.extraDamageIfLowHP));
     }
 
