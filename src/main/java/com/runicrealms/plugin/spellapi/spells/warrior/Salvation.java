@@ -35,6 +35,7 @@ import org.bukkit.scheduler.BukkitTask;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -165,7 +166,7 @@ public class Salvation extends Spell implements DistanceSpell, DurationSpell, Ma
      * @param location to spawn the block
      */
     private void spawnBell(Player caster, Location location) {
-        Location bestLocation = BlocksUtil.findNearestAir(location, 3);
+        Location bestLocation = BlocksUtil.findNearestValidBlock(location, 3, Set.of(Material.AIR, Material.WATER));
         if (bestLocation == null) { // Couldn't find a nearby air block
             caster.sendMessage(ChatColor.RED + "A valid location could not be found!");
             caster.playSound(caster.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1.0f);

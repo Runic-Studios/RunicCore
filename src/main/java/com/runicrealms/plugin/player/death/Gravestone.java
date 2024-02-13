@@ -1,6 +1,7 @@
 package com.runicrealms.plugin.player.death;
 
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.utilities.BlocksUtil;
 import me.filoghost.holographicdisplays.api.HolographicDisplaysAPI;
 import me.filoghost.holographicdisplays.api.hologram.Hologram;
 import net.md_5.bungee.api.ChatColor;
@@ -14,6 +15,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.Set;
 import java.util.UUID;
 
 public class Gravestone {
@@ -42,7 +44,7 @@ public class Gravestone {
         this.inventory = inventory;
         this.priority = priority;
         this.startTime = System.currentTimeMillis();
-        this.fallingBlock = createFallingBlock(player, deathLocation);
+        this.fallingBlock = spawnGravestone(deathLocation);
         this.hologram = buildHologram(player);
         this.priorityTime = priorityTime;
         this.duration = duration;
@@ -85,12 +87,15 @@ public class Gravestone {
         }
     }
 
-    private FallingBlock createFallingBlock(Player player, Location deathLocation) {
-        Location gravestoneLocation = deathLocation;
+    public FallingBlock spawnGravestone(Location deathLocation) {
+        Location gravestoneLocation = BlocksUtil.findNearestValidBlock(deathLocation, 8, Set.of(Material.AIR, Material.WATER));
         // Verify the gravestone has a valid location to spawn
         if (gravestoneLocation == null || gravestoneLocation.getWorld() == null) {
-            Bukkit.getLogger().severe("A gravestone could not be placed for " + player.getName() + "!");
-            player.sendMessage(ChatColor.RED + "Error: Your gravestone could not be placed. Please contact an admin.");
+            Bukkit.getLogger().severe("A gravestone could not be placed!");
+            Player player = Bukkit.getPlayer(uuid);
+            if (player != null) {
+                player.sendMessage(ChatColor.RED + "Error: Your gravestone could not be placed. Please contact an admin.");
+            }
             return null;
         }
 

@@ -142,6 +142,10 @@ public class GravestoneManager implements Listener {
             for (UUID uuid : gravestoneMap.keySet()) {
                 Gravestone gravestone = gravestoneMap.get(uuid);
 
+                // Respawn gravestone for insurance
+                if (gravestone.getFallingBlock().isDead()) {
+                    gravestone.spawnGravestone(gravestone.getFallingBlock().getLocation());
+                }
                 gravestone.getFallingBlock().setTicksLived(1); // Prevents gravestones from de-spawning
 
                 Hologram hologram = gravestone.getHologram();

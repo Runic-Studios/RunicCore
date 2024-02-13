@@ -28,8 +28,8 @@ public class FromTheShadows extends Spell implements DurationSpell {
         this.setDescription("While you are &8shrouded&7, your first " +
                 "spell cast is empowered! " +
                 "\n\n&aDash &7- You cleanse all slows and gain Speed III for " + this.duration + "s!" +
-                "\n&aTwin Fangs &7- This spell will critically strike!" +
-                "\n&aCocoon &7- Successfully landing this spell will teleport you behind your opponent!"
+                "\n\n&aTwin Fangs &7- This spell will critically strike!" +
+                "\n\n&aCocoon &7- Successfully landing this spell will teleport you behind your opponent!"
         );
     }
 
