@@ -184,7 +184,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public class RunicCore extends JavaPlugin implements Listener {
 
-    public static final String VERSION_NUMBER = ColorUtil.format("&av2.1.3");
+    public static final String VERSION_NUMBER = ColorUtil.format("&av2.1.2");
     public static final String VERSION_TITLE = ColorUtil.format("&c&lEmbers of &b&lFrost");
     private static final int BASE_OUTLAW_RATING = 1500;
     private static RunicCore instance;
