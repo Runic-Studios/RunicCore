@@ -27,7 +27,8 @@ public class ModelInteractHandler {
 
                     if (action == EnumWrappers.EntityUseAction.INTERACT_AT
                             || action == EnumWrappers.EntityUseAction.ATTACK) {
-                        if (useAction.getHand() == EnumWrappers.Hand.OFF_HAND) return;
+                        if (action == EnumWrappers.EntityUseAction.INTERACT_AT && useAction.getHand() == EnumWrappers.Hand.OFF_HAND)
+                            return;
 
                         // Grab ID of clientside entity
                         int entityID = packet.getIntegers().read(0);
