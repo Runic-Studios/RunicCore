@@ -1,21 +1,11 @@
 package com.runicrealms.plugin.player.death;
 
-import com.comphenix.protocol.PacketType;
-import com.comphenix.protocol.ProtocolLibrary;
-import com.comphenix.protocol.events.ListenerPriority;
-import com.comphenix.protocol.events.PacketAdapter;
-import com.comphenix.protocol.events.PacketContainer;
-import com.comphenix.protocol.events.PacketEvent;
-import com.comphenix.protocol.wrappers.EnumWrappers;
-import com.comphenix.protocol.wrappers.WrappedEnumEntityUseAction;
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.common.event.ModelInteractEvent;
 import com.runicrealms.plugin.events.RunicDeathEvent;
-import com.runicrealms.plugin.npcs.RunicNpcs;
 import com.runicrealms.plugin.runicitems.RunicItemsAPI;
 import com.runicrealms.plugin.runicitems.item.RunicItem;
 import com.runicrealms.plugin.runicrestart.event.PreShutdownEvent;
-import com.ticxo.modelengine.api.ModelEngineAPI;
-import com.ticxo.modelengine.api.model.ActiveModel;
 import me.filoghost.holographicdisplays.api.hologram.Hologram;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -38,43 +28,16 @@ public class GravestoneManager implements Listener {
 
     public GravestoneManager() {
         Bukkit.getPluginManager().registerEvents(this, RunicCore.getInstance());
-        registerPacketListener(); // Listen async for USE_ENTITY packet
         startGravestoneTask();
     }
 
-    private void registerPacketListener() {
-        ProtocolLibrary.getProtocolManager().getAsynchronousManager().registerAsyncHandler(new PacketAdapter(RunicNpcs.getInstance(), ListenerPriority.NORMAL, PacketType.Play.Client.USE_ENTITY) {
-            @Override
-            public void onPacketReceiving(PacketEvent event) {
-                if (event.getPacketType() == PacketType.Play.Client.USE_ENTITY) {
-                    PacketContainer packet = event.getPacket();
-                    WrappedEnumEntityUseAction useAction = packet.getEnumEntityUseActions().readSafely(0);
-                    EnumWrappers.EntityUseAction action = useAction.getAction();
-
-                    if (action == EnumWrappers.EntityUseAction.ATTACK) return;
-                    if (action == EnumWrappers.EntityUseAction.INTERACT) return;
-                    if (action == EnumWrappers.EntityUseAction.INTERACT_AT) {
-                        if (useAction.getHand() == EnumWrappers.Hand.OFF_HAND) return;
-                        if (gravestoneMap.isEmpty()) return;
-
-                        // Grab ID of clientside entity
-                        int entityID = packet.getIntegers().read(0);
-
-                        // Find matching active model
-                        final ActiveModel activeModel = ModelEngineAPI.getInteractionTracker().getModelRelay(entityID);
-                        if (activeModel == null) return;
-                        if (activeModel.getModeledEntity() == null) return;
-                        if (activeModel.getModeledEntity().getBase() == null) return;
-
-                        int baseEntityId = activeModel.getModeledEntity().getBase().getEntityId();
-
-                        // Find corresponding serverside entity
-                        Optional<Gravestone> gravestone = gravestoneMap.values().stream().filter(stone -> stone.getEntity().getBase().getEntityId() == baseEntityId).findFirst();
-                        gravestone.ifPresent(value -> attemptToOpenGravestone(event.getPlayer(), value));
-                    }
-                }
-            }
-        }).start();
+    @EventHandler(priority = EventPriority.HIGH)
+    public void onModelInteract(ModelInteractEvent event) {
+        if (event.isCancelled()) return;
+        if (gravestoneMap.isEmpty()) return;
+        int baseEntityId = event.getActiveModel().getModeledEntity().getBase().getEntityId();
+        Optional<Gravestone> gravestone = gravestoneMap.values().stream().filter(stone -> stone.getEntity().getBase().getEntityId() == baseEntityId).findFirst();
+        gravestone.ifPresent(value -> attemptToOpenGravestone(event.getWhoClicked(), value));
     }
 
     private void attemptToOpenGravestone(Player player, Gravestone gravestone) {

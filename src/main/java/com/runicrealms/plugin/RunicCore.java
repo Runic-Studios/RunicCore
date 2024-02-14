@@ -112,6 +112,7 @@ import com.runicrealms.plugin.luckperms.LuckPermsManager;
 import com.runicrealms.plugin.model.MongoTask;
 import com.runicrealms.plugin.model.SettingsManager;
 import com.runicrealms.plugin.model.TitleManager;
+import com.runicrealms.plugin.modelengine.ModelInteractHandler;
 import com.runicrealms.plugin.modtools.AFKListener;
 import com.runicrealms.plugin.modtools.TempbanListener;
 import com.runicrealms.plugin.modtools.VanishManager;
@@ -470,6 +471,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         new NpcListener();
         new PlayerQueueManager();
         new NameTagColorHandler();
+        new ModelInteractHandler();
 
         // register commands
         registerACFCommands();
