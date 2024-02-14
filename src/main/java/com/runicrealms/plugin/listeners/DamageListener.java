@@ -4,10 +4,7 @@ import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
-import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
-import com.comphenix.protocol.wrappers.EnumWrappers;
-import com.comphenix.protocol.wrappers.WrappedEnumEntityUseAction;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.WeaponType;
 import com.runicrealms.plugin.api.event.BasicAttackEvent;
@@ -17,7 +14,6 @@ import com.runicrealms.plugin.rdb.RunicDatabase;
 import com.runicrealms.plugin.runicitems.RunicItemsAPI;
 import com.runicrealms.plugin.runicitems.item.RunicItemWeapon;
 import com.runicrealms.plugin.utilities.DamageUtil;
-import com.ticxo.modelengine.api.ModelEngineAPI;
 import io.lumine.mythic.bukkit.MythicBukkit;
 import io.lumine.mythic.core.mobs.ActiveMob;
 import org.bukkit.Bukkit;
@@ -61,6 +57,90 @@ public class DamageListener implements Listener {
                 onPacket(event);
             }
         }).start();
+    }
+
+    public static boolean matchClass(Player player, boolean sendMessage) {
+        ItemStack mainHand = player.getInventory().getItemInMainHand();
+        String className = RunicDatabase.getAPI().getCharacterAPI().getPlayerClass(player);
+        if (className == null) return false;
+        switch (mainHand.getType()) {
+            case BOW:
+                if (!className.equals("Archer")) {
+                    if (sendMessage) {
+                        player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
+                        player.sendMessage(weaponMessage(className));
+                    }
+                    return false;
+                } else {
+                    return true;
+                }
+            case WOODEN_SHOVEL:
+                if (!className.equals("Cleric")) {
+                    if (sendMessage) {
+                        player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
+                        player.sendMessage(weaponMessage(className));
+                    }
+                    return false;
+                } else {
+                    return true;
+                }
+            case WOODEN_HOE:
+                if (!className.equals("Mage")) {
+                    if (sendMessage) {
+                        player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
+                        player.sendMessage(weaponMessage(className));
+                    }
+                    return false;
+                } else {
+                    return true;
+                }
+            case WOODEN_SWORD:
+                if (!className.equals("Rogue")) {
+                    if (sendMessage) {
+                        player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
+                        player.sendMessage(weaponMessage(className));
+                    }
+                    return false;
+                } else {
+                    return true;
+                }
+            case WOODEN_AXE:
+                if (!className.equals("Warrior")) {
+                    if (sendMessage) {
+                        player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
+                        player.sendMessage(weaponMessage(className));
+                    }
+                    return false;
+                } else {
+                    return true;
+                }
+            default:
+                return true;
+        }
+    }
+
+    private static String weaponMessage(String className) {
+        return switch (className) {
+            case "Archer" -> (ChatColor.RED + "Archers can only wield bows.");
+            case "Cleric" -> (ChatColor.RED + "Clerics can only wield maces.");
+            case "Mage" -> (ChatColor.RED + "Mages can only wield staves.");
+            case "Rogue" -> (ChatColor.RED + "Rogues can only wield swords.");
+            case "Warrior" -> (ChatColor.RED + "Warriors can only wield axes.");
+            default -> "";
+        };
+    }
+
+    public static void applySlainMechanics(Entity damager, Player victim) {
+        // if the player was killed by an arrow, set damager to its shooter
+        if (damager instanceof Arrow arrow) {
+            if (arrow.getShooter() instanceof Player) {
+                damager = (Player) arrow.getShooter();
+            }
+        }
+
+        // Call custom death event
+        RunicDeathEvent event = new RunicDeathEvent(victim, victim.getLocation(), damager);
+        Bukkit.getPluginManager().callEvent(event);
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
@@ -227,113 +307,29 @@ public class DamageListener implements Listener {
             return;
         }
 
-        PacketContainer packet = event.getPacket();
-        WrappedEnumEntityUseAction useAction = packet.getEnumEntityUseActions().readSafely(0);
-        EnumWrappers.EntityUseAction action = useAction.getAction();
-
-        if (action != EnumWrappers.EntityUseAction.ATTACK) {
-            return;
-        }
-
-        int entityID = packet.getIntegers().read(0);
-        UUID uuid = ModelEngineAPI.getInteractionTicker().getModelRelay(entityID);
-
-        if (uuid == null) {
-            return;
-        }
-
-        event.setCancelled(true);
-        Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), () -> {
-            Long lastTime = lastDamaged.remove(uuid);
-            if ((lastTime != null && System.currentTimeMillis() - lastTime < DELAY) || !(Bukkit.getEntity(uuid) instanceof LivingEntity entity)) {
-                return;
-            }
-
-            entity.damage(1, event.getPlayer()); //damage number does not matter since we re-calculate anyway
-        }, DELAY);
-    }
-
-    public static boolean matchClass(Player player, boolean sendMessage) {
-        ItemStack mainHand = player.getInventory().getItemInMainHand();
-        String className = RunicDatabase.getAPI().getCharacterAPI().getPlayerClass(player);
-        if (className == null) return false;
-        switch (mainHand.getType()) {
-            case BOW:
-                if (!className.equals("Archer")) {
-                    if (sendMessage) {
-                        player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
-                        player.sendMessage(weaponMessage(className));
-                    }
-                    return false;
-                } else {
-                    return true;
-                }
-            case WOODEN_SHOVEL:
-                if (!className.equals("Cleric")) {
-                    if (sendMessage) {
-                        player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
-                        player.sendMessage(weaponMessage(className));
-                    }
-                    return false;
-                } else {
-                    return true;
-                }
-            case WOODEN_HOE:
-                if (!className.equals("Mage")) {
-                    if (sendMessage) {
-                        player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
-                        player.sendMessage(weaponMessage(className));
-                    }
-                    return false;
-                } else {
-                    return true;
-                }
-            case WOODEN_SWORD:
-                if (!className.equals("Rogue")) {
-                    if (sendMessage) {
-                        player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
-                        player.sendMessage(weaponMessage(className));
-                    }
-                    return false;
-                } else {
-                    return true;
-                }
-            case WOODEN_AXE:
-                if (!className.equals("Warrior")) {
-                    if (sendMessage) {
-                        player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
-                        player.sendMessage(weaponMessage(className));
-                    }
-                    return false;
-                } else {
-                    return true;
-                }
-            default:
-                return true;
-        }
-    }
-
-    private static String weaponMessage(String className) {
-        return switch (className) {
-            case "Archer" -> (ChatColor.RED + "Archers can only wield bows.");
-            case "Cleric" -> (ChatColor.RED + "Clerics can only wield maces.");
-            case "Mage" -> (ChatColor.RED + "Mages can only wield staves.");
-            case "Rogue" -> (ChatColor.RED + "Rogues can only wield swords.");
-            case "Warrior" -> (ChatColor.RED + "Warriors can only wield axes.");
-            default -> "";
-        };
-    }
-
-    public static void applySlainMechanics(Entity damager, Player victim) {
-        // if the player was killed by an arrow, set damager to its shooter
-        if (damager instanceof Arrow arrow) {
-            if (arrow.getShooter() instanceof Player) {
-                damager = (Player) arrow.getShooter();
-            }
-        }
-
-        // Call custom death event
-        RunicDeathEvent event = new RunicDeathEvent(victim, victim.getLocation(), damager);
-        Bukkit.getPluginManager().callEvent(event);
+//        PacketContainer packet = event.getPacket();
+//        WrappedEnumEntityUseAction useAction = packet.getEnumEntityUseActions().readSafely(0);
+//        EnumWrappers.EntityUseAction action = useAction.getAction();
+//
+//        if (action != EnumWrappers.EntityUseAction.ATTACK) {
+//            return;
+//        }
+//
+//        int entityID = packet.getIntegers().read(0);
+//        UUID uuid = ModelEngineAPI.getInteractionTicker().getModelRelay(entityID);
+//
+//        if (uuid == null) {
+//            return;
+//        }
+//
+//        event.setCancelled(true);
+//        Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), () -> {
+//            Long lastTime = lastDamaged.remove(uuid);
+//            if ((lastTime != null && System.currentTimeMillis() - lastTime < DELAY) || !(Bukkit.getEntity(uuid) instanceof LivingEntity entity)) {
+//                return;
+//            }
+//
+//            entity.damage(1, event.getPlayer()); //damage number does not matter since we re-calculate anyway
+//        }, DELAY);
     }
 }

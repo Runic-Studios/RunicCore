@@ -2,6 +2,10 @@ package com.runicrealms.plugin.player.death;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.utilities.BlocksUtil;
+import com.ticxo.modelengine.api.ModelEngineAPI;
+import com.ticxo.modelengine.api.entity.Dummy;
+import com.ticxo.modelengine.api.model.ActiveModel;
+import com.ticxo.modelengine.api.model.ModeledEntity;
 import me.filoghost.holographicdisplays.api.HolographicDisplaysAPI;
 import me.filoghost.holographicdisplays.api.hologram.Hologram;
 import net.md_5.bungee.api.ChatColor;
@@ -10,7 +14,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
-import org.bukkit.entity.FallingBlock;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -19,13 +23,16 @@ import java.util.Set;
 import java.util.UUID;
 
 public class Gravestone {
+    private static final double HITBOX_SCALE = 1.5;
+    private static final String MODEL_ID = "boulder";
     private final int priorityTime; // Seconds
     private final int duration; // Seconds
     private final UUID uuid;
     private final Hologram hologram;
     private final long startTime;
     private final Inventory inventory;
-    private final FallingBlock fallingBlock;
+    private final ModeledEntity entity;
+    private int id = -1;
     private boolean priority; // False in PvP (anyone can loot)
 
     /**
@@ -44,16 +51,20 @@ public class Gravestone {
         this.inventory = inventory;
         this.priority = priority;
         this.startTime = System.currentTimeMillis();
-        this.fallingBlock = spawnGravestone(deathLocation);
+        this.entity = spawnGravestone(deathLocation);
         this.hologram = buildHologram(player);
         this.priorityTime = priorityTime;
         this.duration = duration;
         RunicCore.getGravestoneManager().getGravestoneMap().put(uuid, this);
     }
 
+    public int getId() {
+        return id;
+    }
+
     private Hologram buildHologram(Player player) {
         // Spawn the hologram a few blocks above
-        Hologram hologram = HolographicDisplaysAPI.get(RunicCore.getInstance()).createHologram(this.fallingBlock.getLocation().add(0, 2.5f, 0));
+        Hologram hologram = HolographicDisplaysAPI.get(RunicCore.getInstance()).createHologram(this.entity.getBase().getLocation().add(0, 2.5f, 0));
         hologram.getLines().appendText(ChatColor.RED + player.getName() + "'s Gravestone");
         String priorityFormatted = String.format("%dm%ds", priorityTime / 60, 0);
         String durationFormatted = String.format("%dm%ds", duration / 60, 0);
@@ -71,10 +82,10 @@ public class Gravestone {
     public void collapse(boolean dropItems) {
         this.hologram.delete();
         try {
-            Location location = this.fallingBlock.getLocation();
+            Location location = this.entity.getBase().getLocation();
             location.getWorld().playSound(location, Sound.ENTITY_SHULKER_SHOOT, 0.5f, 0.2f);
             location.getWorld().spawnParticle(Particle.CLOUD, location, 25, 0.75f, 1.0f, 0.75f, 0);
-            this.fallingBlock.remove();
+            this.entity.destroy();
             // If the player dies while a gravestone is active, gravestone will collapse and drop their items
             if (dropItems) {
                 for (ItemStack itemStack : this.inventory.getContents()) {
@@ -87,8 +98,14 @@ public class Gravestone {
         }
     }
 
-    public FallingBlock spawnGravestone(Location deathLocation) {
-        Location gravestoneLocation = BlocksUtil.findNearestValidBlock(deathLocation, 8, Set.of(Material.AIR, Material.WATER));
+    /**
+     * ?
+     *
+     * @param deathLocation
+     * @return
+     */
+    public ModeledEntity spawnGravestone(Location deathLocation) {
+        Location gravestoneLocation = BlocksUtil.findNearestValidBlock(deathLocation, 5, Set.of(Material.AIR, Material.WATER));
         // Verify the gravestone has a valid location to spawn
         if (gravestoneLocation == null || gravestoneLocation.getWorld() == null) {
             Bukkit.getLogger().severe("A gravestone could not be placed!");
@@ -102,14 +119,23 @@ public class Gravestone {
         // Center gravestone location in the block
         gravestoneLocation = gravestoneLocation.getBlock().getLocation().add(0.5f, 0, 0.5f);
 
-        // Spawn a FallingBlock that is stationary
-        FallingBlock fallingBlock = gravestoneLocation.getWorld().spawnFallingBlock(gravestoneLocation, Material.BASALT.createBlockData());
-        fallingBlock.setDropItem(false); // Prevent the block from dropping items
-        fallingBlock.setGravity(false); // Make it not affected by gravity if you want it to stay in place
-        fallingBlock.setHurtEntities(false); // Prevent the block from hurting entities
-        fallingBlock.setInvulnerable(true); // Prevent the entity from taking damage
+        // Spawn a base entity
+        Dummy<Entity> dummy = new Dummy<>();
+        dummy.setLocation(gravestoneLocation.clone().subtract(0, 2, 0));
+        int nextId = ModelEngineAPI.getEntityHandler().getNextEntityId();
+        this.id = nextId - 1;
 
-        return fallingBlock;
+        ActiveModel activeModel = ModelEngineAPI.createActiveModel(MODEL_ID);
+        ModeledEntity modeledEntity = ModelEngineAPI.createModeledEntity(dummy);
+
+        if (activeModel != null) {
+            activeModel.setHitboxVisible(true);
+            activeModel.setHitboxScale(HITBOX_SCALE);
+            modeledEntity.addModel(activeModel, true);
+//            modeledEntity.setBaseEntityVisible(false);
+        }
+
+        return modeledEntity;
     }
 
     public Hologram getHologram() {
@@ -121,11 +147,11 @@ public class Gravestone {
     }
 
     public Location getLocation() {
-        return this.fallingBlock.getLocation();
+        return this.entity.getBase().getLocation();
     }
 
-    public FallingBlock getFallingBlock() {
-        return fallingBlock;
+    public ModeledEntity getEntity() {
+        return entity;
     }
 
     public long getStartTime() {

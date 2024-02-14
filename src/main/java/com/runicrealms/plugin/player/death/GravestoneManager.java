@@ -14,6 +14,8 @@ import com.runicrealms.plugin.npcs.RunicNpcs;
 import com.runicrealms.plugin.runicitems.RunicItemsAPI;
 import com.runicrealms.plugin.runicitems.item.RunicItem;
 import com.runicrealms.plugin.runicrestart.event.PreShutdownEvent;
+import com.ticxo.modelengine.api.ModelEngineAPI;
+import com.ticxo.modelengine.api.model.ActiveModel;
 import me.filoghost.holographicdisplays.api.hologram.Hologram;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -36,8 +38,7 @@ public class GravestoneManager implements Listener {
 
     public GravestoneManager() {
         Bukkit.getPluginManager().registerEvents(this, RunicCore.getInstance());
-        // Listen async for USE_ENTITY packet (FallingBlock)
-        registerPacketListener();
+        registerPacketListener(); // Listen async for USE_ENTITY packet
         startGravestoneTask();
     }
 
@@ -54,9 +55,21 @@ public class GravestoneManager implements Listener {
                     if (action == EnumWrappers.EntityUseAction.INTERACT) return;
                     if (action == EnumWrappers.EntityUseAction.INTERACT_AT) {
                         if (useAction.getHand() == EnumWrappers.Hand.OFF_HAND) return;
-                        int entityID = packet.getIntegers().read(0);
                         if (gravestoneMap.isEmpty()) return;
-                        Optional<Gravestone> gravestone = gravestoneMap.values().stream().filter(stone -> stone.getFallingBlock().getEntityId() == entityID).findFirst();
+
+                        // Grab ID of clientside entity
+                        int entityID = packet.getIntegers().read(0);
+
+                        // Find matching active model
+                        final ActiveModel activeModel = ModelEngineAPI.getInteractionTracker().getModelRelay(entityID);
+                        if (activeModel == null) return;
+                        if (activeModel.getModeledEntity() == null) return;
+                        if (activeModel.getModeledEntity().getBase() == null) return;
+
+                        int baseEntityId = activeModel.getModeledEntity().getBase().getEntityId();
+
+                        // Find corresponding serverside entity
+                        Optional<Gravestone> gravestone = gravestoneMap.values().stream().filter(stone -> stone.getEntity().getBase().getEntityId() == baseEntityId).findFirst();
                         gravestone.ifPresent(value -> attemptToOpenGravestone(event.getPlayer(), value));
                     }
                 }
@@ -142,11 +155,11 @@ public class GravestoneManager implements Listener {
             for (UUID uuid : gravestoneMap.keySet()) {
                 Gravestone gravestone = gravestoneMap.get(uuid);
 
-                // Respawn gravestone for insurance
-                if (gravestone.getFallingBlock().isDead()) {
-                    gravestone.spawnGravestone(gravestone.getFallingBlock().getLocation());
-                }
-                gravestone.getFallingBlock().setTicksLived(1); // Prevents gravestones from de-spawning
+//                // Respawn gravestone for insurance
+//                if (gravestone.getFallingBlock().isDead()) {
+//                    gravestone.spawnGravestone(gravestone.getFallingBlock().getLocation());
+//                }
+//                gravestone.getFallingBlock().setTicksLived(1); // Prevents gravestones from de-spawning
 
                 Hologram hologram = gravestone.getHologram();
 
