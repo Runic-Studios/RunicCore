@@ -117,6 +117,7 @@ public class PartyCommand extends BaseCommand {
         Party party = RunicCore.getPartyAPI().getParty(player.getUniqueId());
         party.sendMessageInChannel("This party has been disbanded &7Reason: leader disbanded");
         for (Player member : party.getMembersWithLeader()) {
+            Bukkit.getPluginManager().callEvent(new PartyLeaveEvent(party, member, LeaveReason.DISBAND));
             RunicCore.getPartyAPI().updatePlayerParty(member.getUniqueId(), null);
         }
         PartyLeaveEvent partyLeaveEvent = new PartyLeaveEvent(party, party.getLeader(), LeaveReason.DISBAND);
