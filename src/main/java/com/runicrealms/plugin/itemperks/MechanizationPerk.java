@@ -47,7 +47,7 @@ public class MechanizationPerk extends ItemPerkHandler {
                 .stream()
                 .map(Bukkit::getPlayer)
                 .filter(Objects::nonNull)
-                .forEach(player -> RunicCore.getRegenManager().addMana(player, -this.manaDrainPerSecond * this.getCurrentStacks(player))), 20, 0);
+                .forEach(player -> RunicCore.getRegenManager().addMana(player, -this.manaDrainPerSecond * this.getCurrentStacks(player))), 0, 20);
     }
 
     @Override
