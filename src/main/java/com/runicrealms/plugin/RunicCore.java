@@ -94,6 +94,7 @@ import com.runicrealms.plugin.listeners.MinLevelListener;
 import com.runicrealms.plugin.listeners.MobCleanupListener;
 import com.runicrealms.plugin.listeners.MobMechanicsListener;
 import com.runicrealms.plugin.listeners.MobTagger;
+import com.runicrealms.plugin.listeners.ModelMobListener;
 import com.runicrealms.plugin.listeners.NoJockeysListener;
 import com.runicrealms.plugin.listeners.NpcListener;
 import com.runicrealms.plugin.listeners.PlayerInteractCorrectionListener;
@@ -627,6 +628,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         pm.registerEvents(new AFKListener(), this);
         pm.registerEvents(new PlayerInteractCorrectionListener(), this);
         pm.registerEvents(new BossTimedLootDamageListener(), this);
+        pm.registerEvents(new ModelMobListener(), this);
     }
 
     private void registerOldStyleCommands() {
