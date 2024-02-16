@@ -14,7 +14,6 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -32,7 +31,6 @@ public class Gravestone {
     private final long startTime;
     private final Inventory inventory;
     private final ModeledEntity entity;
-    private int id = -1;
     private boolean priority; // False in PvP (anyone can loot)
 
     /**
@@ -58,13 +56,11 @@ public class Gravestone {
         RunicCore.getGravestoneManager().getGravestoneMap().put(uuid, this);
     }
 
-    public int getId() {
-        return id;
-    }
-
     private Hologram buildHologram(Player player) {
-        // Spawn the hologram a few blocks above
-        Hologram hologram = HolographicDisplaysAPI.get(RunicCore.getInstance()).createHologram(this.entity.getBase().getLocation().add(0, 2.5f, 0));
+        // Spawn the hologram a few blocks above the Dummy entity
+        Hologram hologram = HolographicDisplaysAPI.get(RunicCore.getInstance()).createHologram(
+                this.entity.getBase().getLocation().clone().add(0, 2.0f, 0)
+        );
         hologram.getLines().appendText(ChatColor.RED + player.getName() + "'s Gravestone");
         String priorityFormatted = String.format("%dm%ds", priorityTime / 60, 0);
         String durationFormatted = String.format("%dm%ds", duration / 60, 0);
@@ -99,10 +95,11 @@ public class Gravestone {
     }
 
     /**
-     * ?
+     * Spawns a gravestone at the given location by spawning a Dummy base entity and a
+     * boulder model
      *
-     * @param deathLocation
-     * @return
+     * @param deathLocation to spawn the entity
+     * @return a modeled entity
      */
     public ModeledEntity spawnGravestone(Location deathLocation) {
         Location gravestoneLocation = BlocksUtil.findNearestValidBlock(deathLocation, 5, Set.of(Material.AIR, Material.WATER));
@@ -120,10 +117,8 @@ public class Gravestone {
         gravestoneLocation = gravestoneLocation.getBlock().getLocation().add(0.5f, 0, 0.5f);
 
         // Spawn a base entity
-        Dummy<Entity> dummy = new Dummy<>();
-        dummy.setLocation(gravestoneLocation.clone().subtract(0, 2, 0));
-        int nextId = ModelEngineAPI.getEntityHandler().getNextEntityId();
-        this.id = nextId - 1;
+        Dummy<?> dummy = new Dummy<>();
+        dummy.setLocation(gravestoneLocation);
 
         ActiveModel activeModel = ModelEngineAPI.createActiveModel(MODEL_ID);
         ModeledEntity modeledEntity = ModelEngineAPI.createModeledEntity(dummy);
@@ -132,7 +127,6 @@ public class Gravestone {
             activeModel.setHitboxVisible(true);
             activeModel.setHitboxScale(HITBOX_SCALE);
             modeledEntity.addModel(activeModel, true);
-//            modeledEntity.setBaseEntityVisible(false);
         }
 
         return modeledEntity;

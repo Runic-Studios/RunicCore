@@ -33,8 +33,10 @@ public class GravestoneManager implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onModelInteract(ModelInteractEvent event) {
+        Bukkit.broadcastMessage("event with type " + event.getInteractionType());
         if (event.isCancelled()) return;
         if (gravestoneMap.isEmpty()) return;
+        if (event.getInteractionType() == ModelInteractEvent.InteractType.LEFT_CLICK) return;
         int baseEntityId = event.getActiveModel().getModeledEntity().getBase().getEntityId();
         Optional<Gravestone> gravestone = gravestoneMap.values().stream().filter(stone -> stone.getEntity().getBase().getEntityId() == baseEntityId).findFirst();
         gravestone.ifPresent(value -> attemptToOpenGravestone(event.getWhoClicked(), value));
@@ -118,17 +120,9 @@ public class GravestoneManager implements Listener {
             for (UUID uuid : gravestoneMap.keySet()) {
                 Gravestone gravestone = gravestoneMap.get(uuid);
 
-//                // Respawn gravestone for insurance
-//                if (gravestone.getFallingBlock().isDead()) {
-//                    gravestone.spawnGravestone(gravestone.getFallingBlock().getLocation());
-//                }
-//                gravestone.getFallingBlock().setTicksLived(1); // Prevents gravestones from de-spawning
-
                 Hologram hologram = gravestone.getHologram();
-
                 long currentTime = System.currentTimeMillis();
                 long elapsedTimeInSeconds = (currentTime - gravestone.getStartTime()) / 1000; // Convert from milliseconds to seconds
-
                 int remainingPriorityTime = gravestone.getPriorityTime() - (int) elapsedTimeInSeconds;
                 int duration = gravestone.getDuration() - (int) elapsedTimeInSeconds;
 
