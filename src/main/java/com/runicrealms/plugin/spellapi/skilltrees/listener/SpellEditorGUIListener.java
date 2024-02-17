@@ -1,7 +1,7 @@
 package com.runicrealms.plugin.spellapi.skilltrees.listener;
 
 import com.runicrealms.plugin.common.util.GUIUtil;
-import com.runicrealms.plugin.model.SpellField;
+import com.runicrealms.plugin.spellapi.SpellSlot;
 import com.runicrealms.plugin.spellapi.skilltrees.gui.RuneGUI;
 import com.runicrealms.plugin.spellapi.skilltrees.gui.SpellEditorGUI;
 import com.runicrealms.plugin.spellapi.skilltrees.gui.SpellGUI;
@@ -53,20 +53,20 @@ public class SpellEditorGUIListener implements Listener {
             player.closeInventory();
             Bukkit.dispatchCommand(Bukkit.getServer().getConsoleSender(), "resettree " + player.getName());
         } else if (event.getRawSlot() == SpellEditorGUI.SPELL_ONE_INDEX)
-            player.openInventory(new SpellGUI(player, SpellField.HOT_BAR_ONE).getInventory());
+            player.openInventory(new SpellGUI(player, SpellSlot.HOT_BAR_ONE).getInventory());
         else if (event.getRawSlot() == SpellEditorGUI.SPELL_TWO_INDEX)
             if (SpellEditorGUI.hasSlotUnlocked(player, SpellEditorGUI.getSlotReq2()))
-                player.openInventory(new SpellGUI(player, SpellField.LEFT_CLICK).getInventory());
+                player.openInventory(new SpellGUI(player, SpellSlot.LEFT_CLICK).getInventory());
             else
                 player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1.0f);
         else if (event.getRawSlot() == SpellEditorGUI.SPELL_THREE_INDEX)
             if (SpellEditorGUI.hasSlotUnlocked(player, SpellEditorGUI.getSlotReq3()))
-                player.openInventory(new SpellGUI(player, SpellField.RIGHT_CLICK).getInventory());
+                player.openInventory(new SpellGUI(player, SpellSlot.RIGHT_CLICK).getInventory());
             else
                 player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1.0f);
         else if (event.getRawSlot() == SpellEditorGUI.SPELL_FOUR_INDEX)
             if (SpellEditorGUI.hasSlotUnlocked(player, SpellEditorGUI.getSlotReq4()))
-                player.openInventory(new SpellGUI(player, SpellField.SWAP_HANDS).getInventory());
+                player.openInventory(new SpellGUI(player, SpellSlot.SWAP_HANDS).getInventory());
             else
                 player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1.0f);
     }

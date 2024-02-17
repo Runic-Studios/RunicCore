@@ -1,5 +1,6 @@
 package com.runicrealms.plugin.api;
 
+import com.runicrealms.plugin.spellapi.SpellSlot;
 import com.runicrealms.plugin.spellapi.spelltypes.ShieldPayload;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import org.bukkit.entity.Player;
@@ -33,12 +34,12 @@ public interface SpellAPI {
     /**
      * Gets the spell in the associated 'slot' from player spell wrapper.
      *
-     * @param player to grab spell for
-     * @param number of spell slot (1, 2, 3, 4)
+     * @param player    to grab spell for
+     * @param spellSlot which slot (swap hands, left click)
      * @return a Spell object to be used elsewhere
      */
     @Nullable
-    Spell getPlayerSpell(@NotNull Player player, int number);
+    Spell getPlayerSpell(@NotNull Player player, SpellSlot spellSlot);
 
     /**
      * Maps a player UUID to a shield object

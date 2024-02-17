@@ -6,7 +6,7 @@ import com.runicrealms.plugin.events.EnterCombatEvent;
 import com.runicrealms.plugin.events.MagicDamageEvent;
 import com.runicrealms.plugin.events.MobDamageEvent;
 import com.runicrealms.plugin.events.PhysicalDamageEvent;
-import com.runicrealms.plugin.events.SpellCastEvent;
+import com.runicrealms.plugin.spellapi.event.SpellCastEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;

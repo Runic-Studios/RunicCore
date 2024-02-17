@@ -1,11 +1,11 @@
 package com.runicrealms.plugin.itemperks;
 
 import com.runicrealms.plugin.api.event.BasicAttackEvent;
-import com.runicrealms.plugin.events.SpellCastEvent;
 import com.runicrealms.plugin.rdb.event.CharacterQuitEvent;
 import com.runicrealms.plugin.runicitems.RunicItemsAPI;
 import com.runicrealms.plugin.runicitems.item.perk.DynamicItemPerkPercentStatPlaceholder;
 import com.runicrealms.plugin.runicitems.item.perk.ItemPerkHandler;
+import com.runicrealms.plugin.spellapi.event.SpellCastEvent;
 import com.runicrealms.plugin.spellapi.spells.rogue.Dash;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;

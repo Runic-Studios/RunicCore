@@ -1,10 +1,10 @@
 package com.runicrealms.plugin.itemperks;
 
 import com.runicrealms.plugin.events.EnemyVerifyEvent;
-import com.runicrealms.plugin.events.SpellHealEvent;
 import com.runicrealms.plugin.runicitems.RunicItemsAPI;
 import com.runicrealms.plugin.runicitems.item.perk.DynamicItemPerkPercentStatPlaceholder;
 import com.runicrealms.plugin.runicitems.item.perk.ItemPerkHandler;
+import com.runicrealms.plugin.spellapi.event.SpellHealEvent;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.attribute.Attribute;
@@ -24,11 +24,10 @@ import java.util.UUID;
  * @author BoBoBalloon
  */
 public class BlackfrostClericArmorPerk extends ItemPerkHandler {
+    private static final long COOLDOWN = 100; //.1 seconds
     private final Map<UUID, Long> limiter;
     private final double damagePercent;
     private final double range;
-
-    private static final long COOLDOWN = 100; //.1 seconds
 
     public BlackfrostClericArmorPerk() {
         super("blackfrost-cleric-armor");

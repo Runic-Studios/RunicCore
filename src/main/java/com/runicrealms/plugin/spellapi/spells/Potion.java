@@ -2,11 +2,11 @@ package com.runicrealms.plugin.spellapi.spells;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.common.CharacterClass;
-import com.runicrealms.plugin.events.SpellCastEvent;
-import com.runicrealms.plugin.spellapi.spelltypes.Spell;
-import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.runicitems.item.event.RunicItemGenericTriggerEvent;
 import com.runicrealms.plugin.runicitems.item.stats.RunicItemTag;
+import com.runicrealms.plugin.spellapi.event.SpellCastEvent;
+import com.runicrealms.plugin.spellapi.spelltypes.Spell;
+import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;

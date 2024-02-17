@@ -1,9 +1,9 @@
 package com.runicrealms.plugin.itemperks;
 
-import com.runicrealms.plugin.events.SpellHealEvent;
 import com.runicrealms.plugin.runicitems.RunicItemsAPI;
 import com.runicrealms.plugin.runicitems.item.perk.DynamicItemPerkPercentStatPlaceholder;
 import com.runicrealms.plugin.runicitems.item.perk.ItemPerkHandler;
+import com.runicrealms.plugin.spellapi.event.SpellHealEvent;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;

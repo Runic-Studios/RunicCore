@@ -1,12 +1,12 @@
 package com.runicrealms.plugin.player.listener;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.events.SpellCastEvent;
 import com.runicrealms.plugin.player.RegenManager;
 import com.runicrealms.plugin.rdb.RunicDatabase;
 import com.runicrealms.plugin.rdb.event.CharacterLoadedEvent;
 import com.runicrealms.plugin.runicitems.Stat;
 import com.runicrealms.plugin.runicitems.item.event.RunicStatUpdateEvent;
+import com.runicrealms.plugin.spellapi.event.SpellCastEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;

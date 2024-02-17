@@ -65,12 +65,12 @@ public class SpellGUIListener implements Listener {
         String spell = ChatColor.stripColor(spellName);
         int slot = RunicDatabase.getAPI().getCharacterAPI().getCharacterSlot(player.getUniqueId());
         SpellData spellData = RunicCore.getSkillTreeAPI().getPlayerSpellData(player.getUniqueId(), slot);
-        switch (spellGUI.getSpellField()) {
+        switch (spellGUI.getSpellSlot()) {
             case HOT_BAR_ONE -> spellData.setSpellHotbarOne(spell);
             case LEFT_CLICK -> spellData.setSpellLeftClick(spell);
             case RIGHT_CLICK -> spellData.setSpellRightClick(spell);
             case SWAP_HANDS -> spellData.setSpellSwapHands(spell);
-            default -> throw new IllegalStateException("Unexpected value: " + spellGUI.getSpellField());
+            default -> throw new IllegalStateException("Unexpected value: " + spellGUI.getSpellSlot());
         }
         RunicCore.getCoreWriteOperation().updateCorePlayerData
                 (

@@ -2,9 +2,9 @@ package com.runicrealms.plugin.itemperks;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.events.PhysicalDamageEvent;
-import com.runicrealms.plugin.events.SpellHealEvent;
 import com.runicrealms.plugin.runicitems.Stat;
 import com.runicrealms.plugin.runicitems.item.perk.ItemPerkHandler;
+import com.runicrealms.plugin.spellapi.event.SpellHealEvent;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Particle;

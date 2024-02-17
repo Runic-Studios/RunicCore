@@ -2,8 +2,8 @@ package com.runicrealms.plugin.spellapi.spells.rogue;
 
 import com.runicrealms.plugin.common.CharacterClass;
 import com.runicrealms.plugin.events.PhysicalDamageEvent;
-import com.runicrealms.plugin.events.SpellCastEvent;
 import com.runicrealms.plugin.rdb.event.CharacterQuitEvent;
+import com.runicrealms.plugin.spellapi.event.SpellCastEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.PhysicalDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;

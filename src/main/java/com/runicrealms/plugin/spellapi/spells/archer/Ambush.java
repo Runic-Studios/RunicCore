@@ -4,7 +4,7 @@ import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.api.event.RunicBowEvent;
 import com.runicrealms.plugin.common.CharacterClass;
 import com.runicrealms.plugin.events.PhysicalDamageEvent;
-import com.runicrealms.plugin.events.SpellCastEvent;
+import com.runicrealms.plugin.spellapi.event.SpellCastEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.WarmupSpell;

@@ -16,10 +16,10 @@ import java.util.UUID;
 /**
  * Used to create damage events for MythicMobs with ModelEngine models
  */
-public class ModelMobListener implements Listener {
+public class ModelDamageListener implements Listener {
 
-    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
-    public void onModelInteract(ModelInteractEvent event) {
+    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
+    public void onModelDamaged(ModelInteractEvent event) {
         if (event.getInteractionType() == ModelInteractEvent.InteractType.RIGHT_CLICK) return;
         UUID entityId = event.getActiveModel().getModeledEntity().getBase().getUUID();
         if (MythicBukkit.inst().getMobManager().getActiveMob(entityId).isEmpty()) return;

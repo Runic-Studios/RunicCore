@@ -4,8 +4,8 @@ import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.common.util.ColorUtil;
 import com.runicrealms.plugin.common.util.GUIUtil;
 import com.runicrealms.plugin.model.SkillTreePosition;
-import com.runicrealms.plugin.model.SpellField;
 import com.runicrealms.plugin.rdb.RunicDatabase;
+import com.runicrealms.plugin.spellapi.SpellSlot;
 import com.runicrealms.plugin.spellapi.skilltrees.Perk;
 import com.runicrealms.plugin.spellapi.skilltrees.PerkSpell;
 import com.runicrealms.plugin.spellapi.skilltrees.util.ArcherTreeUtil;
@@ -24,12 +24,12 @@ public class SpellGUI implements InventoryHolder {
 
     private final Inventory inventory;
     private final Player player;
-    private final SpellField spellField;
+    private final SpellSlot spellSlot;
 
-    public SpellGUI(Player player, SpellField spellField) {
+    public SpellGUI(Player player, SpellSlot spellSlot) {
         this.inventory = Bukkit.createInventory(this, 54, ColorUtil.format("&a&lAvailable Spells"));
         this.player = player;
-        this.spellField = spellField;
+        this.spellSlot = spellSlot;
         openMenu();
     }
 
@@ -60,8 +60,8 @@ public class SpellGUI implements InventoryHolder {
         return this.player;
     }
 
-    public SpellField getSpellField() {
-        return this.spellField;
+    public SpellSlot getSpellSlot() {
+        return this.spellSlot;
     }
 
     /**

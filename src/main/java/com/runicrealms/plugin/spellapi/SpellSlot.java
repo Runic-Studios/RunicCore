@@ -1,7 +1,6 @@
-package com.runicrealms.plugin.model;
+package com.runicrealms.plugin.spellapi;
 
-public enum SpellField {
-
+public enum SpellSlot {
     HOT_BAR_ONE("hotBarOne"),
     LEFT_CLICK("leftClick"),
     RIGHT_CLICK("rightClick"),
@@ -9,7 +8,7 @@ public enum SpellField {
 
     private final String field;
 
-    SpellField(String field) {
+    SpellSlot(String field) {
         this.field = field;
     }
 

@@ -1,4 +1,4 @@
-package com.runicrealms.plugin.events;
+package com.runicrealms.plugin.spellapi.event;
 
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import org.bukkit.entity.Entity;
@@ -14,10 +14,11 @@ import org.jetbrains.annotations.Nullable;
  */
 public class SpellHealEvent extends Event implements Cancellable {
 
-    private int amount;
+    private static final HandlerList handlers = new HandlerList();
     private final Player player;
     private final Entity entity;
     private final Spell spell;
+    private int amount;
     private boolean isCritical;
     private boolean isCancelled;
 
@@ -32,6 +33,10 @@ public class SpellHealEvent extends Event implements Cancellable {
 
     public SpellHealEvent(int amount, Entity recipient, Player caster) {
         this(amount, recipient, caster, null);
+    }
+
+    public static HandlerList getHandlerList() {
+        return handlers;
     }
 
     public int getAmount() {
@@ -73,15 +78,9 @@ public class SpellHealEvent extends Event implements Cancellable {
         this.isCancelled = arg0;
     }
 
-    private static final HandlerList handlers = new HandlerList();
-
     @SuppressWarnings("NullableProblems")
     @Override
     public HandlerList getHandlers() {
-        return handlers;
-    }
-
-    public static HandlerList getHandlerList() {
         return handlers;
     }
 }

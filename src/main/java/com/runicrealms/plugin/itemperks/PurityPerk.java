@@ -2,10 +2,10 @@ package com.runicrealms.plugin.itemperks;
 
 import com.google.common.collect.ImmutableSet;
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.events.SpellCastEvent;
-import com.runicrealms.plugin.events.SpellHealEvent;
 import com.runicrealms.plugin.runicitems.item.perk.ItemPerkHandler;
 import com.runicrealms.plugin.spellapi.effect.RunicStatusEffect;
+import com.runicrealms.plugin.spellapi.event.SpellCastEvent;
+import com.runicrealms.plugin.spellapi.event.SpellHealEvent;
 import com.runicrealms.plugin.spellapi.spells.Potion;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -16,9 +16,8 @@ import org.bukkit.event.EventPriority;
  * @author BoBoBalloon
  */
 public class PurityPerk extends ItemPerkHandler {
-    private final double healReductionPercent;
-
     private static final ImmutableSet<RunicStatusEffect> EFFECTS = ImmutableSet.of(RunicStatusEffect.ROOT, RunicStatusEffect.STUN, RunicStatusEffect.SLOW_I, RunicStatusEffect.SLOW_II, RunicStatusEffect.SLOW_III);
+    private final double healReductionPercent;
 
     public PurityPerk() {
         super("purity");

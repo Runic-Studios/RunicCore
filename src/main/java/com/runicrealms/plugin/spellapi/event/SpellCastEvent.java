@@ -1,4 +1,4 @@
-package com.runicrealms.plugin.events;
+package com.runicrealms.plugin.spellapi.event;
 
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import org.bukkit.entity.Entity;
@@ -9,8 +9,7 @@ import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * This custom event is called when a player is damaged by a magic source.
- * This gets called in our DamageUtil.
+ * This custom event is called when a player casts a spell
  */
 public class SpellCastEvent extends Event implements Cancellable {
 

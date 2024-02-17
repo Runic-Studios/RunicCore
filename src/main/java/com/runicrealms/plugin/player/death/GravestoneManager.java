@@ -33,7 +33,6 @@ public class GravestoneManager implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onModelInteract(ModelInteractEvent event) {
-        Bukkit.broadcastMessage("event with type " + event.getInteractionType());
         if (event.isCancelled()) return;
         if (gravestoneMap.isEmpty()) return;
         if (event.getInteractionType() == ModelInteractEvent.InteractType.LEFT_CLICK) return;

@@ -3,9 +3,9 @@ package com.runicrealms.plugin.spellapi;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.api.SpellAPI;
 import com.runicrealms.plugin.api.event.SpellShieldEvent;
-import com.runicrealms.plugin.events.SpellHealEvent;
 import com.runicrealms.plugin.model.SpellData;
 import com.runicrealms.plugin.rdb.RunicDatabase;
+import com.runicrealms.plugin.spellapi.event.SpellHealEvent;
 import com.runicrealms.plugin.spellapi.spells.Combat;
 import com.runicrealms.plugin.spellapi.spells.Potion;
 import com.runicrealms.plugin.spellapi.spells.archer.Ambush;
@@ -146,35 +146,35 @@ public class SpellManager implements Listener, SpellAPI {
     }
 
     @Override
-    public Spell getPlayerSpell(@NotNull Player player, int number) {
+    public Spell getPlayerSpell(@NotNull Player player, SpellSlot spellSlot) {
         Spell spellToCast = null;
         UUID uuid = player.getUniqueId();
         try {
             int slot = RunicDatabase.getAPI().getCharacterAPI().getCharacterSlot(uuid);
             SpellData playerSpellData = RunicCore.getSkillTreeAPI().getPlayerSpellData(uuid, slot);
-            switch (number) {
-                case 1 -> {
+            switch (spellSlot) {
+                case HOT_BAR_ONE -> {
                     spellToCast = this.getSpellByName(playerSpellData.getSpellHotbarOne());
                     if (playerSpellData.getSpellHotbarOne().equals("")) {
                         player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1.0f);
                         player.sendMessage(ChatColor.RED + "You have no spell set in this slot!");
                     }
                 }
-                case 2 -> {
+                case LEFT_CLICK -> {
                     spellToCast = this.getSpellByName(playerSpellData.getSpellLeftClick());
                     if (playerSpellData.getSpellLeftClick().equals("")) {
                         player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1.0f);
                         player.sendMessage(ChatColor.RED + "You have no spell set in this slot!");
                     }
                 }
-                case 3 -> {
+                case RIGHT_CLICK -> {
                     spellToCast = this.getSpellByName(playerSpellData.getSpellRightClick());
                     if (playerSpellData.getSpellRightClick().equals("")) {
                         player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1.0f);
                         player.sendMessage(ChatColor.RED + "You have no spell set in this slot!");
                     }
                 }
-                case 4 -> {
+                case SWAP_HANDS -> {
                     spellToCast = this.getSpellByName(playerSpellData.getSpellSwapHands());
                     if (playerSpellData.getSpellSwapHands().equals("")) {
                         player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1.0f);

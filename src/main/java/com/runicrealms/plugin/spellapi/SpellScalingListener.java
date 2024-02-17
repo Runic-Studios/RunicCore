@@ -3,7 +3,7 @@ package com.runicrealms.plugin.spellapi;
 import com.runicrealms.plugin.api.event.SpellShieldEvent;
 import com.runicrealms.plugin.events.MagicDamageEvent;
 import com.runicrealms.plugin.events.PhysicalDamageEvent;
-import com.runicrealms.plugin.events.SpellHealEvent;
+import com.runicrealms.plugin.spellapi.event.SpellHealEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.HealingSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.PhysicalDamageSpell;
