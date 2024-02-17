@@ -105,7 +105,9 @@ public class StatusEffectManager implements Listener, StatusEffectAPI {
                 removePotionEffect((LivingEntity) entity, PotionEffectType.SPEED);
             }
 
-            statusEffectMap.get(uuid).remove(statusEffect);
+            if (statusEffectMap.get(uuid) != null) {
+                statusEffectMap.get(uuid).remove(statusEffect);
+            }
             return true;
         }
         return false;
