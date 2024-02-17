@@ -47,7 +47,7 @@ public class FocusPerk extends ItemPerkHandler {
             return;
         }
 
-        double amount = event.getAmount() * (1 + this.increaseDamagePercent);
+        double amount = event.getAmount() * (1 + this.increaseDamagePercent * this.getCurrentStacks(player));
 
         event.setAmount((int) amount);
     }

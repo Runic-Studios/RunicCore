@@ -14,7 +14,7 @@ import org.bukkit.event.EventHandler;
  * @author BoBoBalloon
  */
 public class BloodlustPerk extends ItemPerkHandler {
-    private final int extraDamagePerMissingHealth;
+    private final double extraDamagePerMissingHealthPercent;
     private final double perMissingHealthPercent;
     private final int extraDamageIfLowHP;
     private final double lowHPCutoff;
@@ -22,12 +22,12 @@ public class BloodlustPerk extends ItemPerkHandler {
     public BloodlustPerk() {
         super("bloodlust");
 
-        this.extraDamagePerMissingHealth = ((Number) this.config.get("extra-damage-per-missing-health")).intValue();
+        this.extraDamagePerMissingHealthPercent = ((Number) this.config.get("extra-damage-per-missing-health-percent")).doubleValue();
         this.perMissingHealthPercent = ((Number) this.config.get("per-missing-health-percent")).doubleValue();
         this.extraDamageIfLowHP = ((Number) this.config.get("extra-damage-low-hp")).intValue();
         this.lowHPCutoff = ((Number) this.config.get("low-hp-cutoff")).doubleValue();
 
-        RunicItemsAPI.getDynamicItemHandler().registerTextPlaceholder(new DynamicItemPerkPercentStatPlaceholder("bloodlust-extra-damage-per-missing-health", this, () -> this.extraDamagePerMissingHealth));
+        RunicItemsAPI.getDynamicItemHandler().registerTextPlaceholder(new DynamicItemPerkPercentStatPlaceholder("bloodlust-extra-damage-per-missing-health-percent", this, () -> this.extraDamagePerMissingHealthPercent));
         RunicItemsAPI.getDynamicItemHandler().registerTextPlaceholder(new DynamicItemPerkStatPlaceholder("bloodlust-extra-damage-low-hp", this, () -> this.extraDamageIfLowHP));
     }
 
@@ -45,6 +45,6 @@ public class BloodlustPerk extends ItemPerkHandler {
 
         int perkStacks = this.getCurrentStacks(event.getPlayer());
 
-        event.setAmount(event.getAmount() + (stacks * this.extraDamagePerMissingHealth * perkStacks) + bonus * perkStacks);
+        event.setAmount(event.getAmount() + (int) (event.getAmount() * stacks * this.extraDamagePerMissingHealthPercent * perkStacks) + bonus * perkStacks);
     }
 }
