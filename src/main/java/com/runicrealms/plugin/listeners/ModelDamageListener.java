@@ -22,17 +22,15 @@ public class ModelDamageListener implements Listener {
     public void onModelDamaged(ModelInteractEvent event) {
         if (event.getInteractionType() == ModelInteractEvent.InteractType.RIGHT_CLICK) return;
         UUID entityId = event.getActiveModel().getModeledEntity().getBase().getUUID();
-        try (MythicBukkit instance = MythicBukkit.inst()) {
-            if (instance.getMobManager().getActiveMob(entityId).isEmpty()) return;
-            ActiveMob am = instance.getMobManager().getActiveMob(entityId).get();
-            EntityDamageByEntityEvent damageByEntityEvent = new EntityDamageByEntityEvent(
-                    event.getWhoClicked(),
-                    am.getEntity().getBukkitEntity(),
-                    EntityDamageEvent.DamageCause.ENTITY_ATTACK,
-                    1
-            );
-            // Call event sync
-            Bukkit.getScheduler().runTask(RunicCore.getInstance(), () -> Bukkit.getPluginManager().callEvent(damageByEntityEvent));
-        }
+        if (MythicBukkit.inst().getMobManager().getActiveMob(entityId).isEmpty()) return;
+        ActiveMob am = MythicBukkit.inst().getMobManager().getActiveMob(entityId).get();
+        EntityDamageByEntityEvent damageByEntityEvent = new EntityDamageByEntityEvent(
+                event.getWhoClicked(),
+                am.getEntity().getBukkitEntity(),
+                EntityDamageEvent.DamageCause.ENTITY_ATTACK,
+                1
+        );
+        // Call event sync
+        Bukkit.getScheduler().runTask(RunicCore.getInstance(), () -> Bukkit.getPluginManager().callEvent(damageByEntityEvent));
     }
 }

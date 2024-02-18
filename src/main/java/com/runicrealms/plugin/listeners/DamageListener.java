@@ -1,11 +1,5 @@
 package com.runicrealms.plugin.listeners;
 
-import com.comphenix.protocol.PacketType;
-import com.comphenix.protocol.ProtocolLibrary;
-import com.comphenix.protocol.events.ListenerPriority;
-import com.comphenix.protocol.events.PacketAdapter;
-import com.comphenix.protocol.events.PacketEvent;
-import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.WeaponType;
 import com.runicrealms.plugin.api.event.BasicAttackEvent;
 import com.runicrealms.plugin.events.MobDamageEvent;
@@ -32,12 +26,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.inventory.ItemStack;
-import org.jetbrains.annotations.NotNull;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
-import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -46,25 +36,13 @@ import java.util.concurrent.ThreadLocalRandom;
  * @author Skyfallin_
  */
 public class DamageListener implements Listener {
-    private static final long DELAY = 1; //delay in event being received to event fired
-    private final Map<UUID, Long> lastDamaged;
-
-    public DamageListener() {
-        this.lastDamaged = new HashMap<>();
-        ProtocolLibrary.getProtocolManager().getAsynchronousManager().registerAsyncHandler(new PacketAdapter(RunicCore.getInstance(), ListenerPriority.HIGHEST, PacketType.Play.Client.USE_ENTITY) {
-            @Override
-            public void onPacketReceiving(PacketEvent event) {
-                onPacket(event);
-            }
-        }).start();
-    }
 
     public static boolean matchClass(Player player, boolean sendMessage) {
         ItemStack mainHand = player.getInventory().getItemInMainHand();
         String className = RunicDatabase.getAPI().getCharacterAPI().getPlayerClass(player);
         if (className == null) return false;
         switch (mainHand.getType()) {
-            case BOW:
+            case BOW -> {
                 if (!className.equals("Archer")) {
                     if (sendMessage) {
                         player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
@@ -74,7 +52,8 @@ public class DamageListener implements Listener {
                 } else {
                     return true;
                 }
-            case WOODEN_SHOVEL:
+            }
+            case WOODEN_SHOVEL -> {
                 if (!className.equals("Cleric")) {
                     if (sendMessage) {
                         player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
@@ -84,7 +63,8 @@ public class DamageListener implements Listener {
                 } else {
                     return true;
                 }
-            case WOODEN_HOE:
+            }
+            case WOODEN_HOE -> {
                 if (!className.equals("Mage")) {
                     if (sendMessage) {
                         player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
@@ -94,7 +74,8 @@ public class DamageListener implements Listener {
                 } else {
                     return true;
                 }
-            case WOODEN_SWORD:
+            }
+            case WOODEN_SWORD -> {
                 if (!className.equals("Rogue")) {
                     if (sendMessage) {
                         player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
@@ -104,7 +85,8 @@ public class DamageListener implements Listener {
                 } else {
                     return true;
                 }
-            case WOODEN_AXE:
+            }
+            case WOODEN_AXE -> {
                 if (!className.equals("Warrior")) {
                     if (sendMessage) {
                         player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
@@ -114,8 +96,10 @@ public class DamageListener implements Listener {
                 } else {
                     return true;
                 }
-            default:
+            }
+            default -> {
                 return true;
+            }
         }
     }
 
@@ -188,8 +172,6 @@ public class DamageListener implements Listener {
             if (!event.isCancelled())
                 DamageUtil.damageEntityMob(Math.ceil(event.getAmount()), event.getVictim(), e.getDamager(), event.shouldApplyMechanics());
         }
-
-        this.lastDamaged.put(e.getEntity().getUniqueId(), System.currentTimeMillis());
 
         // only listen for when a player swings or fires an arrow
         if (damager instanceof Player player) {
@@ -295,41 +277,5 @@ public class DamageListener implements Listener {
 
         // Call custom death event
         Bukkit.getPluginManager().callEvent(new RunicDeathEvent(victim, victim.getLocation()));
-    }
-
-    /**
-     * A band-aid fix to custom models not registering hits (no bukkit events even fired). RIGHT-CLICKS WORK FINE
-     *
-     * @author BoBoBalloon
-     */
-    private void onPacket(@NotNull PacketEvent event) {
-        if (event.getPacketType() != PacketType.Play.Client.USE_ENTITY) {
-            return;
-        }
-
-//        PacketContainer packet = event.getPacket();
-//        WrappedEnumEntityUseAction useAction = packet.getEnumEntityUseActions().readSafely(0);
-//        EnumWrappers.EntityUseAction action = useAction.getAction();
-//
-//        if (action != EnumWrappers.EntityUseAction.ATTACK) {
-//            return;
-//        }
-//
-//        int entityID = packet.getIntegers().read(0);
-//        UUID uuid = ModelEngineAPI.getInteractionTicker().getModelRelay(entityID);
-//
-//        if (uuid == null) {
-//            return;
-//        }
-//
-//        event.setCancelled(true);
-//        Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), () -> {
-//            Long lastTime = lastDamaged.remove(uuid);
-//            if ((lastTime != null && System.currentTimeMillis() - lastTime < DELAY) || !(Bukkit.getEntity(uuid) instanceof LivingEntity entity)) {
-//                return;
-//            }
-//
-//            entity.damage(1, event.getPlayer()); //damage number does not matter since we re-calculate anyway
-//        }, DELAY);
     }
 }
