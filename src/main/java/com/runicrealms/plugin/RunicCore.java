@@ -164,10 +164,10 @@ import com.runicrealms.plugin.spellapi.SpellScalingListener;
 import com.runicrealms.plugin.spellapi.SpellUseListener;
 import com.runicrealms.plugin.spellapi.api.SpellEffectAPI;
 import com.runicrealms.plugin.spellapi.api.StatusEffectAPI;
+import com.runicrealms.plugin.spellapi.armorstand.ModeledStandAPI;
+import com.runicrealms.plugin.spellapi.armorstand.ModeledStandManager;
 import com.runicrealms.plugin.spellapi.effect.SpellEffectManager;
 import com.runicrealms.plugin.spellapi.effect.StatusEffectManager;
-import com.runicrealms.plugin.spellapi.item.ModeledItemAPI;
-import com.runicrealms.plugin.spellapi.item.ModeledItemManager;
 import com.runicrealms.plugin.spellapi.skilltrees.SkillTreeManager;
 import com.runicrealms.plugin.spellapi.skilltrees.listener.RuneGUIListener;
 import com.runicrealms.plugin.spellapi.skilltrees.listener.SkillTreeGUIListener;
@@ -212,7 +212,7 @@ public class RunicCore extends JavaPlugin implements Listener {
     private static SettingsManager settingsManager;
     private static ShopAPI shopAPI;
     private static MongoTask mongoTask;
-    private static ModeledItemAPI modeledItemAPI;
+    private static ModeledStandAPI modeledStandAPI;
     private static SpellEffectAPI spellEffectAPI;
     private static StatusEffectAPI statusEffectAPI;
     private static GravestoneManager gravestoneManager;
@@ -262,8 +262,8 @@ public class RunicCore extends JavaPlugin implements Listener {
         return shopAPI;
     }
 
-    public static ModeledItemAPI getModeledItemAPI() {
-        return modeledItemAPI;
+    public static ModeledStandAPI getModeledStandAPI() {
+        return modeledStandAPI;
     }
 
     public static SpellEffectAPI getSpellEffectAPI() {
@@ -392,7 +392,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         settingsManager = null;
         shopAPI = null;
         mongoTask = null;
-        modeledItemAPI = null;
+        modeledStandAPI = null;
         spellEffectAPI = null;
         statusEffectAPI = null;
         taskChainFactory = null;
@@ -468,7 +468,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         settingsManager = new SettingsManager();
         shopAPI = new RunicItemShopManager();
         mongoTask = new MongoTask();
-        modeledItemAPI = new ModeledItemManager();
+        modeledStandAPI = new ModeledStandManager();
         spellEffectAPI = new SpellEffectManager();
         statusEffectAPI = new StatusEffectManager();
         gravestoneManager = new GravestoneManager();

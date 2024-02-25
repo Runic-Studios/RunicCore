@@ -1,13 +1,14 @@
-package com.runicrealms.plugin.spellapi.item;
+package com.runicrealms.plugin.spellapi.armorstand;
 
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.api.ArmorStandAPI;
 import com.ticxo.modelengine.api.ModelEngineAPI;
 import com.ticxo.modelengine.api.model.ActiveModel;
 import com.ticxo.modelengine.api.model.ModeledEntity;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -15,7 +16,7 @@ import org.bukkit.util.Vector;
 
 import java.util.function.Predicate;
 
-public class ModeledItem {
+public class ModeledStand {
     private static final String HITBOX_MODEL_ID = "hitbox";
     private final Player player;
     private final Location location;
@@ -25,20 +26,20 @@ public class ModeledItem {
     private final double hitboxScale;
     private final Predicate<Entity> filter;
     private final ModeledEntity modeledEntity;
-    private final Item item;
+    private final ArmorStand armorStand;
     private final long startTime;
 
     /**
-     * Creates a ModeledItem, which is used as a projectile library. Using custom resources and ModelEngine,
+     * Creates a ModeledStand, which is used as a projectile library. Using custom resources and ModelEngine,
      * creates moving projectiles with custom hitboxes for use in spell design
      *
      * @param customModelData an integer which is used in the '/models' folder's .json files to specify texture
-     * @param duration        the maximum length before the item will be destroyed
+     * @param duration        the maximum length before the stand will be destroyed
      * @param hitboxScale     a modifier to scale the custom hitbox up or down
-     * @param player          who fired/spawned the modeled item
-     * @param vector          that the item will follow (its velocity)
+     * @param player          who fired/spawned the modeled stand
+     * @param vector          that the stand will follow (its velocity)
      */
-    public ModeledItem(
+    public ModeledStand(
             Player player,
             Location location,
             Vector vector,
@@ -53,13 +54,13 @@ public class ModeledItem {
         this.duration = duration;
         this.hitboxScale = hitboxScale;
         this.filter = filter;
-        this.item = initializeItem();
+        this.armorStand = createArmorStand();
         this.modeledEntity = createModeledEntity();
-        RunicCore.getModeledItemAPI().addModeledItemToManager(this);
+        RunicCore.getModeledStandAPI().addModeledStandToManager(this);
         this.startTime = System.currentTimeMillis();
     }
 
-    private Item initializeItem() {
+    private ArmorStand createArmorStand() {
         ItemStack modeledItemStack = new ItemStack(Material.PAPER, 1);
         ItemMeta meta = modeledItemStack.getItemMeta();
         if (meta != null) {
@@ -67,17 +68,18 @@ public class ModeledItem {
             modeledItemStack.setItemMeta(meta);
         }
 
-        Item modeledItem = player.getWorld().dropItem(this.location, modeledItemStack);
-        modeledItem.setPickupDelay(Integer.MAX_VALUE);
-        modeledItem.setGravity(false);
-        modeledItem.setVelocity(vector);
+        ArmorStand armorStand = ArmorStandAPI.spawnArmorStand(this.location.clone().subtract(0, 0.25f, 0));
+        if (armorStand != null && armorStand.getEquipment() != null) {
+            armorStand.getEquipment().setHelmet(modeledItemStack);
+            armorStand.setVelocity(this.vector);
+        }
 
-        return modeledItem;
+        return armorStand;
     }
 
     private ModeledEntity createModeledEntity() {
         ActiveModel activeModel = ModelEngineAPI.createActiveModel(HITBOX_MODEL_ID);
-        ModeledEntity modeledEntity = ModelEngineAPI.createModeledEntity(this.item);
+        ModeledEntity modeledEntity = ModelEngineAPI.createModeledEntity(this.armorStand);
 
         if (activeModel != null) {
             activeModel.setHitboxVisible(true);
@@ -90,7 +92,7 @@ public class ModeledItem {
 
     public void destroy() {
         this.modeledEntity.destroy();
-        this.item.remove();
+        this.armorStand.remove();
     }
 
     public int getCustomModelData() {
@@ -117,8 +119,8 @@ public class ModeledItem {
         return vector;
     }
 
-    public Item getItem() {
-        return item;
+    public ArmorStand getArmorStand() {
+        return armorStand;
     }
 
     public ModeledEntity getModeledEntity() {

@@ -1,7 +1,7 @@
 package com.runicrealms.plugin.api;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.utilities.InvisStandSpawner;
+import com.runicrealms.plugin.utilities.InvisibleStandSpawner;
 import org.bukkit.Location;
 import org.bukkit.entity.ArmorStand;
 
@@ -9,11 +9,12 @@ public class ArmorStandAPI {
 
     /**
      * Spawns an invisible armor stand using the parameterized consumer.
+     *
      * @param location to spawn the armor stand
      * @return the armor stand entity
      */
     public static ArmorStand spawnArmorStand(Location location) {
-        InvisStandSpawner consumer = new InvisStandSpawner();
+        InvisibleStandSpawner consumer = new InvisibleStandSpawner();
         if (location.getWorld() == null) {
             RunicCore.getInstance().getLogger().info("An error occurred.");
             return null;

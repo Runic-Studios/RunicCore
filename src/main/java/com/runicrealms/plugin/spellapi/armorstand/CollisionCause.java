@@ -1,4 +1,4 @@
-package com.runicrealms.plugin.spellapi.item;
+package com.runicrealms.plugin.spellapi.armorstand;
 
 public enum CollisionCause {
     ENTITY,

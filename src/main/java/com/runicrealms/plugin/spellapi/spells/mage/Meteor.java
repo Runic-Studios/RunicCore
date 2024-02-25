@@ -1,8 +1,8 @@
 package com.runicrealms.plugin.spellapi.spells.mage;
 
 import com.runicrealms.plugin.common.CharacterClass;
-import com.runicrealms.plugin.spellapi.event.ModeledItemCollideEvent;
-import com.runicrealms.plugin.spellapi.item.ModeledItem;
+import com.runicrealms.plugin.spellapi.armorstand.ModeledStand;
+import com.runicrealms.plugin.spellapi.event.ModeledStandCollideEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.RadiusSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
@@ -127,16 +127,16 @@ public class Meteor extends Spell implements MagicDamageSpell, RadiusSpell {
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
-    public void onFireballHit(ModeledItemCollideEvent event) {
-        if (event.getModeledItem().getCustomModelData() != METEOR_MODEL_DATA) return;
-        Player player = event.getModeledItem().getPlayer();
-        explode(player, event.getModeledItem().getItem().getLocation());
+    public void onFireballHit(ModeledStandCollideEvent event) {
+        if (event.getModeledStand().getCustomModelData() != METEOR_MODEL_DATA) return;
+        Player player = event.getModeledStand().getPlayer();
+        explode(player, event.getModeledStand().getArmorStand().getLocation());
     }
 
     private void summonMeteor(Player player, Location location) {
         final Location meteorLocation = location.clone().add(0, HEIGHT, 0);
         Vector vector = new Vector(0, -1, 0).multiply(METEOR_SPEED);
-        ModeledItem meteor = new ModeledItem(
+        ModeledStand meteor = new ModeledStand(
                 player,
                 meteorLocation,
                 vector,
@@ -145,7 +145,7 @@ public class Meteor extends Spell implements MagicDamageSpell, RadiusSpell {
                 HITBOX_SCALE,
                 entity -> TargetUtil.isValidEnemy(player, entity)
         );
-        EntityTrail.entityTrail(meteor.getItem(), Particle.FLAME);
+        EntityTrail.entityTrail(meteor.getArmorStand(), Particle.FLAME);
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 0.5f, 0.01f);
     }
 }

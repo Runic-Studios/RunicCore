@@ -1,9 +1,9 @@
 package com.runicrealms.plugin.spellapi.spells.mage;
 
 import com.runicrealms.plugin.common.CharacterClass;
-import com.runicrealms.plugin.spellapi.event.ModeledItemCollideEvent;
-import com.runicrealms.plugin.spellapi.item.CollisionCause;
-import com.runicrealms.plugin.spellapi.item.ModeledItem;
+import com.runicrealms.plugin.spellapi.armorstand.CollisionCause;
+import com.runicrealms.plugin.spellapi.armorstand.ModeledStand;
+import com.runicrealms.plugin.spellapi.event.ModeledStandCollideEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
@@ -20,8 +20,8 @@ import org.bukkit.util.Vector;
 
 public class Fireball extends Spell implements MagicDamageSpell {
     private static final int FIREBALL_MODEL_DATA = 2251;
-    private static final double HITBOX_SCALE = .01;
-    private static final double SPEED = 2.5; // TODO: should be in .yml
+    private static final double HITBOX_SCALE = 0.5;
+    private static final double SPEED = 2;
     private double magicDamage;
     private double magicDamagePerLevel;
 
@@ -37,8 +37,8 @@ public class Fireball extends Spell implements MagicDamageSpell {
 
     @Override
     public void executeSpell(Player player, SpellItemType type) {
-        final Vector vector = player.getLocation().getDirection().normalize().multiply(SPEED);
-        ModeledItem fireball = new ModeledItem(
+        final Vector vector = player.getEyeLocation().getDirection().normalize().multiply(SPEED);
+        ModeledStand fireball = new ModeledStand(
                 player,
                 player.getEyeLocation(),
                 vector,
@@ -47,7 +47,7 @@ public class Fireball extends Spell implements MagicDamageSpell {
                 HITBOX_SCALE,
                 entity -> TargetUtil.isValidEnemy(player, entity)
         );
-        EntityTrail.entityTrail(fireball.getItem(), Particle.FLAME);
+        EntityTrail.entityTrail(fireball.getArmorStand(), Particle.FLAME);
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 0.5f, 1);
     }
 
@@ -72,10 +72,10 @@ public class Fireball extends Spell implements MagicDamageSpell {
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
-    public void onFireballHit(ModeledItemCollideEvent event) {
-        if (event.getModeledItem().getCustomModelData() != FIREBALL_MODEL_DATA) return;
+    public void onFireballHit(ModeledStandCollideEvent event) {
+        if (event.getModeledStand().getCustomModelData() != FIREBALL_MODEL_DATA) return;
         if (event.getCollisionCause() != CollisionCause.ENTITY) return;
-        Player player = event.getModeledItem().getPlayer();
+        Player player = event.getModeledStand().getPlayer();
         LivingEntity livingEntity = event.getEntity();
         DamageUtil.damageEntitySpell(this.magicDamage, livingEntity, player, this);
         livingEntity.getWorld().spawnParticle(Particle.FLAME, livingEntity.getEyeLocation(), 3, 0.5F, 0.5F, 0.5F, 0);
