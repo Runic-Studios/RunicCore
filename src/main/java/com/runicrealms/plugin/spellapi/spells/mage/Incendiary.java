@@ -3,10 +3,10 @@ package com.runicrealms.plugin.spellapi.spells.mage;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.api.event.StaffAttackEvent;
 import com.runicrealms.plugin.common.CharacterClass;
-import com.runicrealms.plugin.events.MagicDamageEvent;
 import com.runicrealms.plugin.spellapi.effect.SpellEffect;
 import com.runicrealms.plugin.spellapi.effect.SpellEffectType;
 import com.runicrealms.plugin.spellapi.effect.mage.IncendiaryEffect;
+import com.runicrealms.plugin.spellapi.event.SpellCastEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.DistanceSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
@@ -49,7 +49,7 @@ public class Incendiary extends Spell implements MagicDamageSpell, DistanceSpell
     public Incendiary() {
         super("Incendiary", CharacterClass.MAGE);
         this.setIsPassive(true);
-        this.setDescription("Each time you damage an enemy with a &6Pyromancer&7 spell, " +
+        this.setDescription("Each time you cast a &6Pyromancer&7 spell, " +
                 "you become &oincendiary &7for the next " + duration + "s, engulfing you in flame! " +
                 "Your first basic attack while incendiary releases a wave of fire " +
                 "up to " + this.distance + " blocks away, " +
@@ -102,26 +102,26 @@ public class Incendiary extends Spell implements MagicDamageSpell, DistanceSpell
         }
     }
 
-    // TODO: should work on spell cast to reduce bugs, indicator from archmage set?
     @EventHandler(priority = EventPriority.HIGHEST) // last
-    private void onSpellCast(MagicDamageEvent event) {
-        if (!this.hasPassive(event.getPlayer().getUniqueId(), this.getName())) {
+    private void onSpellCast(SpellCastEvent event) {
+        if (!this.hasPassive(event.getCaster().getUniqueId(), this.getName())) {
             return;
         }
 
-        if (!(event.getSpell() instanceof DragonsBreath
+        if (!(event.getSpell() instanceof Fireball
+                || event.getSpell() instanceof DragonsBreath
                 || event.getSpell() instanceof Erupt
                 || event.getSpell() instanceof Meteor)) {
             return;
         }
 
-        UUID uuid = event.getPlayer().getUniqueId();
+        UUID uuid = event.getCaster().getUniqueId();
         Optional<SpellEffect> spellEffectOpt = this.getSpellEffect(uuid, uuid, SpellEffectType.INCENDIARY);
         if (spellEffectOpt.isPresent()) {
             IncendiaryEffect incendiaryEffect = (IncendiaryEffect) spellEffectOpt.get();
             incendiaryEffect.refresh();
         } else {
-            IncendiaryEffect incendiaryEffect = new IncendiaryEffect(event.getPlayer(), this.duration);
+            IncendiaryEffect incendiaryEffect = new IncendiaryEffect(event.getCaster(), this.duration);
             incendiaryEffect.initialize();
         }
     }
