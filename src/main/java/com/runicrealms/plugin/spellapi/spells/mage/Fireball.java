@@ -47,7 +47,11 @@ public class Fireball extends Spell implements MagicDamageSpell {
                 HITBOX_SCALE,
                 entity -> TargetUtil.isValidEnemy(player, entity)
         );
-        EntityTrail.entityTrail(fireball.getArmorStand(), Particle.FLAME);
+        EntityTrail.entityTrail(
+                fireball.getArmorStand(),
+                Particle.FLAME,
+                1.0f
+        );
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 0.5f, 1);
     }
 

@@ -13,8 +13,9 @@ import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.spellapi.spellutil.TargetUtil;
+import com.runicrealms.plugin.spellapi.spellutil.particles.EntityTrail;
 import com.runicrealms.plugin.utilities.DamageUtil;
-import org.bukkit.Bukkit;
+import org.bukkit.Color;
 import org.bukkit.Sound;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -69,7 +70,7 @@ public class Icebolt extends Spell implements DistanceSpell, DurationSpell, Magi
     @Override
     public void executeSpell(Player player, SpellItemType type) {
         final Vector vector = player.getLocation().getDirection().normalize().multiply(SPEED);
-        new ModeledStand(
+        ModeledStand icebolt = new ModeledStand(
                 player,
                 player.getEyeLocation(),
                 vector,
@@ -78,6 +79,7 @@ public class Icebolt extends Spell implements DistanceSpell, DurationSpell, Magi
                 HITBOX_SCALE,
                 entity -> TargetUtil.isValidEnemy(player, entity)
         );
+        EntityTrail.entityTrail(icebolt.getArmorStand(), Color.fromRGB(178, 216, 216), 1.0f);
         player.getWorld().playSound(player.getLocation(), Sound.BLOCK_GLASS_BREAK, 0.5F, 1);
     }
 
@@ -123,22 +125,18 @@ public class Icebolt extends Spell implements DistanceSpell, DurationSpell, Magi
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onIceboltHit(ModeledStandCollideEvent event) {
-        Bukkit.broadcastMessage("event is triggered with reason: " + event.getCollisionCause().toString());
         if (event.getModeledStand().getCustomModelData() != ICEBOLT_MODEL_DATA) return;
         if (event.getCollisionCause() != CollisionCause.ENTITY) return;
-        Bukkit.broadcastMessage("0");
         Player player = event.getModeledStand().getPlayer();
         LivingEntity livingEntity = event.getEntity();
         // Apply or consume chilled, deal damage
         Optional<SpellEffect> spellEffectOpt = this.getSpellEffect(player.getUniqueId(), livingEntity.getUniqueId(), SpellEffectType.CHILLED);
         if (spellEffectOpt.isPresent()) {
-            Bukkit.broadcastMessage("1");
             ChilledEffect chilledEffect = (ChilledEffect) spellEffectOpt.get();
             chilledEffect.cancel();
             double damagePerLevel = this.empoweredDamagePerLevel * player.getLevel();
             DamageUtil.damageEntitySpell(this.empoweredDamage + damagePerLevel, livingEntity, player); // No spell scaling to apply custom
         } else {
-            Bukkit.broadcastMessage("2");
             ChilledEffect chilledEffect = new ChilledEffect(player, livingEntity, this.duration);
             chilledEffect.initialize();
             DamageUtil.damageEntitySpell(this.damage, livingEntity, player, this);

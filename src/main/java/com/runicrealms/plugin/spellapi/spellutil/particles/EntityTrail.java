@@ -27,21 +27,24 @@ public final class EntityTrail {
 
             long now = System.currentTimeMillis();
 
-            for (Map.Entry<Entity, ParticleData> entry : PARTICLES.entrySet()) {
-                ParticleData data = entry.getValue();
-
-                if (entry.getKey().isDead() || (data.getDuration() != null && now >= data.getStart() + data.getDuration() * 50)) {
-                    PARTICLES.remove(entry.getKey());
-                    continue;
+            PARTICLES.forEach(((entity, particleData) -> {
+                if (entity.isDead() || (particleData.getDuration() != null && now >= particleData.getStart() + particleData.getDuration() * 50)) {
+                    PARTICLES.remove(entity);
+                    return;
                 }
 
-                entry.getKey().getWorld().spawnParticle(data.getParticle(), entry.getKey().getLocation(), 1, 0, 0, 0, 0, data.getExtra());
-            }
+                entity.getWorld().spawnParticle(
+                        particleData.getParticle(),
+                        particleData.getOffset() == 0 ? entity.getLocation() : entity.getLocation().clone().add(0, particleData.getOffset(), 0),
+                        1,
+                        0,
+                        0,
+                        0,
+                        0,
+                        particleData.getExtra()
+                );
+            }));
         }, 0, 1);
-    }
-
-    private EntityTrail() {
-
     }
 
     /**
@@ -52,24 +55,28 @@ public final class EntityTrail {
      * @param duration the duration it should last in ticks (or null if no duration)
      * @param extra    extra particle data
      */
-    public static void entityTrail(@NotNull Entity entity, @NotNull Particle particle, @Nullable Long duration, @Nullable Particle.DustOptions extra) {
-        PARTICLES.put(entity, new ParticleData(particle, duration, extra));
+    public static void entityTrail(@NotNull Entity entity, @NotNull Particle particle, @Nullable Long duration, @Nullable Particle.DustOptions extra, float offset) {
+        PARTICLES.put(entity, new ParticleData(particle, duration, extra, offset));
     }
 
-    public static void entityTrail(@NotNull Entity entity, @NotNull Particle particle, @Nullable Long duration) {
-        EntityTrail.entityTrail(entity, particle, duration, null);
+    public static void entityTrail(@NotNull Entity entity, @NotNull Particle particle, @Nullable Long duration, float offset) {
+        EntityTrail.entityTrail(entity, particle, duration, null, offset);
+    }
+
+    public static void entityTrail(@NotNull Entity entity, @NotNull Particle particle, float offset) {
+        EntityTrail.entityTrail(entity, particle, null, offset);
     }
 
     public static void entityTrail(@NotNull Entity entity, @NotNull Particle particle) {
-        EntityTrail.entityTrail(entity, particle, null);
+        EntityTrail.entityTrail(entity, particle, null, 0);
+    }
+
+    public static void entityTrail(@NotNull Entity entity, @NotNull Color color, float offset) {
+        PARTICLES.put(entity, new ParticleData(Particle.REDSTONE, null, new Particle.DustOptions(color, 1), offset));
     }
 
     public static void entityTrail(@NotNull Entity entity, @NotNull Color color) {
-        PARTICLES.put(entity, new ParticleData(Particle.REDSTONE, null, new Particle.DustOptions(color, 1)));
-    }
-
-    public static void removeTrail(@NotNull Entity entity) {
-        PARTICLES.remove(entity);
+        PARTICLES.put(entity, new ParticleData(Particle.REDSTONE, null, new Particle.DustOptions(color, 1), 0));
     }
 
     /**
@@ -82,12 +89,14 @@ public final class EntityTrail {
         private final Long duration;
         private final long start;
         private final Particle.DustOptions extra;
+        private final float offset;
 
-        public ParticleData(@NotNull Particle particle, @Nullable Long duration, @Nullable Particle.DustOptions extra) {
+        public ParticleData(@NotNull Particle particle, @Nullable Long duration, @Nullable Particle.DustOptions extra, float offset) {
             this.particle = particle;
             this.duration = duration;
             this.start = System.currentTimeMillis();
             this.extra = extra;
+            this.offset = offset;
         }
 
         @NotNull
@@ -113,6 +122,10 @@ public final class EntityTrail {
         @Nullable
         public Particle.DustOptions getExtra() {
             return this.extra;
+        }
+
+        public float getOffset() {
+            return offset;
         }
     }
 }
