@@ -31,7 +31,7 @@ import java.util.Optional;
 public class Icebolt extends Spell implements DistanceSpell, DurationSpell, MagicDamageSpell {
     private static final int ICEBOLT_MODEL_DATA = 2244;
     private static final double HITBOX_SCALE = 0.5;
-    private static final double SPEED = 1.5;
+    private static final double SPEED = 2.5;
     private double damage;
     private double damagePerLevel;
     private double distance;
@@ -69,7 +69,7 @@ public class Icebolt extends Spell implements DistanceSpell, DurationSpell, Magi
     @Override
     public void executeSpell(Player player, SpellItemType type) {
         final Vector vector = player.getLocation().getDirection().normalize().multiply(SPEED);
-        ModeledStand icebolt = new ModeledStand(
+        new ModeledStand(
                 player,
                 player.getEyeLocation(),
                 vector,
@@ -78,7 +78,6 @@ public class Icebolt extends Spell implements DistanceSpell, DurationSpell, Magi
                 HITBOX_SCALE,
                 entity -> TargetUtil.isValidEnemy(player, entity)
         );
-//        EntityTrail.entityTrail(icebolt.getItem(), Color.fromRGB(178, 216, 216));
         player.getWorld().playSound(player.getLocation(), Sound.BLOCK_GLASS_BREAK, 0.5F, 1);
     }
 
@@ -124,6 +123,7 @@ public class Icebolt extends Spell implements DistanceSpell, DurationSpell, Magi
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onIceboltHit(ModeledStandCollideEvent event) {
+        Bukkit.broadcastMessage("event is triggered with reason: " + event.getCollisionCause().toString());
         if (event.getModeledStand().getCustomModelData() != ICEBOLT_MODEL_DATA) return;
         if (event.getCollisionCause() != CollisionCause.ENTITY) return;
         Bukkit.broadcastMessage("0");

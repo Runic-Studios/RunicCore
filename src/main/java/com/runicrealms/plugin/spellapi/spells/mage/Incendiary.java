@@ -102,6 +102,7 @@ public class Incendiary extends Spell implements MagicDamageSpell, DistanceSpell
         }
     }
 
+    // TODO: should work on spell cast to reduce bugs, indicator from archmage set?
     @EventHandler(priority = EventPriority.HIGHEST) // last
     private void onSpellCast(MagicDamageEvent event) {
         if (!this.hasPassive(event.getPlayer().getUniqueId(), this.getName())) {

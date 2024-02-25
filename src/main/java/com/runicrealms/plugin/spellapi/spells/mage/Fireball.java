@@ -21,7 +21,7 @@ import org.bukkit.util.Vector;
 public class Fireball extends Spell implements MagicDamageSpell {
     private static final int FIREBALL_MODEL_DATA = 2251;
     private static final double HITBOX_SCALE = 0.5;
-    private static final double SPEED = 2;
+    private static final double SPEED = 3.5;
     private double magicDamage;
     private double magicDamagePerLevel;
 

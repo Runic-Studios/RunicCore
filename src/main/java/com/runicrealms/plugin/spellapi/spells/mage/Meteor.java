@@ -31,7 +31,7 @@ public class Meteor extends Spell implements MagicDamageSpell, RadiusSpell {
     private static final int HEIGHT = 8;
     private static final int MAX_DIST = 12;
     private static final double HITBOX_SCALE = .01;
-    private static final double METEOR_SPEED = 0.75D;
+    private static final double METEOR_SPEED = 1.5D;
     private static final double RAY_SIZE = 1.0D;
     private double damage;
     private double radius;

@@ -1,7 +1,6 @@
 package com.runicrealms.plugin.spellapi.armorstand;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.api.ArmorStandAPI;
 import com.ticxo.modelengine.api.ModelEngineAPI;
 import com.ticxo.modelengine.api.model.ActiveModel;
 import com.ticxo.modelengine.api.model.ModeledEntity;
@@ -68,11 +67,18 @@ public class ModeledStand {
             modeledItemStack.setItemMeta(meta);
         }
 
-        ArmorStand armorStand = ArmorStandAPI.spawnArmorStand(this.location.clone().subtract(0, 0.25f, 0));
-        if (armorStand != null && armorStand.getEquipment() != null) {
+        ArmorStand armorStand = player.getWorld().spawn(this.location.clone().subtract(0, 0.25f, 0), ArmorStand.class);
+        if (armorStand.getEquipment() != null) {
             armorStand.getEquipment().setHelmet(modeledItemStack);
-            armorStand.setVelocity(this.vector);
         }
+        armorStand.setVisible(false);
+        armorStand.setCollidable(false);
+        armorStand.setInvulnerable(true);
+        armorStand.setGravity(false);
+        armorStand.setMarker(false);
+
+        armorStand.teleport(armorStand.getLocation().add(vector));
+//        armorStand.setVelocity(this.vector);
 
         return armorStand;
     }

@@ -8,7 +8,6 @@ import com.runicrealms.plugin.spellapi.spelltypes.RadiusSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spellutil.TargetUtil;
 import com.runicrealms.plugin.utilities.DamageUtil;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -52,7 +51,6 @@ public class Wildfire extends Spell implements RadiusSpell, DurationSpell {
         if (!this.hasPassive(event.getPlayer().getUniqueId(), this.getName()) || !(event.getSpell() instanceof Fireball)) {
             return;
         }
-        Bukkit.broadcastMessage("wildfire");
 
         // Initial reduction from first fireball
         RunicCore.getSpellAPI().reduceCooldown(event.getPlayer(), "Meteor", this.duration);
