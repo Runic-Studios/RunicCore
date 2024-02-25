@@ -7,6 +7,7 @@ import com.runicrealms.plugin.spellapi.spelltypes.RadiusSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.ShieldingSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
+import com.runicrealms.plugin.spellapi.spellutil.TargetUtil;
 import com.runicrealms.plugin.spellapi.spellutil.particles.Hexagon;
 import org.bukkit.Color;
 import org.bukkit.Location;
@@ -71,13 +72,13 @@ public class CosmicPrism extends Spell implements DurationSpell, RadiusSpell, Sh
                     this.cancel();
                     new Hexagon(castLocation, Sound.ITEM_FIRECHARGE_USE, 0.25f, 1, radius, Particle.FIREWORKS_SPARK, Color.YELLOW).runTaskTimer(RunicCore.getInstance(), 0, 20L);
                     castLocation.getWorld().playSound(castLocation, Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 0.5f);
-                    for (Entity entity : castLocation.getWorld().getNearbyEntities(castLocation, radius, radius, radius, target -> isValidAlly(player, target))) {
+                    for (Entity entity : castLocation.getWorld().getNearbyEntities(castLocation, radius, radius, radius, target -> TargetUtil.isValidAlly(player, target))) {
                         RunicCore.getSpellAPI().shieldPlayer(player, (Player) entity, percent * shield, spell);
                     }
                     return;
                 }
                 count += period;
-                for (Entity entity : castLocation.getWorld().getNearbyEntities(castLocation, radius, radius, radius, target -> isValidAlly(player, target))) {
+                for (Entity entity : castLocation.getWorld().getNearbyEntities(castLocation, radius, radius, radius, target -> TargetUtil.isValidAlly(player, target))) {
                     RunicCore.getSpellAPI().shieldPlayer(player, (Player) entity, shield, spell);
                 }
             }

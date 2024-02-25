@@ -47,7 +47,7 @@
 //        event.getPlayer().getWorld().playSound(onKillEvent.getVictim().getLocation(), Sound.ENTITY_FIREWORK_ROCKET_BLAST, 2.0f, 1.0f);
 //        onKillEvent.getVictim().getWorld().spawnParticle(Particle.CRIT_MAGIC, onKillEvent.getVictim().getLocation(), 25, 0.5F, 0.5F, 0.5F, 0);
 //        for (Entity en : onKillEvent.getVictim().getNearbyEntities(RADIUS, RADIUS, RADIUS)) {
-//            if (!isValidEnemy(event.getPlayer(), en)) continue;
+//            if (!TargetUtil.isValidEnemy(event.getPlayer(), en)) continue;
 //            DamageUtil.damageEntitySpell(damage, (LivingEntity) en, event.getPlayer());
 //        }
 //    }

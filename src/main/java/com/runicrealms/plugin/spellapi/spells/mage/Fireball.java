@@ -1,27 +1,27 @@
 package com.runicrealms.plugin.spellapi.spells.mage;
 
 import com.runicrealms.plugin.common.CharacterClass;
+import com.runicrealms.plugin.spellapi.event.ModeledItemCollideEvent;
+import com.runicrealms.plugin.spellapi.item.CollisionCause;
+import com.runicrealms.plugin.spellapi.item.ModeledItem;
 import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
+import com.runicrealms.plugin.spellapi.spellutil.TargetUtil;
+import com.runicrealms.plugin.spellapi.spellutil.particles.EntityTrail;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.SmallFireball;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.util.Vector;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
-
 public class Fireball extends Spell implements MagicDamageSpell {
-    private static final double FIREBALL_SPEED = 2;
-    private final Map<UUID, SmallFireball> fireballMap = new HashMap<>();
+    private static final int FIREBALL_MODEL_DATA = 2251;
+    private static final double HITBOX_SCALE = .01;
+    private static final double SPEED = 2.5; // TODO: should be in .yml
     private double magicDamage;
     private double magicDamagePerLevel;
 
@@ -37,12 +37,17 @@ public class Fireball extends Spell implements MagicDamageSpell {
 
     @Override
     public void executeSpell(Player player, SpellItemType type) {
-        fireballMap.put(player.getUniqueId(), player.launchProjectile(SmallFireball.class));
-        SmallFireball fireball = fireballMap.get(player.getUniqueId());
-        fireball.setIsIncendiary(false);
-        final Vector velocity = player.getLocation().getDirection().normalize().multiply(FIREBALL_SPEED);
-        fireball.setVelocity(velocity);
-        fireball.setShooter(player);
+        final Vector vector = player.getLocation().getDirection().normalize().multiply(SPEED);
+        ModeledItem fireball = new ModeledItem(
+                player,
+                player.getEyeLocation(),
+                vector,
+                FIREBALL_MODEL_DATA,
+                4.0,
+                HITBOX_SCALE,
+                entity -> TargetUtil.isValidEnemy(player, entity)
+        );
+        EntityTrail.entityTrail(fireball.getItem(), Particle.FLAME);
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 0.5f, 1);
     }
 
@@ -66,20 +71,14 @@ public class Fireball extends Spell implements MagicDamageSpell {
         this.magicDamagePerLevel = magicDamagePerLevel;
     }
 
-    @EventHandler(priority = EventPriority.LOWEST)
-    public void onFireballDamage(ProjectileHitEvent event) {
-        if (fireballMap.isEmpty()) return;
-        if (event.getEntity().getShooter() == null) return;
-        if (!(event.getEntity().getShooter() instanceof Player player)) return;
-        if (!fireballMap.containsKey(player.getUniqueId())) return;
-        SmallFireball fireball = fireballMap.get(player.getUniqueId());
-        fireball.remove();
-        fireballMap.remove(player.getUniqueId());
-        event.setCancelled(true);
-        if (!(event.getHitEntity() instanceof LivingEntity victim)) return;
-        if (!isValidEnemy(player, victim)) return;
-        DamageUtil.damageEntitySpell(this.magicDamage, victim, player, this);
-        victim.getWorld().spawnParticle(Particle.FLAME, victim.getEyeLocation(), 3, 0.5F, 0.5F, 0.5F, 0);
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    public void onFireballHit(ModeledItemCollideEvent event) {
+        if (event.getModeledItem().getCustomModelData() != FIREBALL_MODEL_DATA) return;
+        if (event.getCollisionCause() != CollisionCause.ENTITY) return;
+        Player player = event.getModeledItem().getPlayer();
+        LivingEntity livingEntity = event.getEntity();
+        DamageUtil.damageEntitySpell(this.magicDamage, livingEntity, player, this);
+        livingEntity.getWorld().spawnParticle(Particle.FLAME, livingEntity.getEyeLocation(), 3, 0.5F, 0.5F, 0.5F, 0);
         player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_HURT, 0.5f, 1);
     }
 }

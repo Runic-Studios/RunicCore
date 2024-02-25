@@ -51,8 +51,8 @@ import com.runicrealms.plugin.spellapi.spells.mage.Blizzard;
 import com.runicrealms.plugin.spellapi.spells.mage.DragonsBreath;
 import com.runicrealms.plugin.spellapi.spells.mage.Erupt;
 import com.runicrealms.plugin.spellapi.spells.mage.Fireball;
-import com.runicrealms.plugin.spellapi.spells.mage.Frostbite;
 import com.runicrealms.plugin.spellapi.spells.mage.Glacier;
+import com.runicrealms.plugin.spellapi.spells.mage.Icebolt;
 import com.runicrealms.plugin.spellapi.spells.mage.Incendiary;
 import com.runicrealms.plugin.spellapi.spells.mage.Meteor;
 import com.runicrealms.plugin.spellapi.spells.mage.PrimalArcanum;
@@ -392,7 +392,7 @@ public class SpellManager implements Listener, SpellAPI {
         this.spellList.add(new RadiantFire());
         this.spellList.add(new Backstab());
         this.spellList.add(new Taunt());
-        this.spellList.add(new Frostbite());
+        this.spellList.add(new Icebolt());
         this.spellList.add(new DragonsBreath());
         this.spellList.add(new Riftwalk());
         this.spellList.add(new SpectralBlade());
@@ -444,7 +444,7 @@ public class SpellManager implements Listener, SpellAPI {
         this.spellList.add(new UmbralGrasp());
         this.spellList.add(new Damnation());
         this.spellList.add(new Ruination());
-        this.spellList.add(new Frostbite());
+        this.spellList.add(new Icebolt());
         this.spellList.add(new Shatter());
         this.spellList.add(new Jolt());
         this.spellList.add(new Overcharge());

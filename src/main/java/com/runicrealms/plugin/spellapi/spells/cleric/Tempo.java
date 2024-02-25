@@ -10,6 +10,7 @@ import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.ISpell;
 import com.runicrealms.plugin.spellapi.spelltypes.RadiusSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
+import com.runicrealms.plugin.spellapi.spellutil.TargetUtil;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -54,7 +55,7 @@ public class Tempo extends Spell implements RadiusSpell, DurationSpell {
         RunicCore.getRegenManager().addMana(event.getCaster(), this.restore);
 
         for (Entity entity : event.getCaster().getNearbyEntities(this.radius, this.radius, this.radius)) {
-            if (!(entity instanceof Player ally) || !this.isValidAlly(event.getCaster(), ally)) {
+            if (!(entity instanceof Player ally) || !TargetUtil.isValidAlly(event.getCaster(), ally)) {
                 continue;
             }
 

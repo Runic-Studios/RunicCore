@@ -8,6 +8,7 @@ import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.PhysicalDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
+import com.runicrealms.plugin.spellapi.spellutil.TargetUtil;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import com.runicrealms.plugin.utilities.MobUtil;
 import org.bukkit.Bukkit;
@@ -101,7 +102,7 @@ public class Cannonfire extends Spell implements DurationSpell, PhysicalDamageSp
                 pellet.getWorld().spawnParticle(Particle.CRIT, pellet.getLocation(), 1, 0, 0, 0, 0);
 
                 for (Entity entity : pellet.getWorld().getNearbyEntities(loc, 1.5, 1.5, 1.5)) {
-                    if (!isValidEnemy(player, entity) || hasBeenHit.get(player.getUniqueId()).contains(entity.getUniqueId())) {
+                    if (!TargetUtil.isValidEnemy(player, entity) || hasBeenHit.get(player.getUniqueId()).contains(entity.getUniqueId())) {
                         continue;
                     }
 

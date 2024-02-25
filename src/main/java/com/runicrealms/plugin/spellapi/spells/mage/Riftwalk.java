@@ -7,6 +7,7 @@ import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.RadiusSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
+import com.runicrealms.plugin.spellapi.spellutil.TargetUtil;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
@@ -87,7 +88,7 @@ public class Riftwalk extends Spell implements DurationSpell, MagicDamageSpell, 
                     caster.getWorld().playSound(caster.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 1.0f, 0.2f);
                     for (Entity entity : event.getCaster().getWorld().getNearbyEntities
                             (event.getCaster().getLocation(), radius, radius, radius,
-                                    target -> isValidEnemy(event.getCaster(), target))) {
+                                    target -> TargetUtil.isValidEnemy(event.getCaster(), target))) {
                         DamageUtil.damageEntitySpell(damage, (LivingEntity) entity, event.getCaster(), this);
                         foundEnemy = true;
                     }

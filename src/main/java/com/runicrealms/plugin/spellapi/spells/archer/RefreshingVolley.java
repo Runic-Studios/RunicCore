@@ -7,6 +7,7 @@ import com.runicrealms.plugin.events.PhysicalDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.DistanceSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.HealingSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
+import com.runicrealms.plugin.spellapi.spellutil.TargetUtil;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -71,7 +72,7 @@ public class RefreshingVolley extends Spell implements HealingSpell, DistanceSpe
         Pair<Player, Double> two = null;
 
         for (Entity entity : event.getPlayer().getWorld().getNearbyEntities(event.getPlayer().getLocation(), this.distance, this.distance, this.distance, entity -> !entity.getUniqueId().equals(event.getPlayer().getUniqueId()))) {
-            if (!(entity instanceof Player member) || !this.isValidAlly(event.getPlayer(), member)) {
+            if (!(entity instanceof Player member) || !TargetUtil.isValidAlly(event.getPlayer(), member)) {
                 continue;
             }
 

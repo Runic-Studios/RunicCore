@@ -5,6 +5,7 @@ import com.runicrealms.plugin.spellapi.spelltypes.DistanceSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.PhysicalDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
+import com.runicrealms.plugin.spellapi.spellutil.TargetUtil;
 import com.runicrealms.plugin.spellapi.spellutil.VectorUtil;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.Color;
@@ -54,7 +55,7 @@ public class PiercingArrow extends Spell implements DistanceSpell, PhysicalDamag
                             remainingDistance,
                             BEAM_WIDTH,
                             entity -> {
-                                boolean result = isValidEnemy(player, entity);
+                                boolean result = TargetUtil.isValidEnemy(player, entity);
                                 if (hitEntityMap.get(player.getUniqueId()).contains(entity.getUniqueId()))
                                     result = false;
                                 return result;

@@ -6,6 +6,7 @@ import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.RadiusSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
+import com.runicrealms.plugin.spellapi.spellutil.TargetUtil;
 import com.runicrealms.plugin.spellapi.spellutil.particles.EntityTrail;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.Color;
@@ -103,7 +104,7 @@ public class ThunderArrow extends Spell implements MagicDamageSpell, RadiusSpell
                     powerShot.getWorld().spawnParticle(Particle.EXPLOSION_LARGE, arrowLoc, 10, 0, 0, 0, 0);
                     powerShot.getWorld().spawnParticle(Particle.CRIT_MAGIC, arrowLoc, 25, 0.5f, 0.5f, 0.5f, 0);
                     for (Entity entity : player.getWorld().getNearbyEntities(arrowLoc, radius, radius, radius)) {
-                        if (!isValidEnemy(player, entity)) continue;
+                        if (!TargetUtil.isValidEnemy(player, entity)) continue;
                         DamageUtil.damageEntitySpell(damage, (LivingEntity) entity, player, spell);
                     }
                 }

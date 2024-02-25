@@ -11,6 +11,7 @@ import com.runicrealms.plugin.spellapi.spelltypes.PhysicalDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.RadiusSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
+import com.runicrealms.plugin.spellapi.spellutil.TargetUtil;
 import com.runicrealms.plugin.spellapi.spellutil.VectorUtil;
 import com.runicrealms.plugin.spellapi.spellutil.particles.HorizontalCircleFrame;
 import com.runicrealms.plugin.utilities.DamageUtil;
@@ -69,7 +70,7 @@ public class Whirlpool extends Spell implements DistanceSpell, DurationSpell, Ma
                         player.getLocation().getDirection(),
                         distance,
                         BEAM_WIDTH,
-                        entity -> isValidEnemy(player, entity)
+                        entity -> TargetUtil.isValidEnemy(player, entity)
                 );
 
         if (rayTraceResult == null) {
@@ -109,7 +110,7 @@ public class Whirlpool extends Spell implements DistanceSpell, DurationSpell, Ma
             }
 
             for (Entity entity : recipient.getWorld().getNearbyEntities(castLocation, radius,
-                    radius, radius, target -> isValidEnemy(caster, target))) {
+                    radius, radius, target -> TargetUtil.isValidEnemy(caster, target))) {
                 if (count.get() % 1 == 0) {
                     DamageUtil.damageEntitySpell(magicDamage, (LivingEntity) entity, caster, this);
                 }

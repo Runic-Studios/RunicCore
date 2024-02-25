@@ -8,6 +8,7 @@ import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.RadiusSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
+import com.runicrealms.plugin.spellapi.spellutil.TargetUtil;
 import com.runicrealms.plugin.spellapi.spellutil.ThreatUtil;
 import com.runicrealms.plugin.spellapi.spellutil.VectorUtil;
 import com.runicrealms.plugin.utilities.DamageUtil;
@@ -50,7 +51,7 @@ public class Smite extends Spell implements DistanceSpell, MagicDamageSpell, Rad
                         player.getLocation().getDirection(),
                         maxDistance,
                         BEAM_WIDTH,
-                        entity -> isValidEnemy(player, entity)
+                        entity -> TargetUtil.isValidEnemy(player, entity)
                 );
 
         if (rayTraceResult == null) {
@@ -62,7 +63,7 @@ public class Smite extends Spell implements DistanceSpell, MagicDamageSpell, Rad
             VectorUtil.drawLine(player, Particle.CLOUD, Color.WHITE, player.getEyeLocation(), livingEntity.getEyeLocation(), 0.75D, 1, 0.15f);
             livingEntity.getWorld().playSound(livingEntity.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 0.25f, 2.0f);
             livingEntity.getWorld().spawnParticle(Particle.VILLAGER_ANGRY, livingEntity.getEyeLocation(), 8, 0.8f, 0.5f, 0.8f, 0);
-            for (Entity entity : livingEntity.getWorld().getNearbyEntities(livingEntity.getLocation(), radius, radius, radius, target -> isValidEnemy(player, target))) {
+            for (Entity entity : livingEntity.getWorld().getNearbyEntities(livingEntity.getLocation(), radius, radius, radius, target -> TargetUtil.isValidEnemy(player, target))) {
                 if (livingEntity.equals(entity)) continue;
                 // Calculate knockback direction
                 Vector attackerPos = player.getLocation().toVector();

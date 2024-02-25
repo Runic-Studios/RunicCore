@@ -13,6 +13,7 @@ import com.runicrealms.plugin.spellapi.spelltypes.RadiusSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.spellapi.spelltypes.WarmupSpell;
+import com.runicrealms.plugin.spellapi.spellutil.TargetUtil;
 import com.runicrealms.plugin.spellapi.spellutil.VectorUtil;
 import com.runicrealms.plugin.spellapi.spellutil.particles.HorizontalCircleFrame;
 import com.runicrealms.plugin.utilities.DamageUtil;
@@ -62,7 +63,7 @@ public class Blizzard extends Spell implements DistanceSpell, DurationSpell, Mag
     }
 
     private void blizzardDamage(Player player, Location location) {
-        for (Entity entity : player.getWorld().getNearbyEntities(location, radius, radius, radius, target -> isValidEnemy(player, target))) {
+        for (Entity entity : player.getWorld().getNearbyEntities(location, radius, radius, radius, target -> TargetUtil.isValidEnemy(player, target))) {
             player.getWorld().playSound(entity.getLocation(), Sound.BLOCK_GLASS_BREAK, 0.25F, 1.0F);
             DamageUtil.damageEntitySpell(damage, (LivingEntity) entity, player, this);
             addStatusEffect((LivingEntity) entity, RunicStatusEffect.SLOW_III, SLOW_DURATION, false);
@@ -85,7 +86,7 @@ public class Blizzard extends Spell implements DistanceSpell, DurationSpell, Mag
                 player.getLocation().getDirection(),
                 distance,
                 RAY_SIZE,
-                entity -> isValidEnemy(player, entity)
+                entity -> TargetUtil.isValidEnemy(player, entity)
         );
 
         Location location;

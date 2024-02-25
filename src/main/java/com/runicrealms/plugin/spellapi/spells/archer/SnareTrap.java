@@ -9,6 +9,7 @@ import com.runicrealms.plugin.spellapi.spelltypes.RadiusSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.spellapi.spelltypes.WarmupSpell;
+import com.runicrealms.plugin.spellapi.spellutil.TargetUtil;
 import com.runicrealms.plugin.spellapi.spellutil.particles.Circle;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import me.filoghost.holographicdisplays.api.HolographicDisplaysAPI;
@@ -67,7 +68,7 @@ public class SnareTrap extends Spell implements DurationSpell, RadiusSpell, Warm
                     Circle.createParticleCircle(player, castLocation, (int) radius, Particle.CRIT);
                     boolean trapSprung = false;
                     for (Entity entity : player.getWorld().getNearbyEntities(castLocation, radius, radius, radius)) {
-                        if (isValidEnemy(player, entity)) {
+                        if (TargetUtil.isValidEnemy(player, entity)) {
                             trapSprung = true;
                             springTrap((LivingEntity) entity, player);
                         }

@@ -1,9 +1,7 @@
 package com.runicrealms.plugin.spellapi.spelltypes;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.api.event.AllyVerifyEvent;
 import com.runicrealms.plugin.common.CharacterClass;
-import com.runicrealms.plugin.events.EnemyVerifyEvent;
 import com.runicrealms.plugin.rdb.RunicDatabase;
 import com.runicrealms.plugin.spellapi.effect.RunicStatusEffect;
 import com.runicrealms.plugin.spellapi.effect.SpellEffect;
@@ -169,20 +167,6 @@ public abstract class Spell implements ISpell, Listener {
     @Override
     public boolean isOnCooldown(@NotNull Player player) {
         return RunicCore.getSpellAPI().isOnCooldown(player, this.getName());
-    }
-
-    @Override
-    public boolean isValidAlly(@NotNull Player caster, @NotNull Entity ally) {
-        AllyVerifyEvent allyVerifyEvent = new AllyVerifyEvent(caster, ally);
-        Bukkit.getServer().getPluginManager().callEvent(allyVerifyEvent);
-        return !allyVerifyEvent.isCancelled();
-    }
-
-    @Override
-    public boolean isValidEnemy(@NotNull Player caster, @NotNull Entity victim) {
-        EnemyVerifyEvent enemyVerifyEvent = new EnemyVerifyEvent(caster, victim);
-        Bukkit.getServer().getPluginManager().callEvent(enemyVerifyEvent);
-        return !enemyVerifyEvent.isCancelled();
     }
 
     @Override

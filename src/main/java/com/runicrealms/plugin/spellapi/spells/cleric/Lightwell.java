@@ -6,6 +6,7 @@ import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.HealingSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.RadiusSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
+import com.runicrealms.plugin.spellapi.spellutil.TargetUtil;
 import com.runicrealms.plugin.spellapi.spellutil.particles.Circle;
 import org.bukkit.Color;
 import org.bukkit.Location;
@@ -108,9 +109,9 @@ public class Lightwell extends Spell implements DurationSpell, HealingSpell, Rad
                 player.getWorld().spawnParticle(Particle.FIREWORKS_SPARK, location, 25, 0.75f, 0.75f, 0.75f, 0);
 
                 for (Entity entity : player.getWorld().getNearbyEntities(location, radius, radius, radius)) {
-                    if (isValidAlly(player, entity)) {
+                    if (TargetUtil.isValidAlly(player, entity)) {
                         healPlayer(player, (Player) entity, healAmt, spell);
-                    } else if (isValidEnemy(player, entity)) {
+                    } else if (TargetUtil.isValidEnemy(player, entity)) {
                         entity.getWorld().spawnParticle(Particle.REDSTONE, ((LivingEntity) entity).getEyeLocation(), 5, 0.5f, 0.5f, 0.5f,
                                 new Particle.DustOptions(Color.BLACK, 1));
                     }

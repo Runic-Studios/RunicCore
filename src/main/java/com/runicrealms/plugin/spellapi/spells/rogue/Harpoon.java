@@ -8,6 +8,7 @@ import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.PhysicalDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
+import com.runicrealms.plugin.spellapi.spellutil.TargetUtil;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import com.runicrealms.plugin.utilities.MobUtil;
 import org.bukkit.Bukkit;
@@ -118,13 +119,13 @@ public class Harpoon extends Spell implements DurationSpell, PhysicalDamageSpell
 
         // grab our variables
         LivingEntity victim = (LivingEntity) event.getCollidedWith();
-        if (isValidAlly(player, victim)) {
+        if (TargetUtil.isValidAlly(player, victim)) {
             player.teleport(victim.getEyeLocation());
             final Vector velocity = player.getLocation().getDirection().add(new Vector(0, 0.5, 0)).normalize().multiply(0.5);
             player.setVelocity(velocity);
             return;
         }
-        if (isValidEnemy(player, victim)) {
+        if (TargetUtil.isValidEnemy(player, victim)) {
 
             // apply spell mechanics
             Location playerLoc = player.getLocation();

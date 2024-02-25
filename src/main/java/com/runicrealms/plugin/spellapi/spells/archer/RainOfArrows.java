@@ -9,6 +9,7 @@ import com.runicrealms.plugin.spellapi.spelltypes.PhysicalDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.RadiusSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
+import com.runicrealms.plugin.spellapi.spellutil.TargetUtil;
 import com.runicrealms.plugin.spellapi.spellutil.VectorUtil;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.Bukkit;
@@ -81,7 +82,7 @@ public class RainOfArrows extends Spell implements RadiusSpell, DurationSpell, P
 
             Bukkit.getScheduler().runTask(RunicCore.getInstance(), () -> {
                 for (Entity entity : player.getNearbyEntities(this.radius, this.radius, this.radius)) {
-                    if (!(entity instanceof LivingEntity target) || !this.isValidEnemy(player, target)) {
+                    if (!(entity instanceof LivingEntity target) || !TargetUtil.isValidEnemy(player, target)) {
                         continue;
                     }
 

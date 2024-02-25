@@ -6,6 +6,7 @@ import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.RadiusSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
+import com.runicrealms.plugin.spellapi.spellutil.TargetUtil;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.Color;
 import org.bukkit.Location;
@@ -133,9 +134,9 @@ public class SacredSpring extends Spell implements HealingSpell, MagicDamageSpel
         expiredBomb.getWorld().playSound(loc, Sound.ENTITY_EXPERIENCE_BOTTLE_THROW, 0.5F, 1.0F);
 
         for (Entity entity : player.getWorld().getNearbyEntities(loc, radius, radius, radius)) {
-            if (isValidAlly(player, entity))
+            if (TargetUtil.isValidAlly(player, entity))
                 healPlayer(player, (Player) entity, healAmt, this);
-            if (isValidEnemy(player, entity))
+            if (TargetUtil.isValidEnemy(player, entity))
                 DamageUtil.damageEntitySpell(damage, ((LivingEntity) entity), player, this);
         }
     }

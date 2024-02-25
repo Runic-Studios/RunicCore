@@ -10,6 +10,7 @@ import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.RadiusSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
+import com.runicrealms.plugin.spellapi.spellutil.TargetUtil;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.Location;
 import org.bukkit.Particle;
@@ -77,7 +78,7 @@ public class Erupt extends Spell implements DurationSpell, MagicDamageSpell, Rad
                         player.getLocation().getDirection(),
                         MAX_DIST,
                         RAY_SIZE,
-                        entity -> isValidEnemy(player, entity)
+                        entity -> TargetUtil.isValidEnemy(player, entity)
                 );
         Location location;
         if (rayTraceResult == null) {
@@ -102,7 +103,7 @@ public class Erupt extends Spell implements DurationSpell, MagicDamageSpell, Rad
         player.getWorld().playSound(blastLocation, Sound.ENTITY_GENERIC_EXPLODE, 0.5f, 0.5f);
         player.getWorld().spawnParticle(Particle.LAVA, blastLocation, 25, 0.3f, 0.3f, 0.3f, 0);
 
-        for (Entity entity : player.getWorld().getNearbyEntities(blastLocation, radius, radius, radius, target -> isValidEnemy(player, target))) {
+        for (Entity entity : player.getWorld().getNearbyEntities(blastLocation, radius, radius, radius, target -> TargetUtil.isValidEnemy(player, target))) {
             LivingEntity livingEntity = (LivingEntity) entity;
             DamageUtil.damageEntitySpell(damage, livingEntity, player, this);
             IgniteEffect igniteEffect = new IgniteEffect(player, livingEntity, duration);

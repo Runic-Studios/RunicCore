@@ -9,6 +9,7 @@ import com.runicrealms.plugin.spellapi.spelltypes.RadiusSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.ShieldingSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
+import com.runicrealms.plugin.spellapi.spellutil.TargetUtil;
 import com.runicrealms.plugin.spellapi.spellutil.VectorUtil;
 import com.runicrealms.plugin.utilities.BlocksUtil;
 import com.runicrealms.plugin.utilities.DamageUtil;
@@ -129,7 +130,7 @@ public class Salvation extends Spell implements DistanceSpell, DurationSpell, Ma
         Block block = optional.get();
         Player caster = Bukkit.getPlayer(blockMap.get(block).getCasterUUID());
         if (caster == null) return;
-        if (!isValidAlly(caster, player)) return; // Only allies can click the bell
+        if (!TargetUtil.isValidAlly(caster, player)) return; // Only allies can click the bell
         player.getWorld().playSound(event.getClickedBlock().getLocation(), Sound.BLOCK_BELL_USE, 0.5f, 2.0f);
         // Destroy bell
         int count = blockMap.get(block).getCount().get();
@@ -138,7 +139,7 @@ public class Salvation extends Spell implements DistanceSpell, DurationSpell, Ma
         // Damage nearby entities
         block.getWorld().playSound(block.getLocation(), Sound.ENTITY_DRAGON_FIREBALL_EXPLODE, 0.5f, 2.0f);
         block.getWorld().spawnParticle(Particle.FIREWORKS_SPARK, block.getLocation(), 15, 2.0f, 2.0f, 2.0f, 0);
-        for (Entity entity : block.getWorld().getNearbyEntities(block.getLocation(), radius, radius, radius, target -> isValidEnemy(caster, target))) {
+        for (Entity entity : block.getWorld().getNearbyEntities(block.getLocation(), radius, radius, radius, target -> TargetUtil.isValidEnemy(caster, target))) {
             DamageUtil.damageEntitySpell(damage * count, (LivingEntity) entity, caster, this);
         }
         shieldPlayer(caster, player, shield * count, this);

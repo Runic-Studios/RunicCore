@@ -15,6 +15,7 @@ import com.runicrealms.plugin.spellapi.spelltypes.AttributeSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.RadiusSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
+import com.runicrealms.plugin.spellapi.spellutil.TargetUtil;
 import org.bukkit.Color;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
@@ -64,7 +65,7 @@ public class Accelerando extends Spell implements DurationSpell, RadiusSpell, At
         long now = System.currentTimeMillis();
 
         for (Entity entity : event.getCaster().getNearbyEntities(this.radius, this.radius, this.radius)) {
-            if (!(entity instanceof Player ally) || !this.isValidAlly(event.getCaster(), ally)) {
+            if (!(entity instanceof Player ally) || !TargetUtil.isValidAlly(event.getCaster(), ally)) {
                 continue;
             }
 

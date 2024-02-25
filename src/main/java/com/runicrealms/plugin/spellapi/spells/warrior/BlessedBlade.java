@@ -15,6 +15,7 @@ import com.runicrealms.plugin.spellapi.spelltypes.HealingSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.RadiusSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
+import com.runicrealms.plugin.spellapi.spellutil.TargetUtil;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -127,7 +128,7 @@ public class BlessedBlade extends Spell implements DurationSpell, HealingSpell, 
         // Heal caster and allies
         healPlayer(player, player, heal, this);
         int alliesHealed = 0;
-        for (Entity entity : player.getWorld().getNearbyEntities(player.getLocation(), radius, radius, radius, target -> isValidAlly(player, target))) {
+        for (Entity entity : player.getWorld().getNearbyEntities(player.getLocation(), radius, radius, radius, target -> TargetUtil.isValidAlly(player, target))) {
             if (entity.equals(player)) continue;
             healPlayer(player, (Player) entity, heal, this);
             alliesHealed++;

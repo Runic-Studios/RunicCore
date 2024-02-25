@@ -8,6 +8,7 @@ import com.runicrealms.plugin.spellapi.spelltypes.HealingSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.RadiusSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
+import com.runicrealms.plugin.spellapi.spellutil.TargetUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
@@ -57,7 +58,7 @@ public class Rejuvenate extends Spell implements DurationSpell, HealingSpell, Ra
         HashSet<UUID> allies = new HashSet<>();
         affectedPlayers.put(caster.getUniqueId(), allies);
         for (Entity entity : caster.getWorld().getNearbyEntities(location, radius, radius, radius)) {
-            if (isValidAlly(caster, entity)) {
+            if (TargetUtil.isValidAlly(caster, entity)) {
                 // a bunch of fancy checks to make sure one player can't be spam healed by the same effect
                 // multiple times
                 Player ally = (Player) entity;

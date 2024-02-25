@@ -6,7 +6,9 @@ import com.runicrealms.plugin.events.MagicDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.RadiusSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
+import com.runicrealms.plugin.spellapi.spellutil.TargetUtil;
 import com.runicrealms.plugin.utilities.DamageUtil;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -50,6 +52,7 @@ public class Wildfire extends Spell implements RadiusSpell, DurationSpell {
         if (!this.hasPassive(event.getPlayer().getUniqueId(), this.getName()) || !(event.getSpell() instanceof Fireball)) {
             return;
         }
+        Bukkit.broadcastMessage("wildfire");
 
         // Initial reduction from first fireball
         RunicCore.getSpellAPI().reduceCooldown(event.getPlayer(), "Meteor", this.duration);
@@ -59,7 +62,7 @@ public class Wildfire extends Spell implements RadiusSpell, DurationSpell {
 
         int count = 1;
         for (Entity entity : victim.getWorld().getNearbyEntities(
-                victim.getLocation(), this.radius, this.radius, this.radius, target -> isValidEnemy(player, target))) {
+                victim.getLocation(), this.radius, this.radius, this.radius, target -> TargetUtil.isValidEnemy(player, target))) {
             if (entity.equals(victim)) continue;
             count++;
             if (count > maxTargets) break;

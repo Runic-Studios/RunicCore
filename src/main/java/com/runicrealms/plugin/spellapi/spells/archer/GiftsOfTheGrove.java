@@ -10,6 +10,7 @@ import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.HealingSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.RadiusSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
+import com.runicrealms.plugin.spellapi.spellutil.TargetUtil;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
@@ -110,7 +111,7 @@ public class GiftsOfTheGrove extends Spell implements AttributeSpell, DurationSp
         double heal = ((HealingSpell) spell).getHeal();
         double healPerLevel = ((HealingSpell) spell).getHealingPerLevel();
         double total = heal + (healPerLevel * event.getCaster().getLevel());
-        for (Entity entity : groveLocation.getWorld().getNearbyEntities(groveLocation, radius, radius, radius, target -> isValidAlly(event.getCaster(), target))) {
+        for (Entity entity : groveLocation.getWorld().getNearbyEntities(groveLocation, radius, radius, radius, target -> TargetUtil.isValidAlly(event.getCaster(), target))) {
             Player playerEntity = (Player) entity;
             healPlayer(event.getCaster(), playerEntity, percent * total, this);
         }

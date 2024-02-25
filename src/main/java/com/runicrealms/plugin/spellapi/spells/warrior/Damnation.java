@@ -8,6 +8,7 @@ import com.runicrealms.plugin.spellapi.spelltypes.RadiusSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.spellapi.spelltypes.WarmupSpell;
+import com.runicrealms.plugin.spellapi.spellutil.TargetUtil;
 import com.runicrealms.plugin.spellapi.spellutil.particles.Cone;
 import com.runicrealms.plugin.spellapi.spellutil.particles.ParticleSphere;
 import com.runicrealms.plugin.utilities.DamageUtil;
@@ -103,7 +104,7 @@ public class Damnation extends Spell implements DurationSpell, MagicDamageSpell,
                             ).show();
                 }
 
-                for (Entity entity : player.getWorld().getNearbyEntities(player.getLocation(), totalRadius, totalRadius, totalRadius, target -> isValidEnemy(player, target))) {
+                for (Entity entity : player.getWorld().getNearbyEntities(player.getLocation(), totalRadius, totalRadius, totalRadius, target -> TargetUtil.isValidEnemy(player, target))) {
                     if (count % 1 == 0) {
                         DamageUtil.damageEntitySpell(totalDamage, (LivingEntity) entity, player, spell);
                     }

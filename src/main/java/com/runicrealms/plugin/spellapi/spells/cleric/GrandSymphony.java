@@ -12,6 +12,7 @@ import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.RadiusSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
+import com.runicrealms.plugin.spellapi.spellutil.TargetUtil;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
@@ -75,7 +76,7 @@ public class GrandSymphony extends Spell implements RadiusSpell, MagicDamageSpel
             long now = System.currentTimeMillis();
 
             for (Entity entity : player.getNearbyEntities(this.radius, this.radius, this.radius)) {
-                if (!(entity instanceof LivingEntity target) || !this.isValidEnemy(player, target)) {
+                if (!(entity instanceof LivingEntity target) || !TargetUtil.isValidEnemy(player, target)) {
                     continue;
                 }
 

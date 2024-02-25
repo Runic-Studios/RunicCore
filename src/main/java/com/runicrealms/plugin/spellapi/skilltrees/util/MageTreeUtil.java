@@ -20,7 +20,7 @@ public class MageTreeUtil {
 
     public static List<Perk> cryomancerPerkList() {
         List<Perk> perks = new ArrayList<>();
-        perks.add(new PerkSpell(72, 1, 0, 1, "Frostbite"));
+        perks.add(new PerkSpell(72, 1, 0, 1, "Icebolt"));
         perks.add(new PerkBaseStat(73, 1, 0, 5, Stat.INTELLIGENCE));
         perks.add(new PerkSpell(74, 1, 0, 1, "Shatter"));
         perks.add(new PerkBaseStat(75, 1, 0, 3, Stat.VITALITY));

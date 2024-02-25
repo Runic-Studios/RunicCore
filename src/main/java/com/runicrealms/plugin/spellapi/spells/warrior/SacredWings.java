@@ -12,6 +12,7 @@ import com.runicrealms.plugin.spellapi.spelltypes.ShieldingSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.spellapi.spellutil.KnockbackUtil;
+import com.runicrealms.plugin.spellapi.spellutil.TargetUtil;
 import com.runicrealms.plugin.spellapi.spellutil.particles.SlashEffect;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.Location;
@@ -66,7 +67,7 @@ public class SacredWings extends Spell implements DurationSpell, RadiusSpell, Sh
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_LIGHTNING_BOLT_IMPACT, 0.5F, 1.0F);
         player.getWorld().spigot().strikeLightningEffect(player.getLocation(), true);
         this.addStatusEffect(player, RunicStatusEffect.SPEED_I, this.duration, false);
-        for (Entity entity : player.getWorld().getNearbyEntities(player.getLocation(), radius, radius, radius, target -> isValidAlly(player, target))) {
+        for (Entity entity : player.getWorld().getNearbyEntities(player.getLocation(), radius, radius, radius, target -> TargetUtil.isValidAlly(player, target))) {
             this.addStatusEffect((LivingEntity) entity, RunicStatusEffect.SPEED_I, this.duration, false);
         }
         this.shieldPlayer(player, player, this.shield, this);
@@ -113,7 +114,7 @@ public class SacredWings extends Spell implements DurationSpell, RadiusSpell, Sh
                         player.getLocation().getDirection(),
                         distance,
                         BEAM_WIDTH,
-                        entity -> isValidEnemy(player, entity)
+                        entity -> TargetUtil.isValidEnemy(player, entity)
                 );
         if (rayTraceResult == null) {
             Location location = player.getTargetBlock(null, (int) distance).getLocation();
@@ -137,7 +138,7 @@ public class SacredWings extends Spell implements DurationSpell, RadiusSpell, Sh
             );
             livingEntity.getWorld().playSound(livingEntity.getLocation(), Sound.ENTITY_PLAYER_HURT, 0.5f, 2.0f);
             Collection<Entity> targets = player.getWorld().getNearbyEntities
-                    (livingEntity.getLocation(), BEAM_WIDTH, BEAM_WIDTH, BEAM_WIDTH, target -> isValidEnemy(player, target));
+                    (livingEntity.getLocation(), BEAM_WIDTH, BEAM_WIDTH, BEAM_WIDTH, target -> TargetUtil.isValidEnemy(player, target));
             // Then pass to double-scale off INT
             targets.forEach(target -> DamageUtil.damageEntityPhysical(
                     randomNum,
@@ -158,7 +159,7 @@ public class SacredWings extends Spell implements DurationSpell, RadiusSpell, Sh
         victim.getWorld().spawnParticle(Particle.CLOUD, victim.getLocation(), 25, 0.75f, 1.0f, 0.75f, 0);
         KnockbackUtil.knockBackCustom(player, victim, knockback);
         // Shield nearby allies (ignore caster)
-        for (Entity entity : victim.getWorld().getNearbyEntities(victim.getLocation(), radius, radius, radius, target -> isValidAlly(player, target))) {
+        for (Entity entity : victim.getWorld().getNearbyEntities(victim.getLocation(), radius, radius, radius, target -> TargetUtil.isValidAlly(player, target))) {
             if (entity.equals(player)) continue;
             this.shieldPlayer(player, (Player) entity, shield, this);
         }

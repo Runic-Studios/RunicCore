@@ -8,6 +8,7 @@ import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.RadiusSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
+import com.runicrealms.plugin.spellapi.spellutil.TargetUtil;
 import com.runicrealms.plugin.spellapi.spellutil.particles.HorizontalCircleFrame;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -93,7 +94,7 @@ public class WardingGlyph extends Spell implements DurationSpell, RadiusSpell {
                     createRunicMarking(castLocation, player);
                     player.getWorld().playSound(castLocation, Sound.BLOCK_CAMPFIRE_CRACKLE, 0.5f, 2.0f); // todo: does this work?
 
-                    for (Entity entity : player.getWorld().getNearbyEntities(castLocation, radius, radius, radius, target -> isValidAlly(player, target))) {
+                    for (Entity entity : player.getWorld().getNearbyEntities(castLocation, radius, radius, radius, target -> TargetUtil.isValidAlly(player, target))) {
                         if (!SilverBolt.getBrandedEnemiesMap().contains(entity.getUniqueId())) continue;
                         // Silence branded enemies within glyph
                         addStatusEffect((LivingEntity) entity, RunicStatusEffect.SILENCE, durationSilence, true);

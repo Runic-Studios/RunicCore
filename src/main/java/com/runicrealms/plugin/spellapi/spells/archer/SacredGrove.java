@@ -8,6 +8,7 @@ import com.runicrealms.plugin.spellapi.spelltypes.RadiusSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.spellapi.spelltypes.WarmupSpell;
+import com.runicrealms.plugin.spellapi.spellutil.TargetUtil;
 import com.runicrealms.plugin.spellapi.spellutil.particles.HorizontalCircleFrame;
 import me.filoghost.holographicdisplays.api.HolographicDisplaysAPI;
 import me.filoghost.holographicdisplays.api.hologram.Hologram;
@@ -65,7 +66,7 @@ public class SacredGrove extends Spell implements DurationSpell, HealingSpell, R
                 } else {
                     count += 1;
                     new HorizontalCircleFrame((float) radius, false).playParticle(player, Particle.VILLAGER_HAPPY, location, 5, Color.GREEN);
-                    for (Entity entity : player.getWorld().getNearbyEntities(location, radius, radius, radius, target -> isValidAlly(player, target))) {
+                    for (Entity entity : player.getWorld().getNearbyEntities(location, radius, radius, radius, target -> TargetUtil.isValidAlly(player, target))) {
                         Player playerEntity = (Player) entity;
                         healPlayer(player, playerEntity, healAmt, spell);
                     }

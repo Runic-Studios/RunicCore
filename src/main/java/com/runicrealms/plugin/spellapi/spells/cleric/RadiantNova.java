@@ -11,6 +11,7 @@ import com.runicrealms.plugin.spellapi.spelltypes.RadiusSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.spellapi.spelltypes.WarmupSpell;
+import com.runicrealms.plugin.spellapi.spellutil.TargetUtil;
 import com.runicrealms.plugin.spellapi.spellutil.particles.Cone;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
@@ -45,7 +46,7 @@ public class RadiantNova extends Spell implements HealingSpell, RadiusSpell, War
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 1.0f);
         Location location = player.getEyeLocation();
         spawnSphere(player, location);
-        for (Entity entity : player.getWorld().getNearbyEntities(location, radius, radius, radius, target -> isValidAlly(player, target))) {
+        for (Entity entity : player.getWorld().getNearbyEntities(location, radius, radius, radius, target -> TargetUtil.isValidAlly(player, target))) {
             Player ally = (Player) entity;
             healPlayer(player, ally, healAmt, this);
             if (!hasWarmup) {

@@ -14,6 +14,7 @@ import com.runicrealms.plugin.spellapi.spelltypes.RadiusSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.spellapi.spellutil.KnockbackUtil;
+import com.runicrealms.plugin.spellapi.spellutil.TargetUtil;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
@@ -69,9 +70,9 @@ public class Battlecry extends Spell implements AttributeSpell, DurationSpell, M
         applySongOfWar(player, player); // Apply song of war to caster, since we're not using .getWorld() for entity check
 
         for (Entity entity : player.getNearbyEntities(this.radius, this.radius, this.radius)) {
-            if (isValidAlly(player, entity)) {
+            if (TargetUtil.isValidAlly(player, entity)) {
                 applySongOfWar(player, (Player) entity);
-            } else if (isValidEnemy(player, entity)) {
+            } else if (TargetUtil.isValidEnemy(player, entity)) {
                 DamageUtil.damageEntitySpell(this.damage, (LivingEntity) entity, player, this);
                 KnockbackUtil.knockBackCustom(player, (LivingEntity) entity, this.knockback);
             }

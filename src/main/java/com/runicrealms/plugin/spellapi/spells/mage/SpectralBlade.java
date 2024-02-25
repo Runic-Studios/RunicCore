@@ -10,6 +10,7 @@ import com.runicrealms.plugin.runicitems.Stat;
 import com.runicrealms.plugin.runicitems.item.RunicItemWeapon;
 import com.runicrealms.plugin.spellapi.spelltypes.DistanceSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
+import com.runicrealms.plugin.spellapi.spellutil.TargetUtil;
 import com.runicrealms.plugin.spellapi.spellutil.particles.SlashEffect;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.Location;
@@ -54,7 +55,7 @@ public class SpectralBlade extends Spell {
                         player.getLocation().getDirection(),
                         distance,
                         ArcaneSlash.BEAM_WIDTH,
-                        entity -> isValidEnemy(player, entity)
+                        entity -> TargetUtil.isValidEnemy(player, entity)
                 );
         if (rayTraceResult == null) {
             Location location = player.getTargetBlock(null, (int) distance).getLocation();
@@ -66,7 +67,7 @@ public class SpectralBlade extends Spell {
             SlashEffect.slashHorizontal(player.getLocation(), Particle.SPELL_WITCH);
             livingEntity.getWorld().playSound(livingEntity.getLocation(), Sound.ENTITY_PLAYER_HURT, 0.5f, 2.0f);
             Collection<Entity> targets = player.getWorld().getNearbyEntities
-                    (livingEntity.getLocation(), ArcaneSlash.BEAM_WIDTH, ArcaneSlash.BEAM_WIDTH, ArcaneSlash.BEAM_WIDTH, target -> isValidEnemy(player, target));
+                    (livingEntity.getLocation(), ArcaneSlash.BEAM_WIDTH, ArcaneSlash.BEAM_WIDTH, ArcaneSlash.BEAM_WIDTH, target -> TargetUtil.isValidEnemy(player, target));
             // Scale attack off STR first
             double physicalDamageBonusPercent = Stat.getPhysicalDmgMult() * RunicCore.getStatAPI().getPlayerStrength(player.getUniqueId());
             double finalDamage = randomNum + Math.ceil(randomNum * physicalDamageBonusPercent);

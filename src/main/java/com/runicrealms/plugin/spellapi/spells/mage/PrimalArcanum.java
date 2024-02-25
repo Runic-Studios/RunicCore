@@ -11,6 +11,7 @@ import com.runicrealms.plugin.spellapi.spelltypes.RadiusSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.ShieldingSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
+import com.runicrealms.plugin.spellapi.spellutil.TargetUtil;
 import com.runicrealms.plugin.spellapi.spellutil.particles.HelixParticleFrame;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
@@ -66,7 +67,7 @@ public class PrimalArcanum extends Spell implements DurationSpell, RadiusSpell, 
 
         // Shield nearby allies
         int count = 1;
-        for (Entity entity : player.getWorld().getNearbyEntities(player.getLocation(), radius, radius, radius, target -> isValidAlly(player, target))) {
+        for (Entity entity : player.getWorld().getNearbyEntities(player.getLocation(), radius, radius, radius, target -> TargetUtil.isValidAlly(player, target))) {
             if (count > maxAllies) return;
             if (entity.equals(player)) continue;
             Player ally = (Player) entity;

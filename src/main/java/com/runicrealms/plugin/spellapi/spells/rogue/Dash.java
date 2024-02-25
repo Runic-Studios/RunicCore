@@ -9,6 +9,7 @@ import com.runicrealms.plugin.spellapi.spelltypes.PhysicalDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.RadiusSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
+import com.runicrealms.plugin.spellapi.spellutil.TargetUtil;
 import com.runicrealms.plugin.spellapi.spellutil.particles.HorizontalCircleFrame;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.Bukkit;
@@ -88,7 +89,7 @@ public class Dash extends Spell implements DurationSpell, PhysicalDamageSpell, R
         return new BukkitRunnable() {
             @Override
             public void run() {
-                Collection<Entity> nearbyEntities = player.getWorld().getNearbyEntities(player.getLocation(), radius, radius, radius, target -> isValidEnemy(player, target) && !damagedEntities.contains(target));
+                Collection<Entity> nearbyEntities = player.getWorld().getNearbyEntities(player.getLocation(), radius, radius, radius, target -> TargetUtil.isValidEnemy(player, target) && !damagedEntities.contains(target));
                 for (Entity entity : nearbyEntities) {
                     DamageUtil.damageEntityPhysical(damage, (LivingEntity) entity, player, false, false, spell);
                     damagedEntities.add(entity);

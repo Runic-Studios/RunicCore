@@ -6,6 +6,7 @@ import com.runicrealms.plugin.spellapi.effect.RunicStatusEffect;
 import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
+import com.runicrealms.plugin.spellapi.spellutil.TargetUtil;
 import com.runicrealms.plugin.spellapi.spellutil.particles.Circle;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.Bukkit;
@@ -50,8 +51,7 @@ public class Consecration extends Spell implements MagicDamageSpell {
                     Bukkit.getScheduler().runTaskAsynchronously(RunicCore.getInstance(), () -> Circle.createParticleCircle(player, castLocation, RADIUS, Particle.SPELL_INSTANT, Color.WHITE));
                     Bukkit.getScheduler().runTaskAsynchronously(RunicCore.getInstance(), () -> Circle.createParticleCircle(player, castLocation, RADIUS - 3, Particle.SPELL_INSTANT, Color.WHITE));
                     player.getWorld().playSound(castLocation, Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 2.0f);
-                    for (Entity en : player.getWorld().getNearbyEntities(castLocation, RADIUS, RADIUS, RADIUS)) {
-                        if (!(isValidEnemy(player, en))) continue;
+                    for (Entity en : player.getWorld().getNearbyEntities(castLocation, RADIUS, RADIUS, RADIUS, target -> TargetUtil.isValidEnemy(player, target))) {
                         LivingEntity victim = (LivingEntity) en;
                         addStatusEffect(victim, RunicStatusEffect.SLOW_III, 3, false);
                         DamageUtil.damageEntitySpell(DAMAGE_AMT, victim, player, spell);

@@ -42,7 +42,7 @@
 //        if (!(trigger instanceof HealingSpell)) return;
 //        double healingAmount = ((HealingSpell) trigger).getHeal();
 //        for (Entity entity : e.getPlayer().getNearbyEntities(RADIUS, RADIUS, RADIUS)) {
-//            if (!isValidEnemy(e.getPlayer(), entity)) continue;
+//            if (!TargetUtil.isValidEnemy(e.getPlayer(), entity)) continue;
 //            e.getPlayer().getWorld().playSound(entity.getLocation(), Sound.ENTITY_FIREWORK_ROCKET_BLAST, 2.0f, 1.0f);
 //            entity.getWorld().spawnParticle(Particle.CRIT_MAGIC, entity.getLocation(), 25, 0.5F, 0.5F, 0.5F, 0);
 //            DamageUtil.damageEntitySpell(healingAmount, (LivingEntity) entity, e.getPlayer());

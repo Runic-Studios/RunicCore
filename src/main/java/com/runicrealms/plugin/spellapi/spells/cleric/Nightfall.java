@@ -8,6 +8,7 @@ import com.runicrealms.plugin.spellapi.spelltypes.RadiusSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.spellapi.spelltypes.WarmupSpell;
+import com.runicrealms.plugin.spellapi.spellutil.TargetUtil;
 import com.runicrealms.plugin.spellapi.spellutil.particles.HelixParticleFrame;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
@@ -85,11 +86,11 @@ public class Nightfall extends Spell implements DurationSpell, RadiusSpell, Warm
             // Check if the entity is in front of the player (cosine of the angle between the vectors > 0)
             double dot = player.getLocation().getDirection().dot(directionToEntity);
             if (dot < maxAngleCos) continue;
-            if (isValidEnemy(player, entity)) {
+            if (TargetUtil.isValidEnemy(player, entity)) {
                 entity.setVelocity(new Vector(0, 1, 0).normalize().multiply(knockupMultiplier));
                 ((LivingEntity) entity).addPotionEffect(new PotionEffect(PotionEffectType.SLOW_FALLING, (int) duration * 20, 2));
                 RunicCore.getStatusEffectAPI().purge(entity.getUniqueId());
-            } else if (isValidAlly(player, entity)) {
+            } else if (TargetUtil.isValidAlly(player, entity)) {
                 addStatusEffect((LivingEntity) entity, RunicStatusEffect.INVULNERABILITY, durationInvulnerable, true);
                 RunicCore.getStatusEffectAPI().cleanse(entity.getUniqueId());
             }

@@ -125,24 +125,6 @@ public interface ISpell {
     boolean isOnCooldown(@NotNull Player player);
 
     /**
-     * Method to check for valid enemy before applying healing / buff spell calculation. True if enemy can be healed.
-     *
-     * @param caster    player who used spell
-     * @param recipient entity who was hit by spell
-     * @return whether target is valid
-     */
-    boolean isValidAlly(@NotNull Player caster, @NotNull Entity recipient);
-
-    /**
-     * Method to check for valid enemy before applying damage calculation. True if enemy can be damaged.
-     *
-     * @param caster player who used spell
-     * @param victim mob or player who was hit by spell
-     * @return whether target is valid
-     */
-    boolean isValidEnemy(@NotNull Player caster, @NotNull Entity victim); // check tons of things, like if target entity is NPC, party member, and outlaw checks
-
-    /**
      * Used for spells that rely on percent max health
      *
      * @param livingEntity mob/player to check hp for

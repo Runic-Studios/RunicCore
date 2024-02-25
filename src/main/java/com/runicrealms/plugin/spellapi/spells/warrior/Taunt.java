@@ -1,8 +1,9 @@
 package com.runicrealms.plugin.spellapi.spells.warrior;
 
-import com.runicrealms.plugin.events.PhysicalDamageEvent;
 import com.runicrealms.plugin.common.CharacterClass;
+import com.runicrealms.plugin.events.PhysicalDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
+import com.runicrealms.plugin.spellapi.spellutil.TargetUtil;
 import io.lumine.mythic.bukkit.MythicBukkit;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
@@ -25,7 +26,7 @@ public class Taunt extends Spell {
     }
 
     private void generateThreat(Player player, Entity entity) {
-        if (isValidEnemy(player, entity)) {
+        if (TargetUtil.isValidEnemy(player, entity)) {
             LivingEntity victim = (LivingEntity) entity;
             if (!(victim instanceof Monster || victim instanceof Wolf || victim instanceof PolarBear))
                 return;

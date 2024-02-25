@@ -6,6 +6,7 @@ import com.runicrealms.plugin.spellapi.spelltypes.DistanceSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.PhysicalDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
+import com.runicrealms.plugin.spellapi.spellutil.TargetUtil;
 import com.runicrealms.plugin.spellapi.spellutil.particles.SlashEffect;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.Bukkit;
@@ -66,7 +67,7 @@ public class TwinFangs extends Spell implements DistanceSpell, PhysicalDamageSpe
                         player.getLocation().getDirection(),
                         maxDistance,
                         BEAM_WIDTH,
-                        entity -> isValidEnemy(player, entity)
+                        entity -> TargetUtil.isValidEnemy(player, entity)
                 );
         if (rayTraceResult == null) {
             Location location = player.getTargetBlock(null, (int) maxDistance).getLocation();
@@ -78,7 +79,7 @@ public class TwinFangs extends Spell implements DistanceSpell, PhysicalDamageSpe
             fangEffect(player);
             livingEntity.getWorld().playSound(livingEntity.getLocation(), Sound.ENTITY_PLAYER_HURT, 0.5f, 2.0f);
             Collection<Entity> targets = player.getWorld().getNearbyEntities
-                    (livingEntity.getLocation(), BEAM_WIDTH, BEAM_WIDTH, BEAM_WIDTH, target -> isValidEnemy(player, target));
+                    (livingEntity.getLocation(), BEAM_WIDTH, BEAM_WIDTH, BEAM_WIDTH, target -> TargetUtil.isValidEnemy(player, target));
             targets.forEach(target -> DamageUtil.damageEntityPhysical(damage + percentMissingHealth((LivingEntity) target, percent, (int) damageCap),
                     (LivingEntity) target, player, false, false, this));
         }

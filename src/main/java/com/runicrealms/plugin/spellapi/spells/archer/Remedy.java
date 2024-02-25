@@ -7,6 +7,7 @@ import com.runicrealms.plugin.spellapi.spelltypes.HealingSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.RadiusSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
+import com.runicrealms.plugin.spellapi.spellutil.TargetUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Particle;
@@ -60,7 +61,7 @@ public class Remedy extends Spell implements DurationSpell, HealingSpell, Radius
                 healPlayer(player, player, healAmt, spell);
                 for (Entity entity : player.getNearbyEntities(radius, radius, radius)) {
                     if (entity.equals(player)) continue;
-                    if (!isValidAlly(player, entity)) continue;
+                    if (!TargetUtil.isValidAlly(player, entity)) continue;
                     Player playerEntity = (Player) entity;
                     healPlayer(player, playerEntity, healAmt / duration, spell);
                 }

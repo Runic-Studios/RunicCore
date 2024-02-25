@@ -12,6 +12,7 @@ import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
+import com.runicrealms.plugin.spellapi.spellutil.TargetUtil;
 import com.runicrealms.plugin.spellapi.spellutil.particles.Cone;
 import com.runicrealms.plugin.spellapi.spellutil.particles.HorizontalCircleFrame;
 import com.runicrealms.plugin.utilities.DamageUtil;
@@ -80,7 +81,7 @@ public class SnapFreeze extends Spell implements DistanceSpell, DurationSpell, M
             damageMap.put(player.getUniqueId(), new HashSet<>());
         new HorizontalCircleFrame(BEAM_RADIUS, true).playParticle(player, Particle.BLOCK_CRACK, location);
         player.getWorld().playSound(location, Sound.BLOCK_GLASS_BREAK, 0.5f, 0.5f);
-        for (Entity entity : player.getWorld().getNearbyEntities(location, BEAM_RADIUS, BEAM_RADIUS, BEAM_RADIUS, target -> isValidEnemy(player, target))) {
+        for (Entity entity : player.getWorld().getNearbyEntities(location, BEAM_RADIUS, BEAM_RADIUS, BEAM_RADIUS, target -> TargetUtil.isValidEnemy(player, target))) {
             if (damageMap.get(player.getUniqueId()).contains(entity.getUniqueId())) continue;
             DamageUtil.damageEntitySpell(damage, (LivingEntity) entity, player, this);
 

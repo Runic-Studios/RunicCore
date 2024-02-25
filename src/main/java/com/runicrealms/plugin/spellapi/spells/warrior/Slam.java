@@ -7,6 +7,7 @@ import com.runicrealms.plugin.spellapi.spelltypes.PhysicalDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.RadiusSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
+import com.runicrealms.plugin.spellapi.spellutil.TargetUtil;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
@@ -147,7 +148,7 @@ public class Slam extends Spell implements PhysicalDamageSpell, RadiusSpell {
                             25, 0.5f, 0.5f, 0.5f, new Particle.DustOptions(Color.fromRGB(210, 180, 140), 20));
 
                     for (Entity en : player.getNearbyEntities(radius, radius, radius)) {
-                        if (isValidEnemy(player, en)) {
+                        if (TargetUtil.isValidEnemy(player, en)) {
                             DamageUtil.damageEntityPhysical(damage, (LivingEntity) en, player, false, false, spell);
                             Vector force = (player.getLocation().toVector().subtract
                                     (en.getLocation().toVector()).multiply(0).setY(KNOCKUP_AMT));

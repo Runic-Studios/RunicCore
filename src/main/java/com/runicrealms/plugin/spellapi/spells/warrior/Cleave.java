@@ -11,6 +11,7 @@ import com.runicrealms.plugin.spellapi.spelltypes.PhysicalDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.RadiusSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
+import com.runicrealms.plugin.spellapi.spellutil.TargetUtil;
 import com.runicrealms.plugin.spellapi.spellutil.particles.SlashEffect;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.Bukkit;
@@ -56,7 +57,7 @@ public class Cleave extends Spell implements DistanceSpell, DurationSpell, Physi
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_PLAYER_ATTACK_CRIT, 0.75f, 0.5f);
         // Damage entities in front of the player
         SlashEffect.slashHorizontal(player.getLocation());
-        for (Entity entity : player.getWorld().getNearbyEntities(player.getLocation(), radius, radius, radius, target -> isValidEnemy(player, target))) {
+        for (Entity entity : player.getWorld().getNearbyEntities(player.getLocation(), radius, radius, radius, target -> TargetUtil.isValidEnemy(player, target))) {
             Location entityLocation = entity.getLocation();
             Vector directionToEntity = entityLocation.subtract(player.getLocation()).toVector().normalize();
             // Check if the entity is in front of the player (cosine of the angle between the vectors > 0)

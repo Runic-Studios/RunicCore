@@ -10,6 +10,7 @@ import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.PhysicalDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
+import com.runicrealms.plugin.spellapi.spellutil.TargetUtil;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import com.runicrealms.plugin.utilities.FloatingItemUtil;
 import org.bukkit.Bukkit;
@@ -66,7 +67,7 @@ public class AxeToss extends Spell implements DurationSpell, PhysicalDamageSpell
             Location loc = projectile.getLocation();
             projectile.getWorld().spawnParticle(Particle.CRIT, projectile.getLocation(), 1, 0, 0, 0, 0);
 
-            for (Entity entity : projectile.getWorld().getNearbyEntities(loc, 1.5, 1.5, 1.5, target -> isValidEnemy(player, target))) {
+            for (Entity entity : projectile.getWorld().getNearbyEntities(loc, 1.5, 1.5, 1.5, target -> TargetUtil.isValidEnemy(player, target))) {
                 if (hasBeenHit.get(player.getUniqueId()) == entity.getUniqueId()) continue;
                 hasBeenHit.put(player.getUniqueId(), entity.getUniqueId()); // prevent concussive hits
 

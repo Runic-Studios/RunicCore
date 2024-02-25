@@ -8,6 +8,7 @@ import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.RadiusSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
+import com.runicrealms.plugin.spellapi.spellutil.TargetUtil;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
@@ -84,7 +85,7 @@ public class Ruination extends Spell implements DurationSpell, MagicDamageSpell,
             // Check if the entity is in front of the player (cosine of the angle between the vectors > 0)
             double dot = player.getLocation().getDirection().dot(directionToEntity);
             if (dot < maxAngleCos) continue;
-            if (isValidEnemy(player, entity)) {
+            if (TargetUtil.isValidEnemy(player, entity)) {
                 weakenedHealers.add(entity.getUniqueId());
                 Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), () -> weakenedHealers.remove(entity.getUniqueId()), (long) duration * 20L);
                 entity.getWorld().playSound(entity.getLocation(), Sound.ENTITY_PLAYER_HURT, 0.5f, 1.0f);

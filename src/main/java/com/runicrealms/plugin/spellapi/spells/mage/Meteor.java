@@ -1,42 +1,38 @@
 package com.runicrealms.plugin.spellapi.spells.mage;
 
-import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.common.CharacterClass;
+import com.runicrealms.plugin.spellapi.event.ModeledItemCollideEvent;
+import com.runicrealms.plugin.spellapi.item.ModeledItem;
 import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.RadiusSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
+import com.runicrealms.plugin.spellapi.spellutil.TargetUtil;
 import com.runicrealms.plugin.spellapi.spellutil.VectorUtil;
 import com.runicrealms.plugin.spellapi.spellutil.particles.EntityTrail;
 import com.runicrealms.plugin.spellapi.spellutil.particles.HorizontalCircleFrame;
 import com.runicrealms.plugin.utilities.DamageUtil;
-import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LargeFireball;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.ExplosionPrimeEvent;
-import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
-
 public class Meteor extends Spell implements MagicDamageSpell, RadiusSpell {
+    private static final int METEOR_MODEL_DATA = 2274;
     private static final int HEIGHT = 8;
     private static final int MAX_DIST = 12;
+    private static final double HITBOX_SCALE = .01;
     private static final double METEOR_SPEED = 0.75D;
     private static final double RAY_SIZE = 1.0D;
-    private final Set<UUID> meteorCasterSet = new HashSet<>();
     private double damage;
     private double radius;
     private double damagePerLevel;
@@ -57,7 +53,7 @@ public class Meteor extends Spell implements MagicDamageSpell, RadiusSpell {
                         player.getLocation().getDirection(),
                         MAX_DIST,
                         RAY_SIZE,
-                        entity -> isValidEnemy(player, entity)
+                        entity -> TargetUtil.isValidEnemy(player, entity)
                 );
         Location location;
         if (rayTraceResult == null) {
@@ -87,7 +83,7 @@ public class Meteor extends Spell implements MagicDamageSpell, RadiusSpell {
         player.getWorld().playSound(location, Sound.ENTITY_GENERIC_EXPLODE, 0.5F, 1.0F);
         player.getWorld().playSound(location, Sound.ENTITY_DRAGON_FIREBALL_EXPLODE, 0.5F, 0.5F);
         player.getWorld().spawnParticle(Particle.EXPLOSION_LARGE, location, 20, 0.5f, 0.5, 0.5f, 0);
-        for (Entity entity : player.getWorld().getNearbyEntities(location, radius, radius, radius, target -> isValidEnemy(player, target))) {
+        for (Entity entity : player.getWorld().getNearbyEntities(location, radius, radius, radius, target -> TargetUtil.isValidEnemy(player, target))) {
             DamageUtil.damageEntitySpell(damage, (LivingEntity) entity, player, this);
             player.getWorld().playSound(location, Sound.ENTITY_PLAYER_HURT, 0.5f, 1);
         }
@@ -130,44 +126,27 @@ public class Meteor extends Spell implements MagicDamageSpell, RadiusSpell {
         }
     }
 
-    @EventHandler(priority = EventPriority.LOWEST)
-    public void onMeteorDamage(ProjectileHitEvent event) {
-        if (meteorCasterSet.isEmpty()) return;
-        if (event.getEntity().getShooter() == null) return;
-        if (!(event.getEntity().getShooter() instanceof Player player)) return;
-        if (!meteorCasterSet.contains(player.getUniqueId())) return;
-        Location location = event.getEntity().getLocation();
-        event.getEntity().remove();
-        event.setCancelled(true);
-        explode(player, location);
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    public void onFireballHit(ModeledItemCollideEvent event) {
+        if (event.getModeledItem().getCustomModelData() != METEOR_MODEL_DATA) return;
+        Player player = event.getModeledItem().getPlayer();
+        explode(player, event.getModeledItem().getItem().getLocation());
     }
 
-    /**
-     * @param player   who cast the spell
-     * @param location to spawn the meteor
-     */
     private void summonMeteor(Player player, Location location) {
-        meteorCasterSet.add(player.getUniqueId());
-        final Location[] meteorLocation = {location.clone().add(0, HEIGHT, 0)};
-
-        Vector velocity = new Vector(0, -1, 0).multiply(METEOR_SPEED);
-        LargeFireball meteor = (LargeFireball) player.getWorld().spawnEntity(meteorLocation[0].setDirection(velocity), EntityType.FIREBALL);
-        EntityTrail.entityTrail(meteor, Particle.FLAME);
-        meteor.setInvulnerable(true);
-        meteor.setIsIncendiary(false);
-        meteor.setYield(0F);
-        meteor.setShooter(player);
+        final Location meteorLocation = location.clone().add(0, HEIGHT, 0);
+        Vector vector = new Vector(0, -1, 0).multiply(METEOR_SPEED);
+        ModeledItem meteor = new ModeledItem(
+                player,
+                meteorLocation,
+                vector,
+                METEOR_MODEL_DATA,
+                4.0,
+                HITBOX_SCALE,
+                entity -> TargetUtil.isValidEnemy(player, entity)
+        );
+        EntityTrail.entityTrail(meteor.getItem(), Particle.FLAME);
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 0.5f, 0.01f);
-
-        // Repeatedly set velocity to prevent players redirecting meteor
-        Bukkit.getScheduler().runTaskTimer(RunicCore.getInstance(), velocityTask -> {
-            if (!meteor.isDead()) {
-                meteor.setVelocity(velocity);
-            } else {
-                velocityTask.cancel();
-                meteorCasterSet.remove(player.getUniqueId());
-            }
-        }, 0, 2); //Every 2 ticks (1/10th of a second)
     }
 }
 

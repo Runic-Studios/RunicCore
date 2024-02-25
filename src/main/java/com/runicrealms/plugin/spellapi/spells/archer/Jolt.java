@@ -9,6 +9,7 @@ import com.runicrealms.plugin.spellapi.spelltypes.RadiusSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.spellapi.spelltypes.WarmupSpell;
+import com.runicrealms.plugin.spellapi.spellutil.TargetUtil;
 import com.runicrealms.plugin.spellapi.spellutil.particles.HorizontalCircleFrame;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.Location;
@@ -55,7 +56,7 @@ public class Jolt extends Spell implements MagicDamageSpell, RadiusSpell, Durati
                         player.getLocation().getDirection(),
                         this.distance,
                         1.75,
-                        entity -> isValidEnemy(player, entity)
+                        entity -> TargetUtil.isValidEnemy(player, entity)
                 );
 
         Location location = player.getTargetBlock(null, (int) distance).getLocation();
@@ -90,7 +91,7 @@ public class Jolt extends Spell implements MagicDamageSpell, RadiusSpell, Durati
                     count += damageInterval;
                     new HorizontalCircleFrame((float) radius / 2, false).playParticle(player, Particle.CRIT_MAGIC, location, 3);
                     new HorizontalCircleFrame((float) radius, false).playParticle(player, Particle.CRIT_MAGIC, location, 3);
-                    for (Entity entity : location.getWorld().getNearbyEntities(location, radius, radius, radius, target -> isValidEnemy(player, target))) {
+                    for (Entity entity : location.getWorld().getNearbyEntities(location, radius, radius, radius, target -> TargetUtil.isValidEnemy(player, target))) {
                         LivingEntity target = (LivingEntity) entity;
                         entity.getWorld().playSound(entity.getLocation(), Sound.ENTITY_FIREWORK_ROCKET_BLAST, 0.25f, 2.0f);
                         DamageUtil.damageEntitySpell(damage, target, player, false, spell);

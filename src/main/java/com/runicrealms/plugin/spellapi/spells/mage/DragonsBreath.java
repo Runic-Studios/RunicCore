@@ -8,6 +8,7 @@ import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.RadiusSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
+import com.runicrealms.plugin.spellapi.spellutil.TargetUtil;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -58,7 +59,7 @@ public class DragonsBreath extends Spell implements DurationSpell, MagicDamageSp
         }
         double maxAngleCos = Math.cos(Math.toRadians(maxAngle));
         // Damage entities in front of the player
-        for (Entity entity : player.getWorld().getNearbyEntities(player.getLocation(), effectiveRadius, effectiveRadius, effectiveRadius, target -> isValidEnemy(player, target))) {
+        for (Entity entity : player.getWorld().getNearbyEntities(player.getLocation(), effectiveRadius, effectiveRadius, effectiveRadius, target -> TargetUtil.isValidEnemy(player, target))) {
             Location entityLocation = entity.getLocation();
             Vector directionToEntity = entityLocation.subtract(player.getLocation()).toVector().normalize();
             // Check if the entity is in front of the player (cosine of the angle between the vectors > 0)

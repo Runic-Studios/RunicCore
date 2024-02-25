@@ -10,6 +10,7 @@ import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.RadiusSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
+import com.runicrealms.plugin.spellapi.spellutil.TargetUtil;
 import com.runicrealms.plugin.spellapi.spellutil.VectorUtil;
 import com.runicrealms.plugin.spellapi.spellutil.particles.HorizontalCircleFrame;
 import com.runicrealms.plugin.utilities.DamageUtil;
@@ -78,7 +79,7 @@ public class Sear extends Spell implements DurationSpell, MagicDamageSpell, Radi
                         player.getLocation().getDirection(),
                         MAX_DIST,
                         BEAM_WIDTH,
-                        entity -> isValidEnemy(player, entity)
+                        entity -> TargetUtil.isValidEnemy(player, entity)
                 );
 
         if (rayTraceResult == null) {
@@ -143,7 +144,7 @@ public class Sear extends Spell implements DurationSpell, MagicDamageSpell, Radi
         atoningEntitiesMap.remove(event.getVictim().getUniqueId());
         Player caster = event.getPlayer();
         LivingEntity victim = event.getVictim();
-        for (Entity entity : victim.getWorld().getNearbyEntities(victim.getLocation(), radius, radius, radius, target -> isValidEnemy(caster, target))) {
+        for (Entity entity : victim.getWorld().getNearbyEntities(victim.getLocation(), radius, radius, radius, target -> TargetUtil.isValidEnemy(caster, target))) {
             DamageUtil.damageEntitySpell(damage, (LivingEntity) entity, caster, this);
         }
     }
@@ -162,7 +163,7 @@ public class Sear extends Spell implements DurationSpell, MagicDamageSpell, Radi
         atoningEntitiesMap.remove(event.getVictim().getUniqueId());
         Player caster = event.getPlayer();
         LivingEntity victim = event.getVictim();
-        for (Entity entity : victim.getWorld().getNearbyEntities(victim.getLocation(), radius, radius, radius, target -> isValidEnemy(caster, target))) {
+        for (Entity entity : victim.getWorld().getNearbyEntities(victim.getLocation(), radius, radius, radius, target -> TargetUtil.isValidEnemy(caster, target))) {
             DamageUtil.damageEntitySpell(damage, (LivingEntity) entity, caster, this);
         }
     }

@@ -8,6 +8,7 @@ import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.RadiusSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
+import com.runicrealms.plugin.spellapi.spellutil.TargetUtil;
 import com.runicrealms.plugin.spellapi.spellutil.particles.HorizontalCircleFrame;
 import me.filoghost.holographicdisplays.api.HolographicDisplaysAPI;
 import me.filoghost.holographicdisplays.api.hologram.Hologram;
@@ -68,7 +69,7 @@ public class Diminuendo extends Spell implements DurationSpell, RadiusSpell {
                     player.getWorld().playSound(center, Sound.BLOCK_NOTE_BLOCK_HARP, 0.5f, 1.0f);
                     new HorizontalCircleFrame((float) radius, false).playParticle(player, Particle.CRIT, center, Color.GREEN);
                     affectedEnemiesMap.put(player.getUniqueId(), new HashSet<>());
-                    for (Entity entity : center.getWorld().getNearbyEntities(center, radius, radius, radius, target -> isValidEnemy(player, target))) {
+                    for (Entity entity : center.getWorld().getNearbyEntities(center, radius, radius, radius, target -> TargetUtil.isValidEnemy(player, target))) {
                         affectedEnemiesMap.get(player.getUniqueId()).add(entity.getUniqueId());
                     }
                 }

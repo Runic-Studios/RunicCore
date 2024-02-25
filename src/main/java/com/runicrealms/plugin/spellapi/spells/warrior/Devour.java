@@ -10,6 +10,7 @@ import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.RadiusSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
+import com.runicrealms.plugin.spellapi.spellutil.TargetUtil;
 import com.runicrealms.plugin.spellapi.spellutil.ThreatUtil;
 import com.runicrealms.plugin.spellapi.spellutil.particles.SlashEffect;
 import com.runicrealms.plugin.utilities.DamageUtil;
@@ -59,7 +60,7 @@ public class Devour extends Spell implements DurationSpell, MagicDamageSpell, Ra
                         player.getLocation().getDirection(),
                         radius,
                         BEAM_WIDTH,
-                        entity -> isValidEnemy(player, entity)
+                        entity -> TargetUtil.isValidEnemy(player, entity)
                 );
         if (rayTraceResult == null) {
             Location location = player.getTargetBlock(null, (int) radius).getLocation();
@@ -72,7 +73,7 @@ public class Devour extends Spell implements DurationSpell, MagicDamageSpell, Ra
             SlashEffect.slashHorizontal(player.getLocation(), true, true, Particle.REDSTONE, 0.04f, Color.fromRGB(185, 251, 185));
             SlashEffect.slashHorizontal(player.getLocation().add(0, 0.5, 0), true, true, Particle.REDSTONE, 0.04f, Color.fromRGB(185, 251, 185));
             livingEntity.getWorld().playSound(livingEntity.getLocation(), Sound.ENTITY_PLAYER_HURT, 0.5f, 2.0f);
-            for (Entity entity : player.getWorld().getNearbyEntities(livingEntity.getLocation(), BEAM_WIDTH, BEAM_WIDTH, BEAM_WIDTH, target -> isValidEnemy(player, target))) {
+            for (Entity entity : player.getWorld().getNearbyEntities(livingEntity.getLocation(), BEAM_WIDTH, BEAM_WIDTH, BEAM_WIDTH, target -> TargetUtil.isValidEnemy(player, target))) {
                 debuffedEntities.add(entity.getUniqueId());
                 Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(),
                         () -> debuffedEntities.remove(entity.getUniqueId()), (long) duration * 20L);

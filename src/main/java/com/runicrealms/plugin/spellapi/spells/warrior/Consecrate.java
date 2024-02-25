@@ -8,6 +8,7 @@ import com.runicrealms.plugin.spellapi.spelltypes.HealingSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.RadiusSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
+import com.runicrealms.plugin.spellapi.spellutil.TargetUtil;
 import com.runicrealms.plugin.spellapi.spellutil.particles.HorizontalCircleFrame;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.Bukkit;
@@ -103,10 +104,10 @@ public class Consecrate extends Spell implements DurationSpell, HealingSpell, Ma
                     new HorizontalCircleFrame((float) radius, false).playParticle(caster, Particle.SPELL_INSTANT, castLocation, 3, Color.YELLOW);
                     createStarParticles(castLocation, radius, Particle.VILLAGER_ANGRY, 5);
                     for (Entity entity : castLocation.getWorld().getNearbyEntities(castLocation, radius, radius, radius)) {
-                        if (isValidEnemy(caster, entity)) {
+                        if (TargetUtil.isValidEnemy(caster, entity)) {
                             DamageUtil.damageEntitySpell(magicDamage, (LivingEntity) entity, caster, false, spell);
                             addStatusEffect((LivingEntity) entity, RunicStatusEffect.SLOW_II, slowDuration, false);
-                        } else if (isValidAlly(caster, entity)) {
+                        } else if (TargetUtil.isValidAlly(caster, entity)) {
                             healPlayer(caster, (Player) entity, heal, spell);
                         }
                     }

@@ -9,6 +9,7 @@ import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.RadiusSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
+import com.runicrealms.plugin.spellapi.spellutil.TargetUtil;
 import com.runicrealms.plugin.spellapi.spellutil.VectorUtil;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.Bukkit;
@@ -57,7 +58,7 @@ public class RayOfLight extends Spell implements DistanceSpell, DurationSpell, M
                         player.getLocation().getDirection(),
                         maxDistance,
                         BEAM_WIDTH,
-                        entity -> isValidEnemy(player, entity)
+                        entity -> TargetUtil.isValidEnemy(player, entity)
                 );
 
         Location location;
@@ -79,7 +80,7 @@ public class RayOfLight extends Spell implements DistanceSpell, DurationSpell, M
         player.getWorld().playSound(location, Sound.ENTITY_LIGHTNING_BOLT_IMPACT, 0.5F, 1.0F);
         player.getWorld().playSound(location, Sound.ENTITY_GENERIC_EXPLODE, 0.5F, 1.0F);
         player.getWorld().spawnParticle(Particle.EXPLOSION_LARGE, location.add(0, 1, 0), 15, 0.25f, 0, 0.25f, 0);
-        for (Entity entity : player.getWorld().getNearbyEntities(location, radius, radius, radius, target -> isValidEnemy(player, target))) {
+        for (Entity entity : player.getWorld().getNearbyEntities(location, radius, radius, radius, target -> TargetUtil.isValidEnemy(player, target))) {
             // Knock away
             Vector force = player.getLocation().toVector().subtract(entity.getLocation().toVector()).multiply(-knockback).setY(0.3);
             entity.setVelocity(force);

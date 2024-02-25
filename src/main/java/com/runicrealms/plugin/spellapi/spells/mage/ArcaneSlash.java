@@ -6,6 +6,7 @@ import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.ShieldingSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
+import com.runicrealms.plugin.spellapi.spellutil.TargetUtil;
 import com.runicrealms.plugin.spellapi.spellutil.particles.SlashEffect;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.Location;
@@ -49,7 +50,7 @@ public class ArcaneSlash extends Spell implements DistanceSpell, MagicDamageSpel
                         player.getLocation().getDirection(),
                         distance,
                         BEAM_WIDTH,
-                        entity -> isValidEnemy(player, entity)
+                        entity -> TargetUtil.isValidEnemy(player, entity)
                 );
         if (rayTraceResult == null) {
             Location location = player.getTargetBlock(null, (int) distance).getLocation();
@@ -61,7 +62,7 @@ public class ArcaneSlash extends Spell implements DistanceSpell, MagicDamageSpel
             SlashEffect.slashHorizontal(player.getLocation(), Particle.SPELL_WITCH);
             livingEntity.getWorld().playSound(livingEntity.getLocation(), Sound.ENTITY_PLAYER_HURT, 0.5f, 2.0f);
             Collection<Entity> targets = player.getWorld().getNearbyEntities
-                    (livingEntity.getLocation(), BEAM_WIDTH, BEAM_WIDTH, BEAM_WIDTH, target -> isValidEnemy(player, target));
+                    (livingEntity.getLocation(), BEAM_WIDTH, BEAM_WIDTH, BEAM_WIDTH, target -> TargetUtil.isValidEnemy(player, target));
             targets.forEach(target -> DamageUtil.damageEntitySpell(damage, (LivingEntity) target, player, this));
             if (targets.size() > 0) {
                 shieldPlayer(player, player, shield, this);

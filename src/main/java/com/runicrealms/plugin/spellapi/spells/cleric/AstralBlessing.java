@@ -8,6 +8,7 @@ import com.runicrealms.plugin.events.RunicDeathEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.ShieldingSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
+import com.runicrealms.plugin.spellapi.spellutil.TargetUtil;
 import com.runicrealms.plugin.spellapi.spellutil.particles.HorizontalCircleFrame;
 import io.lumine.mythic.bukkit.events.MythicMobDeathEvent;
 import org.bukkit.Color;
@@ -82,7 +83,7 @@ public class AstralBlessing extends Spell implements DurationSpell, ShieldingSpe
     public void onPhysicalDamage(PhysicalDamageEvent event) {
         if (!blessingMap.containsKey(event.getVictim().getUniqueId())) return;
         // Person who bonked the victim must be allied with the source of the debuff to receive shield
-        if (!isValidAlly(blessingMap.get(event.getVictim().getUniqueId()).getCaster(), event.getPlayer()))
+        if (!TargetUtil.isValidAlly(blessingMap.get(event.getVictim().getUniqueId()).getCaster(), event.getPlayer()))
             return;
         blessingMap.get(event.getVictim().getUniqueId()).getBukkitTask().cancel();
         blessingMap.remove(event.getVictim().getUniqueId());

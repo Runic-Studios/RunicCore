@@ -11,6 +11,7 @@ import com.runicrealms.plugin.spellapi.spells.Potion;
 import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.RadiusSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
+import com.runicrealms.plugin.spellapi.spellutil.TargetUtil;
 import com.runicrealms.plugin.spellapi.spellutil.VectorUtil;
 import com.runicrealms.plugin.spellapi.spellutil.particles.EntityTrail;
 import com.runicrealms.plugin.utilities.DamageUtil;
@@ -119,7 +120,7 @@ public class Stormborn extends Spell implements MagicDamageSpell, RadiusSpell {
 
     private void ricochetEffect(Player caster, LivingEntity victim) {
         int enemiesHit = 0;
-        for (Entity entity : victim.getWorld().getNearbyEntities(victim.getLocation(), radius, radius, radius, target -> isValidEnemy(caster, target))) {
+        for (Entity entity : victim.getWorld().getNearbyEntities(victim.getLocation(), radius, radius, radius, target -> TargetUtil.isValidEnemy(caster, target))) {
             if (enemiesHit >= maxTargets) break;
             if (entity.equals(victim)) continue;
             entity.getWorld().playSound(entity.getLocation(), Sound.ENTITY_FIREWORK_ROCKET_BLAST, 0.25f, 1.0f);

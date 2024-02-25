@@ -9,6 +9,7 @@ import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.RadiusSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
+import com.runicrealms.plugin.spellapi.spellutil.TargetUtil;
 import com.runicrealms.plugin.spellapi.spellutil.particles.HorizontalCircleFrame;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.Color;
@@ -79,13 +80,13 @@ public class Starlight extends Spell implements DistanceSpell, DurationSpell, Ma
         player.getWorld().playSound(location, Sound.BLOCK_GLASS_BREAK, 0.25f, 2.0f);
         player.getWorld().playSound(location, Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 2.25f);
         for (Entity entity : player.getWorld().getNearbyEntities(location, BEAM_RADIUS, BEAM_RADIUS, BEAM_RADIUS)) {
-            if (isValidEnemy(player, entity)) {
+            if (TargetUtil.isValidEnemy(player, entity)) {
                 if (damageMap.get(player.getUniqueId()).contains(entity.getUniqueId())) continue;
                 DamageUtil.damageEntitySpell(damage, (LivingEntity) entity, player, this);
                 addStatusEffect((LivingEntity) entity, RunicStatusEffect.SILENCE, duration, true);
                 damageMap.get(player.getUniqueId()).add(entity.getUniqueId());
                 // Refresh shield uptime for allies
-            } else if (isValidAlly(player, entity)) {
+            } else if (TargetUtil.isValidAlly(player, entity)) {
                 if (!RunicCore.getSpellAPI().getShieldedPlayers().containsKey(entity.getUniqueId())) continue;
                 RunicCore.getSpellAPI().getShieldedPlayers().get(entity.getUniqueId()).shield().setStartTime(System.currentTimeMillis());
             }

@@ -7,6 +7,7 @@ import com.runicrealms.plugin.spellapi.spelltypes.HealingSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.RadiusSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
+import com.runicrealms.plugin.spellapi.spellutil.TargetUtil;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.Location;
@@ -45,7 +46,7 @@ public class Purify extends Spell implements HealingSpell, RadiusSpell {
     @SuppressWarnings("deprecation")
     private void allyCheck(Player player, Location location) {
         for (Entity e : player.getWorld().getNearbyEntities(location, radius, radius, radius)) {
-            if (isValidAlly(player, e)) {
+            if (TargetUtil.isValidAlly(player, e)) {
                 // a bunch of fancy checks to make sure one player can't be spam healed by the same effect
                 // multiple times
                 Player ally = (Player) e;
