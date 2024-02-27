@@ -102,6 +102,7 @@ public class ModeledSpellAttached implements ModeledSpell {
 
     @Override
     public void cancel() {
+        player.removePassenger(this.entity);
         startTime = (long) (System.currentTimeMillis() - (duration * 1000)); // Immediately end effect
     }
 }

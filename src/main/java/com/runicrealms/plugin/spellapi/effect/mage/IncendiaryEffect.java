@@ -7,7 +7,7 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
 public class IncendiaryEffect implements SpellEffect {
-    private static final String MODEL_ID = "meteor_storm_magic_circle";
+    private static final String MODEL_ID = "incendiary_indicator";
     private final Player caster;
     private final double duration;
     private final ModeledSpellAttached modeledSpellAttached;
