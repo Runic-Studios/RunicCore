@@ -36,8 +36,13 @@ public class ModeledStandManager implements Listener, ModeledStandAPI {
                         modeledStand.destroy();
                         return;
                     }
+
+                    // Ignore zero-vector collisions
+                    if (modeledStand.getVector().length() == 0) return;
+
                     // Check for collisions
                     ArmorStand armorStand = modeledStand.getArmorStand();
+
                     // Continuously teleport stand to achieve movement
                     armorStand.teleport(armorStand.getLocation().add(modeledStand.getVector()));
 

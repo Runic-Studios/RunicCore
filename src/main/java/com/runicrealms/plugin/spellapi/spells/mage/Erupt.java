@@ -5,6 +5,7 @@ import com.runicrealms.plugin.events.MagicDamageEvent;
 import com.runicrealms.plugin.spellapi.effect.SpellEffect;
 import com.runicrealms.plugin.spellapi.effect.SpellEffectType;
 import com.runicrealms.plugin.spellapi.effect.mage.IgniteEffect;
+import com.runicrealms.plugin.spellapi.modeled.ModeledStand;
 import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.RadiusSpell;
@@ -31,6 +32,7 @@ import java.util.Optional;
  * @author BoBoBalloon, Skyfallin
  */
 public class Erupt extends Spell implements DurationSpell, MagicDamageSpell, RadiusSpell {
+    private static final int ERUPT_MODEL_DATA = 2266;
     private static final int MAX_DIST = 10;
     private static final int MOB_DAMAGE_CAP = 500;
     private static final double RAY_SIZE = 1.5D;
@@ -105,6 +107,16 @@ public class Erupt extends Spell implements DurationSpell, MagicDamageSpell, Rad
 
         for (Entity entity : player.getWorld().getNearbyEntities(blastLocation, radius, radius, radius, target -> TargetUtil.isValidEnemy(player, target))) {
             LivingEntity livingEntity = (LivingEntity) entity;
+            new ModeledStand(
+                    player,
+                    livingEntity.getLocation().add(0, 0.3f, 0),
+                    new Vector(0, 0, 0),
+                    ERUPT_MODEL_DATA,
+                    2.0,
+                    1.0,
+                    target -> false
+            );
+
             DamageUtil.damageEntitySpell(damage, livingEntity, player, this);
             IgniteEffect igniteEffect = new IgniteEffect(player, livingEntity, duration);
             igniteEffect.initialize();
