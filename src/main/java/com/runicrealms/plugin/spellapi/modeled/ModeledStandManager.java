@@ -1,4 +1,4 @@
-package com.runicrealms.plugin.spellapi.armorstand;
+package com.runicrealms.plugin.spellapi.modeled;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.spellapi.event.ModeledStandCollideEvent;

@@ -1,12 +1,12 @@
 package com.runicrealms.plugin.spellapi.spells.mage;
 
 import com.runicrealms.plugin.common.CharacterClass;
-import com.runicrealms.plugin.spellapi.armorstand.CollisionCause;
-import com.runicrealms.plugin.spellapi.armorstand.ModeledStand;
 import com.runicrealms.plugin.spellapi.effect.SpellEffect;
 import com.runicrealms.plugin.spellapi.effect.SpellEffectType;
 import com.runicrealms.plugin.spellapi.effect.mage.ChilledEffect;
 import com.runicrealms.plugin.spellapi.event.ModeledStandCollideEvent;
+import com.runicrealms.plugin.spellapi.modeled.CollisionCause;
+import com.runicrealms.plugin.spellapi.modeled.ModeledStand;
 import com.runicrealms.plugin.spellapi.spelltypes.DistanceSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;

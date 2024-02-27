@@ -1,7 +1,7 @@
 package com.runicrealms.plugin.spellapi.event;
 
-import com.runicrealms.plugin.spellapi.armorstand.CollisionCause;
-import com.runicrealms.plugin.spellapi.armorstand.ModeledStand;
+import com.runicrealms.plugin.spellapi.modeled.CollisionCause;
+import com.runicrealms.plugin.spellapi.modeled.ModeledStand;
 import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.Cancellable;

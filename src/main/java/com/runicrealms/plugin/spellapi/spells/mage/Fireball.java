@@ -1,9 +1,9 @@
 package com.runicrealms.plugin.spellapi.spells.mage;
 
 import com.runicrealms.plugin.common.CharacterClass;
-import com.runicrealms.plugin.spellapi.armorstand.CollisionCause;
-import com.runicrealms.plugin.spellapi.armorstand.ModeledStand;
 import com.runicrealms.plugin.spellapi.event.ModeledStandCollideEvent;
+import com.runicrealms.plugin.spellapi.modeled.CollisionCause;
+import com.runicrealms.plugin.spellapi.modeled.ModeledStand;
 import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
