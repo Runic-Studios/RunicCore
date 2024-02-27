@@ -3,6 +3,7 @@ package com.runicrealms.plugin.spellapi.spells.mage;
 import com.runicrealms.plugin.common.CharacterClass;
 import com.runicrealms.plugin.spellapi.event.ModeledStandCollideEvent;
 import com.runicrealms.plugin.spellapi.modeled.ModeledStand;
+import com.runicrealms.plugin.spellapi.modeled.StandSlot;
 import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.RadiusSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
@@ -143,6 +144,7 @@ public class Meteor extends Spell implements MagicDamageSpell, RadiusSpell {
                 METEOR_MODEL_DATA,
                 4.0,
                 HITBOX_SCALE,
+                StandSlot.HEAD,
                 entity -> TargetUtil.isValidEnemy(player, entity)
         );
         EntityTrail.entityTrail(meteor.getArmorStand(), Particle.LAVA);

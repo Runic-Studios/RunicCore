@@ -4,6 +4,7 @@ import com.runicrealms.plugin.common.CharacterClass;
 import com.runicrealms.plugin.spellapi.event.ModeledStandCollideEvent;
 import com.runicrealms.plugin.spellapi.modeled.CollisionCause;
 import com.runicrealms.plugin.spellapi.modeled.ModeledStand;
+import com.runicrealms.plugin.spellapi.modeled.StandSlot;
 import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
@@ -45,6 +46,7 @@ public class Fireball extends Spell implements MagicDamageSpell {
                 FIREBALL_MODEL_DATA,
                 4.0,
                 HITBOX_SCALE,
+                StandSlot.HEAD,
                 entity -> TargetUtil.isValidEnemy(player, entity)
         );
         EntityTrail.entityTrail(

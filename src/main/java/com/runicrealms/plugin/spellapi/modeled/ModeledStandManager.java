@@ -22,10 +22,18 @@ public class ModeledStandManager implements Listener, ModeledStandAPI {
 
     public ModeledStandManager() {
         Bukkit.getPluginManager().registerEvents(this, RunicCore.getInstance());
-        startCollisionCheckTask();
+        startAnimationTask();
+        startCollisionTask();
     }
 
-    private void startCollisionCheckTask() {
+    private void startAnimationTask() {
+        Bukkit.getScheduler().runTaskTimerAsynchronously(RunicCore.getInstance(), () -> activeModeledStands.forEach((uuid, modeledStand) -> {
+            if (!(modeledStand instanceof ModeledStandAnimated modeledStandAnimated)) return;
+            modeledStandAnimated.incrementAnimationFrame();
+        }), 0, 1L);
+    }
+
+    private void startCollisionTask() {
         new BukkitRunnable() {
             @Override
             public void run() {

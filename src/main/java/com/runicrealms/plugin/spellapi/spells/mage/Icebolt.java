@@ -7,6 +7,7 @@ import com.runicrealms.plugin.spellapi.effect.mage.ChilledEffect;
 import com.runicrealms.plugin.spellapi.event.ModeledStandCollideEvent;
 import com.runicrealms.plugin.spellapi.modeled.CollisionCause;
 import com.runicrealms.plugin.spellapi.modeled.ModeledStand;
+import com.runicrealms.plugin.spellapi.modeled.StandSlot;
 import com.runicrealms.plugin.spellapi.spelltypes.DistanceSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
@@ -77,6 +78,7 @@ public class Icebolt extends Spell implements DistanceSpell, DurationSpell, Magi
                 ICEBOLT_MODEL_DATA,
                 4.0,
                 HITBOX_SCALE,
+                StandSlot.HEAD,
                 entity -> TargetUtil.isValidEnemy(player, entity)
         );
         EntityTrail.entityTrail(icebolt.getArmorStand(), Color.fromRGB(178, 216, 216), 1.0f);

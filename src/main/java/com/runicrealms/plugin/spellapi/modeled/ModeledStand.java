@@ -23,9 +23,11 @@ public class ModeledStand {
     private final int customModelData;
     private final double duration;
     private final double hitboxScale;
+    private final StandSlot standSlot;
     private final Predicate<Entity> filter;
-    private final ModeledEntity modeledEntity;
+    private final ItemStack itemStack;
     private final ArmorStand armorStand;
+    private final ModeledEntity modeledEntity;
     private final long startTime;
 
     /**
@@ -45,6 +47,7 @@ public class ModeledStand {
             int customModelData,
             double duration,
             double hitboxScale,
+            StandSlot standSlot,
             Predicate<Entity> filter) {
         this.player = player;
         this.location = location;
@@ -52,25 +55,29 @@ public class ModeledStand {
         this.customModelData = customModelData;
         this.duration = duration;
         this.hitboxScale = hitboxScale;
+        this.standSlot = standSlot;
         this.filter = filter;
+        this.itemStack = createItemStack();
         this.armorStand = createArmorStand();
         this.modeledEntity = createModeledEntity();
         RunicCore.getModeledStandAPI().addModeledStandToManager(this);
         this.startTime = System.currentTimeMillis();
     }
 
-    private ArmorStand createArmorStand() {
+    private ItemStack createItemStack() {
         ItemStack modeledItemStack = new ItemStack(Material.PAPER, 1);
         ItemMeta meta = modeledItemStack.getItemMeta();
         if (meta != null) {
             meta.setCustomModelData(customModelData);
             modeledItemStack.setItemMeta(meta);
         }
+        return modeledItemStack;
+    }
 
+    private ArmorStand createArmorStand() {
         ArmorStand armorStand = player.getWorld().spawn(this.location.clone().subtract(0, 0.25f, 0), ArmorStand.class);
-        if (armorStand.getEquipment() != null) {
-            armorStand.getEquipment().setHelmet(modeledItemStack);
-        }
+        this.updateEquipment();
+
         armorStand.setVisible(false);
         armorStand.setCollidable(false);
         armorStand.setInvulnerable(true);
@@ -100,6 +107,16 @@ public class ModeledStand {
         this.armorStand.remove();
     }
 
+    public void updateEquipment() {
+        if (armorStand.getEquipment() != null) {
+            if (standSlot == StandSlot.HEAD) {
+                armorStand.getEquipment().setHelmet(this.itemStack);
+            } else {
+                armorStand.getEquipment().setItemInMainHand(this.itemStack);
+            }
+        }
+    }
+
     public int getCustomModelData() {
         return customModelData;
     }
@@ -112,6 +129,10 @@ public class ModeledStand {
         return hitboxScale;
     }
 
+    public StandSlot getStandSlot() {
+        return standSlot;
+    }
+
     public Player getPlayer() {
         return player;
     }
@@ -122,6 +143,10 @@ public class ModeledStand {
 
     public Vector getVector() {
         return vector;
+    }
+
+    public ItemStack getItemStack() {
+        return itemStack;
     }
 
     public ArmorStand getArmorStand() {
