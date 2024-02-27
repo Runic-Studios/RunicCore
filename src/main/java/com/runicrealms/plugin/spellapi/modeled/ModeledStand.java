@@ -63,7 +63,7 @@ public class ModeledStand {
         ItemStack modeledItemStack = new ItemStack(Material.PAPER, 1);
         ItemMeta meta = modeledItemStack.getItemMeta();
         if (meta != null) {
-            meta.setCustomModelData(customModelData); // Set custom model data 2274
+            meta.setCustomModelData(customModelData);
             modeledItemStack.setItemMeta(meta);
         }
 
@@ -78,7 +78,6 @@ public class ModeledStand {
         armorStand.setMarker(false);
 
         armorStand.teleport(armorStand.getLocation().add(vector));
-//        armorStand.setVelocity(this.vector);
 
         return armorStand;
     }

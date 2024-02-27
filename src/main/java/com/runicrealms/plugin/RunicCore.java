@@ -166,6 +166,8 @@ import com.runicrealms.plugin.spellapi.api.SpellEffectAPI;
 import com.runicrealms.plugin.spellapi.api.StatusEffectAPI;
 import com.runicrealms.plugin.spellapi.effect.SpellEffectManager;
 import com.runicrealms.plugin.spellapi.effect.StatusEffectManager;
+import com.runicrealms.plugin.spellapi.modeled.ModeledSpellAPI;
+import com.runicrealms.plugin.spellapi.modeled.ModeledSpellManager;
 import com.runicrealms.plugin.spellapi.modeled.ModeledStandAPI;
 import com.runicrealms.plugin.spellapi.modeled.ModeledStandManager;
 import com.runicrealms.plugin.spellapi.skilltrees.SkillTreeManager;
@@ -213,6 +215,7 @@ public class RunicCore extends JavaPlugin implements Listener {
     private static ShopAPI shopAPI;
     private static MongoTask mongoTask;
     private static ModeledStandAPI modeledStandAPI;
+    private static ModeledSpellAPI modeledSpellAPI;
     private static SpellEffectAPI spellEffectAPI;
     private static StatusEffectAPI statusEffectAPI;
     private static GravestoneManager gravestoneManager;
@@ -264,6 +267,10 @@ public class RunicCore extends JavaPlugin implements Listener {
 
     public static ModeledStandAPI getModeledStandAPI() {
         return modeledStandAPI;
+    }
+
+    public static ModeledSpellAPI getModeledSpellAPI() {
+        return modeledSpellAPI;
     }
 
     public static SpellEffectAPI getSpellEffectAPI() {
@@ -393,6 +400,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         shopAPI = null;
         mongoTask = null;
         modeledStandAPI = null;
+        modeledSpellAPI = null;
         spellEffectAPI = null;
         statusEffectAPI = null;
         taskChainFactory = null;
@@ -469,6 +477,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         shopAPI = new RunicItemShopManager();
         mongoTask = new MongoTask();
         modeledStandAPI = new ModeledStandManager();
+        modeledSpellAPI = new ModeledSpellManager();
         spellEffectAPI = new SpellEffectManager();
         statusEffectAPI = new StatusEffectManager();
         gravestoneManager = new GravestoneManager();

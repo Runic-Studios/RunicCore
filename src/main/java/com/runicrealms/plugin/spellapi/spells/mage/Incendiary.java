@@ -14,7 +14,6 @@ import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spellutil.TargetUtil;
 import com.runicrealms.plugin.spellapi.spellutil.particles.HorizontalCircleFrame;
 import com.runicrealms.plugin.utilities.DamageUtil;
-import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Particle;
@@ -115,7 +114,6 @@ public class Incendiary extends Spell implements MagicDamageSpell, DistanceSpell
                 || event.getSpell() instanceof Meteor)) {
             return;
         }
-        Bukkit.broadcastMessage("incendiary");
 
         UUID uuid = event.getCaster().getUniqueId();
         Optional<SpellEffect> spellEffectOpt = this.getSpellEffect(uuid, uuid, SpellEffectType.INCENDIARY);
