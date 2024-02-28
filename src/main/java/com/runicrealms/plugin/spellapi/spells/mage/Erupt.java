@@ -6,6 +6,7 @@ import com.runicrealms.plugin.spellapi.effect.SpellEffect;
 import com.runicrealms.plugin.spellapi.effect.SpellEffectType;
 import com.runicrealms.plugin.spellapi.effect.mage.IgniteEffect;
 import com.runicrealms.plugin.spellapi.modeled.ModeledStand;
+import com.runicrealms.plugin.spellapi.modeled.StandSlot;
 import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.RadiusSpell;
@@ -88,10 +89,20 @@ public class Erupt extends Spell implements DurationSpell, MagicDamageSpell, Rad
         } else if (rayTraceResult.getHitEntity() != null) {
             location = rayTraceResult.getHitEntity().getLocation();
         } else if (rayTraceResult.getHitBlock() != null) {
-            location = rayTraceResult.getHitBlock().getLocation();
+            location = rayTraceResult.getHitBlock().getLocation().add(0, 1, 0);
         } else {
             location = player.getTargetBlock(null, MAX_DIST).getLocation();
         }
+        new ModeledStand(
+                player,
+                location.clone().add(0, 0.3f, 0),
+                new Vector(0, 0, 0),
+                ERUPT_MODEL_DATA,
+                2.0,
+                1.0,
+                StandSlot.HEAD,
+                target -> false
+        );
         fireBlast(player, location);
     }
 
@@ -107,16 +118,6 @@ public class Erupt extends Spell implements DurationSpell, MagicDamageSpell, Rad
 
         for (Entity entity : player.getWorld().getNearbyEntities(blastLocation, radius, radius, radius, target -> TargetUtil.isValidEnemy(player, target))) {
             LivingEntity livingEntity = (LivingEntity) entity;
-            new ModeledStand(
-                    player,
-                    livingEntity.getLocation().add(0, 0.3f, 0),
-                    new Vector(0, 0, 0),
-                    ERUPT_MODEL_DATA,
-                    2.0,
-                    1.0,
-                    target -> false
-            );
-
             DamageUtil.damageEntitySpell(damage, livingEntity, player, this);
             IgniteEffect igniteEffect = new IgniteEffect(player, livingEntity, duration);
             igniteEffect.initialize();

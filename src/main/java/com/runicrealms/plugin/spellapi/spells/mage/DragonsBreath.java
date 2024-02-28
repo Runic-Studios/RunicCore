@@ -3,6 +3,8 @@ package com.runicrealms.plugin.spellapi.spells.mage;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.common.CharacterClass;
 import com.runicrealms.plugin.spellapi.effect.RunicStatusEffect;
+import com.runicrealms.plugin.spellapi.modeled.ModeledStandAnimated;
+import com.runicrealms.plugin.spellapi.modeled.StandSlot;
 import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.RadiusSpell;
@@ -25,6 +27,19 @@ import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class DragonsBreath extends Spell implements DurationSpell, MagicDamageSpell, RadiusSpell {
+    private static final int MODEL_DATA = 2752;
+    private static final int[] MODEL_DATA_ARRAY = new int[]{
+            MODEL_DATA,
+            2753,
+            2754,
+            2755,
+            2756,
+            2757,
+            2758,
+            2759,
+            2760,
+    };
+    private static final double HITBOX_SCALE = 0.5;
     private static final int PERIOD = 1;
     private double damageAmt;
     private double duration;
@@ -35,31 +50,33 @@ public class DragonsBreath extends Spell implements DurationSpell, MagicDamageSp
         super("Dragon's Breath", CharacterClass.MAGE);
         this.setDescription("You conjure a torrent of flame ahead of you " +
                 "in a cone! Your fiery breath deals (" + damageAmt + " + &f" + damagePerLevel +
-                "x&7 lvl) magicʔ damage every second for " + duration + "s and " +
-                "grows in size each tick, up to " + radius + " blocks! " +
+                "x&7 lvl) magicʔ damage every second for " + duration + "s to " +
+                "enemies within " + radius + " blocks! " +
                 "Silences and stuns end this spell early. " +
                 "You are slowed for the duration of the effect.");
     }
 
-    private void conjureBreath(Player player, int count) {
-        double effectiveRadius = radius - (duration - count);
-        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 0.5f, 2.0f);
-        // Visual effect
+    private void conjureBreath(Player player) {
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 0.5f, 0.5f);
+        Vector direction = player.getEyeLocation().getDirection();
+        Vector forward = direction.multiply(3); // Adjust the multiplier to set the distance in front of the player
+        Location spawnLocation = player.getEyeLocation().add(forward).add(0, -0.25f, 0);
+        new ModeledStandAnimated(
+                player,
+                spawnLocation,
+                new Vector(0, 0, 0),
+                MODEL_DATA,
+                4.0,
+                HITBOX_SCALE,
+                StandSlot.ARM,
+                target -> false,
+                MODEL_DATA_ARRAY
+        );
+        // Only hit enemies in front of the caster
         double maxAngle = 45;
-
-        Vector middle = player.getEyeLocation().getDirection().normalize();
-        Vector one = rotateVectorAroundY(middle, -maxAngle);
-        Vector two = rotateVectorAroundY(middle, -maxAngle / 2);
-        Vector three = rotateVectorAroundY(middle, maxAngle / 2);
-        Vector four = rotateVectorAroundY(middle, maxAngle);
-
-        Vector[] vectors = new Vector[]{one, two, three, four};
-        for (Vector vector : vectors) {
-            spawnWaveFlameLine(player, vector, player.getEyeLocation(), effectiveRadius);
-        }
         double maxAngleCos = Math.cos(Math.toRadians(maxAngle));
         // Damage entities in front of the player
-        for (Entity entity : player.getWorld().getNearbyEntities(player.getLocation(), effectiveRadius, effectiveRadius, effectiveRadius, target -> TargetUtil.isValidEnemy(player, target))) {
+        for (Entity entity : player.getWorld().getNearbyEntities(player.getLocation(), radius, radius, radius, target -> TargetUtil.isValidEnemy(player, target))) {
             Location entityLocation = entity.getLocation();
             Vector directionToEntity = entityLocation.subtract(player.getLocation()).toVector().normalize();
             // Check if the entity is in front of the player (cosine of the angle between the vectors > 0)
@@ -82,7 +99,7 @@ public class DragonsBreath extends Spell implements DurationSpell, MagicDamageSp
                 removeStatusEffect(player, RunicStatusEffect.SLOW_I);
             } else {
                 count.set(count.get() + PERIOD);
-                conjureBreath(player, count.get());
+                conjureBreath(player);
             }
         }, 0, PERIOD * 20);
     }

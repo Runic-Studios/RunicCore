@@ -11,6 +11,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.util.EulerAngle;
 import org.bukkit.util.Vector;
 
 import java.util.function.Predicate;
@@ -28,7 +29,7 @@ public class ModeledStand {
     private final ItemStack itemStack;
     private final ArmorStand armorStand;
     private final ModeledEntity modeledEntity;
-    private final long startTime;
+    private long startTime;
 
     /**
      * Creates a ModeledStand, which is used as a projectile library. Using custom resources and ModelEngine,
@@ -76,7 +77,6 @@ public class ModeledStand {
 
     private ArmorStand createArmorStand() {
         ArmorStand armorStand = player.getWorld().spawn(this.location.clone().subtract(0, 0.25f, 0), ArmorStand.class);
-        this.updateEquipment();
 
         armorStand.setVisible(false);
         armorStand.setCollidable(false);
@@ -84,6 +84,13 @@ public class ModeledStand {
         armorStand.setGravity(false);
         armorStand.setMarker(false);
 
+        if (standSlot == StandSlot.ARM) {
+            armorStand.setArms(true);
+            // Set the right arm pose to (0, 0, 0)
+            armorStand.setRightArmPose(new EulerAngle(0, 0, 0));
+        }
+
+        this.updateEquipment(armorStand);
         armorStand.teleport(armorStand.getLocation().add(vector));
 
         return armorStand;
@@ -107,7 +114,7 @@ public class ModeledStand {
         this.armorStand.remove();
     }
 
-    public void updateEquipment() {
+    public void updateEquipment(ArmorStand armorStand) {
         if (armorStand.getEquipment() != null) {
             if (standSlot == StandSlot.HEAD) {
                 armorStand.getEquipment().setHelmet(this.itemStack);
@@ -159,6 +166,10 @@ public class ModeledStand {
 
     public long getStartTime() {
         return startTime;
+    }
+
+    public void cancel() {
+        startTime = (long) (System.currentTimeMillis() - (duration * 1000)); // Immediately end effect
     }
 
     public Predicate<Entity> getFilter() {

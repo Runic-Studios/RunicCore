@@ -30,7 +30,7 @@ public class ModeledStandManager implements Listener, ModeledStandAPI {
         Bukkit.getScheduler().runTaskTimerAsynchronously(RunicCore.getInstance(), () -> activeModeledStands.forEach((uuid, modeledStand) -> {
             if (!(modeledStand instanceof ModeledStandAnimated modeledStandAnimated)) return;
             modeledStandAnimated.incrementAnimationFrame();
-        }), 0, 1L);
+        }), 0, 2L);
     }
 
     private void startCollisionTask() {

@@ -26,17 +26,21 @@ public class ModeledStandAnimated extends ModeledStand {
             Predicate<Entity> filter,
             int[] modelDataArray) {
         super(player, location, vector, customModelData, duration, hitboxScale, standSlot, filter);
-        this.index = 0;
         this.modelDataArray = modelDataArray;
+        this.index = 0;
     }
 
     public void incrementAnimationFrame() {
-        if (this.index == this.modelDataArray.length - 1) return;
+        if (this.index == this.modelDataArray.length - 1) {
+            this.cancel();
+            return;
+        }
         this.index++;
         ItemMeta meta = this.getItemStack().getItemMeta();
         if (meta != null) {
             meta.setCustomModelData(this.modelDataArray[this.index]);
         }
-        this.updateEquipment();
+        this.getItemStack().setItemMeta(meta);
+        this.updateEquipment(this.getArmorStand());
     }
 }
