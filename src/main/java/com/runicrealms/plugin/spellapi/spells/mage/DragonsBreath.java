@@ -58,9 +58,10 @@ public class DragonsBreath extends Spell implements DurationSpell, MagicDamageSp
 
     private void conjureBreath(Player player) {
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 0.5f, 0.5f);
-        Vector direction = player.getEyeLocation().getDirection();
+        Location sourceLocation = player.getEyeLocation().subtract(0, 0.4f, 0);
+        Vector direction = sourceLocation.getDirection();
         Vector forward = direction.multiply(3); // Adjust the multiplier to set the distance in front of the player
-        Location spawnLocation = player.getEyeLocation().add(forward).add(0, -0.25f, 0);
+        Location spawnLocation = sourceLocation.add(forward);
         new ModeledStandAnimated(
                 player,
                 spawnLocation,
