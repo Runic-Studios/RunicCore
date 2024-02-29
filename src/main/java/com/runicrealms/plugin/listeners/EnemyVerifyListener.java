@@ -31,6 +31,11 @@ public class EnemyVerifyListener implements Listener {
             return;
         }
 
+        if (victim.isInvulnerable()) {
+            event.setCancelled(true);
+            return;
+        }
+
         // target must be alive
         if (!(victim instanceof LivingEntity)) {
             event.setCancelled(true);

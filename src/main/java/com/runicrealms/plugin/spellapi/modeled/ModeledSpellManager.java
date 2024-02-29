@@ -1,8 +1,6 @@
 package com.runicrealms.plugin.spellapi.modeled;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.events.MagicDamageEvent;
-import com.runicrealms.plugin.events.PhysicalDamageEvent;
 import com.runicrealms.plugin.spellapi.event.ModeledSpellCollideEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.FluidCollisionMode;
@@ -11,7 +9,6 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.RayTraceResult;
 
@@ -97,6 +94,7 @@ public class ModeledSpellManager implements Listener, ModeledSpellAPI {
         Can't add the model's entity to the filter predicate before it is spawned into the world
         This prevents the entity from counting its own base in the raytrace
         */
+        if (event.getCollisionCause() != CollisionCause.ENTITY) return;
         AtomicBoolean cancelEvent = new AtomicBoolean(false);
         this.activeModeledSpells.forEach((uuid, modeledSpell) -> {
             if (event.getEntity().equals(modeledSpell.getEntity())) {
@@ -106,35 +104,6 @@ public class ModeledSpellManager implements Listener, ModeledSpellAPI {
         });
         if (cancelEvent.get()) return;
         event.getModeledSpell().cancel();
-    }
-
-    // TODO; remove all active entities on shutdown
-
-    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
-    public void onEntityDamageByEntityEvent(EntityDamageByEntityEvent event) {
-        this.activeModeledSpells.forEach((uuid, modeledSpell) -> {
-            if (event.getEntity().equals(modeledSpell.getEntity())) {
-                event.setCancelled(true);
-            }
-        });
-    }
-
-    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
-    public void onMagicDamage(MagicDamageEvent event) {
-        this.activeModeledSpells.forEach((uuid, modeledSpell) -> {
-            if (event.getVictim().equals(modeledSpell.getEntity())) {
-                event.setCancelled(true);
-            }
-        });
-    }
-
-    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
-    public void onPhysicalDamage(PhysicalDamageEvent event) {
-        this.activeModeledSpells.forEach((uuid, modeledSpell) -> {
-            if (event.getVictim().equals(modeledSpell.getEntity())) {
-                event.setCancelled(true);
-            }
-        });
     }
 
     @Override

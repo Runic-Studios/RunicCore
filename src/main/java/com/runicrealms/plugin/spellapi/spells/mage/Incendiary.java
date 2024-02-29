@@ -33,7 +33,7 @@ import java.util.UUID;
  * @author BoBoBalloon, Skyfallin
  */
 public class Incendiary extends Spell implements MagicDamageSpell, DistanceSpell, DurationSpell {
-    private static final double HITBOX_SCALE = 0.5;
+    private static final double HITBOX_SCALE = 1.0;
     private static final double SPEED = 1.0;
     private static final String MODEL_ID = "meteor_storm_meteor";
     private double damage;
@@ -72,7 +72,7 @@ public class Incendiary extends Spell implements MagicDamageSpell, DistanceSpell
                 castLocation,
                 vector,
                 HITBOX_SCALE,
-                4.0,
+                3.0,
                 target -> TargetUtil.isValidEnemy(player, target)
         );
         projectile.initialize();
