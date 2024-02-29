@@ -83,7 +83,8 @@ public class IncendiaryEffect implements SpellEffect {
                 MODEL_ID,
                 this.caster.getLocation(),
                 1.0,
-                this.duration
+                this.duration,
+                target -> false
         );
         modeledSpellAttached.initialize();
         modeledSpellAttached.getModeledEntity().getModels().forEach((s, activeModel) -> activeModel.getAnimationHandler().playAnimation(

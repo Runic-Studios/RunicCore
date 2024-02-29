@@ -1,35 +1,30 @@
 package com.runicrealms.plugin.spellapi.spells.mage;
 
-import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.api.event.StaffAttackEvent;
 import com.runicrealms.plugin.common.CharacterClass;
 import com.runicrealms.plugin.spellapi.effect.SpellEffect;
 import com.runicrealms.plugin.spellapi.effect.SpellEffectType;
 import com.runicrealms.plugin.spellapi.effect.mage.IncendiaryEffect;
+import com.runicrealms.plugin.spellapi.event.ModeledSpellCollideEvent;
 import com.runicrealms.plugin.spellapi.event.SpellCastEvent;
+import com.runicrealms.plugin.spellapi.modeled.CollisionCause;
+import com.runicrealms.plugin.spellapi.modeled.ModeledSpellProjectile;
 import com.runicrealms.plugin.spellapi.spelltypes.DistanceSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spellutil.TargetUtil;
-import com.runicrealms.plugin.spellapi.spellutil.particles.HorizontalCircleFrame;
 import com.runicrealms.plugin.utilities.DamageUtil;
-import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.util.Vector;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -38,9 +33,9 @@ import java.util.UUID;
  * @author BoBoBalloon, Skyfallin
  */
 public class Incendiary extends Spell implements MagicDamageSpell, DistanceSpell, DurationSpell {
-    private static final double PERIOD = 0.5;
-    private static final int BEAM_RADIUS = 1;
-    private final Map<UUID, Set<UUID>> damageMap = new HashMap<>(); // Prevents repeat hits on same target
+    private static final double HITBOX_SCALE = 0.5;
+    private static final double SPEED = 1.0;
+    private static final String MODEL_ID = "meteor_storm_meteor";
     private double damage;
     private double damagePerLevel;
     private double distance;
@@ -50,11 +45,11 @@ public class Incendiary extends Spell implements MagicDamageSpell, DistanceSpell
         super("Incendiary", CharacterClass.MAGE);
         this.setIsPassive(true);
         this.setDescription("Each time you cast a &6Pyromancer&7 spell, " +
-                "you become &oincendiary &7for the next " + duration + "s, engulfing you in flame! " +
-                "Your first basic attack while incendiary releases a wave of fire " +
-                "up to " + this.distance + " blocks away, " +
-                "dealing (" + this.damage + " + &f" + this.damagePerLevel + "x&7 lvl) magicʔ damage " +
-                "to enemies it passes through!");
+                "you become &cincendiary &7for the next " + duration + "s!" +
+                "\n\n&2&lEFFECT &cIncendiary" +
+                "\n&7Your first basic attack while &cincendiary &7releases a slow-moving " +
+                "ball of fire, dealing (" + this.damage + " + &f" + this.damagePerLevel + "x&7 lvl) " +
+                "magicʔ damage to enemies it passes through!");
     }
 
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
@@ -69,40 +64,32 @@ public class Incendiary extends Spell implements MagicDamageSpell, DistanceSpell
 
     private void startEffect(Player player) {
         Location castLocation = player.getEyeLocation();
-        fireWaveEffect(player, castLocation);
-        new BukkitRunnable() {
-            double count = 1;
-
-            @Override
-            public void run() {
-                if (count > distance) {
-                    this.cancel();
-                    damageMap.remove(player.getUniqueId());
-                } else {
-                    count += 1 * PERIOD;
-                    castLocation.add(castLocation.getDirection());
-                    fireWaveEffect(player, castLocation);
-                }
-            }
-        }.runTaskTimer(RunicCore.getInstance(), 0, (long) PERIOD * 20L);
+        player.getWorld().playSound(castLocation, Sound.ITEM_FIRECHARGE_USE, 0.25f, 2.0f);
+        final Vector vector = castLocation.getDirection().normalize().multiply(SPEED);
+        ModeledSpellProjectile projectile = new ModeledSpellProjectile(
+                player,
+                MODEL_ID,
+                castLocation,
+                vector,
+                HITBOX_SCALE,
+                4.0,
+                target -> TargetUtil.isValidEnemy(player, target)
+        );
+        projectile.initialize();
     }
 
-    private void fireWaveEffect(Player player, Location location) {
-        if (!damageMap.containsKey(player.getUniqueId()))
-            damageMap.put(player.getUniqueId(), new HashSet<>());
-        // Particles
-        player.getWorld().spawnParticle(Particle.REDSTONE, location,
-                2, 0.5f, 0.5f, 0.5f, new Particle.DustOptions(Color.YELLOW, 1));
-        new HorizontalCircleFrame(BEAM_RADIUS, true).playParticle(player, Particle.FLAME, location, 50.0f);
-        player.getWorld().playSound(location, Sound.ITEM_FIRECHARGE_USE, 0.25f, 2.0f);
-        for (Entity entity : player.getWorld().getNearbyEntities(location, BEAM_RADIUS, BEAM_RADIUS, BEAM_RADIUS, target -> TargetUtil.isValidEnemy(player, target))) {
-            if (damageMap.get(player.getUniqueId()).contains(entity.getUniqueId())) continue;
-            DamageUtil.damageEntitySpell(damage, (LivingEntity) entity, player, this);
-            damageMap.get(player.getUniqueId()).add(entity.getUniqueId());
-        }
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    public void onHit(ModeledSpellCollideEvent event) {
+        if (!event.getModeledSpell().getModelId().equals(MODEL_ID)) return;
+        if (event.getCollisionCause() != CollisionCause.ENTITY) return;
+        Player player = event.getModeledSpell().getPlayer();
+        LivingEntity livingEntity = event.getEntity();
+        DamageUtil.damageEntitySpell(this.damage, livingEntity, player, this);
+        livingEntity.getWorld().spawnParticle(Particle.FLAME, livingEntity.getEyeLocation(), 3, 0.5F, 0.5F, 0.5F, 0);
+        player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_HURT, 0.5f, 1);
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST) // last
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true) // last
     private void onSpellCast(SpellCastEvent event) {
         if (!this.hasPassive(event.getCaster().getUniqueId(), this.getName())) {
             return;

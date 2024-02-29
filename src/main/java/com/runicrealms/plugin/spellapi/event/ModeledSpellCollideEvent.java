@@ -1,7 +1,7 @@
 package com.runicrealms.plugin.spellapi.event;
 
 import com.runicrealms.plugin.spellapi.modeled.CollisionCause;
-import com.runicrealms.plugin.spellapi.modeled.ModeledStand;
+import com.runicrealms.plugin.spellapi.modeled.ModeledSpell;
 import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.Cancellable;
@@ -10,29 +10,29 @@ import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * This custom event is called when a custom ModeledStand collides with an entity
+ * This custom event is called when a custom ModeledSpell collides with an entity
  */
-public class ModeledStandCollideEvent extends Event implements Cancellable {
+public class ModeledSpellCollideEvent extends Event implements Cancellable {
     private static final HandlerList handlers = new HandlerList();
-    private final ModeledStand modeledStand;
+    private final ModeledSpell modeledSpell;
     private final Location location;
     private final CollisionCause collisionCause;
     private final LivingEntity entity;
     private boolean passThroughEnemies;
     private boolean isCancelled;
 
-    public ModeledStandCollideEvent(ModeledStand modeledStand, CollisionCause collisionCause) {
-        this.modeledStand = modeledStand;
-        this.location = modeledStand.getLocation();
+    public ModeledSpellCollideEvent(ModeledSpell modeledSpell, CollisionCause collisionCause) {
+        this.modeledSpell = modeledSpell;
+        this.location = modeledSpell.getEntity().getLocation();
         this.collisionCause = collisionCause;
         this.entity = null;
         this.passThroughEnemies = false;
         this.isCancelled = false;
     }
 
-    public ModeledStandCollideEvent(ModeledStand modeledStand, CollisionCause collisionCause, @NotNull LivingEntity entity) {
-        this.modeledStand = modeledStand;
-        this.location = modeledStand.getLocation();
+    public ModeledSpellCollideEvent(ModeledSpell modeledStand, CollisionCause collisionCause, @NotNull LivingEntity entity) {
+        this.modeledSpell = modeledStand;
+        this.location = modeledStand.getEntity().getLocation();
         this.collisionCause = collisionCause;
         this.entity = entity;
         this.passThroughEnemies = false;
@@ -43,8 +43,8 @@ public class ModeledStandCollideEvent extends Event implements Cancellable {
         return handlers;
     }
 
-    public ModeledStand getModeledStand() {
-        return modeledStand;
+    public ModeledSpell getModeledSpell() {
+        return modeledSpell;
     }
 
     public Location getLocation() {

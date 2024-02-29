@@ -54,7 +54,6 @@ public class ModeledStandManager implements Listener, ModeledStandAPI {
                     // Continuously teleport stand to achieve movement
                     armorStand.teleport(armorStand.getLocation().add(modeledStand.getVector()));
 
-                    // TODO: extract to method
                     RayTraceResult rayTraceEntities = armorStand.getWorld().rayTraceEntities(
                             armorStand.getLocation(),
                             modeledStand.getVector(),
@@ -71,30 +70,34 @@ public class ModeledStandManager implements Listener, ModeledStandAPI {
                             true
                     );
 
-                    // TODO: extract to method
-                    if (rayTraceEntities != null && rayTraceEntities.getHitEntity() != null) {
-                        ModeledStandCollideEvent event = new ModeledStandCollideEvent(modeledStand, CollisionCause.ENTITY, (LivingEntity) rayTraceEntities.getHitEntity());
-                        Bukkit.getPluginManager().callEvent(event);
-                    } else if (rayTraceBlocks != null && rayTraceBlocks.getHitBlock() != null) {
-                        ModeledStandCollideEvent event = new ModeledStandCollideEvent(modeledStand, CollisionCause.TERRAIN);
-                        Bukkit.getPluginManager().callEvent(event);
-                    } else if (armorStand.isOnGround()) {
-                        ModeledStandCollideEvent event = new ModeledStandCollideEvent(modeledStand, CollisionCause.ON_GROUND);
-                        Bukkit.getPluginManager().callEvent(event);
-                    } else if (!armorStand.isValid()) {
-                        ModeledStandCollideEvent event = new ModeledStandCollideEvent(modeledStand, CollisionCause.INVALID);
-                        Bukkit.getPluginManager().callEvent(event);
-                    }
-
+                    handleCollision(modeledStand, armorStand, rayTraceEntities, rayTraceBlocks);
                 });
             }
         }.runTaskTimer(RunicCore.getInstance(), 0L, 3L);
     }
 
+    /**
+     * Handles each case which will result in a ModeledStand collision, such as hitting entities or terrain
+     */
+    private void handleCollision(ModeledStand modeledStand, ArmorStand armorStand, RayTraceResult rayTraceEntities, RayTraceResult rayTraceBlocks) {
+        if (rayTraceEntities != null && rayTraceEntities.getHitEntity() != null) {
+            ModeledStandCollideEvent event = new ModeledStandCollideEvent(modeledStand, CollisionCause.ENTITY, (LivingEntity) rayTraceEntities.getHitEntity());
+            Bukkit.getPluginManager().callEvent(event);
+        } else if (rayTraceBlocks != null && rayTraceBlocks.getHitBlock() != null) {
+            ModeledStandCollideEvent event = new ModeledStandCollideEvent(modeledStand, CollisionCause.TERRAIN);
+            Bukkit.getPluginManager().callEvent(event);
+        } else if (armorStand.isOnGround()) {
+            ModeledStandCollideEvent event = new ModeledStandCollideEvent(modeledStand, CollisionCause.ON_GROUND);
+            Bukkit.getPluginManager().callEvent(event);
+        } else if (!armorStand.isValid()) {
+            ModeledStandCollideEvent event = new ModeledStandCollideEvent(modeledStand, CollisionCause.INVALID);
+            Bukkit.getPluginManager().callEvent(event);
+        }
+    }
+
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onModeledStandCollide(ModeledStandCollideEvent event) {
-        activeModeledStands.remove(event.getModeledStand().getArmorStand().getUniqueId());
-        event.getModeledStand().destroy();
+        event.getModeledStand().cancel();
     }
 
     @Override

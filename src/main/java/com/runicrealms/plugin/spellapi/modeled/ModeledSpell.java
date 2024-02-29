@@ -6,76 +6,65 @@ import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
+import java.util.function.Predicate;
+
 public interface ModeledSpell {
 
     /**
-     * ?
-     *
-     * @return
+     * @return the player who cast the spell
      */
     Player getPlayer();
 
     /**
-     * ?
-     *
-     * @return
+     * @return the string identifier of the model in ModelEngine
      */
     String getModelId();
 
     /**
-     * ?
-     *
-     * @return
+     * @return the location where the model will spawn
      */
     Location getSpawnLocation();
 
     /**
-     * ?
-     *
-     * @return
+     * @return the duration before the model is forcibly removed
      */
     double getDuration();
 
     /**
-     * ?
-     *
-     * @param duration
+     * @param duration to set before model is removed
      */
     void setDuration(double duration);
 
     /**
-     * ?
-     *
-     * @return
+     * @return the time when the model was created
      */
     double getStartTime();
 
     /**
-     * ?
-     *
-     * @return
+     * @return the hitbox scale
      */
     double getHitboxScale();
 
     /**
-     * ?
-     *
-     * @return
+     * @return the modeled entity
      */
     ModeledEntity getModeledEntity();
 
     /**
-     * ?
+     * Sets up the base entity which underlies the model
      *
-     * @param location
-     * @return
+     * @param location to spawn the entity
+     * @return the base entity
      */
     Entity initializeBaseEntity(Location location);
 
     /**
-     * ?
-     *
-     * @return
+     * @return the base entity
+     */
+    Entity getEntity();
+
+    /**
+     * @return setup and spawn the model over the base entity
      */
     ModeledEntity spawnModel();
 
@@ -87,7 +76,14 @@ public interface ModeledSpell {
     }
 
     /**
-     * ?
+     * Immediately remove the model and base entity
      */
     void cancel();
+
+    /**
+     * A predicate filter when tracking nearby entities. Useful for only targeting enemies, allies, etc.
+     *
+     * @return an entity filter
+     */
+    Predicate<Entity> getFilter();
 }

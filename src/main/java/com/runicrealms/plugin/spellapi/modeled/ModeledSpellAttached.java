@@ -8,6 +8,8 @@ import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
+import java.util.function.Predicate;
+
 public class ModeledSpellAttached implements ModeledSpell {
     private final Player player;
     private final String modelId;
@@ -15,6 +17,7 @@ public class ModeledSpellAttached implements ModeledSpell {
     private final double hitboxScale;
     private final Entity entity;
     private final ModeledEntity modeledEntity;
+    private final Predicate<Entity> filter;
     private double startTime;
     private double duration;
 
@@ -23,11 +26,13 @@ public class ModeledSpellAttached implements ModeledSpell {
             final String modelId,
             final Location spawnLocation,
             final double hitboxScale,
-            final double duration) {
+            final double duration,
+            final Predicate<Entity> filter) {
         this.player = player;
         this.modelId = modelId;
         this.spawnLocation = spawnLocation;
         this.duration = duration;
+        this.filter = filter;
         this.hitboxScale = hitboxScale;
         this.entity = initializeBaseEntity(this.spawnLocation);
         this.modeledEntity = spawnModel();
@@ -70,6 +75,11 @@ public class ModeledSpellAttached implements ModeledSpell {
     }
 
     @Override
+    public Entity getEntity() {
+        return entity;
+    }
+
+    @Override
     public ModeledEntity getModeledEntity() {
         return modeledEntity;
     }
@@ -104,5 +114,10 @@ public class ModeledSpellAttached implements ModeledSpell {
     public void cancel() {
         player.removePassenger(this.entity);
         startTime = (long) (System.currentTimeMillis() - (duration * 1000)); // Immediately end effect
+    }
+
+    @Override
+    public Predicate<Entity> getFilter() {
+        return filter;
     }
 }
