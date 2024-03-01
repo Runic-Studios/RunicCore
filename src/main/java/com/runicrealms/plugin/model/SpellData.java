@@ -9,7 +9,7 @@ import java.util.Map;
 
 public class SpellData {
     public static final String DEFAULT_ARCHER = "Rapid Fire";
-    public static final String DEFAULT_CLERIC = "Sacred Spring";
+    public static final String DEFAULT_CLERIC = "Healing Sprite";
     public static final String DEFAULT_MAGE = "Fireball";
     public static final String DEFAULT_ROGUE = "Dash";
     public static final String DEFAULT_WARRIOR = "Slam";

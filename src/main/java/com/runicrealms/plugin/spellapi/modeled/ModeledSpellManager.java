@@ -11,11 +11,11 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.RayTraceResult;
+import org.bukkit.util.Vector;
 
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ModeledSpellManager implements Listener, ModeledSpellAPI {
     private static final double RAY_SIZE = 1.0D;
@@ -34,14 +34,25 @@ public class ModeledSpellManager implements Listener, ModeledSpellAPI {
                     // Remove modeled spell if duration has expired
                     if (System.currentTimeMillis() - modeledSpell.getStartTime() > (modeledSpell.getDuration() * 1000)) {
                         activeModeledSpells.remove(modeledSpell.getModeledEntity().getBase().getUUID());
-                        modeledSpell.getModeledEntity().destroy();
+                        modeledSpell.destroy();
                         return;
                     }
 
-                    // Skip models with no vector
+                    // Skip models with no vector or not a projectile
                     if (!(modeledSpell instanceof ModeledSpellProjectile projectile)) return;
-                    if (projectile.getVector().length() == 0)
-                        return;
+                    if (projectile.getVector().length() == 0) return;
+
+                    // If projectile has a maxDistance, calculate distance squared from starting point
+                    if (projectile.getMaxDistance() != -1) {
+                        double distanceSquared = projectile.getSpawnLocation().distanceSquared(projectile.getEntity().getLocation());
+                        if (distanceSquared > Math.pow(projectile.getMaxDistance(), 2)) {
+                            // If max distance exceeded, set velocity to zero and skip further processing
+                            projectile.getEntity().setVelocity(new Vector(0, 0, 0));
+                            ModeledSpellCollideEvent event = new ModeledSpellCollideEvent(modeledSpell, CollisionCause.MAX_DISTANCE);
+                            Bukkit.getPluginManager().callEvent(event);
+                            return;
+                        }
+                    }
 
                     // Continuously set the base entity's velocity
                     Entity entity = modeledSpell.getEntity();
@@ -88,21 +99,11 @@ public class ModeledSpellManager implements Listener, ModeledSpellAPI {
         }
     }
 
+    /**
+     * Remove the modeled entity and base on a collision
+     */
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onModeledSpellCollide(ModeledSpellCollideEvent event) {
-        /*
-        Can't add the model's entity to the filter predicate before it is spawned into the world
-        This prevents the entity from counting its own base in the raytrace
-        */
-        if (event.getCollisionCause() != CollisionCause.ENTITY) return;
-        AtomicBoolean cancelEvent = new AtomicBoolean(false);
-        this.activeModeledSpells.forEach((uuid, modeledSpell) -> {
-            if (event.getEntity().equals(modeledSpell.getEntity())) {
-                event.setCancelled(true);
-                cancelEvent.set(true);
-            }
-        });
-        if (cancelEvent.get()) return;
         event.getModeledSpell().cancel();
     }
 

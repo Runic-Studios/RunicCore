@@ -76,9 +76,17 @@ public interface ModeledSpell {
     }
 
     /**
-     * Immediately remove the model and base entity
+     * Immediately set the duration to max, expiring the model
      */
     void cancel();
+
+    /**
+     * Destroy the model and its underlying base entity
+     */
+    default void destroy() {
+        getModeledEntity().destroy();
+        getEntity().remove();
+    }
 
     /**
      * A predicate filter when tracking nearby entities. Useful for only targeting enemies, allies, etc.

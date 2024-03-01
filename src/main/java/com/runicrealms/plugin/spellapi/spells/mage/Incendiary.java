@@ -72,6 +72,7 @@ public class Incendiary extends Spell implements MagicDamageSpell, DistanceSpell
                 castLocation,
                 vector,
                 HITBOX_SCALE,
+                -1,
                 3.0,
                 target -> TargetUtil.isValidEnemy(player, target)
         );

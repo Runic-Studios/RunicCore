@@ -8,6 +8,7 @@ import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * This custom event is called when a custom ModeledSpell collides with an entity
@@ -17,7 +18,7 @@ public class ModeledSpellCollideEvent extends Event implements Cancellable {
     private final ModeledSpell modeledSpell;
     private final Location location;
     private final CollisionCause collisionCause;
-    private final LivingEntity entity;
+    private final @Nullable LivingEntity entity;
     private boolean passThroughEnemies;
     private boolean isCancelled;
 
@@ -55,6 +56,7 @@ public class ModeledSpellCollideEvent extends Event implements Cancellable {
         return collisionCause;
     }
 
+    @Nullable
     public LivingEntity getEntity() {
         return entity;
     }

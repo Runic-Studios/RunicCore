@@ -11,11 +11,15 @@ import org.bukkit.util.Vector;
 
 import java.util.function.Predicate;
 
+/**
+ * Implementation of ModeledSpell, used for spell effects which use ModelEngine to create custom projectiles
+ */
 public class ModeledSpellProjectile implements ModeledSpell {
     private final Player player;
     private final String modelId;
     private final Location spawnLocation;
     private final double hitboxScale;
+    private final double maxDistance;
     private final Entity entity;
     private final ModeledEntity modeledEntity;
     private final Vector vector;
@@ -29,6 +33,7 @@ public class ModeledSpellProjectile implements ModeledSpell {
             final Location spawnLocation,
             final Vector vector,
             final double hitboxScale,
+            final double maxDistance,
             final double duration,
             final Predicate<Entity> filter) {
         this.player = player;
@@ -36,6 +41,7 @@ public class ModeledSpellProjectile implements ModeledSpell {
         this.spawnLocation = spawnLocation;
         this.vector = vector;
         this.hitboxScale = hitboxScale;
+        this.maxDistance = maxDistance;
         this.duration = duration;
         this.filter = filter;
         this.entity = initializeBaseEntity(this.spawnLocation);
@@ -80,6 +86,10 @@ public class ModeledSpellProjectile implements ModeledSpell {
     @Override
     public double getHitboxScale() {
         return hitboxScale;
+    }
+
+    public double getMaxDistance() {
+        return maxDistance;
     }
 
     @Override
