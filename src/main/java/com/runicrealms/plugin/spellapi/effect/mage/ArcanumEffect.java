@@ -2,14 +2,15 @@ package com.runicrealms.plugin.spellapi.effect.mage;
 
 import com.runicrealms.plugin.spellapi.effect.SpellEffect;
 import com.runicrealms.plugin.spellapi.effect.SpellEffectType;
-import com.runicrealms.plugin.spellapi.spellutil.particles.HelixParticleFrame;
-import org.bukkit.Particle;
+import com.runicrealms.plugin.spellapi.modeled.ModeledSpellAttached;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
 public class ArcanumEffect implements SpellEffect {
+    private static final String MODEL_ID = "arcane_magic_circle";
     private final Player caster;
     private final double duration;
+    private final ModeledSpellAttached modeledSpellAttached;
     private long startTime;
 
     /**
@@ -20,6 +21,7 @@ public class ArcanumEffect implements SpellEffect {
         this.caster = caster;
         this.duration = duration;
         this.startTime = System.currentTimeMillis();
+        this.modeledSpellAttached = spawnModel();
     }
 
     @Override
@@ -30,6 +32,7 @@ public class ArcanumEffect implements SpellEffect {
     @Override
     public void cancel() {
         startTime = (long) (System.currentTimeMillis() - (duration * 1000)); // Immediately end effect
+        modeledSpellAttached.cancel();
     }
 
     public void refresh() {
@@ -62,19 +65,36 @@ public class ArcanumEffect implements SpellEffect {
             this.cancel();
             return;
         }
-        if (globalCounter % 20 == 0) { // Show particle once per second
-            executeSpellEffect();
-        }
     }
 
     @Override
     public void executeSpellEffect() {
-        new HelixParticleFrame(1.0F, 30, 20.0F).playParticle(caster, Particle.SPELL_WITCH, caster.getLocation());
+
     }
 
     @Override
     public long getStartTime() {
         return startTime;
+    }
+
+    private ModeledSpellAttached spawnModel() {
+        ModeledSpellAttached modeledSpellAttached = new ModeledSpellAttached(
+                caster,
+                MODEL_ID,
+                this.caster.getLocation(),
+                1.0,
+                this.duration,
+                target -> false
+        );
+        modeledSpellAttached.initialize();
+        modeledSpellAttached.getModeledEntity().getModels().forEach((s, activeModel) -> activeModel.getAnimationHandler().playAnimation(
+                "idle",
+                0.5,
+                0.5,
+                1.0,
+                false
+        ));
+        return modeledSpellAttached;
     }
 
 }

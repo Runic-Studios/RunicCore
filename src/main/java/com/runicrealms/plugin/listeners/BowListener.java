@@ -175,16 +175,11 @@ public class BowListener implements Listener {
         if (!className.equals("Archer")) return;
 
         int reqLv;
-        int damage;
-        int maxDamage;
+        RunicItemWeapon runicItemWeapon = null;
         try {
-            RunicItemWeapon runicItemWeapon = (RunicItemWeapon) RunicItemsAPI.getRunicItemFromItemStack(artifact);
-            damage = runicItemWeapon.getWeaponDamage().getMin();
-            maxDamage = runicItemWeapon.getWeaponDamage().getMax();
+            runicItemWeapon = (RunicItemWeapon) RunicItemsAPI.getRunicItemFromItemStack(artifact);
             reqLv = runicItemWeapon.getLevel();
         } catch (Exception ex) {
-            damage = 1;
-            maxDamage = 1;
             reqLv = 0;
         }
 
@@ -228,8 +223,7 @@ public class BowListener implements Listener {
                 Material.BOW,
                 BasicAttackEvent.BASE_BOW_COOLDOWN,
                 BasicAttackEvent.BASE_BOW_COOLDOWN,
-                damage,
-                maxDamage
+                runicItemWeapon
         ));
 
         RunicBowEvent bowFireEvent = new RunicBowEvent(player, myArrow);

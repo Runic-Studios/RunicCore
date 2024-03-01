@@ -1,10 +1,12 @@
 package com.runicrealms.plugin.api.event;
 
+import com.runicrealms.plugin.runicitems.item.RunicItemWeapon;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * This event is called when a player triggers their basic attack
@@ -18,30 +20,30 @@ public class BasicAttackEvent extends Event implements Cancellable {
     private final int originalCooldownTicks; // Used as a reference to the original value
     private final Player player;
     private final Material material;
-    private final int damage;
-    private final int maxDamage;
+    private final RunicItemWeapon runicItemWeapon;
     private double cooldownTicks; // This is a double so that we don't have round each time we modify it, but we round at the end
     private boolean isCancelled;
 
-    public BasicAttackEvent(Player player, Material material, int originalCooldownTicks, int cooldownTicks, int damage, int maxDamage) {
+    public BasicAttackEvent(
+            Player player,
+            Material material,
+            int originalCooldownTicks,
+            int cooldownTicks,
+            RunicItemWeapon runicItemWeapon) {
         this.player = player;
         this.material = material;
         this.originalCooldownTicks = originalCooldownTicks;
         this.cooldownTicks = cooldownTicks;
-        this.damage = damage;
-        this.maxDamage = maxDamage;
+        this.runicItemWeapon = runicItemWeapon;
     }
+
+    /*
+                damage = runicItemWeapon.getWeaponDamage().getMin();
+            maxDamage = runicItemWeapon.getWeaponDamage().getMax();
+     */
 
     public static HandlerList getHandlerList() {
         return handlers;
-    }
-
-    public int getDamage() {
-        return damage;
-    }
-
-    public int getMaxDamage() {
-        return maxDamage;
     }
 
     // This is used so that we can stack cooldown modifiers without having to round between each time we stack
@@ -55,6 +57,11 @@ public class BasicAttackEvent extends Event implements Cancellable {
 
     public void setCooldownTicks(double cooldownTicks) {
         this.cooldownTicks = cooldownTicks;
+    }
+
+    @Nullable
+    public RunicItemWeapon getRunicItemWeapon() {
+        return runicItemWeapon;
     }
 
     @SuppressWarnings("NullableProblems")

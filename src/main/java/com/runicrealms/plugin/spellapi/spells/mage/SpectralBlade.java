@@ -1,6 +1,7 @@
 package com.runicrealms.plugin.spellapi.spells.mage;
 
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.api.event.BasicAttackEvent;
 import com.runicrealms.plugin.api.event.StaffAttackEvent;
 import com.runicrealms.plugin.common.CharacterClass;
 import com.runicrealms.plugin.common.util.Pair;
@@ -11,10 +12,8 @@ import com.runicrealms.plugin.runicitems.item.RunicItemWeapon;
 import com.runicrealms.plugin.spellapi.spelltypes.DistanceSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spellutil.TargetUtil;
-import com.runicrealms.plugin.spellapi.spellutil.particles.SlashEffect;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.Location;
-import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -22,6 +21,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.util.RayTraceResult;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.concurrent.ThreadLocalRandom;
@@ -40,9 +40,14 @@ public class SpectralBlade extends Spell {
      * @param player          who attacked
      * @param runicItemWeapon the staff (for damage numbers)
      */
-    private void bladeAttack(Player player, RunicItemWeapon runicItemWeapon) {
-        int minDamage = runicItemWeapon.getWeaponDamage().getMin();
-        int maxDamage = runicItemWeapon.getWeaponDamage().getMax();
+    private void bladeAttack(Player player, @Nullable RunicItemWeapon runicItemWeapon) {
+        int minDamage = 1;
+        int maxDamage = 1;
+
+        if (runicItemWeapon != null) {
+            minDamage = runicItemWeapon.getWeaponDamage().getMin();
+            maxDamage = runicItemWeapon.getWeaponDamage().getMax();
+        }
 
         // Apply attack effects, random damage amount
         int randomNum = ThreadLocalRandom.current().nextInt(minDamage, maxDamage + 1);
@@ -61,10 +66,10 @@ public class SpectralBlade extends Spell {
             Location location = player.getTargetBlock(null, (int) distance).getLocation();
             location.setDirection(player.getLocation().getDirection());
             location.setY(player.getLocation().add(0, 1, 0).getY());
-            SlashEffect.slashHorizontal(player.getLocation(), Particle.SPELL_WITCH);
+            ArcaneSlash.spawnParticle(player);
         } else if (rayTraceResult.getHitEntity() != null) {
             LivingEntity livingEntity = (LivingEntity) rayTraceResult.getHitEntity();
-            SlashEffect.slashHorizontal(player.getLocation(), Particle.SPELL_WITCH);
+            ArcaneSlash.spawnParticle(player);
             livingEntity.getWorld().playSound(livingEntity.getLocation(), Sound.ENTITY_PLAYER_HURT, 0.5f, 2.0f);
             Collection<Entity> targets = player.getWorld().getNearbyEntities
                     (livingEntity.getLocation(), ArcaneSlash.BEAM_WIDTH, ArcaneSlash.BEAM_WIDTH, ArcaneSlash.BEAM_WIDTH, target -> TargetUtil.isValidEnemy(player, target));
@@ -75,7 +80,9 @@ public class SpectralBlade extends Spell {
             targets.forEach(target -> DamageUtil.damageEntitySpell(finalDamage, (LivingEntity) target, player, this));
         }
 
-        player.setCooldown(runicItemWeapon.getDisplayableItem().getMaterial(), StaffListener.STAFF_COOLDOWN);
+        if (runicItemWeapon != null) {
+            player.setCooldown(runicItemWeapon.getDisplayableItem().getMaterial(), StaffListener.STAFF_COOLDOWN);
+        }
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
@@ -90,6 +97,14 @@ public class SpectralBlade extends Spell {
             event.setCancelled(true);
             bladeAttack(player, result.second);
         }
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onBasicAttack(BasicAttackEvent event) {
+        if (!RunicCore.getSpellAPI().isShielded(event.getPlayer().getUniqueId())) return;
+        if (!hasPassive(event.getPlayer().getUniqueId(), this.getName())) return;
+        event.setCancelled(true);
+        bladeAttack(event.getPlayer(), event.getRunicItemWeapon());
     }
 
     @EventHandler(ignoreCancelled = true)

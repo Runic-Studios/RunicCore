@@ -1,8 +1,8 @@
 package com.runicrealms.plugin.spellapi.spells.mage;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.api.event.BasicAttackEvent;
 import com.runicrealms.plugin.common.CharacterClass;
+import com.runicrealms.plugin.events.MagicDamageEvent;
 import com.runicrealms.plugin.spellapi.effect.SpellEffect;
 import com.runicrealms.plugin.spellapi.effect.SpellEffectType;
 import com.runicrealms.plugin.spellapi.effect.mage.ArcanumEffect;
@@ -13,6 +13,7 @@ import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.spellapi.spellutil.TargetUtil;
 import com.runicrealms.plugin.spellapi.spellutil.particles.HelixParticleFrame;
+import org.bukkit.Color;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.entity.Entity;
@@ -62,6 +63,12 @@ public class PrimalArcanum extends Spell implements DurationSpell, RadiusSpell, 
     public void executeSpell(Player player, SpellItemType type) {
         player.getWorld().playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1.0f, 2.0f);
         player.getWorld().playSound(player.getLocation(), Sound.BLOCK_CONDUIT_ACTIVATE, 1.0f, 1.0f);
+        new HelixParticleFrame(3.0f, 30, 6.0F).playParticle(
+                player,
+                Particle.REDSTONE,
+                player.getLocation(),
+                Color.fromRGB(148, 255, 241)
+        );
         new HelixParticleFrame(3.0f, 30, 12.0F).playParticle(player, Particle.SPELL_WITCH, player.getLocation());
         shieldPlayer(player, player, shield, this);
 
@@ -86,7 +93,9 @@ public class PrimalArcanum extends Spell implements DurationSpell, RadiusSpell, 
     }
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
-    public void onArcanumSlash(BasicAttackEvent event) {
+    public void onArcanumSlash(MagicDamageEvent event) {
+        if (event.getSpell() == null) return;
+        if (!(event.getSpell() instanceof ArcaneSlash || event.getSpell() instanceof SpectralBlade)) return;
         if (!RunicCore.getSpellAPI().isShielded(event.getPlayer().getUniqueId())) return;
         UUID uuid = event.getPlayer().getUniqueId();
         Optional<SpellEffect> spellEffectOpt = this.getSpellEffect(uuid, uuid, SpellEffectType.ARCANUM);

@@ -3,6 +3,7 @@ package com.runicrealms.plugin.spellapi.spells.warrior;
 import com.runicrealms.plugin.api.event.BasicAttackEvent;
 import com.runicrealms.plugin.common.CharacterClass;
 import com.runicrealms.plugin.events.PhysicalDamageEvent;
+import com.runicrealms.plugin.runicitems.item.RunicItemWeapon;
 import com.runicrealms.plugin.spellapi.effect.RunicStatusEffect;
 import com.runicrealms.plugin.spellapi.effect.SpellEffectType;
 import com.runicrealms.plugin.spellapi.effect.warrior.HolyFervorEffect;
@@ -99,11 +100,18 @@ public class SacredWings extends Spell implements DurationSpell, RadiusSpell, Sh
     public void onBasicAttack(BasicAttackEvent event) {
         if (!this.hasSpellEffect(event.getPlayer().getUniqueId(), SpellEffectType.HOLY_FERVOR)) return;
         event.setCancelled(true);
-        sweepEffect(event.getPlayer(), event.getMaterial(), event.getDamage(), event.getMaxDamage(), event.getRoundedCooldownTicks());
+        sweepEffect(event.getPlayer(), event.getMaterial(), event.getRunicItemWeapon(), event.getRoundedCooldownTicks());
     }
 
-    private void sweepEffect(Player player, Material material, int minDamage, int maxDamage, int cooldownTicks) {
+    private void sweepEffect(Player player, Material material, RunicItemWeapon runicItemWeapon, int cooldownTicks) {
         // Apply attack effects, random damage amount
+        int minDamage = 1;
+        int maxDamage = 1;
+
+        if (runicItemWeapon != null) {
+            minDamage = runicItemWeapon.getWeaponDamage().getMin();
+            maxDamage = runicItemWeapon.getWeaponDamage().getMax();
+        }
         int randomNum = ThreadLocalRandom.current().nextInt(minDamage, maxDamage + 1);
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 0.5f, 2.0f);
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDERMAN_TELEPORT, 0.5f, 1.2f);

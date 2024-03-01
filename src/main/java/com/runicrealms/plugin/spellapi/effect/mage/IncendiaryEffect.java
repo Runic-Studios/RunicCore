@@ -21,7 +21,6 @@ public class IncendiaryEffect implements SpellEffect {
         this.caster = caster;
         this.duration = duration;
         this.startTime = System.currentTimeMillis();
-        executeSpellEffect();
         this.modeledSpellAttached = spawnModel();
     }
 

@@ -163,17 +163,13 @@ public class StaffListener implements Listener {
             damageStaff(player, livingEntity, runicItemWeapon);
         }
 
-        int minDamage = runicItemWeapon.getWeaponDamage().getMin();
-        int maxDamage = runicItemWeapon.getWeaponDamage().getMax();
-
         Bukkit.getPluginManager().callEvent(new BasicAttackEvent
                 (
                         player,
                         runicItemWeapon.getDisplayableItem().getMaterial(),
                         BasicAttackEvent.BASE_STAFF_COOLDOWN,
                         BasicAttackEvent.BASE_STAFF_COOLDOWN,
-                        minDamage,
-                        maxDamage
+                        runicItemWeapon
                 ));
     }
 

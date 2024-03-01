@@ -181,8 +181,9 @@ public class DamageListener implements Listener {
             int damage;
             int maxDamage;
             int reqLv;
+            RunicItemWeapon runicItemWeapon = null;
             try {
-                RunicItemWeapon runicItemWeapon = (RunicItemWeapon) RunicItemsAPI.getRunicItemFromItemStack(artifact);
+                runicItemWeapon = (RunicItemWeapon) RunicItemsAPI.getRunicItemFromItemStack(artifact);
                 damage = runicItemWeapon.getWeaponDamage().getMin();
                 maxDamage = runicItemWeapon.getWeaponDamage().getMax();
                 reqLv = runicItemWeapon.getLevel();
@@ -236,8 +237,8 @@ public class DamageListener implements Listener {
                         artifact.getType(),
                         BasicAttackEvent.BASE_MELEE_COOLDOWN,
                         BasicAttackEvent.BASE_MELEE_COOLDOWN,
-                        damage,
-                        maxDamage);
+                        runicItemWeapon
+                );
                 Bukkit.getPluginManager().callEvent(basicAttackEvent);
                 if (!basicAttackEvent.isCancelled()) {
                     DamageUtil.damageEntityPhysical(randomNum, victim, (Player) damager, true, false);
