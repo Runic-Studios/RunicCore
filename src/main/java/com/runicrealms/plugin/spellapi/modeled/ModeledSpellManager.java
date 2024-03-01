@@ -54,9 +54,11 @@ public class ModeledSpellManager implements Listener, ModeledSpellAPI {
                         }
                     }
 
-                    // Continuously set the base entity's velocity
                     Entity entity = modeledSpell.getEntity();
-                    entity.setVelocity(projectile.getVector());
+                    // Continuously set the base entity's velocity if type is LINEAR
+                    if (projectile.getProjectileType() == ProjectileType.LINEAR) {
+                        entity.setVelocity(projectile.getVector());
+                    }
 
                     RayTraceResult rayTraceEntities = entity.getWorld().rayTraceEntities(
                             entity.getLocation(),

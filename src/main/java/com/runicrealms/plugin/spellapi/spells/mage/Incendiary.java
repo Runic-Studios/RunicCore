@@ -9,6 +9,7 @@ import com.runicrealms.plugin.spellapi.event.ModeledSpellCollideEvent;
 import com.runicrealms.plugin.spellapi.event.SpellCastEvent;
 import com.runicrealms.plugin.spellapi.modeled.CollisionCause;
 import com.runicrealms.plugin.spellapi.modeled.ModeledSpellProjectile;
+import com.runicrealms.plugin.spellapi.modeled.ProjectileType;
 import com.runicrealms.plugin.spellapi.spelltypes.DistanceSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
@@ -69,6 +70,7 @@ public class Incendiary extends Spell implements MagicDamageSpell, DistanceSpell
         ModeledSpellProjectile projectile = new ModeledSpellProjectile(
                 player,
                 MODEL_ID,
+                ProjectileType.LINEAR,
                 castLocation,
                 vector,
                 HITBOX_SCALE,

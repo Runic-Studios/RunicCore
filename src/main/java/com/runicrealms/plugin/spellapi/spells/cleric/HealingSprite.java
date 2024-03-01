@@ -3,6 +3,7 @@ package com.runicrealms.plugin.spellapi.spells.cleric;
 import com.runicrealms.plugin.common.CharacterClass;
 import com.runicrealms.plugin.spellapi.event.ModeledSpellCollideEvent;
 import com.runicrealms.plugin.spellapi.modeled.ModeledSpellProjectile;
+import com.runicrealms.plugin.spellapi.modeled.ProjectileType;
 import com.runicrealms.plugin.spellapi.spelltypes.DistanceSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.HealingSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
@@ -24,7 +25,7 @@ import org.bukkit.util.Vector;
 
 public class HealingSprite extends Spell implements DistanceSpell, HealingSpell, MagicDamageSpell, RadiusSpell {
     private static final double HITBOX_SCALE = 1.0;
-    private static final double SPEED = 0.85;
+    private static final double SPEED = 1.25;
     private static final String MODEL_ID = "dawnbringer_angel";
     private double damage;
     private double damagePerLevel;
@@ -35,8 +36,8 @@ public class HealingSprite extends Spell implements DistanceSpell, HealingSpell,
 
     public HealingSprite() {
         super("Healing Sprite", CharacterClass.CLERIC);
-        this.setDescription("You conjure a magical sprite that travels forward up to " +
-                distance + " blocks! Upon reaching its destination or hitting an enemy, " +
+        this.setDescription("You conjure a magical sprite that descends from the sky! " +
+                "Upon reaching its destination or hitting an enemy, " +
                 "the sprite releases a burst of magic! " +
                 "Allies within " + radius + " blocks of the sprite " +
                 "are healed✦ for (" + healAmt + " + &f" +
@@ -79,15 +80,38 @@ public class HealingSprite extends Spell implements DistanceSpell, HealingSpell,
         ModeledSpellProjectile projectile = new ModeledSpellProjectile(
                 player,
                 MODEL_ID,
+                ProjectileType.THROWN,
                 castLocation,
                 vector,
                 HITBOX_SCALE,
                 this.distance,
-                6.0, // max before projectile is force-removed
+                10.0, // max before projectile is force-removed
                 target -> TargetUtil.isValidEnemy(player, target)
         );
         EntityTrail.entityTrail(projectile.getEntity(), Particle.END_ROD);
         projectile.initialize();
+
+//        ItemStack item = new ItemStack(Material.SPLASH_POTION);
+//        PotionMeta meta = (PotionMeta) item.getItemMeta();
+//        Objects.requireNonNull(meta).setColor(Color.AQUA);
+//        item.setItemMeta(meta);
+//        ThrownPotion thrownPotion = player.launchProjectile(ThrownPotion.class);
+//        thrownPotion.setItem(item);
+//        final Vector velocity = player.getLocation().getDirection().normalize().multiply(1.25);
+//        thrownPotion.setVelocity(velocity);
+//        thrownPotion.setShooter(player);
+//
+//        ActiveModel activeModel = ModelEngineAPI.createActiveModel(MODEL_ID);
+//        ModeledEntity modeledEntity = ModelEngineAPI.createModeledEntity(thrownPotion);
+//        modeledEntity.setBaseEntityVisible(false);
+//
+//        if (activeModel != null) {
+//            activeModel.setHitboxVisible(true);
+//            activeModel.setHitboxScale(HITBOX_SCALE);
+//            modeledEntity.addModel(activeModel, true);
+//        }
+
+//        return modeledEntity;
     }
 
     @Override

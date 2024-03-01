@@ -7,6 +7,7 @@ import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Pig;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.ThrownPotion;
 import org.bukkit.util.Vector;
 
 import java.util.function.Predicate;
@@ -17,6 +18,7 @@ import java.util.function.Predicate;
 public class ModeledSpellProjectile implements ModeledSpell {
     private final Player player;
     private final String modelId;
+    private final ProjectileType projectileType;
     private final Location spawnLocation;
     private final double hitboxScale;
     private final double maxDistance;
@@ -30,6 +32,7 @@ public class ModeledSpellProjectile implements ModeledSpell {
     public ModeledSpellProjectile(
             final Player player,
             final String modelId,
+            final ProjectileType projectileType,
             final Location spawnLocation,
             final Vector vector,
             final double hitboxScale,
@@ -38,6 +41,7 @@ public class ModeledSpellProjectile implements ModeledSpell {
             final Predicate<Entity> filter) {
         this.player = player;
         this.modelId = modelId;
+        this.projectileType = projectileType;
         this.spawnLocation = spawnLocation;
         this.vector = vector;
         this.hitboxScale = hitboxScale;
@@ -57,6 +61,10 @@ public class ModeledSpellProjectile implements ModeledSpell {
     @Override
     public String getModelId() {
         return modelId;
+    }
+
+    public ProjectileType getProjectileType() {
+        return projectileType;
     }
 
     @Override
@@ -104,10 +112,15 @@ public class ModeledSpellProjectile implements ModeledSpell {
 
     @Override
     public Entity initializeBaseEntity(Location location) {
-        Pig entity = player.getWorld().spawn(location, Pig.class);
-        entity.setGravity(false);
-        entity.setInvisible(true);
-        entity.setCollidable(false);
+        Entity entity;
+        if (this.projectileType == ProjectileType.LINEAR) {
+            entity = player.getWorld().spawn(location, Pig.class);
+            ((Pig) entity).setInvisible(true);
+            ((Pig) entity).setCollidable(false);
+            entity.setGravity(false);
+        } else {
+            entity = player.launchProjectile(ThrownPotion.class);
+        }
         entity.setSilent(true);
         entity.setInvulnerable(true);
         entity.setVelocity(this.vector);
