@@ -1,5 +1,6 @@
 package com.runicrealms.plugin.spellapi.modeled;
 
+import com.runicrealms.plugin.RunicCore;
 import com.ticxo.modelengine.api.ModelEngineAPI;
 import com.ticxo.modelengine.api.model.ActiveModel;
 import com.ticxo.modelengine.api.model.ModeledEntity;
@@ -8,6 +9,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Pig;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.ThrownPotion;
+import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.util.Vector;
 
 import java.util.function.Predicate;
@@ -118,8 +120,12 @@ public class ModeledSpellProjectile implements ModeledSpell {
             ((Pig) entity).setInvisible(true);
             ((Pig) entity).setCollidable(false);
             entity.setGravity(false);
-        } else {
+        } else { // Thrown projectile
             entity = player.launchProjectile(ThrownPotion.class);
+            entity.setMetadata(
+                    "modeledSpell",
+                    new FixedMetadataValue(RunicCore.getInstance(), "modeledSpell")
+            );
         }
         entity.setSilent(true);
         entity.setInvulnerable(true);

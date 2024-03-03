@@ -9,6 +9,7 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.PotionSplashEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
@@ -107,6 +108,15 @@ public class ModeledSpellManager implements Listener, ModeledSpellAPI {
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onModeledSpellCollide(ModeledSpellCollideEvent event) {
         event.getModeledSpell().cancel();
+    }
+
+    /**
+     * Disable potion splash effect for modeled spells using thrown potion as base entity
+     */
+    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
+    public void onPotionSplash(PotionSplashEvent event) {
+        if (!event.getEntity().hasMetadata("modeledSpell")) return;
+        event.setCancelled(true);
     }
 
     @Override

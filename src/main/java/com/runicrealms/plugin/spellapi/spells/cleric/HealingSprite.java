@@ -12,6 +12,7 @@ import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.spellapi.spellutil.TargetUtil;
 import com.runicrealms.plugin.spellapi.spellutil.particles.EntityTrail;
+import com.runicrealms.plugin.spellapi.spellutil.particles.HorizontalCircleFrame;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.Location;
 import org.bukkit.Particle;
@@ -36,7 +37,7 @@ public class HealingSprite extends Spell implements DistanceSpell, HealingSpell,
 
     public HealingSprite() {
         super("Healing Sprite", CharacterClass.CLERIC);
-        this.setDescription("You conjure a magical sprite that descends from the sky! " +
+        this.setDescription("You launch a magical sprite that descends toward the ground! " +
                 "Upon reaching its destination or hitting an enemy, " +
                 "the sprite releases a burst of magic! " +
                 "Allies within " + radius + " blocks of the sprite " +
@@ -51,18 +52,20 @@ public class HealingSprite extends Spell implements DistanceSpell, HealingSpell,
         if (!event.getModeledSpell().getModelId().equals(MODEL_ID)) return;
         Player player = event.getModeledSpell().getPlayer();
         Entity sprite = event.getModeledSpell().getEntity();
-        sprite.getWorld().playSound(sprite.getLocation(), Sound.ENTITY_SPLASH_POTION_BREAK, 0.5f, 2.0f);
-        sprite.getWorld().playSound(sprite.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5F, 0.5F);
-        sprite.getWorld().playSound(sprite.getLocation(), Sound.ENTITY_EXPERIENCE_BOTTLE_THROW, 0.5F, 1.0F);
+        sprite.getWorld().playSound(sprite.getLocation(), Sound.ENTITY_SPLASH_POTION_BREAK, 0.75f, 2.0f);
+        sprite.getWorld().playSound(sprite.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.75F, 0.5F);
+        sprite.getWorld().playSound(sprite.getLocation(), Sound.ENTITY_EXPERIENCE_BOTTLE_THROW, 0.75F, 1.0F);
+        sprite.getWorld().playSound(sprite.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 0.75F, 12.0f);
         sprite.getWorld().spawnParticle(
-                Particle.VILLAGER_HAPPY,
+                Particle.FIREWORKS_SPARK,
                 sprite.getLocation(),
-                15,
-                1.0f,
-                1.0f,
-                1.0f,
+                25,
+                2.0f,
+                2.0f,
+                2.0f,
                 0
         );
+        new HorizontalCircleFrame((float) radius, false).playParticle(player, Particle.FIREWORKS_SPARK, sprite.getLocation().add(0, 0.5f, 0));
 
         for (Entity entity : sprite.getWorld().getNearbyEntities(sprite.getLocation(), radius, radius, radius)) {
             if (TargetUtil.isValidAlly(player, entity))
@@ -76,6 +79,7 @@ public class HealingSprite extends Spell implements DistanceSpell, HealingSpell,
     public void executeSpell(Player player, SpellItemType type) {
         Location castLocation = player.getEyeLocation();
         player.getWorld().playSound(castLocation, Sound.ENTITY_ALLAY_AMBIENT_WITH_ITEM, 0.5f, 2.0f);
+        player.getWorld().playSound(castLocation, Sound.ENTITY_BLAZE_SHOOT, 0.5f, 4.0f);
         final Vector vector = castLocation.getDirection().normalize().multiply(SPEED);
         ModeledSpellProjectile projectile = new ModeledSpellProjectile(
                 player,
@@ -90,28 +94,6 @@ public class HealingSprite extends Spell implements DistanceSpell, HealingSpell,
         );
         EntityTrail.entityTrail(projectile.getEntity(), Particle.END_ROD);
         projectile.initialize();
-
-//        ItemStack item = new ItemStack(Material.SPLASH_POTION);
-//        PotionMeta meta = (PotionMeta) item.getItemMeta();
-//        Objects.requireNonNull(meta).setColor(Color.AQUA);
-//        item.setItemMeta(meta);
-//        ThrownPotion thrownPotion = player.launchProjectile(ThrownPotion.class);
-//        thrownPotion.setItem(item);
-//        final Vector velocity = player.getLocation().getDirection().normalize().multiply(1.25);
-//        thrownPotion.setVelocity(velocity);
-//        thrownPotion.setShooter(player);
-//
-//        ActiveModel activeModel = ModelEngineAPI.createActiveModel(MODEL_ID);
-//        ModeledEntity modeledEntity = ModelEngineAPI.createModeledEntity(thrownPotion);
-//        modeledEntity.setBaseEntityVisible(false);
-//
-//        if (activeModel != null) {
-//            activeModel.setHitboxVisible(true);
-//            activeModel.setHitboxScale(HITBOX_SCALE);
-//            modeledEntity.addModel(activeModel, true);
-//        }
-
-//        return modeledEntity;
     }
 
     @Override
