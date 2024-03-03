@@ -25,8 +25,5 @@ public class RunicTeleportListener implements Listener {
     public void onPlayerTeleport(PlayerTeleportEvent event) {
         List<Entity> passengers = event.getPlayer().getPassengers();
         passengers.forEach(passenger -> event.getPlayer().removePassenger(passenger));
-        if (event.getTo() != null) {
-            event.getPlayer().teleport(event.getTo());
-        }
     }
 }

@@ -3,9 +3,8 @@ package com.runicrealms.plugin.spellapi.effect.cleric;
 import com.runicrealms.plugin.spellapi.effect.SpellEffectType;
 import com.runicrealms.plugin.spellapi.effect.StackEffect;
 import com.runicrealms.plugin.spellapi.effect.StackHologram;
-import com.runicrealms.plugin.spellapi.spellutil.particles.HelixParticleFrame;
+import com.runicrealms.plugin.spellapi.modeled.ModeledSpellAttached;
 import org.bukkit.Location;
-import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -14,6 +13,7 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class RadiantFireEffect implements StackEffect {
+    private static final String MODEL_ID = "radiant_fire";
     private static final int PERIOD = 20;
     private final Player caster;
     private final int maxStacks;
@@ -23,6 +23,7 @@ public class RadiantFireEffect implements StackEffect {
     private final StackHologram stackHologram;
     private Location hologramLocation;
     private int nextTickCounter;
+    private ModeledSpellAttached modeledSpellAttached;
 
     /**
      * @param caster           uuid of the caster
@@ -44,7 +45,6 @@ public class RadiantFireEffect implements StackEffect {
                 hologramLocation,
                 Set.of(caster)
         );
-        executeSpellEffect();
     }
 
     public int getMaxStacks() {
@@ -102,7 +102,7 @@ public class RadiantFireEffect implements StackEffect {
 
     @Override
     public void tick(int globalCounter) {
-        if (globalCounter % 60 == 0) { // Show particle effect once per two three
+        if (globalCounter % 60 == 0) { // Show particle effect / hologram every 60 ticks
             executeSpellEffect();
         }
         if (globalCounter < nextTickCounter) {
@@ -116,6 +116,7 @@ public class RadiantFireEffect implements StackEffect {
         if (stacks.get() > 0) {
             stacks.getAndDecrement();
             caster.playSound(caster.getLocation(), Sound.BLOCK_CONDUIT_DEACTIVATE, 0.25f, 3.0f);
+            executeSpellEffect();
         }
         // Set the next tick
         nextTickCounter += getTickInterval();
@@ -125,8 +126,11 @@ public class RadiantFireEffect implements StackEffect {
     public void executeSpellEffect() {
         int stacks = this.stacks.get();
         stackHologram.showHologram(this.hologramLocation, this.stacks.get());
-        if (stacks >= stackThreshold) {
-            new HelixParticleFrame(1.0F, 30, 10.0F).playParticle(caster, Particle.FIREWORKS_SPARK, caster.getLocation());
+        if (stacks >= stackThreshold && this.modeledSpellAttached == null) {
+            this.modeledSpellAttached = spawnModel();
+        } else if (stacks < stackThreshold && this.modeledSpellAttached != null) {
+            modeledSpellAttached.cancel();
+            this.modeledSpellAttached = null;
         }
     }
 
@@ -134,6 +138,9 @@ public class RadiantFireEffect implements StackEffect {
     public void cancel() {
         stacks.set(0);
         caster.playSound(caster.getLocation(), Sound.BLOCK_CONDUIT_DEACTIVATE, 0.25f, 3.0f);
+        if (this.modeledSpellAttached != null) {
+            modeledSpellAttached.cancel();
+        }
     }
 
     @Override
@@ -148,5 +155,25 @@ public class RadiantFireEffect implements StackEffect {
 
     public int getStackThreshold() {
         return stackThreshold;
+    }
+
+    private ModeledSpellAttached spawnModel() {
+        ModeledSpellAttached modeledSpellAttached = new ModeledSpellAttached(
+                caster,
+                MODEL_ID,
+                this.caster.getLocation(),
+                1.0,
+                999,
+                target -> false
+        );
+        modeledSpellAttached.initialize();
+        modeledSpellAttached.getModeledEntity().getModels().forEach((s, activeModel) -> activeModel.getAnimationHandler().playAnimation(
+                "idle",
+                0.5,
+                0.5,
+                1.0,
+                false
+        ));
+        return modeledSpellAttached;
     }
 }
