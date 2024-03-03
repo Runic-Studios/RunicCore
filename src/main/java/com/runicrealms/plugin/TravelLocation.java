@@ -1,5 +1,6 @@
 package com.runicrealms.plugin;
 
+import com.runicrealms.plugin.common.event.RunicTeleportEvent;
 import com.runicrealms.plugin.common.util.ColorUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -59,7 +60,9 @@ public enum TravelLocation {
 
     public static void fastTravelTask(Player player, TravelType travelType, TravelLocation travelLocation) {
         player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 5 * 20, 2));
-        player.teleport(travelLocation.getLocation());
+        RunicTeleportEvent runicTeleportEvent = new RunicTeleportEvent(player, travelLocation.getLocation());
+        Bukkit.getPluginManager().callEvent(runicTeleportEvent);
+        if (runicTeleportEvent.isCancelled()) return;
 
         new BukkitRunnable() {
             int count = 1;

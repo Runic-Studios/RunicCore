@@ -10,6 +10,7 @@ import co.aikar.commands.annotation.Default;
 import com.runicrealms.plugin.DungeonLocation;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.SafeZoneLocation;
+import com.runicrealms.plugin.common.event.RunicTeleportEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
@@ -63,9 +64,12 @@ public class RunicTeleportCMD extends BaseCommand {
             return;
         }
         assert location != null;
-        player.teleport(location);
-        player.getWorld().playSound(player.getLocation(), Sound.BLOCK_PORTAL_TRIGGER, 0.5f, 1.0f);
-        player.getWorld().spawnParticle(Particle.REDSTONE, player.getLocation().add(0, 1, 0),
-                10, 0.5f, 0.5f, 0.5f, new Particle.DustOptions(Color.PURPLE, 3));
+        RunicTeleportEvent runicTeleportEvent = new RunicTeleportEvent(player, location);
+        Bukkit.getPluginManager().callEvent(runicTeleportEvent);
+        if (!runicTeleportEvent.isCancelled()) {
+            player.getWorld().playSound(player.getLocation(), Sound.BLOCK_PORTAL_TRIGGER, 0.5f, 1.0f);
+            player.getWorld().spawnParticle(Particle.REDSTONE, player.getLocation().add(0, 1, 0),
+                    10, 0.5f, 0.5f, 0.5f, new Particle.DustOptions(Color.PURPLE, 3));
+        }
     }
 }

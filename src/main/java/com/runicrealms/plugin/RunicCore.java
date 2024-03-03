@@ -102,6 +102,7 @@ import com.runicrealms.plugin.listeners.PlayerInteractCorrectionListener;
 import com.runicrealms.plugin.listeners.PreCommandListener;
 import com.runicrealms.plugin.listeners.RuneListener;
 import com.runicrealms.plugin.listeners.RunicExpListener;
+import com.runicrealms.plugin.listeners.RunicTeleportListener;
 import com.runicrealms.plugin.listeners.ServerListPingListener;
 import com.runicrealms.plugin.listeners.SheepShearListener;
 import com.runicrealms.plugin.listeners.ShieldListener;
@@ -652,6 +653,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         pm.registerEvents(new BossTimedLootDamageListener(), this);
         pm.registerEvents(new ModelDamageListener(), this);
         pm.registerEvents(new ModelInteractListener(), this);
+        pm.registerEvents(new RunicTeleportListener(), this);
     }
 
     private void registerOldStyleCommands() {

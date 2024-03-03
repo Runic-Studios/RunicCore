@@ -88,27 +88,19 @@ public class PlayerJoinListener implements Listener {
     @EventHandler(priority = EventPriority.NORMAL)
     public void onCharacterLoaded(CharacterLoadedEvent event) {
         Player player = event.getPlayer();
-//        player.setInvulnerable(false);
-//        HealthUtils.setPlayerMaxHealth(player);
-//        player.setHealthScale(HealthUtils.getHeartAmount());
-//        player.setHealth(player.getMaxHealth());
-//        Bukkit.getLogger().severe("PLAYER HEALTH SET 3");
         int slot = event.getCharacterSelectEvent().getSlot();
         player.teleport(((CorePlayerData) event.getCharacterSelectEvent().getSessionDataMongo()).getCharacter(slot).getLocation());
-//        Bukkit.getLogger().severe("PLAYER WAS TELEPORTED 4");
         Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), () -> LOADING_SCREEN_PLAYERS.remove(event.getPlayer().getUniqueId()), 7L);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onCharacterLoadedLast(CharacterLoadedEvent event) {
-//        Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), () -> {
         Player player = event.getPlayer();
         player.setInvulnerable(false);
         HealthUtils.setPlayerMaxHealth(player);
         player.setHealthScale(HealthUtils.getHeartAmount());
         player.setHealth(player.getMaxHealth());
         LOADS_IN_PROGRESS.remove(event.getPlayer().getUniqueId());
-//        }, 40L);
     }
 
     /**
