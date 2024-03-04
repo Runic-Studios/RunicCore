@@ -6,6 +6,8 @@ import com.runicrealms.plugin.spellapi.effect.RunicStatusEffect;
 import com.runicrealms.plugin.spellapi.effect.SpellEffect;
 import com.runicrealms.plugin.spellapi.effect.SpellEffectType;
 import com.runicrealms.plugin.spellapi.effect.mage.ChilledEffect;
+import com.runicrealms.plugin.spellapi.modeled.ModeledStand;
+import com.runicrealms.plugin.spellapi.modeled.StandSlot;
 import com.runicrealms.plugin.spellapi.spelltypes.DistanceSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
@@ -22,6 +24,7 @@ import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
+import org.bukkit.SoundCategory;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -29,22 +32,20 @@ import org.bukkit.entity.Snowball;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
 
-import java.util.HashSet;
 import java.util.Optional;
-import java.util.Set;
 
 public class Blizzard extends Spell implements DistanceSpell, DurationSpell, MagicDamageSpell, RadiusSpell, WarmupSpell {
+    private static final int MODEL_DATA = 2718;
+    private static final double HITBOX_SCALE = 0.5;
     private static final int HEIGHT = 9;
     private static final int SLOW_DURATION = 2;
-    private static final double SNOWBALL_SPEED = 0.5;
+    private static final double SPEED = 3.0;
     private static final double RAY_SIZE = 1.0D;
     // Add a set for the blizzard snowballs
-    private final Set<Snowball> blizzardSnowballs = new HashSet<>();
     private double damage;
     private double damagePerLevel;
     private double distance;
@@ -167,21 +168,8 @@ public class Blizzard extends Spell implements DistanceSpell, DurationSpell, Mag
         }
     }
 
-    @EventHandler(priority = EventPriority.HIGH)
-    public void onSnowballHit(ProjectileHitEvent event) {
-        if (event.isCancelled()) return;
-        if (!(event.getEntity() instanceof Snowball snowball)) return;
-
-        // Check if snowball was created by Blizzard spell
-        if (blizzardSnowballs.contains(snowball)) {
-            snowball.remove();
-            blizzardSnowballs.remove(snowball); // Remove snowball from set
-            event.setCancelled(true);
-        }
-    }
-
     private void spawnBlizzard(Player player, Location location) {
-        Vector launchPath = new Vector(0, -1.0, 0).multiply(SNOWBALL_SPEED);
+        Vector launchPath = new Vector(0, -1.0, 0).multiply(SPEED);
         Location cloudLoc = location.clone().add(0, HEIGHT, 0);
         Blizzard blizzard = this;
 
@@ -194,12 +182,16 @@ public class Blizzard extends Spell implements DistanceSpell, DurationSpell, Mag
                     this.cancel();
                 else {
                     count++;
-                    new HorizontalCircleFrame((float) radius, false).playParticle(player, Particle.REDSTONE, location, Color.WHITE);
+                    new HorizontalCircleFrame((float) radius, false).playParticle(player, Particle.END_ROD, location);
                     new HorizontalCircleFrame((float) radius, false).playParticle(player, Particle.SNOWBALL, location, Color.WHITE);
                     // Sounds, reduced volume due to quantity of snowballs
-                    player.getWorld().playSound(location, Sound.ENTITY_ENDER_DRAGON_FLAP, 0.75f, 0.5f);
-                    player.getWorld().playSound(location, Sound.WEATHER_RAIN_ABOVE, 0.75f, 0.75f);
-                    player.getWorld().playSound(location, Sound.AMBIENT_CAVE, 0.75f, 1.0f);
+                    player.playSound(
+                            location,
+                            "samus.archmage.blizzard",
+                            SoundCategory.AMBIENT,
+                            0.5f,
+                            1.0f
+                    );
                     player.getWorld().spawnParticle(Particle.REDSTONE, cloudLoc,
                             25, blizzard.getRadius() / 2, 0.75f, blizzard.getRadius() / 2, new Particle.DustOptions(Color.WHITE, 20));
                     // Visual effect
@@ -212,10 +204,16 @@ public class Blizzard extends Spell implements DistanceSpell, DurationSpell, Mag
     }
 
     private void spawnSnowball(Player player, Location loc, Vector vec) {
-        Snowball snowball = player.getWorld().spawn(loc, Snowball.class);
-        snowball.setVelocity(vec);
-        snowball.setShooter(player);
-        blizzardSnowballs.add(snowball); // Add snowball to set
+        new ModeledStand(
+                player,
+                loc,
+                vec,
+                MODEL_DATA,
+                4.0,
+                HITBOX_SCALE,
+                StandSlot.HEAD,
+                target -> false
+        );
     }
 
     private void spawnSnowballs(Player player, Location cloudLoc, Vector launchPath) {

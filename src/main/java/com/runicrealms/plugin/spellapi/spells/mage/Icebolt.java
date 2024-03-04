@@ -17,6 +17,7 @@ import com.runicrealms.plugin.spellapi.spellutil.TargetUtil;
 import com.runicrealms.plugin.spellapi.spellutil.particles.EntityTrail;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.Color;
+import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -33,7 +34,7 @@ import java.util.Optional;
 public class Icebolt extends Spell implements DistanceSpell, DurationSpell, MagicDamageSpell {
     private static final int ICEBOLT_MODEL_DATA = 2244;
     private static final double HITBOX_SCALE = 0.5;
-    private static final double SPEED = 2.5;
+    private static final double SPEED = 2.25;
     private double damage;
     private double damagePerLevel;
     private double distance;
@@ -136,6 +137,15 @@ public class Icebolt extends Spell implements DistanceSpell, DurationSpell, Magi
         if (spellEffectOpt.isPresent()) {
             ChilledEffect chilledEffect = (ChilledEffect) spellEffectOpt.get();
             chilledEffect.cancel();
+            livingEntity.getWorld().spawnParticle(
+                    Particle.END_ROD,
+                    livingEntity.getEyeLocation(),
+                    10,
+                    0.5f,
+                    0.5f,
+                    0.5f,
+                    0
+            );
             double damagePerLevel = this.empoweredDamagePerLevel * player.getLevel();
             DamageUtil.damageEntitySpell(this.empoweredDamage + damagePerLevel, livingEntity, player); // No spell scaling to apply custom
         } else {
