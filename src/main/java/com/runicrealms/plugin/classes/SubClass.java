@@ -18,7 +18,7 @@ public enum SubClass {
      Archer
      */
     MARKSMAN("Marksman", 1, CharacterClass.ARCHER, marksmanItem(), "Marksman is a master of mobility and long-range &cphysical⚔ &7attacks!"),
-    STORMSHOT("Stormshot", 2, CharacterClass.ARCHER, stormshotItem(), "Stormshot is a master of lightning &3magicʔ&7, slinging area-of-effect spells!"),
+    STORMSHOT("Stormshot", 2, CharacterClass.ARCHER, stormshotItem(), "Stormshot is a master of lightning &3magicʔ&7 and ramping power!"),
     WARDEN("Warden", 3, CharacterClass.ARCHER, wardenItem(), "Warden is the keeper of the forest, &ahealing✦ &7allies through the power of nature!"),
     /*
      Cleric
@@ -31,7 +31,7 @@ public enum SubClass {
      */
     CRYOMANCER("Cryomancer", 1, CharacterClass.MAGE, cryomancerItem(), "Cryomancer freezes and slows enemies with &fcrowd control&7!"),
     PYROMANCER("Pyromancer", 2, CharacterClass.MAGE, pyromancerItem(), "Pyromancer deals powerful area-of-effect &3magicʔ &7damage!"),
-    SPELLSWORD("Spellsword", 3, CharacterClass.MAGE, spellswordItem(), "Spellsword uses magical melee attacks to &ashield &7allies!"),
+    SPELLSWORD("Spellsword", 3, CharacterClass.MAGE, spellswordItem(), "Spellsword uses magical melee attacks to &ashield &7allies and damage enemies!"),
     /*
      Rogue
      */

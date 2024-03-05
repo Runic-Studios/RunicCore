@@ -10,13 +10,18 @@ import com.runicrealms.plugin.spellapi.effect.SpellEffect;
 import com.runicrealms.plugin.spellapi.effect.SpellEffectType;
 import com.runicrealms.plugin.spellapi.effect.mage.ChilledEffect;
 import com.runicrealms.plugin.spellapi.effect.mage.IceBarrierEffect;
+import com.runicrealms.plugin.spellapi.modeled.ModeledStandAnimated;
+import com.runicrealms.plugin.spellapi.modeled.StandSlot;
 import com.runicrealms.plugin.spellapi.spelltypes.AttributeSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.ShieldingSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.utilities.DamageUtil;
+import org.bukkit.Location;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.util.Vector;
 
 import java.util.Map;
 import java.util.Optional;
@@ -28,6 +33,28 @@ import java.util.UUID;
  * @author BoBoBalloon, Skyfallin
  */
 public class Shatter extends Spell implements AttributeSpell, MagicDamageSpell, ShieldingSpell {
+    private static final int MODEL_DATA = 2719;
+    private static final int[] MODEL_DATA_ARRAY = new int[]{
+            MODEL_DATA,
+            2720,
+            2721,
+            2722,
+            2723,
+            2724,
+            2725
+//            MODEL_DATA,
+//            2733,
+//            2734,
+//            2735,
+//            2736,
+//            2737,
+//            MODEL_DATA,
+//            2733,
+//            2734,
+//            2735,
+//            2736,
+//            2737,
+    };
     private double baseValue;
     private double damage;
     private double damagePerLevel;
@@ -53,6 +80,20 @@ public class Shatter extends Spell implements AttributeSpell, MagicDamageSpell, 
                 "Max " + maxStacks + " stacks. " +
                 "Stacks expire after " + stackDuration + "s. " +
                 "Lose all stacks on exit combat.");
+    }
+
+    public static void spawnParticle(Player player, Location location) {
+        new ModeledStandAnimated(
+                player,
+                location.clone().add(0, 0.3f, 0),
+                new Vector(0, 0, 0),
+                MODEL_DATA,
+                3.0,
+                1.0,
+                StandSlot.HEAD,
+                target -> false,
+                MODEL_DATA_ARRAY
+        );
     }
 
     @Override
@@ -131,6 +172,7 @@ public class Shatter extends Spell implements AttributeSpell, MagicDamageSpell, 
         chilledEffect.cancel();
 
         DamageUtil.damageEntitySpell(damage, event.getVictim(), event.getPlayer(), this);
+        spawnParticle(event.getPlayer(), event.getVictim().getLocation());
 
         Optional<SpellEffect> iceBarrierOptAttacker = this.getSpellEffect(uuid, uuid, SpellEffectType.ICE_BARRIER);
         if (iceBarrierOptAttacker.isPresent()) {
