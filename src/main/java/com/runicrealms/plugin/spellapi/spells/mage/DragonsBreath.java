@@ -70,7 +70,7 @@ public class DragonsBreath extends Spell implements DurationSpell, MagicDamageSp
                 4.0,
                 HITBOX_SCALE,
                 StandSlot.ARM,
-                target -> false,
+                null,
                 MODEL_DATA_ARRAY
         );
         // Only hit enemies in front of the caster

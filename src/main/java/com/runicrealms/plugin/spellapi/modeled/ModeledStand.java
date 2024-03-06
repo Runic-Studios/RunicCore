@@ -25,7 +25,7 @@ public class ModeledStand {
     private final double duration;
     private final double hitboxScale;
     private final StandSlot standSlot;
-    private final Predicate<Entity> filter;
+    private final Predicate<Entity> validTargets;
     private final ItemStack itemStack;
     private final ArmorStand armorStand;
     private final ModeledEntity modeledEntity;
@@ -49,7 +49,7 @@ public class ModeledStand {
             double duration,
             double hitboxScale,
             StandSlot standSlot,
-            Predicate<Entity> filter) {
+            Predicate<Entity> validTargets) {
         this.player = player;
         this.location = location;
         this.vector = vector;
@@ -57,7 +57,7 @@ public class ModeledStand {
         this.duration = duration;
         this.hitboxScale = hitboxScale;
         this.standSlot = standSlot;
-        this.filter = filter;
+        this.validTargets = validTargets;
         this.itemStack = createItemStack();
         this.armorStand = createArmorStand();
         this.modeledEntity = createModeledEntity();
@@ -172,7 +172,7 @@ public class ModeledStand {
         startTime = (long) (System.currentTimeMillis() - (duration * 1000)); // Immediately end effect
     }
 
-    public Predicate<Entity> getFilter() {
-        return filter;
+    public Predicate<Entity> getValidTargets() {
+        return validTargets;
     }
 }

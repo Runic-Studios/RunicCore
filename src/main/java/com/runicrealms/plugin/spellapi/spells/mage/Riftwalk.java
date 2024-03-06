@@ -67,7 +67,7 @@ public class Riftwalk extends Spell implements DurationSpell, MagicDamageSpell, 
                 3.0,
                 1.0,
                 StandSlot.HEAD,
-                target -> false,
+                null,
                 MODEL_DATA_ARRAY
         );
     }

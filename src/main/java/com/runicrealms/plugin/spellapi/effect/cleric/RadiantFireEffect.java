@@ -164,7 +164,7 @@ public class RadiantFireEffect implements StackEffect {
                 this.caster.getLocation(),
                 1.0,
                 999,
-                target -> false
+                null
         );
         modeledSpellAttached.initialize();
         modeledSpellAttached.getModeledEntity().getModels().forEach((s, activeModel) -> activeModel.getAnimationHandler().playAnimation(

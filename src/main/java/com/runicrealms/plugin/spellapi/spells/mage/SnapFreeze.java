@@ -7,6 +7,8 @@ import com.runicrealms.plugin.spellapi.effect.RunicStatusEffect;
 import com.runicrealms.plugin.spellapi.effect.SpellEffect;
 import com.runicrealms.plugin.spellapi.effect.SpellEffectType;
 import com.runicrealms.plugin.spellapi.effect.mage.ChilledEffect;
+import com.runicrealms.plugin.spellapi.modeled.ModeledStand;
+import com.runicrealms.plugin.spellapi.modeled.StandSlot;
 import com.runicrealms.plugin.spellapi.spelltypes.DistanceSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
@@ -14,7 +16,6 @@ import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.spellapi.spellutil.TargetUtil;
 import com.runicrealms.plugin.spellapi.spellutil.particles.Cone;
-import com.runicrealms.plugin.spellapi.spellutil.particles.HorizontalCircleFrame;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
@@ -24,6 +25,7 @@ import org.bukkit.Sound;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.util.Vector;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -33,8 +35,9 @@ import java.util.Set;
 import java.util.UUID;
 
 public class SnapFreeze extends Spell implements DistanceSpell, DurationSpell, MagicDamageSpell {
+    private static final int MODEL_DATA = 2252;
+    private static final double HITBOX_SCALE = 1.0;
     private static final double PERIOD = 0.5;
-    private static final int BEAM_RADIUS = 1;
     private final Map<UUID, Set<UUID>> damageMap = new HashMap<>(); // Prevents concussive hits
     private double damage;
     private double damagePerLevel;
@@ -61,13 +64,13 @@ public class SnapFreeze extends Spell implements DistanceSpell, DurationSpell, M
     @Override
     public void executeSpell(Player player, SpellItemType type) {
         Location castLocation = player.getEyeLocation();
+
         freeze(player, castLocation);
 
         AtomicDouble count = new AtomicDouble(1);
         Bukkit.getScheduler().runTaskTimer(RunicCore.getInstance(), task -> {
             if (count.get() > distance) {
                 task.cancel();
-                damageMap.remove(player.getUniqueId());
             } else {
                 count.set(count.get() + PERIOD);
                 castLocation.add(castLocation.getDirection());
@@ -76,12 +79,26 @@ public class SnapFreeze extends Spell implements DistanceSpell, DurationSpell, M
         }, 0, (long) PERIOD * 20L);
     }
 
+    private void spawnSpike(Player player, Location spawnLocation) {
+        player.getWorld().playSound(spawnLocation, Sound.BLOCK_GLASS_BREAK, 0.35f, 0.5f);
+        new ModeledStand(
+                player,
+                spawnLocation,
+                new Vector(0, 0, 0),
+                MODEL_DATA,
+                0.6,
+                HITBOX_SCALE,
+                StandSlot.HEAD,
+                entity -> TargetUtil.isValidEnemy(player, entity)
+        );
+    }
+
     private void freeze(Player player, Location location) {
         if (!damageMap.containsKey(player.getUniqueId()))
             damageMap.put(player.getUniqueId(), new HashSet<>());
-        new HorizontalCircleFrame(BEAM_RADIUS, true).playParticle(player, Particle.BLOCK_CRACK, location);
+        spawnSpike(player, location);
         player.getWorld().playSound(location, Sound.BLOCK_GLASS_BREAK, 0.5f, 0.5f);
-        for (Entity entity : player.getWorld().getNearbyEntities(location, BEAM_RADIUS, BEAM_RADIUS, BEAM_RADIUS, target -> TargetUtil.isValidEnemy(player, target))) {
+        for (Entity entity : player.getWorld().getNearbyEntities(location, HITBOX_SCALE, HITBOX_SCALE, HITBOX_SCALE, target -> TargetUtil.isValidEnemy(player, target))) {
             if (damageMap.get(player.getUniqueId()).contains(entity.getUniqueId())) continue;
             DamageUtil.damageEntitySpell(damage, (LivingEntity) entity, player, this);
 

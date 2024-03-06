@@ -154,7 +154,7 @@ public class ModeledSpellProjectile implements ModeledSpell {
     }
 
     @Override
-    public Predicate<Entity> getFilter() {
+    public Predicate<Entity> getValidTargets() {
         return filter;
     }
 }

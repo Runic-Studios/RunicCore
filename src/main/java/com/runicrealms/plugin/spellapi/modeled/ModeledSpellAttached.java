@@ -17,7 +17,7 @@ public class ModeledSpellAttached implements ModeledSpell {
     private final double hitboxScale;
     private final Entity entity;
     private final ModeledEntity modeledEntity;
-    private final Predicate<Entity> filter;
+    private final Predicate<Entity> validTargets;
     private double startTime;
     private double duration;
 
@@ -27,12 +27,12 @@ public class ModeledSpellAttached implements ModeledSpell {
             final Location spawnLocation,
             final double hitboxScale,
             final double duration,
-            final Predicate<Entity> filter) {
+            final Predicate<Entity> validTargets) {
         this.player = player;
         this.modelId = modelId;
         this.spawnLocation = spawnLocation;
         this.duration = duration;
-        this.filter = filter;
+        this.validTargets = validTargets;
         this.hitboxScale = hitboxScale;
         this.entity = initializeBaseEntity(this.spawnLocation);
         this.modeledEntity = spawnModel();
@@ -117,7 +117,7 @@ public class ModeledSpellAttached implements ModeledSpell {
     }
 
     @Override
-    public Predicate<Entity> getFilter() {
-        return filter;
+    public Predicate<Entity> getValidTargets() {
+        return validTargets;
     }
 }

@@ -84,7 +84,7 @@ public class ArcanumEffect implements SpellEffect {
                 this.caster.getLocation(),
                 1.0,
                 this.duration,
-                target -> false
+                null
         );
         modeledSpellAttached.initialize();
         modeledSpellAttached.getModeledEntity().getModels().forEach((s, activeModel) -> activeModel.getAnimationHandler().playAnimation(

@@ -101,7 +101,7 @@ public class Erupt extends Spell implements DurationSpell, MagicDamageSpell, Rad
                 2.0,
                 1.0,
                 StandSlot.HEAD,
-                target -> false
+                null
         );
         fireBlast(player, location);
     }

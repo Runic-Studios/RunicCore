@@ -212,7 +212,7 @@ public class Blizzard extends Spell implements DistanceSpell, DurationSpell, Mag
                 4.0,
                 HITBOX_SCALE,
                 StandSlot.HEAD,
-                target -> false
+                null
         );
     }
 

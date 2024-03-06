@@ -91,7 +91,7 @@ public class Shatter extends Spell implements AttributeSpell, MagicDamageSpell, 
                 3.0,
                 1.0,
                 StandSlot.HEAD,
-                target -> false,
+                null,
                 MODEL_DATA_ARRAY
         );
     }

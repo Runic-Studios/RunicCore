@@ -54,13 +54,16 @@ public class ModeledStandManager implements Listener, ModeledStandAPI {
                     // Continuously teleport stand to achieve movement
                     armorStand.teleport(armorStand.getLocation().add(modeledStand.getVector()));
 
-                    RayTraceResult rayTraceEntities = armorStand.getWorld().rayTraceEntities(
-                            armorStand.getLocation(),
-                            modeledStand.getVector(),
-                            modeledStand.getHitboxScale() + 0.5,
-                            RAY_SIZE, // Increases collision detection radius by raySize unit(s) in all directions
-                            modeledStand.getFilter()
-                    );
+                    RayTraceResult rayTraceEntities = null;
+                    if (modeledStand.getValidTargets() != null) {
+                        rayTraceEntities = armorStand.getWorld().rayTraceEntities(
+                                armorStand.getLocation(),
+                                modeledStand.getVector(),
+                                modeledStand.getHitboxScale() + 0.5,
+                                RAY_SIZE, // Increases collision detection radius by raySize unit(s) in all directions
+                                modeledStand.getValidTargets()
+                        );
+                    }
 
                     RayTraceResult rayTraceBlocks = armorStand.getWorld().rayTraceBlocks(
                             armorStand.getLocation(),
@@ -79,7 +82,11 @@ public class ModeledStandManager implements Listener, ModeledStandAPI {
     /**
      * Handles each case which will result in a ModeledStand collision, such as hitting entities or terrain
      */
-    private void handleCollision(ModeledStand modeledStand, ArmorStand armorStand, RayTraceResult rayTraceEntities, RayTraceResult rayTraceBlocks) {
+    private void handleCollision(
+            ModeledStand modeledStand,
+            ArmorStand armorStand,
+            RayTraceResult rayTraceEntities,
+            RayTraceResult rayTraceBlocks) {
         if (rayTraceEntities != null && rayTraceEntities.getHitEntity() != null) {
             ModeledStandCollideEvent event = new ModeledStandCollideEvent(modeledStand, CollisionCause.ENTITY, (LivingEntity) rayTraceEntities.getHitEntity());
             Bukkit.getPluginManager().callEvent(event);

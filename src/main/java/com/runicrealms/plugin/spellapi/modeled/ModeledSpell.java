@@ -93,5 +93,5 @@ public interface ModeledSpell {
      *
      * @return an entity filter
      */
-    Predicate<Entity> getFilter();
+    Predicate<Entity> getValidTargets();
 }

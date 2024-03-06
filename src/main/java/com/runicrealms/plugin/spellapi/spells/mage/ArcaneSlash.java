@@ -78,7 +78,7 @@ public class ArcaneSlash extends Spell implements DistanceSpell, MagicDamageSpel
                 4.0,
                 1.0,
                 StandSlot.ARM,
-                target -> false,
+                null,
                 angle == 75 ? MODEL_DATA_ARRAY : MODEL_DATA_ARRAY_REVERSED
         );
         modeledStandAnimated.getArmorStand().setRightArmPose(new EulerAngle(0, 0, angle));

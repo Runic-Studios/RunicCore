@@ -66,7 +66,7 @@ public class ModeledSpellManager implements Listener, ModeledSpellAPI {
                             projectile.getVector(),
                             modeledSpell.getHitboxScale() + 0.5,
                             RAY_SIZE, // Increases collision detection radius by raySize unit(s) in all directions
-                            modeledSpell.getFilter()
+                            modeledSpell.getValidTargets()
                     );
 
                     RayTraceResult rayTraceBlocks = entity.getWorld().rayTraceBlocks(
