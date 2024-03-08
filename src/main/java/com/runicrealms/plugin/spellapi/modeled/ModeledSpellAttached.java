@@ -1,8 +1,5 @@
 package com.runicrealms.plugin.spellapi.modeled;
 
-import com.ticxo.modelengine.api.ModelEngineAPI;
-import com.ticxo.modelengine.api.model.ActiveModel;
-import com.ticxo.modelengine.api.model.ModeledEntity;
 import org.bukkit.Location;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
@@ -10,78 +7,23 @@ import org.bukkit.entity.Player;
 
 import java.util.function.Predicate;
 
-public class ModeledSpellAttached implements ModeledSpell {
-    private final Player player;
-    private final String modelId;
-    private final Location spawnLocation;
-    private final double hitboxScale;
-    private final Entity entity;
-    private final ModeledEntity modeledEntity;
-    private final Predicate<Entity> validTargets;
-    private double startTime;
-    private double duration;
+/**
+ * The type Modeled spell attached. Extension of stationary modeled spell which remains fixed as a passenger
+ */
+public class ModeledSpellAttached extends ModeledSpellStationary {
 
-    public ModeledSpellAttached(
-            final Player player,
-            final String modelId,
-            final Location spawnLocation,
-            final double hitboxScale,
-            final double duration,
-            final Predicate<Entity> validTargets) {
-        this.player = player;
-        this.modelId = modelId;
-        this.spawnLocation = spawnLocation;
-        this.duration = duration;
-        this.validTargets = validTargets;
-        this.hitboxScale = hitboxScale;
-        this.entity = initializeBaseEntity(this.spawnLocation);
-        this.modeledEntity = spawnModel();
-        this.startTime = System.currentTimeMillis();
-    }
-
-    @Override
-    public Player getPlayer() {
-        return player;
-    }
-
-    @Override
-    public String getModelId() {
-        return modelId;
-    }
-
-    @Override
-    public Location getSpawnLocation() {
-        return this.spawnLocation;
-    }
-
-    @Override
-    public double getDuration() {
-        return duration;
-    }
-
-    @Override
-    public void setDuration(double duration) {
-        this.duration = duration;
-    }
-
-    @Override
-    public double getStartTime() {
-        return startTime;
-    }
-
-    @Override
-    public double getHitboxScale() {
-        return hitboxScale;
-    }
-
-    @Override
-    public Entity getEntity() {
-        return entity;
-    }
-
-    @Override
-    public ModeledEntity getModeledEntity() {
-        return modeledEntity;
+    /**
+     * Instantiates a new Modeled spell stationary.
+     *
+     * @param player        the player
+     * @param modelId       the model id
+     * @param spawnLocation the spawn location
+     * @param hitboxScale   the hitbox scale
+     * @param duration      the duration
+     * @param validTargets  the valid targets
+     */
+    public ModeledSpellAttached(Player player, String modelId, Location spawnLocation, double hitboxScale, double duration, Predicate<Entity> validTargets) {
+        super(player, modelId, spawnLocation, hitboxScale, duration, validTargets);
     }
 
     @Override
@@ -96,28 +38,8 @@ public class ModeledSpellAttached implements ModeledSpell {
     }
 
     @Override
-    public ModeledEntity spawnModel() {
-        ActiveModel activeModel = ModelEngineAPI.createActiveModel(this.modelId);
-        ModeledEntity modeledEntity = ModelEngineAPI.createModeledEntity(entity);
-        modeledEntity.setBaseEntityVisible(false);
-
-        if (activeModel != null) {
-            activeModel.setHitboxVisible(true);
-            activeModel.setHitboxScale(this.hitboxScale);
-            modeledEntity.addModel(activeModel, true);
-        }
-
-        return modeledEntity;
-    }
-
-    @Override
     public void cancel() {
         player.removePassenger(this.entity);
         startTime = (long) (System.currentTimeMillis() - (duration * 1000)); // Immediately end effect
-    }
-
-    @Override
-    public Predicate<Entity> getValidTargets() {
-        return validTargets;
     }
 }

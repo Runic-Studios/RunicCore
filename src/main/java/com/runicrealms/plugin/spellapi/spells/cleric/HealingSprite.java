@@ -25,9 +25,9 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.util.Vector;
 
 public class HealingSprite extends Spell implements DistanceSpell, HealingSpell, MagicDamageSpell, RadiusSpell {
+    public static final String MODEL_ID = "dawnbringer_angel";
     private static final double HITBOX_SCALE = 1.0;
     private static final double SPEED = 1.25;
-    private static final String MODEL_ID = "dawnbringer_angel";
     private double damage;
     private double damagePerLevel;
     private double distance;

@@ -102,7 +102,7 @@ public class ModeledStandManager implements Listener, ModeledStandAPI {
         }
     }
 
-    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onModeledStandCollide(ModeledStandCollideEvent event) {
         event.getModeledStand().cancel();
     }
