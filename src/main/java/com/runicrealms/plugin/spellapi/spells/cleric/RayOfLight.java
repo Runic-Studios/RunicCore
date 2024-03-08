@@ -3,36 +3,59 @@ package com.runicrealms.plugin.spellapi.spells.cleric;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.common.CharacterClass;
 import com.runicrealms.plugin.spellapi.effect.RunicStatusEffect;
+import com.runicrealms.plugin.spellapi.modeled.ModeledStandAnimated;
+import com.runicrealms.plugin.spellapi.modeled.StandSlot;
 import com.runicrealms.plugin.spellapi.spelltypes.DistanceSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.RadiusSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
+import com.runicrealms.plugin.spellapi.spelltypes.WarmupSpell;
 import com.runicrealms.plugin.spellapi.spellutil.TargetUtil;
-import com.runicrealms.plugin.spellapi.spellutil.VectorUtil;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.Bukkit;
-import org.bukkit.Color;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
+import org.bukkit.SoundCategory;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
 
 import java.util.Map;
 
+/**
+ * The type Ray of light.
+ */
 @SuppressWarnings("FieldCanBeLocal")
-public class RayOfLight extends Spell implements DistanceSpell, DurationSpell, MagicDamageSpell, RadiusSpell {
-    private static final int HEIGHT = 8;
-    private static final int MAX_DURATION = 4; // how long until the beam just ends
-    private static final int TRAIL_SPEED = 2;
+public class RayOfLight extends Spell implements DistanceSpell, DurationSpell, MagicDamageSpell, RadiusSpell, WarmupSpell {
+    private static final int MODEL_DATA_BEAM = 2485;
+    private static final int[] MODEL_DATA_BEAM_ARRAY = new int[]{
+            MODEL_DATA_BEAM,
+            2486,
+            2487,
+            2488,
+            2489,
+            2490,
+            2491,
+            2492,
+            2493
+    };
+    private static final int MODEL_DATA_EXPLOSION = 2476;
+    private static final int[] MODEL_DATA_EXPLOSION_ARRAY = new int[]{
+            MODEL_DATA_BEAM,
+            2477,
+            2478,
+            2479,
+            2480,
+            2481,
+            2482,
+            2483,
+            2484
+    };
     private static final double BEAM_WIDTH = 1.0D;
     private double damage;
     private double damagePerLevel;
@@ -40,13 +63,18 @@ public class RayOfLight extends Spell implements DistanceSpell, DurationSpell, M
     private double knockback;
     private double maxDistance;
     private double radius;
+    private double warmup;
 
+    /**
+     * Instantiates a new Ray of light.
+     */
     public RayOfLight() {
         super("Ray Of Light", CharacterClass.CLERIC);
-        this.setDescription("You call forth a ray of light that falls " +
-                "from the sky at your target enemy or location within " +
-                "8 blocks! Enemies within " + radius + " blocks of the impact take (" +
-                damage + " + &f" + damagePerLevel + "x&7 lvl) magicʔ damage and " +
+        this.setDescription("You call forth a ray of light at your target " +
+                "enemy or location within " + maxDistance + " blocks " +
+                "that charges for " + warmup + "s, then explodes! " +
+                "Enemies within " + radius + " blocks of the explosion take (" +
+                damage + " + &f" + damagePerLevel + "x&7 lvl) magicʔ damage, then " +
                 "are knocked away and silenced for " + duration + "s!");
     }
 
@@ -72,7 +100,49 @@ public class RayOfLight extends Spell implements DistanceSpell, DurationSpell, M
             location = player.getTargetBlock(null, (int) maxDistance).getLocation();
         }
 
-        lightBlast(player, location);
+        playEffect(player, location);
+    }
+
+    private void playEffect(Player player, Location location) {
+        player.playSound(
+                location,
+                "samus.bard.symphony_laser",
+                SoundCategory.AMBIENT,
+                0.75f,
+                1.0f
+        );
+        new ModeledStandAnimated(
+                player,
+                location,
+                new Vector(0, 0, 0),
+                MODEL_DATA_BEAM,
+                this.duration,
+                1.0,
+                StandSlot.ARM,
+                null,
+                MODEL_DATA_BEAM_ARRAY
+        );
+        Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), task -> {
+            player.playSound(
+                    location,
+                    "samus.bard.symphony_explosion",
+                    SoundCategory.AMBIENT,
+                    0.5f,
+                    1.0f
+            );
+            new ModeledStandAnimated(
+                    player,
+                    location,
+                    new Vector(0, 0, 0),
+                    MODEL_DATA_EXPLOSION,
+                    this.duration,
+                    1.0,
+                    StandSlot.ARM,
+                    null,
+                    MODEL_DATA_EXPLOSION_ARRAY
+            );
+            explode(player, location);
+        }, (long) this.warmup * 20L);
     }
 
     private void explode(Player player, Location location) {
@@ -90,18 +160,38 @@ public class RayOfLight extends Spell implements DistanceSpell, DurationSpell, M
         }
     }
 
+    /**
+     * Gets damage.
+     *
+     * @return the damage
+     */
     public double getDamage() {
         return damage;
     }
 
+    /**
+     * Sets damage.
+     *
+     * @param damage the damage
+     */
     public void setDamage(double damage) {
         this.damage = damage;
     }
 
+    /**
+     * Gets damage per level.
+     *
+     * @return the damage per level
+     */
     public double getDamagePerLevel() {
         return damagePerLevel;
     }
 
+    /**
+     * Sets damage per level.
+     *
+     * @param damagePerLevel the damage per level
+     */
     public void setDamagePerLevel(double damagePerLevel) {
         this.damagePerLevel = damagePerLevel;
     }
@@ -138,10 +228,20 @@ public class RayOfLight extends Spell implements DistanceSpell, DurationSpell, M
         setDuration(duration.doubleValue());
     }
 
+    /**
+     * Gets knockback.
+     *
+     * @return the knockback
+     */
     public double getKnockback() {
         return knockback;
     }
 
+    /**
+     * Sets knockback.
+     *
+     * @param knockback the knockback
+     */
     public void setKnockback(double knockback) {
         this.knockback = knockback;
     }
@@ -166,10 +266,20 @@ public class RayOfLight extends Spell implements DistanceSpell, DurationSpell, M
         this.damagePerLevel = magicDamagePerLevel;
     }
 
+    /**
+     * Gets max distance.
+     *
+     * @return the max distance
+     */
     public double getMaxDistance() {
         return maxDistance;
     }
 
+    /**
+     * Sets max distance.
+     *
+     * @param maxDistance the max distance
+     */
     public void setMaxDistance(double maxDistance) {
         this.maxDistance = maxDistance;
     }
@@ -184,36 +294,14 @@ public class RayOfLight extends Spell implements DistanceSpell, DurationSpell, M
         this.radius = radius;
     }
 
-    /**
-     * Spawns a falling beam of light from the sky that explodes upon hitting the ground
-     *
-     * @param player   who cast the spell
-     * @param location to end the trail
-     */
-    private void lightBlast(Player player, Location location) {
-
-        final Location[] trailLoc = {location.clone().add(0, HEIGHT, 0)};
-        VectorUtil.drawLine(player, Particle.VILLAGER_ANGRY, Color.WHITE, trailLoc[0], location.clone().subtract(0, 20, 0), 2.5D, 5);
-
-        BukkitTask bukkitTask = new BukkitRunnable() {
-            @Override
-            public void run() {
-                if (trailLoc[0].clone().subtract(0, 2, 0).getBlock().getType() != Material.AIR) { // block is on ground
-                    this.cancel();
-                    Bukkit.getScheduler().runTask(RunicCore.getInstance(), () -> explode(player, trailLoc[0]));
-                }
-
-                // spawn trail
-                player.getWorld().playSound(trailLoc[0], Sound.BLOCK_NOTE_BLOCK_CHIME, 0.5f, 2.0f);
-                player.getWorld().playSound(trailLoc[0], Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 2.0f);
-                player.getWorld().spawnParticle(Particle.SPELL_INSTANT, trailLoc[0], 25, 0.75f, 0.75f, 0.75f, 0);
-                trailLoc[0] = trailLoc[0].subtract(0, TRAIL_SPEED, 0);
-            }
-        }.runTaskTimerAsynchronously(RunicCore.getInstance(), 0, 3L);
-
-        // So the beam doesn't last forever
-        Bukkit.getScheduler().runTaskLaterAsynchronously(RunicCore.getInstance(), bukkitTask::cancel, MAX_DURATION * 20L);
+    @Override
+    public double getWarmup() {
+        return warmup;
     }
 
+    @Override
+    public void setWarmup(double warmup) {
+        this.warmup = warmup;
+    }
 }
 
