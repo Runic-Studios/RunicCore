@@ -76,7 +76,9 @@ public class ModeledStand {
     }
 
     private ArmorStand createArmorStand() {
-        ArmorStand armorStand = player.getWorld().spawn(this.location.clone().subtract(0, 0.25f, 0), ArmorStand.class);
+        ArmorStand armorStand = player.getWorld()
+                .spawn(this.location.clone().setDirection(player.getLocation().getDirection())
+                        .subtract(0, 0.25f, 0), ArmorStand.class);
 
         armorStand.setVisible(false);
         armorStand.setCollidable(false);

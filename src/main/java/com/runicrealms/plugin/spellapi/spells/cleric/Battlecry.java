@@ -7,6 +7,8 @@ import com.runicrealms.plugin.runicitems.Stat;
 import com.runicrealms.plugin.spellapi.effect.SpellEffect;
 import com.runicrealms.plugin.spellapi.effect.SpellEffectType;
 import com.runicrealms.plugin.spellapi.effect.cleric.SongOfWarEffect;
+import com.runicrealms.plugin.spellapi.modeled.ModeledStandAnimated;
+import com.runicrealms.plugin.spellapi.modeled.StandSlot;
 import com.runicrealms.plugin.spellapi.spelltypes.AttributeSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
@@ -16,7 +18,7 @@ import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.spellapi.spellutil.KnockbackUtil;
 import com.runicrealms.plugin.spellapi.spellutil.TargetUtil;
 import com.runicrealms.plugin.utilities.DamageUtil;
-import org.bukkit.Particle;
+import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
 import org.bukkit.entity.Entity;
@@ -24,6 +26,7 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.util.Vector;
 
 import java.util.Map;
 import java.util.Optional;
@@ -35,6 +38,21 @@ import java.util.UUID;
  * @author BoBoBalloon, Skyfallin
  */
 public class Battlecry extends Spell implements AttributeSpell, DurationSpell, MagicDamageSpell, RadiusSpell, Tempo.Influenced {
+    private static final int MODEL_DATA_BEAM = 2494;
+    private static final int[] MODEL_DATA_BEAM_ARRAY = new int[]{
+            MODEL_DATA_BEAM,
+            2495,
+            2496,
+            2497,
+            2498,
+            2499,
+//            MODEL_DATA_BEAM,
+//            2495,
+//            2496,
+//            2497,
+//            2498,
+//            2499,
+    };
     private double duration;
     private double baseValue;
     private double damage;
@@ -44,6 +62,9 @@ public class Battlecry extends Spell implements AttributeSpell, DurationSpell, M
     private double radius;
     private String statName;
 
+    /**
+     * Instantiates a new Battlecry.
+     */
     public Battlecry() {
         super("Battlecry", CharacterClass.CLERIC);
         Stat stat = Stat.getFromName(statName);
@@ -67,6 +88,7 @@ public class Battlecry extends Spell implements AttributeSpell, DurationSpell, M
 
     @Override
     public void executeSpell(Player player, SpellItemType type) {
+        playEffect(player, player.getLocation());
         applySongOfWar(player, player); // Apply song of war to caster, since we're not using .getWorld() for entity check
 
         for (Entity entity : player.getNearbyEntities(this.radius, this.radius, this.radius)) {
@@ -81,8 +103,22 @@ public class Battlecry extends Spell implements AttributeSpell, DurationSpell, M
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDER_DRAGON_GROWL, SoundCategory.AMBIENT, 0.5f, 1.0f);
     }
 
+    private void playEffect(Player player, Location location) {
+        final Vector vector = player.getLocation().getDirection().normalize().multiply(2.0);
+        new ModeledStandAnimated(
+                player,
+                location.add(vector),
+                new Vector(0, 0, 0),
+                MODEL_DATA_BEAM,
+                1.0,
+                1.0,
+                StandSlot.ARM,
+                null,
+                MODEL_DATA_BEAM_ARRAY
+        );
+    }
+
     private void applySongOfWar(Player player, Player recipient) {
-        player.getWorld().spawnParticle(Particle.NOTE, recipient.getEyeLocation(), 8, Math.random() * 2, Math.random(), Math.random() * 2);
         Optional<SpellEffect> spellEffectOpt = this.getSpellEffect(player.getUniqueId(), recipient.getUniqueId(), SpellEffectType.SONG_OF_WAR);
         if (spellEffectOpt.isPresent()) {
             SongOfWarEffect songOfWarEffect = (SongOfWarEffect) spellEffectOpt.get();
@@ -172,6 +208,11 @@ public class Battlecry extends Spell implements AttributeSpell, DurationSpell, M
         this.damagePerLevel = magicDamagePerLevel;
     }
 
+    /**
+     * Sets knockback.
+     *
+     * @param knockback the knockback
+     */
     public void setKnockback(double knockback) {
         this.knockback = knockback;
     }
