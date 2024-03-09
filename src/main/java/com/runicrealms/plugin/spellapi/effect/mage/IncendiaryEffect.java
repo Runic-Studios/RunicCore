@@ -81,7 +81,7 @@ public class IncendiaryEffect implements SpellEffect {
                 caster,
                 MODEL_ID,
                 this.caster.getLocation(),
-                1.0,
+                0,
                 this.duration,
                 null
         );

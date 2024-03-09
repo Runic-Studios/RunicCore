@@ -17,29 +17,32 @@ import org.bukkit.util.Vector;
 import java.util.function.Predicate;
 
 public class ModeledStand {
-    private static final String HITBOX_MODEL_ID = "hitbox";
-    private final Player player;
-    private final Location location;
-    private final Vector vector;
-    private final int customModelData;
-    private final double duration;
-    private final double hitboxScale;
-    private final StandSlot standSlot;
-    private final Predicate<Entity> validTargets;
-    private final ItemStack itemStack;
-    private final ArmorStand armorStand;
-    private final ModeledEntity modeledEntity;
-    private long startTime;
+    protected static final String HITBOX_MODEL_ID = "hitbox";
+    protected final Player player;
+    protected final Location location;
+    protected final Vector vector;
+    protected final int customModelData;
+    protected final double duration;
+    protected final double hitboxScale;
+    protected final StandSlot standSlot;
+    protected final Predicate<Entity> validTargets;
+    protected final ItemStack itemStack;
+    protected final ArmorStand armorStand;
+    protected final ModeledEntity modeledEntity;
+    protected long startTime;
 
     /**
      * Creates a ModeledStand, which is used as a projectile library. Using custom resources and ModelEngine,
      * creates moving projectiles with custom hitboxes for use in spell design
      *
+     * @param player          who fired/spawned the modeled stand
+     * @param location        where the stand will spawn
      * @param customModelData an integer which is used in the '/models' folder's .json files to specify texture
      * @param duration        the maximum length before the stand will be destroyed
      * @param hitboxScale     a modifier to scale the custom hitbox up or down
-     * @param player          who fired/spawned the modeled stand
      * @param vector          that the stand will follow (its velocity)
+     * @param standSlot       whether the item will spawn ARM or HEAD
+     * @param validTargets    a predicate filter to specify valid targets (allies or enemies)
      */
     public ModeledStand(
             Player player,
@@ -75,7 +78,7 @@ public class ModeledStand {
         return modeledItemStack;
     }
 
-    private ArmorStand createArmorStand() {
+    protected ArmorStand createArmorStand() {
         ArmorStand armorStand = player.getWorld()
                 .spawn(this.location.clone().setDirection(player.getLocation().getDirection())
                         .subtract(0, 0.25f, 0), ArmorStand.class);

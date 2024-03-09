@@ -46,12 +46,6 @@ public class Battlecry extends Spell implements AttributeSpell, DurationSpell, M
             2497,
             2498,
             2499,
-//            MODEL_DATA_BEAM,
-//            2495,
-//            2496,
-//            2497,
-//            2498,
-//            2499,
     };
     private double duration;
     private double baseValue;

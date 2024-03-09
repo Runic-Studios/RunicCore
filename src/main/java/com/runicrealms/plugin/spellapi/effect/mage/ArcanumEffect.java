@@ -63,7 +63,6 @@ public class ArcanumEffect implements SpellEffect {
     public void tick(int globalCounter) {
         if (caster.isDead()) {
             this.cancel();
-            return;
         }
     }
 
@@ -82,7 +81,7 @@ public class ArcanumEffect implements SpellEffect {
                 caster,
                 MODEL_ID,
                 this.caster.getLocation(),
-                1.0,
+                0,
                 this.duration,
                 null
         );

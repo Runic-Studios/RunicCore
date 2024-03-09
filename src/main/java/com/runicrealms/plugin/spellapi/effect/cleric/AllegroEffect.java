@@ -2,23 +2,31 @@ package com.runicrealms.plugin.spellapi.effect.cleric;
 
 import com.runicrealms.plugin.spellapi.effect.SpellEffect;
 import com.runicrealms.plugin.spellapi.effect.SpellEffectType;
-import org.bukkit.Particle;
+import com.runicrealms.plugin.spellapi.modeled.ModeledSpellAttached;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
-public class AriaOfArmorEffect implements SpellEffect {
+/**
+ * The type Allegro effect.
+ */
+public class AllegroEffect implements SpellEffect {
+    private static final String MODEL_ID = "blue_bird";
     private final Player recipient;
     private final double duration;
+    private final ModeledSpellAttached modeledSpellAttached;
     private long startTime;
 
     /**
+     * Instantiates a new Allegro effect.
+     *
      * @param recipient player who is receiving the effect
      * @param duration  (in seconds) before the effect expires
      */
-    public AriaOfArmorEffect(Player recipient, double duration) {
+    public AllegroEffect(Player recipient, double duration) {
         this.recipient = recipient;
         this.duration = duration;
         this.startTime = System.currentTimeMillis();
+        this.modeledSpellAttached = spawnModel();
     }
 
     @Override
@@ -29,8 +37,12 @@ public class AriaOfArmorEffect implements SpellEffect {
     @Override
     public void cancel() {
         startTime = (long) (System.currentTimeMillis() - (duration * 1000)); // Immediately end effect
+        this.modeledSpellAttached.cancel();
     }
 
+    /**
+     * Refresh.
+     */
     public void refresh() {
         this.startTime = System.currentTimeMillis();
     }
@@ -59,21 +71,36 @@ public class AriaOfArmorEffect implements SpellEffect {
     public void tick(int globalCounter) {
         if (recipient.isDead()) {
             this.cancel();
-            return;
-        }
-        if (globalCounter % 20 == 0) { // Show particle once per second
-            executeSpellEffect();
         }
     }
 
     @Override
     public void executeSpellEffect() {
-        recipient.getWorld().spawnParticle(Particle.VILLAGER_ANGRY, recipient.getEyeLocation(), 8, Math.random() * 2, Math.random(), Math.random() * 2);
     }
 
     @Override
     public long getStartTime() {
         return startTime;
+    }
+
+    private ModeledSpellAttached spawnModel() {
+        ModeledSpellAttached modeledSpellAttached = new ModeledSpellAttached(
+                recipient,
+                MODEL_ID,
+                this.recipient.getLocation(),
+                0,
+                this.duration,
+                null
+        );
+        modeledSpellAttached.initialize();
+        modeledSpellAttached.getModeledEntity().getModels().forEach((s, activeModel) -> activeModel.getAnimationHandler().playAnimation(
+                "idle",
+                0.5,
+                0.5,
+                1.0,
+                false
+        ));
+        return modeledSpellAttached;
     }
 
 }

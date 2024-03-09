@@ -36,6 +36,19 @@ public class Tempo extends Spell implements RadiusSpell, DurationSpell {
     private double radius;
     private double duration;
 
+    /*
+        private static final int MODEL_DATA = 2474;
+            new ModeledStandAttached(
+                recipient,
+                recipient.getEyeLocation().add(0, 0.5f, 0),
+                new Vector(0, 0, 0),
+                MODEL_DATA,
+                this.duration,
+                0,
+                StandSlot.HEAD,
+                null
+        );
+     */
     public Tempo() {
         super("Tempo", CharacterClass.CLERIC);
         this.setIsPassive(true);
@@ -79,7 +92,7 @@ public class Tempo extends Spell implements RadiusSpell, DurationSpell {
         }
 
         battlecry.increaseExtraDuration(event.getPlayer(), this.duration);
-        accelerando.increaseExtraDuration(event.getPlayer(), this.duration);
+//        accelerando.increaseExtraDuration(event.getPlayer(), this.duration);
         grandSymphony.increaseExtraDuration(event.getPlayer(), this.duration);
     }
 
